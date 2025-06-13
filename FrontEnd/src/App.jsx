@@ -13,6 +13,8 @@ import SignUp from './pages/Login/SignUp';
 import Worcation from './pages/Worcation';
 
 import Mypage from './pages/Mypage';
+import MemberList from './pages/Member/MemberList';
+import LayoutMember from './components/LayoutMember';
 
 function App() {
   return (
@@ -27,6 +29,9 @@ function App() {
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
+          </Route>
+          <Route element={<LayoutMember />}>
+            <Route path="/member/list" element={<MemberList />} />
           </Route>
           {/* 레이아웃 미적용*/}
           <Route path="/login" element={<Login />} />
