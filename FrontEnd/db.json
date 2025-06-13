@@ -1,0 +1,100 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "프리미엄 가죽 자켓",
+      "price": 159000,
+      "description": "최고급 가죽으로 제작된 클래식한 디자인의 자켓입니다.",
+      "image": "https://picsum.photos/seed/jacket/400/400",
+      "category": "의류",
+      "rating": 4.5,
+      "reviewCount": 128,
+      "isNew": true,
+      "isPopular": true
+    },
+    {
+      "id": 2,
+      "name": "스마트 워치",
+      "price": 299000,
+      "description": "건강 모니터링과 스마트 알림 기능이 탑재된 최신 스마트워치입니다.",
+      "image": "https://picsum.photos/seed/watch/400/400",
+      "category": "전자제품",
+      "rating": 4.8,
+      "reviewCount": 256,
+      "isNew": true,
+      "isPopular": true
+    },
+    {
+      "id": 3,
+      "name": "모던 소파",
+      "price": 890000,
+      "description": "편안한 착석감과 세련된 디자인의 3인용 소파입니다.",
+      "image": "https://picsum.photos/seed/sofa/400/400",
+      "category": "가구",
+      "rating": 4.6,
+      "reviewCount": 89,
+      "isNew": false,
+      "isPopular": true
+    },
+    {
+      "id": 4,
+      "name": "유기농 과일 세트",
+      "price": 45000,
+      "description": "신선한 유기농 과일로 구성된 프리미엄 과일 세트입니다.",
+      "image": "https://picsum.photos/seed/fruits/400/400",
+      "category": "식품",
+      "rating": 4.7,
+      "reviewCount": 156,
+      "isNew": true,
+      "isPopular": false
+    },
+    {
+      "id": 5,
+      "name": "프로 요가 매트",
+      "price": 35000,
+      "description": "미끄럼 방지 기능이 있는 고급 요가 매트입니다.",
+      "image": "https://picsum.photos/seed/yogamat/400/400",
+      "category": "스포츠",
+      "rating": 4.4,
+      "reviewCount": 92,
+      "isNew": false,
+      "isPopular": true
+    },
+    {
+      "id": 6,
+      "name": "프리미엄 스킨케어 세트",
+      "price": 128000,
+      "description": "자연 유래 성분으로 만든 고급 스킨케어 세트입니다.",
+      "image": "https://picsum.photos/seed/skincare/400/400",
+      "category": "뷰티",
+      "rating": 4.9,
+      "reviewCount": 203,
+      "isNew": true,
+      "isPopular": true
+    },
+    {
+      "id": 7,
+      "name": "베스트셀러 소설",
+      "price": 15000,
+      "description": "전 세계 독자들의 사랑을 받은 베스트셀러 소설입니다.",
+      "image": "https://picsum.photos/seed/book/400/400",
+      "category": "도서",
+      "rating": 4.7,
+      "reviewCount": 178,
+      "isNew": false,
+      "isPopular": true
+    },
+    {
+      "id": 8,
+      "name": "교육용 로봇",
+      "price": 199000,
+      "description": "아이들의 창의력과 논리적 사고를 키워주는 교육용 로봇입니다.",
+      "image": "https://picsum.photos/seed/robot/400/400",
+      "category": "장난감",
+      "rating": 4.6,
+      "reviewCount": 145,
+      "isNew": true,
+      "isPopular": false
+    }
+  ]
+}

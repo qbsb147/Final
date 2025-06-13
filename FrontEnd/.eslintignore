@@ -1,0 +1,10 @@
+{
+    ignores: [
+      'node_modules',
+      'dist',
+      'build',
+      '.eslintrc.js',
+      'vite.config.js',
+      'webpack.config.js',
+    ],
+},
