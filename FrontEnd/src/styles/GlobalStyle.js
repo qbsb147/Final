@@ -31,6 +31,12 @@ const GlobalStyle = createGlobalStyle`
     font: inherit;
   }
 
+  input{
+    &:focus{
+      outline:none;
+    }
+  }
+
   /* 리스트 스타일 초기화 */
   ul, ol {
     list-style: none;

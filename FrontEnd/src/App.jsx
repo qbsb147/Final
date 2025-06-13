@@ -36,11 +36,12 @@ function App() {
 
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
-              </Route>
+          </Route>
 
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} />
           </Route>
+
           {/* 레이아웃 미적용*/}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />

@@ -20,13 +20,12 @@ const PageWrapper = styled.div`
   min-height: 100vh;
 `;
 const Content = styled.main`
-  flex: 1;
   width: 100%;
   max-width: ${({ theme }) => theme.widthes.maxWidth};
   margin: 0 auto;
   padding: 24px 0px 0px 0px;
   display: flex;
-  flex-direction: column;
+  flex: 1;
 `;
 
 export default Layout3;

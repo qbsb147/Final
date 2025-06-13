@@ -1,11 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import RegisterList from '../../components/list/RegisterList';
+import List from '../../components/worcation/register/List';
+import Form from '../../components/worcation/register/Form';
 
 const Register = () => {
   return (
     <Body>
-      <RegisterList />
+      <InBody>
+        <List />
+        <Form />
+      </InBody>
     </Body>
   );
 };
@@ -17,6 +21,12 @@ const Body = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   width: 100%;
   display: flex;
-    justify-content: center;   // 수평 중앙
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
+`;
+
+const InBody = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
 `;

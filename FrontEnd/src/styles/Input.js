@@ -22,6 +22,13 @@ const Input = {
     borderRadius: '10px',
     color: 'black',
   },
+  LightGray: {
+    boxSizing: 'border-box',
+    background: '#FFFFFF',
+    border: '1px solid #d1d5db',
+    borderRadius: '10px',
+    color: 'black',
+  },
 };
 
 export default Input;
