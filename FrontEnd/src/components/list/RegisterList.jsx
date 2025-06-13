@@ -8,7 +8,7 @@ const RegisterList = () => {
     <FormContainer>
       <InputBox isActive={isActive} onClick={() => setIsActive((prev) => !prev)}>
         <FolderIcon />
-        <Label>호스트 신청</Label>
+        <Label>테스트 신청</Label>
       </InputBox>
 
       <Button type="submit">등록</Button>
