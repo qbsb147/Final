@@ -11,7 +11,7 @@ const RegisterList = () => {
         <Label>호스트 신청</Label>
       </InputBox>
 
-      <Button type="submit">등록입니다</Button>
+      <Button type="submit">등록d</Button>
     </FormContainer>
   );
 };
