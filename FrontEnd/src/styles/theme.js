@@ -3,6 +3,7 @@ const theme = {
   colors: {
     primary: '#FFEB8C',
     secondary: '#FAD700',
+    background: '#FFFAE8',
     info: '#61dafb',
     success: '#22c55e',
     warning: '#f59e0b',
@@ -106,9 +107,13 @@ const theme = {
     toast: 1700,
     tooltip: 1800,
   },
-  fontFamily : {
-    primary : 'Godo B',
-    secondary : 'GyeonggiTitleOTF',
+  fontFamily: {
+    primary: 'Godo B',
+    secondary: 'GyeonggiTitleOTF',
+  },
+  widthes: {
+    layoutWidth: '1280px',
+    maxWidth: '1920px',
   },
 };
 
