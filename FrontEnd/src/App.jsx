@@ -14,6 +14,11 @@ import Worcation from './pages/Worcation';
 
 import Mypage from './pages/Mypage';
 
+import MemberList from './pages/Member/MemberList';
+import LayoutMember from './components/LayoutMember';
+import Layout3 from './components/Layout3';
+import Register from './pages/worcation/Register';
+
 function App() {
   return (
     <BrowserRouter>
@@ -27,6 +32,14 @@ function App() {
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
+          </Route>
+
+          <Route element={<LayoutMember />}>
+            <Route path="/member/list" element={<MemberList />} />
+              </Route>
+
+          <Route element={<Layout3 />}>
+            <Route path="/worcation/register" element={<Register />} />
           </Route>
           {/* 레이아웃 미적용*/}
           <Route path="/login" element={<Login />} />

@@ -31,7 +31,7 @@ const menuData = [
   },
   {
     title: '직원관리',
-    path: '/member',
+    path: '/member/list',
     items: [
       { title: '직원목록', path: '/member/list' },
       { title: '워케이션 신청자', path: '/member/workation-applies' },
@@ -101,8 +101,13 @@ const Header = () => {
 };
 
 const HeaderWrap = styled.header`
-  position: relative;
+  position: absolute;
   font-family: sans-serif;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
 `;
 
 const HeaderBg = styled.div`
