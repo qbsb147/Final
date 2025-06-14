@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaUser, FaCalendarAlt } from 'react-icons/fa';
-import { ButtonYbShadow, ButtonWhite } from '../styles/Button.styles';
-import InputStyle from '../styles/Input.styles';
+import { FaUser } from 'react-icons/fa';
+import Button from '../styles/Button';
+import InputStyle from '../styles/Input';
 
 const PartnershipForm = () => {
   return (
@@ -32,6 +32,15 @@ const PartnershipForm = () => {
               <Input placeholder="연락처" style={InputStyle.InputGray} />
             </InputWrapper>
           </FormGroup>
+
+          <FormGroup>
+            <Label>희망 날짜</Label>
+            <DateRangeWrapper>
+              <InputDate type="date" style={InputStyle.InputYellow} />
+              <DateSeparator>~</DateSeparator>
+              <InputDate type="date" style={InputStyle.InputYellow} />
+            </DateRangeWrapper>
+          </FormGroup>
         </Column>
 
         <Column>
@@ -58,22 +67,12 @@ const PartnershipForm = () => {
               <Input placeholder="이메일" style={InputStyle.InputGray} />
             </InputWrapper>
           </FormGroup>
-
-          <FormGroup>
-            <Label>희망 날짜</Label>
-            <DateRangeWrapper>
-              <FaCalendarAlt className="calendar-icon" />
-              <DateInput type="month" style={InputStyle.InputYellow} />
-              <Tilde>~</Tilde>
-              <DateInput type="month" style={InputStyle.InputYellow} />
-            </DateRangeWrapper>
-          </FormGroup>
         </Column>
       </FormWrapper>
 
       <ButtonGroup>
-        <ButtonYbShadow>이전</ButtonYbShadow>
-        <ButtonWhite>제출</ButtonWhite>
+        <ButtonYellow style={Button.buttonYb}>이전</ButtonYellow>
+        <ButtonWhite style={Button.buttonWhite}>제출</ButtonWhite>
       </ButtonGroup>
     </FormContainer>
   );
@@ -82,37 +81,37 @@ const PartnershipForm = () => {
 export default PartnershipForm;
 
 const FormContainer = styled.div`
-  width: 1048px;
+  width: 100%;
   height: auto;
   background: ${({ theme }) => theme.colors.gray[100]};
-  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
-  padding: ${({ theme }) => theme.spacing.s12};
+  border-radius: 20px;
+  padding: 80px;
   box-sizing: border-box;
 `;
 
 const FormWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.s10};
+  gap: 120px;
 `;
 
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.s6};
+  gap: 30px;
   flex: 1;
 `;
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.s2};
+  gap: 10px;
 `;
 
 const Label = styled.label`
   font-family: ${({ theme }) => theme.fontFamily.primary};
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
-  color: ${({ theme }) => theme.colors.black};
+  color: #000;
 `;
 
 const InputWrapper = styled.div`
@@ -121,56 +120,53 @@ const InputWrapper = styled.div`
   .icon {
     position: absolute;
     top: 50%;
-    left: ${({ theme }) => theme.spacing.s2};
+    left: 10px;
     transform: translateY(-50%);
-    color: ${({ theme }) => theme.colors.gray[300]};
+    color: #dddddd;
   }
 `;
 
 const Input = styled.input`
   width: 100%;
   height: 48px;
-  padding-left: ${({ theme }) => theme.spacing.s8};
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding-left: 40px;
   font-family: ${({ theme }) => theme.fontFamily.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  color: ${({ theme }) => theme.colors.black};
+  font-size: 16px;
+`;
+
+const InputDate = styled.input`
+  width: 45%;
+  height: 48px;
+  padding: 0 10px;
 `;
 
 const DateRangeWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.s4};
-
-  .calendar-icon {
-    font-size: ${({ theme }) => theme.fontSizes['3xl']};
-    color: ${({ theme }) => theme.colors.black};
-  }
+  gap: 10px;
 `;
 
-const DateInput = styled.input`
-  width: 160px;
-  height: 48px;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  font-family: ${({ theme }) => theme.fontFamily.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  text-align: center;
-`;
-
-const Tilde = styled.span`
-  font-size: ${({ theme }) => theme.fontSizes['2xl']};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.black};
-  display: inline-block;
-  margin-top: 4px;
+const DateSeparator = styled.span`
+  font-size: 20px;
+  margin: 0 5px;
+  color: #000;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing.s6};
-  margin-top: ${({ theme }) => theme.spacing.s10};
+  gap: 40px;
+  margin-top: 60px;
+`;
+
+const ButtonYellow = styled.button`
+  width: 100px;
+  height: 50px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+`;
+
+const ButtonWhite = styled.button`
+  width: 100px;
+  height: 50px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
 `;

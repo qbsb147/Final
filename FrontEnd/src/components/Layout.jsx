@@ -8,13 +8,16 @@ import Input from '../styles/Input';
 import WorcationList from '../pages/WorcationList';
 import Main from '../pages/MainPage';
 import Detail from '../pages/WorcationDetail';
-
+import PartnershipForm from '../pages/PartnershipApplication';
+import WorcationApply from '../pages/WorcationApply';
 const Layout = () => {
   return (
     <>
       <Header />
       <Content>
-        <Outlet />
+        {/* <Outlet /> */}
+        {/* <PartnershipForm /> */}
+        <WorcationApply />
       </Content>
       <Footer />
     </>

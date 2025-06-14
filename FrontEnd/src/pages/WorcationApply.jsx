@@ -7,9 +7,9 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import Button from '../styles/Button';
-const locales = {
-  ko: ko,
-};
+import Input from '../styles/Input';
+
+const locales = { ko };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -32,46 +32,49 @@ const WorcationApply = () => {
 
   return (
     <Container>
-      <Title>워케이션 신청</Title>
-      <Subtitle>간세</Subtitle>
+      <Card>
+        <Header>
+          <Title>워케이션 신청</Title>
+          <Subtitle>간세</Subtitle>
+        </Header>
 
-      <CalendarSection>
-        <DnDCalendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          draggableAccessor={() => true}
-          style={{ width: '789px', height: '442px', borderRadius: '10px' }}
-        />
+        <CalendarSection>
+          <DnDCalendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            draggableAccessor={() => true}
+            style={{ width: '789px', height: '442px', borderRadius: '10px' }}
+          />
 
-        <InfoBox>
-          <Label>워케이션 신청자</Label>
-          <ReadOnlyInput value="최예찬" readOnly />
+          <InfoBox>
+            <Label>워케이션 신청자</Label>
+            <ReadOnlyInput value="최예찬" readOnly />
 
-          <Label>금액</Label>
-          <ReadOnlyInput value="45500" readOnly />
-        </InfoBox>
-      </CalendarSection>
+            <Label>금액</Label>
+            <ReadOnlyInput value="45500" readOnly />
+          </InfoBox>
+        </CalendarSection>
+        <DateSection>
+          <DateRangeWrapper>
+            <DateBlock>
+              <Label>시작 일</Label>
+              <DateInput type="date" style={Input.InputOrange} />
+            </DateBlock>
+            <Tilde>~</Tilde>
+            <DateBlock>
+              <Label>종료 일</Label>
+              <DateInput type="date" style={Input.InputOrange} />
+            </DateBlock>
+          </DateRangeWrapper>
+        </DateSection>
 
-      <DateSection>
-        <DateInputBox>
-          <Label>시작 일</Label>
-          <DateInput type="date" />
-        </DateInputBox>
-
-        <Dash>-</Dash>
-
-        <DateInputBox>
-          <Label>종료 일</Label>
-          <DateInput type="date" />
-        </DateInputBox>
-      </DateSection>
-
-      <ButtonSection>
-        <CancelButton style={Button.buttonYb}>취소</CancelButton>
-        <SubmitButton style={Button.buttonWhite}>신청</SubmitButton>
-      </ButtonSection>
+        <ButtonSection>
+          <CancelButton style={Button.buttonYb}>취소</CancelButton>
+          <SubmitButton style={Button.buttonWhite}>신청</SubmitButton>
+        </ButtonSection>
+      </Card>
     </Container>
   );
 };
@@ -80,97 +83,128 @@ export default WorcationApply;
 
 const Container = styled.div`
   width: 100%;
-  height: auto;
-  margin: 0 auto;
-  padding-top: 50px;
+  display: flex;
+  justify-content: center;
+  background: ${({ theme }) => theme.colors.white};
+`;
+
+const Card = styled.div`
+  width: 100%;
   background: ${({ theme }) => theme.colors.gray[100]};
-  padding-bottom: 100px;
+  padding: ${({ theme }) => theme.spacing.s12};
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: ${({ theme }) => theme.spacing.s8};
 `;
 
 const Title = styled.h1`
-  font-size: 48px;
+  font-size: ${({ theme }) => theme.fontSizes['4xl']};
   color: ${({ theme }) => theme.colors.black};
-  margin-bottom: 10px;
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  ${({ theme }) => theme.spacing.s3}
   display: flex;
-  margin-left: 50px;
+  margin-left: ${({ theme }) => theme.spacing.s12};
 `;
 
 const Subtitle = styled.h2`
-  font-size: 35px;
-  color: #010101;
-  margin-bottom: 20px;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  color: ${({ theme }) => theme.colors.gray[900]};
+  margin-bottom: ${({ theme }) => theme.spacing.s5};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
 `;
 
 const CalendarSection = styled.div`
   display: flex;
   justify-content: space-around;
-  margin-left: 30px;
+  gap: ${({ theme }) => theme.spacing.s10};
 `;
 
 const InfoBox = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing.s4};
 `;
 
 const Label = styled.label`
-  font-size: 25px;
-  font-weight: bold;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const ReadOnlyInput = styled.input`
-  background: #fffae6;
-  border: 0.7px solid #c3c3c3;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 25px;
-  color: #333;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.s3};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: ${({ theme }) => theme.colors.gray[700]};
 `;
 
 const DateSection = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 40px;
-  gap: 20px;
+  width: 95%;
+  height: 12%;
+  margin-left: ${({ theme }) => theme.spacing.s16};
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: ${({ theme }) => theme.spacing.s10};
 `;
 
-const DateInputBox = styled.div`
+const DateRangeWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.s4};
+  margin-top: ${({ theme }) => theme.spacing.s2};
+`;
+
+const DateBlock = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 5%;
+  width: 45%;
 `;
 
 const DateInput = styled.input`
-  width: 455px;
-  height: 48px;
-  border: 3px solid ${({ theme }) => theme.colors.primary};
-  border-radius: 10px;
-  font-size: 24px;
-  padding: 10px;
+  width: 100%;
+  height: 90%;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  padding: 2%;
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
 `;
 
-const Dash = styled.span`
-  font-size: 30px;
-  color: #000;
+const Tilde = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const ButtonSection = styled.div`
   display: flex;
   justify-content: center;
-  gap: 80px;
-  margin-top: 50px;
+  gap: ${({ theme }) => theme.spacing.s10};
+  margin-top: ${({ theme }) => theme.spacing.s12};
 `;
 
 const CancelButton = styled.button`
-  width: 200px;
-  height: 50px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
+  width: 23%;
+  height: 100%;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  box-shadow: ${({ theme }) => theme.shadows.md};
 `;
 
 const SubmitButton = styled.button`
-  width: 200px;
-  height: 50px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
+  width: 23%;
+  height: 100%;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  box-shadow: ${({ theme }) => theme.shadows.md};
 `;

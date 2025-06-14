@@ -36,7 +36,7 @@ function App() {
 
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
-              </Route>
+          </Route>
 
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} />
