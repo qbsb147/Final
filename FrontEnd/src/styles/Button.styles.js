@@ -11,7 +11,6 @@ export const ButtonLogin = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 20px;
   color: ${({ theme }) => theme.colors.black};
 `;
 
@@ -22,7 +21,6 @@ export const ButtonYb = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 23px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -41,8 +39,9 @@ export const ButtonBorder = styled.button`
   justify-content: center;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 23px;
   color: ${({ theme }) => theme.colors.black};
+  padding: ${({ theme }) => theme.spacing.buttonPadding};
+  height: 30px;
 `;
 
 export const ButtonWhite = styled.button`
@@ -57,13 +56,12 @@ export const ButtonWhite = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 23px;
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.colors.black};
   justify-content: center;
   cursor: pointer;
-  filter: drop-shadow(4px 4px 4px rgba(0,0,0,0.25));
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.25));
 `;
 
 export const ButtonDetail = styled.button`
@@ -74,7 +72,6 @@ export const ButtonDetail = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 23px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,11 +83,26 @@ export const ButtonYbShadow = styled.button`
   font-family: ${({ theme }) => theme.fontFamily.primary};
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  line-height: 23px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  filter: drop-shadow(4px 4px 4px rgba(0,0,0,0.25));
+  filter: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.25));
+`;
+
+export const BtnWhiteYellowBorder = styled.button`
+  background: ${({ theme }) => theme.colors.white};
+  box-sizing: border-box;
+  border: 3px solid #dda900;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  color: ${({ theme }) => theme.colors.black};
+  padding: ${({ theme }) => theme.spacing.buttonPadding};
 `;

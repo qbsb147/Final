@@ -1,63 +1,79 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../styles/Input.styles';
-import RadioButton from '../../common/RadioButton';
-import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb} from '../../../styles/Button.styles';
+import AddButton from '../../common/AddButton';
+import ImageUploader from '../../common/ImageUploader';
+import { ButtonBorder } from '../../../styles/Button.styles';
 
 const Form = () => {
-  const [selected, setSelected] = useState('Office');
-  const [startDate, setStartDate] = useState(null);
-  
-  const radioOptions = [
-    { value: 'Office', label: '오피스' },
-    { value: 'Accommodation', label: '숙박' },
-    { value: 'OfficeAndStay', label: '오피스&숙박' },
-  ];
+  const [officeImages, setOfficeImages] = useState([]);
+  const [stayImages, setStayImages] = useState([]);
+  const [officeVisited, setOfficeVisited] = useState(true);
+  const [stayVisited, setStayVisited] = useState(true);
+
+  const handleOfficeAddClick = () => {
+    if (officeImages.length < 2) {
+      setOfficeImages((prev) => [...prev, { id: Date.now() }]);
+      setOfficeVisited(true);
+    } else {
+      setOfficeImages((prev) => [...prev, { id: Date.now() }]);
+      setOfficeVisited(false);
+    }
+  };
+
+  const handleStayAddClick = () => {
+    if (stayImages.length < 2) {
+      setStayImages((prev) => [...prev, { id: Date.now() }]);
+      setStayVisited(true);
+    } else {
+      setStayImages((prev) => [...prev, { id: Date.now() }]);
+      setStayVisited(false);
+    }
+  };
+
+  const handleOfficeDelete = (id) => {
+    setOfficeImages((prev) => prev.filter((image) => image.id !== id));
+    setOfficeVisited(true);
+  };
+
+  const handleStayDelete = (id) => {
+    setStayImages((prev) => prev.filter((image) => image.id !== id));
+    setStayVisited(true);
+  };
 
   return (
     <Body>
-      <Title>호스트 신청을 완료해주세요.</Title>
+      <Title>사진을 추가해주세요.(각 최대 4개)</Title>
       <Table>
         <TBody>
           <TR>
-            <TH>업체 유형</TH>
+            <TH>오피스 사진</TH>
             <TD>
-              <RadioButton 
-                options={radioOptions}
-                selected={selected}
-                onChange={setSelected}
-              />
+              <ImageUploader label="메인 사진" />
+              {officeImages.map((image) => (
+                <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleOfficeDelete(image.id)} />
+              ))}
+              {officeVisited && (
+                <AddContainer onClick={handleOfficeAddClick}>
+                  <AddButton />
+                  <p>사진 추가</p>
+                </AddContainer>
+              )}
             </TD>
           </TR>
           <TR>
-            <TH>사업자명</TH>
+            <TH>숙소 사진</TH>
             <TD>
-              <InputLightGray />
-            </TD>
-          </TR>
-          <TR>
-            <TH>상호명</TH>
-            <TD>
-              <InputLightGray />
-            </TD>
-          </TR>
-          <TR>
-            <TH>개업일</TH>
-            <TD>
-              <CustomDatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-              />
-            </TD>
-          </TR>
-          <TR>
-            <TH>사업자등록번호</TH>
-            <TD>
-              <InputLightGray />
-            </TD>
-            <TD>
-              <ButtonYellow>진위확인</ButtonYellow>
+              <ImageUploader label="메인 사진" />
+              {stayImages.map((image) => (
+                <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleStayDelete(image.id)} />
+              ))}
+              {stayVisited && (
+                <AddContainer onClick={handleStayAddClick}>
+                  <AddButton />
+                  <p>사진 추가</p>
+                </AddContainer>
+              )}
             </TD>
           </TR>
         </TBody>
@@ -68,17 +84,20 @@ const Form = () => {
 
 export default Form;
 
-const ButtonYellow = styled(ButtonBorder)`
-  width: 150px;
-  height: ${({ theme }) => theme.heightes.button};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  margin-left: 50px;
-`
+const AddContainer = styled.div`
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  p {
+    color: ${({ theme }) => theme.colors.gray[500]};
+  }
+  cursor: pointer;
+`;
 
 const Body = styled.div`
   gap: 40px;
   padding: 40px;
-  width: 1008px;
   height: 562px;
   background: ${({ theme }) => theme.colors.white};
   border: 2px solid ${({ theme }) => theme.colors.gray[200]};
@@ -93,7 +112,7 @@ const Title = styled.div`
 
 const Table = styled.table`
   width: 100%;
-  border-spacing: 16px 12px; /* 셀 간격 조정 */
+  border-spacing: 16px 12px;
 `;
 const TBody = styled.tbody`
   display: flex;
@@ -104,6 +123,7 @@ const TBody = styled.tbody`
 const TR = styled.tr`
   vertical-align: middle;
   display: flex;
+  align-items: center;
 `;
 
 const TH = styled.th`
@@ -111,8 +131,11 @@ const TH = styled.th`
   vertical-align: middle;
   width: 200px;
   font-weight: 500;
+  margin-bottom: 40px;
 `;
 
 const TD = styled.td`
   display: flex;
+  gap: 30px;
+  align-items: flex-start;
 `;

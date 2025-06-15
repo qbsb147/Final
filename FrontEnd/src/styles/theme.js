@@ -70,6 +70,7 @@ const theme = {
     s48: '192px',
     s56: '224px',
     s64: '256px',
+    buttonPadding: '15px 20px',
   },
   borderRadius: {
     none: '0px',
@@ -114,11 +115,11 @@ const theme = {
   widthes: {
     layoutWidth: '1280px',
     maxWidth: '1920px',
-    button : '150px',
+    input: '200px',
   },
   heightes: {
-    button : '32px',
-  }
+    input: '36px',
+  },
 };
 
 export default theme;

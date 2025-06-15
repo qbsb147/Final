@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { InputLightGray } from '../../../styles/Input.styles';
 import RadioButton from '../../common/RadioButton';
 import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb} from '../../../styles/Button.styles';
+import { ButtonBorder, ButtonYb } from '../../../styles/Button.styles';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
   const [startDate, setStartDate] = useState(null);
-  
+
   const radioOptions = [
     { value: 'Office', label: '오피스' },
     { value: 'Accommodation', label: '숙박' },
@@ -23,11 +23,7 @@ const Form = () => {
           <TR>
             <TH>업체 유형</TH>
             <TD>
-              <RadioButton 
-                options={radioOptions}
-                selected={selected}
-                onChange={setSelected}
-              />
+              <RadioButton options={radioOptions} selected={selected} onChange={setSelected} />
             </TD>
           </TR>
           <TR>
@@ -45,10 +41,7 @@ const Form = () => {
           <TR>
             <TH>개업일</TH>
             <TD>
-              <CustomDatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-              />
+              <CustomDatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
             </TD>
           </TR>
           <TR>
@@ -69,16 +62,14 @@ const Form = () => {
 export default Form;
 
 const ButtonYellow = styled(ButtonBorder)`
-  width: 150px;
-  height: ${({ theme }) => theme.heightes.button};
+  height: 30px;
   font-size: ${({ theme }) => theme.fontSizes.base};
   margin-left: 50px;
-`
+`;
 
 const Body = styled.div`
   gap: 40px;
   padding: 40px;
-  width: 1008px;
   height: 562px;
   background: ${({ theme }) => theme.colors.white};
   border: 2px solid ${({ theme }) => theme.colors.gray[200]};

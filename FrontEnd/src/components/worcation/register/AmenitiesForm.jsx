@@ -3,61 +3,145 @@ import styled from 'styled-components';
 import { InputLightGray } from '../../../styles/Input.styles';
 import RadioButton from '../../common/RadioButton';
 import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb} from '../../../styles/Button.styles';
+import { ButtonBorder, ButtonYb } from '../../../styles/Button.styles';
+import Checkbox from '../../common/Checkbox';
 
 const Form = () => {
-  const [selected, setSelected] = useState('Office');
-  const [startDate, setStartDate] = useState(null);
-  
-  const radioOptions = [
-    { value: 'Office', label: '오피스' },
-    { value: 'Accommodation', label: '숙박' },
-    { value: 'OfficeAndStay', label: '오피스&숙박' },
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
+  const handleAmenityChange = (value) => {
+    setSelectedAmenities((prev) => {
+      if (prev.includes(value)) {
+        return prev.filter((item) => item !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
+  };
+
+  const amenities = [
+    // office
+    { label: '고속 와이파이', value: 'high_speed_wifi', category: 'office' },
+    { label: '소회의실', value: 'small_meeting_room', category: 'office' },
+    { label: '화상회의 부스', value: 'video_conference_booth', category: 'office' },
+    { label: '프린터', value: 'printer', category: 'office' },
+    { label: '개인 업무 책상', value: 'personal_desk', category: 'office' },
+    { label: '멀티탭', value: 'power_strip', category: 'office' },
+
+    // stay
+    { label: '에어컨', value: 'air_conditioner', category: 'stay' },
+    { label: '조리공간', value: 'kitchen_area', category: 'stay' },
+    { label: '세탁기', value: 'washing_machine', category: 'stay' },
+    { label: '편의점 도보거리', value: 'convenience_store_nearby', category: 'stay' },
+    { label: '주차', value: 'parking', category: 'stay' },
+    { label: '청소 서비스', value: 'cleaning_service', category: 'stay' },
+
+    // relax
+    { label: '전용 테라스', value: 'private_terrace', category: 'relax' },
+    { label: '루프탑', value: 'rooftop', category: 'relax' },
+    { label: '피트니스', value: 'fitness', category: 'relax' },
+    { label: '자연 접근성', value: 'nature_accessibility', category: 'relax' },
+    { label: '요가 공간', value: 'yoga_space', category: 'relax' },
+
+    // safety
+    { label: '보안 도어락', value: 'secure_door_lock', category: 'safety' },
+    { label: 'CCTV', value: 'cctv', category: 'safety' },
+    { label: '전용 입구', value: 'private_entrance', category: 'safety' },
+    { label: '라커', value: 'locker', category: 'safety' },
+
+    // digital
+    { label: '무인 체크인', value: 'self_checkin', category: 'digital' },
+    { label: '모바일 컨시어지', value: 'mobile_concierge', category: 'digital' },
+    { label: '커뮤니티 기능', value: 'community_features', category: 'digital' },
   ];
+
+  const getAmenitiesByCategory = (category) => {
+    return amenities.filter((item) => item.category === category);
+  };
 
   return (
     <Body>
-      <Title>호스트 신청을 완료해주세요.</Title>
+      <Title>편의시설을 선택해주세요.(다중 선택 가능)</Title>
       <Table>
         <TBody>
           <TR>
-            <TH>업체 유형</TH>
+            <TH>오피스 시설</TH>
             <TD>
-              <RadioButton 
-                options={radioOptions}
-                selected={selected}
-                onChange={setSelected}
-              />
+              <AmenitiesContainer>
+                {getAmenitiesByCategory('office').map((amenity) => (
+                  <Checkbox
+                    key={amenity.value}
+                    id={amenity.value}
+                    label={amenity.label}
+                    checked={selectedAmenities.includes(amenity.value)}
+                    onChange={() => handleAmenityChange(amenity.value)}
+                  />
+                ))}
+              </AmenitiesContainer>
             </TD>
           </TR>
           <TR>
-            <TH>사업자명</TH>
+            <TH>숙소 시설</TH>
             <TD>
-              <InputLightGray />
+              <AmenitiesContainer>
+                {getAmenitiesByCategory('stay').map((amenity) => (
+                  <Checkbox
+                    key={amenity.value}
+                    id={amenity.value}
+                    label={amenity.label}
+                    checked={selectedAmenities.includes(amenity.value)}
+                    onChange={() => handleAmenityChange(amenity.value)}
+                  />
+                ))}
+              </AmenitiesContainer>
             </TD>
           </TR>
           <TR>
-            <TH>상호명</TH>
+            <TH>휴식 공간</TH>
             <TD>
-              <InputLightGray />
+              <AmenitiesContainer>
+                {getAmenitiesByCategory('relax').map((amenity) => (
+                  <Checkbox
+                    key={amenity.value}
+                    id={amenity.value}
+                    label={amenity.label}
+                    checked={selectedAmenities.includes(amenity.value)}
+                    onChange={() => handleAmenityChange(amenity.value)}
+                  />
+                ))}
+              </AmenitiesContainer>
             </TD>
           </TR>
           <TR>
-            <TH>개업일</TH>
+            <TH>안전 시설</TH>
             <TD>
-              <CustomDatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-              />
+              <AmenitiesContainer>
+                {getAmenitiesByCategory('safety').map((amenity) => (
+                  <Checkbox
+                    key={amenity.value}
+                    id={amenity.value}
+                    label={amenity.label}
+                    checked={selectedAmenities.includes(amenity.value)}
+                    onChange={() => handleAmenityChange(amenity.value)}
+                  />
+                ))}
+              </AmenitiesContainer>
             </TD>
           </TR>
           <TR>
-            <TH>사업자등록번호</TH>
+            <TH>디지털 서비스</TH>
             <TD>
-              <InputLightGray />
-            </TD>
-            <TD>
-              <ButtonYellow>진위확인</ButtonYellow>
+              <AmenitiesContainer>
+                {getAmenitiesByCategory('digital').map((amenity) => (
+                  <Checkbox
+                    key={amenity.value}
+                    id={amenity.value}
+                    label={amenity.label}
+                    checked={selectedAmenities.includes(amenity.value)}
+                    onChange={() => handleAmenityChange(amenity.value)}
+                  />
+                ))}
+              </AmenitiesContainer>
             </TD>
           </TR>
         </TBody>
@@ -68,23 +152,33 @@ const Form = () => {
 
 export default Form;
 
-const ButtonYellow = styled(ButtonBorder)`
-  width: 150px;
-  height: ${({ theme }) => theme.heightes.button};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  margin-left: 50px;
-`
-
 const Body = styled.div`
-  gap: 40px;
   padding: 40px;
-  width: 1008px;
+  gap: 40px;
   height: 562px;
   background: ${({ theme }) => theme.colors.white};
   border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
-  justify-content: flex-start;
   flex-direction: column;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.colors.gray[100]};
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.gray[300]};
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.colors.gray[400]};
+  }
 `;
 
 const Title = styled.div`
@@ -93,7 +187,8 @@ const Title = styled.div`
 
 const Table = styled.table`
   width: 100%;
-  border-spacing: 16px 12px; /* 셀 간격 조정 */
+  border-spacing: 16px 12px;
+  min-width: 800px;
 `;
 const TBody = styled.tbody`
   display: flex;
@@ -115,4 +210,17 @@ const TH = styled.th`
 
 const TD = styled.td`
   display: flex;
+`;
+
+const AmenitiesContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+`;
+
+const ButtonYellow = styled(ButtonBorder)`
+  height: 30px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  margin-left: 50px;
 `;

@@ -2,14 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const CustomTextArea = ({ value, onChange, rows = 3 }) => {
-  return (
-    <StyledTextArea
-      value={value}
-      onChange={onChange}
-      rows={rows}
-      placeholder="내용을 입력해주세요"
-    />
-  );
+  return <StyledTextArea value={value} onChange={onChange} rows={rows} placeholder="내용을 입력해주세요" />;
 };
 
 export default CustomTextArea;
@@ -29,10 +22,11 @@ const StyledTextArea = styled.textarea`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
   }
 
   &::placeholder {
     font-family: ${({ theme }) => theme.fontFamily.primary};
     font-weight: ${({ theme }) => theme.fontWeights.medium};
   }
-`; 
+`;

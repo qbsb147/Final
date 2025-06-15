@@ -18,8 +18,6 @@ export const InputGray = styled.input`
 
 export const InputOrange = styled.input`
   box-sizing: border-box;
-  width: 340px;
-  height: 48px;
   background: ${({ theme }) => theme.colors.white};
   border: 3px solid #f8c470;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -27,9 +25,9 @@ export const InputOrange = styled.input`
 `;
 
 export const InputLightGray = styled.input`
-  width: 200px;
-  height: ${({ theme }) => theme.heightes.button};
   padding: 0 12px;
+  height: ${({ theme }) => theme.heightes.input};
+  width: ${({ theme }) => theme.widthes.input};
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
   font-family: ${({ theme }) => theme.fontFamily.primary};
@@ -41,6 +39,7 @@ export const InputLightGray = styled.input`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
   }
 
   &::placeholder {

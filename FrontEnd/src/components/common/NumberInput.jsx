@@ -7,25 +7,16 @@ const NumberInput = ({ value, onChange, format }) => {
     onChange(value);
   };
 
-  const displayValue = format ? 
-    Number(value).toLocaleString('ko-KR') : 
-    value;
+  const displayValue = format ? Number(value).toLocaleString('ko-KR') : value;
 
-  return (
-    <StyledInput
-      type="text"
-      value={displayValue}
-      onChange={handleChange}
-      placeholder="숫자를 입력해주세요"
-    />
-  );
+  return <StyledInput type="text" value={displayValue} onChange={handleChange} placeholder="숫자를 입력해주세요" />;
 };
 
 export default NumberInput;
 
 const StyledInput = styled.input`
-  width: 200px;
-  height: ${({ theme }) => theme.heightes.button};
+  width: ${({ theme }) => theme.widthes.input};
+  height: ${({ theme }) => theme.heightes.input};
   padding: 0 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
@@ -38,10 +29,11 @@ const StyledInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
   }
 
   &::placeholder {
     font-family: ${({ theme }) => theme.fontFamily.primary};
     font-weight: ${({ theme }) => theme.fontWeights.medium};
   }
-`; 
+`;

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import { ko } from 'date-fns/locale';
 
 const CustomDatePicker = ({ selected, onChange }) => {
@@ -20,7 +20,7 @@ export default CustomDatePicker;
 
 const StyledDatePicker = styled(DatePicker)`
   width: 200px;
-  height: ${({ theme }) => theme.heightes.button};
+  height: 30px;
   padding: 0 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
@@ -32,5 +32,6 @@ const StyledDatePicker = styled(DatePicker)`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
   }
-`; 
+`;

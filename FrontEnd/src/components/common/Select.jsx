@@ -17,8 +17,8 @@ const CustomSelect = ({ options, value, onChange }) => {
 export default CustomSelect;
 
 const StyledSelect = styled.select`
-  width: 200px;
-  height: ${({ theme }) => theme.heightes.button};
+  width: ${({ theme }) => theme.widthes.input};
+  height: ${({ theme }) => theme.heightes.input};
   padding: 0 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
@@ -30,5 +30,6 @@ const StyledSelect = styled.select`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
   }
-`; 
+`;
