@@ -5,6 +5,7 @@ import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 
+// 1단계에서 사용할 입력 필드 정의
 const step1Inputs = [
   { name: 'userId', type: 'text', placeholder: '아이디', side: 'left' },
   { name: 'password', type: 'password', placeholder: '비밀번호', side: 'left' },
@@ -16,6 +17,7 @@ const step1Inputs = [
   { name: 'phone', type: 'text', placeholder: '연락처', side: 'right' },
 ];
 
+// 2단계 (직원)에서 사용할 입력 필드 정의
 const step2InputsForTypeA = [
   { name: 'company', type: 'text', placeholder: '회사명', side: 'left' },
   { name: 'department', type: 'text', placeholder: '부서명', side: 'left' },
@@ -25,6 +27,7 @@ const step2InputsForTypeA = [
   { name: 'tellphone', type: 'text', placeholder: '회사 전화번호', side: 'right' },
 ];
 
+// 2단계 (기업)에서 사용할 입력 필드 정의
 const step2InputsForTypeB = [
   { name: 'company', type: 'text', placeholder: '기업명', side: 'left' },
   { name: 'businessNumber', type: 'text', placeholder: '사업자번호', side: 'left' },
@@ -44,12 +47,14 @@ const SignUp = () => {
   const [formData2, setFormData2] = useState({});
   const [selectedType, setSelectedType] = useState('A');
 
+  // 입력 필드 변경 핸들러
   const handleChange = (e, step) => {
     const { name, value } = e.target;
     if (step === 1) setFormData1((prev) => ({ ...prev, [name]: value }));
     else if (step === 2) setFormData2((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 라디오 버튼 변경 핸들러
   const handleRadioChange = (e) => {
     const { value } = e.target;
     setSelectedType(value);
@@ -57,11 +62,12 @@ const SignUp = () => {
     setFormData2({});
   };
 
-  //다음 버튼
+  // 다음 버튼 핸들러
   const handleNext = () => {
     setFormStep((prev) => prev + 1);
   };
-  //이전 버튼
+
+  // 이전 버튼 핸들러
   const handlePrev = () => {
     if (formStep > 1) {
       setFormStep((prev) => prev - 1);
@@ -69,6 +75,7 @@ const SignUp = () => {
     }
   };
 
+  // 제출 핸들러
   const handleSubmit = () => {
     console.log('1번 폼 데이터', formData1);
     console.log('2번 폼 데이터', formData2);

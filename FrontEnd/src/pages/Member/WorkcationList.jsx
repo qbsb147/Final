@@ -1,28 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
-import MemberSearchBar from '../../components/Member/MemberSearchBar';
-import MemberTable from '../../components/Member/table/MemberTable ';
+import WorkcationTable from '../../components/Member/table/WorkcationTable';
+import CalenderContainoer from '../../components/Member/CalenderContainoer';
 
-const MemberList = () => {
+const WorkcationList = () => {
   return (
     <MemberListWrap>
       <LeftNav>
         <LeftContent />
       </LeftNav>
       <MainContent>
-        <Title>직원 정보</Title>
+        <CalenderContainoer />
+        <Title>워케이션 신청자</Title>
         <Container>
-          <MemberSearchBar />
-          <MemberTable />
+          <WorkcationTable />
         </Container>
       </MainContent>
     </MemberListWrap>
   );
 };
 
-export default MemberList;
+export default WorkcationList;
 
+const MemberListWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* 컨텐츠를 위에서부터 정렬 */
+  gap: ${({ theme }) => theme.spacing.s10}; /* 왼쪽과 오른쪽 컬럼 사이의 간격 */
+  width: 100%;
+  max-width: 1280px;
+`;
 const Title = styled.h1`
   display: flex;
   justify-content: flex-start;
@@ -33,22 +41,13 @@ const Title = styled.h1`
   margin-bottom: ${({ theme }) => theme.spacing.s4};
 `;
 
-const MemberListWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start; /* 컨텐츠를 위에서부터 정렬 */
-  gap: ${({ theme }) => theme.spacing.s10}; /* 왼쪽과 오른쪽 컬럼 사이의 간격 */
-  width: 100%;
-  max-width: 1280px;
-`;
-
 const LeftNav = styled.nav`
   width: 200px; /* 왼쪽 내비게이션 너비 고정 */
+  height: 100%;
   flex-shrink: 0; /* 창이 줄어들어도 너비 유지 */
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: ${({ theme }) => theme.spacing.s3};
-  height: 100%;
 `;
 
 const MainContent = styled.div`

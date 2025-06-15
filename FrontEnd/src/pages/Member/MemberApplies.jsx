@@ -4,14 +4,15 @@ import LeftContent from '../../components/Member/LeftContent';
 import MemberSearchBar from '../../components/Member/MemberSearchBar';
 import MemberTable from '../../components/Member/table/MemberTable ';
 
-const MemberList = () => {
+
+const MemberApplies = () => {
   return (
-    <MemberListWrap>
+    <MemberListWrap>  
       <LeftNav>
         <LeftContent />
       </LeftNav>
       <MainContent>
-        <Title>직원 정보</Title>
+        <Title>직원 승인 목록</Title>
         <Container>
           <MemberSearchBar />
           <MemberTable />
@@ -21,17 +22,7 @@ const MemberList = () => {
   );
 };
 
-export default MemberList;
-
-const Title = styled.h1`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-size: ${({ theme }) => theme.fontSizes['2xl']};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.black};
-  margin-bottom: ${({ theme }) => theme.spacing.s4};
-`;
+export default MemberApplies;
 
 const MemberListWrap = styled.div`
   display: flex;
@@ -41,7 +32,15 @@ const MemberListWrap = styled.div`
   width: 100%;
   max-width: 1280px;
 `;
-
+const Title = styled.h1`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.black};
+  margin-bottom: ${({ theme }) => theme.spacing.s4};
+`;
 const LeftNav = styled.nav`
   width: 200px; /* 왼쪽 내비게이션 너비 고정 */
   flex-shrink: 0; /* 창이 줄어들어도 너비 유지 */
