@@ -114,7 +114,11 @@ const theme = {
   widthes: {
     layoutWidth: '1280px',
     maxWidth: '1920px',
+    button : '150px',
   },
+  heightes: {
+    button : '32px',
+  }
 };
 
 export default theme;

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import List from '../../components/worcation/register/List';
-import Form from '../../components/worcation/register/Form';
+import Form from '../../components/worcation/register/AmenitiesForm';
 
 const Register = () => {
   return (

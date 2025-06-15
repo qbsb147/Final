@@ -27,10 +27,24 @@ export const InputOrange = styled.input`
 `;
 
 export const InputLightGray = styled.input`
-  box-sizing: border-box;
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  width: 200px;
+  height: ${({ theme }) => theme.heightes.button};
+  padding: 0 12px;
+  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.black};
-  height: 32px;
+  background-color: ${({ theme }) => theme.colors.gray[100]};
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+
+  &::placeholder {
+    font-family: ${({ theme }) => theme.fontFamily.primary};
+    font-weight: ${({ theme }) => theme.fontWeights.medium};
+  }
 `;

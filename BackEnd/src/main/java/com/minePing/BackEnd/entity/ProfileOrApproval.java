@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "worcation_partner",
         indexes = {@Index(name = "idx_worcation_partner", columnList = "worcation_no")
                 ,@Index(name = "idx_company_partner", columnList = "company_no")})
-public class WorcationPartner {
+public class ProfileOrApproval {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

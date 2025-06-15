@@ -1,110 +1,35 @@
 import styled from 'styled-components';
 import FolderIcon from './Folder';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const List = () => {
-  const [isApplication, setIsApplication] = useState(false);
-  const [isCompany, setIsCompany] = useState(false);
-  const [isInfo, setIsInfo] = useState(false);
-  const [isPhoto, setIsPhoto] = useState(false);
-  const [isFacility, setIsFacility] = useState(false);
-  const [isLocation, setIsLocation] = useState(false);
-  const [isPolicy, setIsPolicy] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState('');
 
-  const resetAll = () => {
-    setIsApplication(false);
-    setIsCompany(false);
-    setIsInfo(false);
-    setIsPhoto(false);
-    setIsFacility(false);
-    setIsLocation(false);
-    setIsPolicy(false);
-  };
+  const menuItems = [
+    { id: 'application', label: '호스트 신청' },
+    { id: 'company', label: '업체 정보' },
+    { id: 'info', label: '소개' },
+    { id: 'photo', label: '사진' },
+    { id: 'facility', label: '편의시설' },
+    { id: 'location', label: '위치/주소' },
+    { id: 'policy', label: '운영 정책' }
+  ];
 
-  useEffect(() => {
-    const selected = isApplication || isCompany || isInfo || isPhoto || isFacility || isLocation || isPolicy;
-  }, [isApplication, isCompany, isInfo, isPhoto, isFacility, isLocation, isPolicy]);
   return (
     <>
       <Body>
         <Top>워케이션 관리</Top>
         <FormContainer>
-          <InputBox
-            isActive={isApplication}
-            onClick={() => {
-              resetAll();
-              setIsApplication(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>호스트 신청</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isCompany}
-            onClick={() => {
-              resetAll();
-              setIsCompany(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>업체 정보</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isInfo}
-            onClick={() => {
-              resetAll();
-              setIsInfo(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>소개</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isPhoto}
-            onClick={() => {
-              resetAll();
-              setIsPhoto(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>사진</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isFacility}
-            onClick={() => {
-              resetAll();
-              setIsFacility(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>편의시설</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isLocation}
-            onClick={() => {
-              resetAll();
-              setIsLocation(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>위치/주소</Label>
-          </InputBox>
-
-          <InputBox
-            isActive={isPolicy}
-            onClick={() => {
-              resetAll();
-              setIsPolicy(true);
-            }}
-          >
-            <FolderIcon />
-            <Label>운영 정책</Label>
-          </InputBox>
+          {menuItems.map((item) => (
+            <InputBox
+              key={item.id}
+              isActive={selectedMenu === item.id}
+              onClick={() => setSelectedMenu(item.id)}
+            >
+              <FolderIcon />
+              <Label>{item.label}</Label>
+            </InputBox>
+          ))}
         </FormContainer>
       </Body>
     </>
