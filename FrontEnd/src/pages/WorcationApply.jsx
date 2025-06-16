@@ -45,7 +45,7 @@ const WorcationApply = () => {
             startAccessor="start"
             endAccessor="end"
             draggableAccessor={() => true}
-            style={{ width: '789px', height: '442px', borderRadius: '10px' }}
+            style={{ height: '442px', borderRadius: '10px' }}
           />
 
           <InfoBox>
@@ -102,7 +102,7 @@ const Header = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.fontSizes['4xl']};
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
   color: ${({ theme }) => theme.colors.black};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   ${({ theme }) => theme.spacing.s3}

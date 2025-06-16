@@ -4,10 +4,9 @@ import LeftContent from '../../components/Member/LeftContent';
 import MemberSearchBar from '../../components/Member/MemberSearchBar';
 import MemberTable from '../../components/Member/table/MemberTable ';
 
-
 const MemberApplies = () => {
   return (
-    <MemberListWrap>  
+    <MemberListWrap>
       <LeftNav>
         <LeftContent />
       </LeftNav>

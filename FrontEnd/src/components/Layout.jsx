@@ -8,17 +8,20 @@ import Input from '../styles/Input';
 import WorcationList from '../pages/WorcationList';
 import Main from '../pages/MainPage';
 import Detail from '../pages/WorcationDetail';
-import PartnershipForm from '../pages/PartnershipApplication';
+import PartnershipForm from '../pages/Partner/PartnershipApplication';
 import WorcationApply from '../pages/WorcationApply';
+import AffiliationRequests from '../pages/Partner/AffiliationRequests';
+import NeedsConsult from '../pages/Member/NeedsConsult';
+import MemberApplies from '../pages/Member/MemberApplies';
+import MemberWorcationList from '../pages/Member/WorkcationList';
+import PartnerApprovedList from '../pages/Partner/PartnerApprovedList';
 
 const Layout = () => {
   return (
     <>
       <Header />
       <Content>
-        {/* <Outlet /> */}
-        {/* <PartnershipForm /> */}
-        <WorcationApply />
+        <Outlet />
       </Content>
       <Footer />
     </>

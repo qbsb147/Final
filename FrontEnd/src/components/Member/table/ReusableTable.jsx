@@ -70,6 +70,7 @@ const Td = styled.td`
 const ButtonWrap = styled.div`
   display: flex;
   gap: 4px;
+  justify-content: center;
 `;
 
 const ApproveBtn = styled.button`

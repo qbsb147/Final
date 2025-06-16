@@ -23,6 +23,7 @@ import Register from './pages/worcation/Register';
 import WorkcationList from './pages/Member/WorkcationList';
 import NeedsConsult from './pages/Member/NeedsConsult';
 import MemberApplies from './pages/Member/MemberApplies';
+import WorcationApply from './pages/WorcationApply';
 
 function App() {
   return (
@@ -35,12 +36,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
+            <Route path="/workation/apply" element={<WorcationApply />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
             <Route path="/my/body" element={<BodyInfo />} />
           </Route>
-          
+
           {/* 레이아웃 미적용 (직원 관리)*/}
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
@@ -48,7 +50,6 @@ function App() {
             <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
             <Route path="/member/applies" element={<MemberApplies />} />
-
           </Route>
 
           <Route element={<Layout3 />}>

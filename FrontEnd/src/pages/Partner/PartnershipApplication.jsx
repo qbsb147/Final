@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FaUser } from 'react-icons/fa';
-import Button from '../styles/Button';
-import InputStyle from '../styles/Input';
+import Button from '../../styles/Button';
+import InputStyle from '../../styles/Input';
 
 const PartnershipForm = () => {
   return (
