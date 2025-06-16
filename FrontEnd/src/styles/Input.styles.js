@@ -24,6 +24,7 @@ export const InputOrange = styled.input`
   color: ${({ theme }) => theme.colors.black};
 `;
 
+
 export const InputLightGray = styled.input`
   padding: 0 12px;
   height: ${({ theme }) => theme.heightes.input};

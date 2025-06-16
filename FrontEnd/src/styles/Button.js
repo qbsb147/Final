@@ -46,9 +46,6 @@ const btn = {
   },
   buttonWhite: {
     boxSizing: 'border-box',
-    position: 'absolute',
-    left: 'calc(50% - 200px / 2 + 122px)',
-    top: '702px',
     background: '#ffffff',
     border: '1px solid #000000',
     borderRadius: '10px',

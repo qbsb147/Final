@@ -3,8 +3,10 @@ import styled from 'styled-components';
 export const ButtonLogin = styled.button`
   box-sizing: border-box;
   position: absolute;
+
   left: calc(50% - 100px);
   top: calc(50% - 30px);
+
   border: 4px solid ${({ theme }) => theme.colors.black};
   border-radius: ${({ theme }) => theme.borderRadius.full};
   font-family: ${({ theme }) => theme.fontFamily.secondary};
@@ -39,16 +41,20 @@ export const ButtonBorder = styled.button`
   justify-content: center;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
+
   color: ${({ theme }) => theme.colors.black};
   padding: ${({ theme }) => theme.spacing.buttonPadding};
   height: 30px;
+
 `;
 
 export const ButtonWhite = styled.button`
   box-sizing: border-box;
   position: absolute;
+
   left: calc(50% - 200px / 2 + 122px);
   top: 702px;
+
   background: ${({ theme }) => theme.colors.white};
   border: 1px solid ${({ theme }) => theme.colors.black};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -56,6 +62,7 @@ export const ButtonWhite = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
+
   display: flex;
   align-items: center;
   color: ${({ theme }) => theme.colors.black};
@@ -72,6 +79,7 @@ export const ButtonDetail = styled.button`
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xl};
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +91,9 @@ export const ButtonYbShadow = styled.button`
   font-family: ${({ theme }) => theme.fontFamily.primary};
   font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
+
   font-size: ${({ theme }) => theme.fontSizes.base};
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,3 +116,4 @@ export const BtnWhiteYellowBorder = styled.button`
   color: ${({ theme }) => theme.colors.black};
   padding: ${({ theme }) => theme.spacing.buttonPadding};
 `;
+

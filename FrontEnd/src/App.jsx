@@ -44,6 +44,7 @@ function App() {
           {/* 레이아웃 미적용 (직원 관리)*/}
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
+
             <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
             <Route path="/member/applies" element={<MemberApplies />} />
