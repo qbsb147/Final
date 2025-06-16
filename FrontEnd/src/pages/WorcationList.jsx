@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import Button from '../styles/Button';
+import { ButtonBorder, ButtonDetail } from '../styles/Button.styles';
 import seoul1 from '../assets/seoul1.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
@@ -33,141 +33,103 @@ const data = [
 ];
 
 const WorcationList = () => {
+  const [showAISection, setShowAISection] = useState(false);
+
+  const handleShowAI = () => {
+    setShowAISection(true);
+  };
+
   return (
-    <>
-      <Container>
-        <ButtonContainer>
-          <ButtonB style={Button.buttonBorder}>제휴 업체 보기</ButtonB>
-          <ButtonB style={Button.buttonBorder}>ai 추천</ButtonB>
-        </ButtonContainer>
+    <Container>
+      <ButtonWrapper>
+        <ButtonBorder>제휴 업체 보기</ButtonBorder>
+        <ButtonBorder onClick={handleShowAI}>ai 추천</ButtonBorder>
+      </ButtonWrapper>
 
-        <SectionTitle>전체 리스트 보기</SectionTitle>
-        <CardList>
-          {data.map((item) => (
-            <PlaceCard key={item.id}>
-              <PlaceImage src={item.image} alt={item.name} />
-              <CardContent>
-                <InfoBlock>
-                  <PlaceLocation>{item.location}</PlaceLocation>
-                  <PlaceName>{item.name}</PlaceName>
-                  <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
-                </InfoBlock>
-                <ThemeBlock>
-                  <ThemeLabel>테마</ThemeLabel>
-                  <ThemeText>{item.theme}</ThemeText>
-                  <ButtonD style={Button.buttonDetail}>상세보기</ButtonD>
-                </ThemeBlock>
-              </CardContent>
-            </PlaceCard>
-          ))}
-        </CardList>
+      <SectionTitle>전체 리스트 보기</SectionTitle>
+      <CardList>
+        {data.map((item) => (
+          <PlaceCard key={item.id}>
+            <PlaceImage src={item.image} alt={item.name} />
+            <CardContent>
+              <InfoBlock>
+                <PlaceLocation>{item.location}</PlaceLocation>
+                <PlaceName>{item.name}</PlaceName>
+                <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
+              </InfoBlock>
+              <ThemeBlock>
+                <ThemeLabel>테마</ThemeLabel>
+                <ThemeText>{item.theme}</ThemeText>
+                <ButtonDetail>상세보기</ButtonDetail>
+              </ThemeBlock>
+            </CardContent>
+          </PlaceCard>
+        ))}
+      </CardList>
 
-        {/* AI 추천 부분 display로 없애기 */}
-        <Container2>
-          <SectionTitleAI>AI 추천 비제휴 업체</SectionTitleAI>
-          <CardList>
-            {data.map((item) => (
-              <PlaceCard key={item.id}>
-                <PlaceImage src={item.image} alt={item.name} />
-                <CardContent>
-                  <InfoBlock>
-                    <PlaceLocation>{item.location}</PlaceLocation>
-                    <PlaceName>{item.name}</PlaceName>
-                    <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
-                  </InfoBlock>
-                  <ThemeBlock>
-                    <ThemeLabel>테마</ThemeLabel>
-                    <ThemeText>{item.theme}</ThemeText>
-                    <ButtonD style={Button.buttonDetail}>상세보기</ButtonD>
-                  </ThemeBlock>
-                </CardContent>
-              </PlaceCard>
-            ))}
-          </CardList>
-        </Container2>
-      </Container>
-    </>
+      {showAISection && (
+        <>
+          <Container2>
+            <SectionTitleAI>AI 추천 비제휴 업체</SectionTitleAI>
+            <CardList>
+              {data.map((item) => (
+                <PlaceCard key={item.id}>
+                  <PlaceImage src={item.image} alt={item.name} />
+                  <CardContent>
+                    <InfoBlock>
+                      <PlaceLocation>{item.location}</PlaceLocation>
+                      <PlaceName>{item.name}</PlaceName>
+                      <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
+                    </InfoBlock>
+                    <ThemeBlock>
+                      <ThemeLabel>테마</ThemeLabel>
+                      <ThemeText>{item.theme}</ThemeText>
+                      <ButtonDetail>상세보기</ButtonDetail>
+                    </ThemeBlock>
+                  </CardContent>
+                </PlaceCard>
+              ))}
+            </CardList>
+          </Container2>
+        </>
+      )}
+    </Container>
   );
 };
 export default WorcationList;
 
 const Container = styled.div`
-  background-color: #fef6e4;
+  border-top: 2px solid ${({ theme }) => theme.colors.brown};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.brown};
+  background: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
-  padding: 40px 24px;
-  border-top: 1px solid black;
-  margin-top: 20px;
+  padding: 3% 5%;
+  text-align: left;
 `;
-
 const Container2 = styled.div`
   margin-top: 50px;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
 `;
 
-const ButtonContainer = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: right;
-  margin-right: 30px;
-`;
-
-const ButtonB = styled.button`
-  width: 180px;
-  height: 50px;
-  margin-left: 30px;
+  justify-content: flex-end;
+  gap: 2%;
+  margin-bottom: 2%;
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 32px;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: bold;
-  margin-bottom: 24px;
-  display: flex;
-  padding-left: 30px;
+  margin: 30px;
 `;
-
 const SectionTitleAI = styled.h2`
-  font-size: 32px;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: bold;
   margin-bottom: 24px;
   margin-top: 30px;
   display: flex;
   padding-left: 30px;
-`;
-
-const PartnerGrid = styled.div`
-  display: flex;
-  gap: 20px;
-  margin-bottom: 60px;
-  flex-wrap: wrap;
-  padding-left: 30px;
-`;
-
-const PartnerCard = styled.div`
-  position: relative;
-  width: 366px;
-  height: 305px;
-`;
-
-const PartnerImage = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-around;
-`;
-
-const ImageLabel = styled.div`
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.75);
-  text-align: left;
-`;
-
-const ImageLabelT = styled.div`
-  font-size: 26px;
 `;
 
 const CardList = styled.div`
@@ -179,102 +141,68 @@ const CardList = styled.div`
 const PlaceCard = styled.div`
   display: flex;
   background: #fff;
-  border: 1px solid #eee;
-  border-radius: 20px;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 `;
 
 const PlaceImage = styled.img`
-  width: 420px;
-  height: 280px;
+  width: 25%;
+  height: 20%;
   object-fit: cover;
-  border-radius: 20px 0 0 20px;
-  margin: 40px 0 40px 40px;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  margin: 20px 0 20px 40px;
 `;
 
 const CardContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  padding: 40px;
+  width: 65%;
+  padding: 3%;
+  gap: 30%;
+  flex-wrap: wrap;
 `;
 
 const InfoBlock = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  justify-content: start;
+  gap: 12px;
 `;
 
 const PlaceLocation = styled.p`
-  font-size: 16px;
-  color: #555;
-  text-align: left;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.gray[600]};
 `;
 
 const PlaceName = styled.h3`
-  font-size: 24px;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
   font-weight: bold;
-  text-align: left;
 `;
 
 const PlaceReview = styled.p`
-  font-size: 16px;
-  color: #333;
-  text-align: left;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.gray[800]};
 `;
 
 const ThemeBlock = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: end;
-  gap: 8px;
-  border-left: 2px solid #ffdd38;
-  padding-left: 24px;
-  height: 100%;
+  gap: 15px;
+  border-left: 2px solid ${({ theme }) => theme.colors.yellow};
+  padding-left: 5%;
 `;
 
 const ThemeLabel = styled.p`
-  font-size: 16px;
-  color: #888;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.gray[500]};
 `;
 
 const ThemeText = styled.p`
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: bold;
-  color: #000;
-`;
-
-const ButtonD = styled.button`
-  width: 150px;
-  height: 50px;
-  color: #ffffff;
-`;
-
-const BottomBanner = styled.div`
-  margin-top: 30px;
-  position: relative;
-  width: 100%;
-  height: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(235, 235, 235, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const BottomButton = styled.button`
-  background: #ffeb8c;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-family: 'Godo B';
-  font-size: 24px;
-  font-weight: bold;
-  color: #333333;
-  border: none;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
+  color: ${({ theme }) => theme.colors.black};
 `;
