@@ -1,37 +1,25 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from 'react'
 import LeftContent from '../../components/Member/LeftContent';
-import MemberSearchBar from '../../components/Member/MemberSearchBar';
-import MemberTable from '../../components/Member/table/MemberTable ';
+import NeedsConsultTable from '../../components/Member/table/NeedsConsultTable';
+import styled from 'styled-components';
+import CalenderContainoer from '../../components/Member/CalenderContainoer';
 
-const MemberList = () => {
-  return (
-    <MemberListWrap>
-      <LeftNav>
-        <LeftContent />
-      </LeftNav>
-      <MainContent>
-        <Title>직원 정보</Title>
-        <Container>
-          <MemberSearchBar />
-          <MemberTable />
-        </Container>
-      </MainContent>
-    </MemberListWrap>
-  );
-};
-
-export default MemberList;
-
-const Title = styled.h1`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-size: ${({ theme }) => theme.fontSizes['2xl']};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.black};
-  margin-bottom: ${({ theme }) => theme.spacing.s4};
-`;
+const NeedsConsultList = () => {
+    return (
+        <MemberListWrap>  
+          <LeftNav>
+            <LeftContent />
+          </LeftNav>
+          <MainContent>
+          <CalenderContainoer />
+            <Title>상담 필요자</Title>
+            <Container>
+            <NeedsConsultTable />
+            </Container>
+          </MainContent>
+        </MemberListWrap>
+      );
+}
 
 const MemberListWrap = styled.div`
   display: flex;
@@ -41,14 +29,22 @@ const MemberListWrap = styled.div`
   width: 100%;
   max-width: 1280px;
 `;
-
+const Title = styled.h1`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.black};
+  margin-bottom: ${({ theme }) => theme.spacing.s4};
+`;
 const LeftNav = styled.nav`
   width: 200px; /* 왼쪽 내비게이션 너비 고정 */
+  height: 100%;
   flex-shrink: 0; /* 창이 줄어들어도 너비 유지 */
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: ${({ theme }) => theme.spacing.s3};
-  height: 100%;
 `;
 
 const MainContent = styled.div`
@@ -66,3 +62,6 @@ const Container = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};
 `;
+
+export default NeedsConsultList
+

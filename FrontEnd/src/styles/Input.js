@@ -15,10 +15,34 @@ const Input = {
   },
   InputOrange: {
     boxSizing: 'border-box',
-    background: '#FFFFFF',
+
+    width: '340px',
+    height: '48px',
+    background: `${({ theme }) => theme.colors.white}`,
+
     border: '3px solid #F8C470',
     borderRadius: '10px',
     color: 'black',
+  },
+
+  LightGray: {
+    boxSizing: 'border-box',
+    background: '#FFFFFF',
+    border: '1px solid #d1d5db',
+    borderRadius: '10px',
+    color: 'black',
+  },
+  InputRadio: {
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    backgroundColor: '#adadad',
+    width: '18px',
+    height: '18px',
+    borderRadius: '50%',
+    marginLeft: '10px',
+    cursor: 'pointer',
+
   },
 };
 
