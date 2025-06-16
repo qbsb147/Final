@@ -161,6 +161,7 @@ const DateRangeWrapper = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.s4};
   margin-top: ${({ theme }) => theme.spacing.s2};
+  align-items: center;
 `;
 
 const DateBlock = styled.div`
@@ -184,6 +185,7 @@ const Tilde = styled.span`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.black};
+  margin-top: 30px;
 `;
 
 const ButtonSection = styled.div`
