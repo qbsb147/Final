@@ -13,11 +13,16 @@ import SignUp from './pages/Login/SignUp';
 import Worcation from './pages/Worcation';
 
 import Mypage from './pages/Mypage';
+import BodyInfo from './pages/BodyInfo';
+import Trial from './pages/Trial';
 
 import MemberList from './pages/Member/MemberList';
 import LayoutMember from './components/LayoutMember';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
+import WorkcationList from './pages/Member/WorkcationList';
+import NeedsConsult from './pages/Member/NeedsConsult';
+import MemberApplies from './pages/Member/MemberApplies';
 
 function App() {
   return (
@@ -29,20 +34,26 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/wrocation" element={<Worcation />} />
+            <Route path="/trial" element={<Trial />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
+            <Route path="/my/body" element={<BodyInfo />} />
           </Route>
-
+          
+          {/* 레이아웃 미적용 (직원 관리)*/}
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
+            <Route path="/member/workation-applies" element={<WorkcationList />} />
+            <Route path="/member/needs-consult" element={<NeedsConsult />} />
+            <Route path="/member/applies" element={<MemberApplies />} />
+
           </Route>
 
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} />
           </Route>
 
-          {/* 레이아웃 미적용*/}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
         </Routes>
