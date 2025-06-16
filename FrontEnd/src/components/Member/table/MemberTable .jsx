@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReusableTable from './ReusableTable';
 
 const MemberTable = () => {
@@ -13,7 +13,7 @@ const MemberTable = () => {
     { header: '근무 현황', accessor: 'status' },
   ];
 
-  const data = [
+  const [members, setMembers] = useState([  
     {
       department: '기술팀',
       position: '팀장',
@@ -24,9 +24,22 @@ const MemberTable = () => {
       email: 'master@email.com',
       status: '근무중',
     },
-  ];
+  ]);
 
-  return <ReusableTable columns={columns} data={data} />;
+  const handleLevelChange = (index, newLevel) => {
+    const oldLevel = members[index].level;
+
+    if (oldLevel === newLevel) return; // 변경이 없으면 무시
+
+    const isConfirmed = window.confirm(`[${oldLevel}] → [${newLevel}] 로 변경하시겠습니까?`);
+    if (!isConfirmed) return;
+
+    const updated = [...members];
+    updated[index].level = newLevel;
+    setMembers(updated);
+  };
+
+  return <ReusableTable columns={columns} data={members} onLevelChange={handleLevelChange} />;
 };
 
 export default MemberTable;

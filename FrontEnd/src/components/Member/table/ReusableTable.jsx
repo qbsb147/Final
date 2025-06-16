@@ -7,9 +7,10 @@ import styled from 'styled-components';
  * @param {Array} data - 테이블에 표시할 데이터 배열.
  * @param {Function} onApprove - 승인 버튼 클릭 시 실행될 콜백 함수.
  * @param {Function} onReject - 거부 버튼 클릭 시 실행될 콜백 함수.
+ * @param {Function} onLevelChange - 등급 변경 시 호출될 콜백 함수 (rowIndex, newValue)
  */
 
-const ReusableTable = ({ columns, data, onApprove, onReject }) => {
+const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange  }) => {
   return (
     <TableWrap>
       <thead>
@@ -24,13 +25,20 @@ const ReusableTable = ({ columns, data, onApprove, onReject }) => {
           <tr key={rowIndex}>
             {columns.map((col) => (
               <Td key={col.accessor}>
-                {/* accessor가 'actions'이면 승인/거부 버튼을 렌더링 */}
                 {col.accessor === 'actions' ? (
                   <ButtonWrap>
-                    {/* onApprove와 onReject 함수가 props로 전달된 경우에만 버튼을 활성화 */}
                     <ApproveBtn onClick={() => onApprove?.(row)}>승인</ApproveBtn>
                     <RejectBtn onClick={() => onReject?.(row)}>거부</RejectBtn>
                   </ButtonWrap>
+                ) : col.accessor === 'level' ? (
+                  <Select
+                    value={row.level}
+                    onChange={(e) => onLevelChange?.(rowIndex, e.target.value)}
+                  >
+                    <option value="총관리자">총관리자</option>
+                    <option value="관리자">관리자</option>
+                    <option value="직원">직원</option>
+                  </Select>
                 ) : (
                   row[col.accessor]
                 )}
@@ -89,4 +97,13 @@ const RejectBtn = styled.button`
   border-radius: 8px;
   border: none;
   font-weight: bold;
+`;
+
+const Select = styled.select`
+  background-color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.black};
+  border: none;
+  font-weight: bold;
+  text-align: center;
+  text-align-last: center;
 `;
