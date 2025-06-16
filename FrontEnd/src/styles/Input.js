@@ -29,7 +29,7 @@ const Input = {
     border: '1px solid #d1d5db',
     borderRadius: '10px',
     color: 'black',
-
+  },
   InputRadio: {
     appearance: 'none',
     WebkitAppearance: 'none',
