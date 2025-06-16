@@ -19,11 +19,9 @@ import Trial from './pages/Trial';
 import MemberList from './pages/Member/MemberList';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
-import WorcationList from './pages/WorcationList';
 import NeedsConsult from './pages/Member/NeedsConsult';
 import MemberApplies from './pages/Member/MemberApplies';
 import WorcationApply from './pages/WorcationApply';
-import MainPage from './pages/MainPage';
 import WorcationAppliesList from './pages/Member/WorcationAppliesList';
 
 function App() {
@@ -32,21 +30,18 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <Routes>
-
           {/* serachbar포함 */}
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/main" element={<MainPage />} />
+            <Route path="/" element={<MainPage />} />
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
             <Route path="/worcation/apply" element={<WorcationApply />} />
-            <Route path="/worcation/List" element={<WorcationList />} />
             <Route path="/worcation/Detail" element={<WorcationDetail />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
             <Route path="/my/body" element={<BodyInfo />} />
-          </Route>
+
             {/* 메인페이지 */}
             <Route path="/" element={<MainPage />} />
 
@@ -55,7 +50,7 @@ function App() {
 
             {/* 워케이션 */}
             <Route path="/worcation" element={<WorcationList />} />
-            
+
             {/* 워케이션 신청(회원용) */}
             <Route path="/worcation/apply" element={<WorcationApply />} />
 
@@ -90,7 +85,6 @@ function App() {
           {/* 로그인, 회원가입 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
-          
         </Routes>
       </ThemeProvider>
     </BrowserRouter>
