@@ -9,8 +9,10 @@ import Layout2 from './components/Layout2';
 import Home from './pages/Home';
 import Login from './pages/Login/Login';
 import SignUp from './pages/Login/SignUp';
-
+import MainPage from './pages/MainPage';
 import Worcation from './pages/Worcation';
+import WorcationList from './pages/WorcationList';
+import WorcationDetail from './pages/WorcationDetail';
 
 import Mypage from './pages/Mypage';
 import BodyInfo from './pages/BodyInfo';
@@ -34,9 +36,12 @@ function App() {
           {/* 레이아웃 적용*/}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/main" element={<MainPage />} />
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
-            <Route path="/workation/apply" element={<WorcationApply />} />
+            <Route path="/worcation/apply" element={<WorcationApply />} />
+            <Route path="/worcation/List" element={<WorcationList />} />
+            <Route path="/worcation/Detail" element={<WorcationDetail />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />

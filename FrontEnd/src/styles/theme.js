@@ -10,6 +10,7 @@ const theme = {
     danger: '#ef4444',
     white: '#ffffff',
     black: '#000000',
+    brown: '#5c3b00',
     gray: {
       100: '#f3f3f3',
       200: '#e5e7eb',

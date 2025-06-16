@@ -1,25 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
-import ko from 'date-fns/locale/ko';
+import WorcationCalendar from '../components/common/Calendar';
 import Button from '../styles/Button';
 import Input from '../styles/Input';
-
-const locales = { ko };
-
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 0 }),
-  getDay,
-  locales,
-});
-
-const DnDCalendar = withDragAndDrop(Calendar);
 
 const WorcationApply = () => {
   const events = [
@@ -37,16 +20,8 @@ const WorcationApply = () => {
           <Title>워케이션 신청</Title>
           <Subtitle>간세</Subtitle>
         </Header>
-
         <CalendarSection>
-          <DnDCalendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            draggableAccessor={() => true}
-            style={{ height: '442px', borderRadius: '10px' }}
-          />
+          <WorcationCalendar events={events} />
 
           <InfoBox>
             <Label>워케이션 신청자</Label>
