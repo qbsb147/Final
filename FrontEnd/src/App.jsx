@@ -47,12 +47,13 @@ function App() {
             <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
             <Route path="/member/applies" element={<MemberApplies />} />
+
           </Route>
 
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} />
           </Route>
-          {/* 레이아웃 미적용 (로그인, 회원가입)*/}
+
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
         </Routes>

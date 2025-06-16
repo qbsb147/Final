@@ -22,6 +22,14 @@ const Input = {
     borderRadius: '10px',
     color: 'black',
   },
+
+  LightGray: {
+    boxSizing: 'border-box',
+    background: '#FFFFFF',
+    border: '1px solid #d1d5db',
+    borderRadius: '10px',
+    color: 'black',
+
   InputRadio: {
     appearance: 'none',
     WebkitAppearance: 'none',
@@ -32,6 +40,7 @@ const Input = {
     borderRadius: '50%',
     marginLeft: '10px',
     cursor: 'pointer',
+
   },
 };
 
