@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
-import WorkcationTable from '../../components/Member/table/WorkcationTable';
+import WorcationTable from '../../components/Member/table/WorcationTable';
 import CalenderContainoer from '../../components/Member/CalenderContainoer';
 
-const WorkcationList = () => {
+const WorcationAppliesList = () => {
   return (
     <MemberListWrap>
       <LeftNav>
@@ -14,14 +14,14 @@ const WorkcationList = () => {
         <CalenderContainoer />
         <Title>워케이션 신청자</Title>
         <Container>
-          <WorkcationTable />
+          <WorcationTable />
         </Container>
       </MainContent>
     </MemberListWrap>
   );
 };
 
-export default WorkcationList;
+export default WorcationAppliesList;
 
 const MemberListWrap = styled.div`
   display: flex;
@@ -60,7 +60,6 @@ const MainContent = styled.div`
 `;
 const Container = styled.div`
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};

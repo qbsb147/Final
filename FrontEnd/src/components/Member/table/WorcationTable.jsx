@@ -1,7 +1,7 @@
 import React from 'react';
 import ReusableTable from './ReusableTable';
 
-const WorkcationTable = () => {
+const WorcationTable = () => {
     const columns = [
         { header: '부서', accessor: 'department' },
         { header: '직급', accessor: 'position' },
@@ -39,4 +39,4 @@ const WorkcationTable = () => {
   );
 };
 
-export default WorkcationTable;
+export default WorcationTable;
