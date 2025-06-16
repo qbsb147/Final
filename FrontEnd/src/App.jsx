@@ -15,6 +15,7 @@ import Worcation from './pages/Worcation';
 import Mypage from './pages/Mypage';
 import BodyInfo from './pages/BodyInfo';
 import Trial from './pages/Trial';
+import StressTest from './pages/StressTest';
 
 import MemberList from './pages/Member/MemberList';
 import LayoutMember from './components/LayoutMember';
@@ -39,8 +40,9 @@ function App() {
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
             <Route path="/my/body" element={<BodyInfo />} />
+            <Route path="/trial/stress" element={<StressTest />} />
           </Route>
-          
+
           {/* 레이아웃 미적용 (직원 관리)*/}
           <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
@@ -48,7 +50,6 @@ function App() {
             <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
             <Route path="/member/applies" element={<MemberApplies />} />
-
           </Route>
 
           <Route element={<Layout3 />}>

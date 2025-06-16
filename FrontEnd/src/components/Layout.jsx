@@ -16,9 +16,7 @@ const Layout = () => {
     <>
       <Header />
       <Content>
-        {/* <Outlet /> */}
-        {/* <PartnershipForm /> */}
-        <WorcationApply />
+        <Outlet />
       </Content>
       <Footer />
     </>
