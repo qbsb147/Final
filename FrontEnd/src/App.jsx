@@ -33,6 +33,7 @@ function App() {
           {/* serachbar포함 */}
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} />
+
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
             <Route path="/worcation/apply" element={<WorcationApply />} />
