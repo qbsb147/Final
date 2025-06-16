@@ -57,7 +57,6 @@ const MainContent = styled.div`
 `;
 const Container = styled.div`
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};

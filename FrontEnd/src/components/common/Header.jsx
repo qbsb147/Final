@@ -16,12 +16,12 @@ const menuData = [
   },
   {
     title: '워케이션',
-    path: '/workation/all',
+    path: '/worcation',
     items: [
-      { title: '전체보기', path: '/workation/all' },
-      { title: '제휴업체', path: '/workation/partners' },
-      { title: 'AI 추천', path: '/workation/ai' },
-      { title: '워케이션 등록', path: '/workation/register' },
+      { title: '전체보기', path: '/worcation' },
+      { title: '제휴업체', path: '/worcation/partners' },
+      { title: 'AI 추천', path: '/worcation/ai' },
+      { title: '워케이션 등록', path: '/worcation/register' },
     ],
   },
   {
@@ -34,7 +34,7 @@ const menuData = [
     path: '/member/list',
     items: [
       { title: '직원목록', path: '/member/list' },
-      { title: '워케이션 신청자', path: '/member/workation-applies' },
+      { title: '워케이션 신청자', path: '/member/worcation-applies' },
       { title: '상담 필요자', path: '/member/needs-consult' },
       { title: '직원 신청', path: '/member/applies' },
     ],
@@ -44,7 +44,7 @@ const menuData = [
     items: [
       { title: '내 정보', path: '/my/info' },
       { title: '신체 정보', path: '/my/body' },
-      { title: '워케이션 신청내역', path: '/my/workation-history' },
+      { title: '워케이션 신청내역', path: '/my/worcation-history' },
     ],
   },
 ];
@@ -57,7 +57,9 @@ const Header = () => {
       <HeaderBg>
         <HeaderInner>
           <LogoWrap>
-            <LogoImg src={logo} alt="logo" />
+            <Link to="/">
+            <LogoImg src={logo} alt="logo"/>
+            </Link>
           </LogoWrap>
           <NavWrap>
             <Nav>
