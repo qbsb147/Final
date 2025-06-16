@@ -18,12 +18,14 @@ import Trial from './pages/Trial';
 import StressTest from './pages/StressTest';
 
 import MemberList from './pages/Member/MemberList';
-import LayoutMember from './components/LayoutMember';
+// import LayoutMember from './components/LayoutMember';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
-import WorkcationList from './pages/Member/WorkcationList';
+// import WorkcationList from './pages/Member/WorkcationList';
 import NeedsConsult from './pages/Member/NeedsConsult';
 import MemberApplies from './pages/Member/MemberApplies';
+import BurnoutTest from './pages/BurnoutTest';
+import TendencyTest from './pages/TendencyTest';
 
 function App() {
   return (
@@ -33,7 +35,7 @@ function App() {
         <Routes>
           {/* 레이아웃 적용*/}
           <Route element={<Layout />}>
-            <Route path="/" element={<MainPage />} />
+            {/* <Route path="/" element={<MainPage />} /> */}
 
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
@@ -42,16 +44,18 @@ function App() {
             <Route path="/my/info" element={<Mypage />} />
             <Route path="/my/body" element={<BodyInfo />} />
             <Route path="/trial/stress" element={<StressTest />} />
+            <Route path="/trial/burnout" element={<BurnoutTest />} />
+            <Route path="/trial/tendency" element={<TendencyTest />} />
           </Route>
 
           {/* 레이아웃 미적용 (직원 관리)*/}
-          <Route element={<LayoutMember />}>
+          {/* <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
 
             <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
             <Route path="/member/applies" element={<MemberApplies />} />
-          </Route>
+          </Route> */}
 
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} />
