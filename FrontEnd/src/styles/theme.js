@@ -111,7 +111,7 @@ const theme = {
   },
   fontFamily: {
     primary: 'Godo B',
-    secondary: 'GyeonggiTitleOTF',
+    secondary: 'Paperlogy',
   },
   widthes: {
     layoutWidth: '1280px',

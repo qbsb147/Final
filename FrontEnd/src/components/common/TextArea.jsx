@@ -12,7 +12,7 @@ const StyledTextArea = styled.textarea`
   padding: 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
-  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-family: ${({ theme }) => theme.fontFamily.secondary};
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.black};
@@ -26,7 +26,7 @@ const StyledTextArea = styled.textarea`
   }
 
   &::placeholder {
-    font-family: ${({ theme }) => theme.fontFamily.primary};
+    font-family: ${({ theme }) => theme.fontFamily.secondary};
     font-weight: ${({ theme }) => theme.fontWeights.medium};
   }
 `;

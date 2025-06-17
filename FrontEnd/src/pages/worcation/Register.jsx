@@ -8,6 +8,7 @@ import PhotoForm from '../../components/worcation/register/PhotoForm';
 import AmenitiesForm from '../../components/worcation/register/AmenitiesForm';
 import LocationForm from '../../components/worcation/register/LocationForm';
 import PolicyForm from '../../components/worcation/register/PolicyForm';
+import FeatureForm from '../../components/worcation/register/FeatureForm';
 import { BtnWhiteYellowBorder } from '../../styles/Button.styles';
 
 const Register = () => {
@@ -29,6 +30,8 @@ const Register = () => {
         return <LocationForm />;
       case 'Policy':
         return <PolicyForm />;
+      case 'Feature':
+        return <FeatureForm />;
       default:
         return <ApplicationForm />;
     }

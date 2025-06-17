@@ -22,6 +22,7 @@ const StyledSelect = styled.select`
   padding: 0 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border-radius: ${({ theme }) => theme.borderRadius.base};
+  font-family: ${({ theme }) => theme.fontFamily.secondary};
   font-size: ${({ theme }) => theme.fontSizes.base};
   color: ${({ theme }) => theme.colors.black};
   background-color: ${({ theme }) => theme.colors.gray[100]};
