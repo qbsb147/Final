@@ -6,23 +6,26 @@ import theme from './styles/theme';
 import GlobalStyle from './styles/GlobalStyle';
 import Layout from './components/Layout';
 import Layout2 from './components/Layout2';
+import Home from './pages/Home';
 import Login from './pages/Login/Login';
 import SignUp from './pages/Login/SignUp';
-import MainPage from './pages/MainPage';
+
 import Worcation from './pages/Worcation';
-import WorcationList from './pages/WorcationList';
-import WorcationDetail from './pages/WorcationDetail';
 
 import Mypage from './pages/Mypage';
 import BodyInfo from './pages/BodyInfo';
 import Trial from './pages/Trial';
+import StressTest from './pages/StressTest';
+
 import MemberList from './pages/Member/MemberList';
+// import LayoutMember from './components/LayoutMember';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
+// import WorkcationList from './pages/Member/WorkcationList';
 import NeedsConsult from './pages/Member/NeedsConsult';
 import MemberApplies from './pages/Member/MemberApplies';
-import WorcationApply from './pages/WorcationApply';
-import WorcationAppliesList from './pages/Member/WorcationAppliesList';
+import BurnoutTest from './pages/BurnoutTest';
+import TendencyTest from './pages/TendencyTest';
 
 function App() {
   return (
@@ -30,60 +33,34 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <Routes>
-          {/* serachbar포함 */}
+          {/* 레이아웃 적용*/}
           <Route element={<Layout />}>
-            <Route path="/" element={<MainPage />} />
+            {/* <Route path="/" element={<MainPage />} /> */}
 
             <Route path="/wrocation" element={<Worcation />} />
             <Route path="/trial" element={<Trial />} />
-            <Route path="/worcation/apply" element={<WorcationApply />} />
-            <Route path="/worcation/Detail" element={<WorcationDetail />} />
           </Route>
           <Route element={<Layout2 />}>
             <Route path="/my/info" element={<Mypage />} />
             <Route path="/my/body" element={<BodyInfo />} />
+            <Route path="/trial/stress" element={<StressTest />} />
+            <Route path="/trial/burnout" element={<BurnoutTest />} />
+            <Route path="/trial/tendency" element={<TendencyTest />} />
+          </Route>
 
-            {/* 메인페이지 */}
-            <Route path="/" element={<MainPage />} />
-
-            {/* 심리검사 */}
-            <Route path="/trial" element={<Trial />} />
-
-            {/* 워케이션 */}
-            <Route path="/worcation" element={<WorcationList />} />
-
-            {/* 워케이션 신청(회원용) */}
-            <Route path="/worcation/apply" element={<WorcationApply />} />
-
-            {/* 직원 목록 리스트 */}
+          {/* 레이아웃 미적용 (직원 관리)*/}
+          {/* <Route element={<LayoutMember />}>
             <Route path="/member/list" element={<MemberList />} />
 
-            {/* 워케이션 신청 리스트 */}
-            <Route path="/member/worcation-applies" element={<WorcationAppliesList />} />
-
-            {/* 상담 필요자 리스트 */}
+            <Route path="/member/workation-applies" element={<WorkcationList />} />
             <Route path="/member/needs-consult" element={<NeedsConsult />} />
-
-            {/* 직원 승인 목록 리스트 */}
             <Route path="/member/applies" element={<MemberApplies />} />
-          </Route>
+          </Route> */}
 
-          {/* serachbar미포함 */}
-          <Route element={<Layout2 />}>
-            {/* 마이페이지 */}
-            <Route path="/my/info" element={<Mypage />} />
-
-            {/* 신체 정보 */}
-            <Route path="/my/body" element={<BodyInfo />} />
-          </Route>
-
-          {/* Footer미포함 */}
           <Route element={<Layout3 />}>
-            {/* 워케이션 등록(워케이션 업체용) */}
             <Route path="/worcation/register" element={<Register />} />
           </Route>
 
-          {/* 로그인, 회원가입 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
         </Routes>

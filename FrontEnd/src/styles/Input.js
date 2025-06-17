@@ -42,7 +42,6 @@ const Input = {
     borderRadius: '50%',
     marginLeft: '10px',
     cursor: 'pointer',
-
   },
 };
 

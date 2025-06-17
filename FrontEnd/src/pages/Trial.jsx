@@ -9,14 +9,14 @@ const Trial = () => {
         <TestBox>
           <NameBox>
             <TestName>스트레스 검사</TestName>
-            <div>
-              <img
+            <ExplanationBox>
+              <Img
                 src="src/assets/stress.png"
                 alt="Rectangle"
-                style={{ width: '150px', height: '120px', objectFit: 'cover' }}
+                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
               />
-              사진 내용
-            </div>
+              <Explanation>마음이 무겁게 느껴질 때, 스트레스 검사를 통해 내 상태를 한 번 체크해보세요.</Explanation>
+            </ExplanationBox>
           </NameBox>
           <Textbox>
             <button style={Button.buttonWhite2}>테스트하러 가기</button>
@@ -25,7 +25,16 @@ const Trial = () => {
         <TestBox>
           <NameBox>
             <TestName>번아웃 검사</TestName>
-            <div>사진 내용</div>
+            <ExplanationBox>
+              <Img
+                src="src/assets/bunout.png"
+                alt="Rectangle"
+                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
+              />
+              <Explanation>
+                요즘 유난히 피로하고 무기력하다면, 번아웃 검사를 통해 나의 소진 상태를 점검해보세요.
+              </Explanation>
+            </ExplanationBox>
           </NameBox>
           <Textbox>
             <button style={Button.buttonWhite2}>테스트하러 가기</button>
@@ -34,7 +43,14 @@ const Trial = () => {
         <TestBox>
           <NameBox>
             <TestName>성향 검사</TestName>
-            <div>사진 내용</div>
+            <ExplanationBox>
+              <Img
+                src="src/assets/tendency.png"
+                alt="Rectangle"
+                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
+              />
+              <Explanation>워케이션 전, 성향검사로 나에게 맞는 휴식을 찾아보세요.</Explanation>
+            </ExplanationBox>
           </NameBox>
           <Textbox>
             <button style={Button.buttonWhite2}>테스트하러 가기</button>
@@ -44,6 +60,10 @@ const Trial = () => {
     </>
   );
 };
+
+const Img = styled.img`
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+`;
 
 const TestBox = styled.div`
   display: flex;
@@ -80,6 +100,17 @@ const TestName = styled.p`
   padding-left: 10px;
   font-size: ${({ theme }) => theme.fontSizes.xl};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
+`;
+
+const ExplanationBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Explanation = styled.p`
+  padding-left: ${({ theme }) => theme.spacing.s3};
+  width: 300px;
 `;
 
 export default Trial;

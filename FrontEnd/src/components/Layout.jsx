@@ -18,9 +18,9 @@ const Layout = () => {
 
 const PageWrapper = styled.div`
   /* 페이지 전체를 덮는 배경색 설정 */
-  background-color: #f8f9fa; 
+  background-color: #f8f9fa;
   min-height: 100vh;
-  position: relative; 
+  position: relative;
 `;
 
 const Content = styled.main`
