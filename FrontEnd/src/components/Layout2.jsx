@@ -19,7 +19,7 @@ const PageWrapper = styled.div`
   /* 페이지 전체를 덮는 배경색 설정 */
   background-color: ${({ theme }) => theme.colors.white};
   min-height: 100vh;
-  position: relative; 
+  position: relative;
 `;
 
 const Content = styled.main`

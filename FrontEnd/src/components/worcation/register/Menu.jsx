@@ -11,6 +11,7 @@ const Menu = ({ onMenuSelect, selectedMenu }) => {
     { id: 'Amenities', label: '편의시설' },
     { id: 'Location', label: '위치/주소' },
     { id: 'Policy', label: '운영 정책' },
+    { id: 'Feature', label: '워케이션 특징' },
   ];
 
   return (
@@ -54,7 +55,9 @@ const MenuList = styled.div`
   border: 2px solid ${({ theme }) => theme.colors.gray[200]};
 `;
 
-const MenuItem = styled.div`
+const MenuItem = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})`
   display: flex;
   align-items: center;
   gap: 9px;

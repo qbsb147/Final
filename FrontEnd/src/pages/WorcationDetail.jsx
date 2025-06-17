@@ -1,6 +1,7 @@
+// WorcationDetail.jsx (theme 활용 최적화)
 import React from 'react';
 import styled from 'styled-components';
-import Button from '../styles/Button';
+import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import seoulImage from '../assets/seoul1.jpg';
 
 const WorcationDetail = () => {
@@ -9,8 +10,8 @@ const WorcationDetail = () => {
       <Wrapper>
         <MainImageWrapper>
           <TopButtons>
-            <PartnerButton style={Button.buttonBorder}>제휴 신청</PartnerButton>
-            <ReserveButton style={Button.buttonBorder}>예약</ReserveButton>
+            <ButtonBorder>제휴 신청</ButtonBorder>
+            <ButtonBorder>예약</ButtonBorder>
           </TopButtons>
         </MainImageWrapper>
 
@@ -88,7 +89,7 @@ const WorcationDetail = () => {
         <ContentSection>
           <CommentInputWrap>
             <CommentInput placeholder="댓글을 입력하세요." />
-            <CommentSubmit>등록</CommentSubmit>
+            <CommentSubmit as={ButtonYbShadow}>등록</CommentSubmit>
           </CommentInputWrap>
           <CommentList>
             <CommentItem>
@@ -110,26 +111,20 @@ export default WorcationDetail;
 
 const PageContainer = styled.div`
   width: 100%;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.white};
 `;
 
 const Wrapper = styled.div`
   width: auto;
   margin: 50px auto;
   background: rgba(196, 196, 196, 0.1);
-  border-top: 1px solid #5c3b00;
-  border-bottom: 2px solid #5c3b00;
+  border-top: 2px solid ${({ theme }) => theme.colors.brown};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.brown};
   padding: 60px;
   box-sizing: border-box;
 `;
 
-const Wrapper2 = styled.div`
-  width: auto;
-  background: rgba(196, 196, 196, 0.1);
-  border-top: 1px solid #5c3b00;
-  border-bottom: 2px solid #5c3b00;
-  padding: 60px;
-  box-sizing: border-box;
+const Wrapper2 = styled(Wrapper)`
   margin-top: 30px;
 `;
 
@@ -143,7 +138,7 @@ const MainImage = styled.img`
   width: 100%;
   height: auto;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: ${({ theme }) => theme.borderRadius.md};
 `;
 
 const TopButtons = styled.div`
@@ -153,22 +148,14 @@ const TopButtons = styled.div`
   gap: 20px;
 `;
 
-const PartnerButton = styled.button`
-  width: 150px;
-  height: 50px;
-  cursor: pointer;
-`;
-
-const ReserveButton = styled(PartnerButton)`
-  background: #ffeb8c;
-`;
-
 const Title = styled.h1`
-  font-size: 36px;
+  font-size: ${({ theme }) => theme.fontSizes['3xl']};
   font-family: 'Godo B';
-  color: #000;
+  color: ${({ theme }) => theme.colors.black};
   margin-top: 80px;
   margin-bottom: 30px;
+  text-align: left;
+  margin-left: 30px;
 `;
 
 const PriceWrapper = styled.div`
@@ -178,8 +165,8 @@ const PriceWrapper = styled.div`
 
 const Price = styled.div`
   font-family: 'Godo B';
-  font-size: 30px;
-  color: #000;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const ContentSection = styled.div`
@@ -195,22 +182,22 @@ const Block = styled.div`
 `;
 
 const BlockTitle = styled.h2`
-  font-size: 28px;
+  font-size: ${({ theme }) => theme.fontSizes.xl};
   font-family: 'Godo B';
-  color: #000;
+  color: ${({ theme }) => theme.colors.black};
   margin-bottom: 20px;
 `;
 
 const BlockText = styled.p`
-  font-size: 16px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
   font-family: 'Godo B';
-  color: #000;
+  color: ${({ theme }) => theme.colors.black};
   line-height: 2.5;
 `;
 
 const CommentTitle = styled.h3`
-  font-size: 30px;
-  color: #555;
+  font-size: ${({ theme }) => theme.fontSizes['2xl']};
+  color: ${({ theme }) => theme.colors.gray[600]};
   font-family: 'Godo B';
   display: flex;
   justify-content: left;
@@ -227,27 +214,18 @@ const CommentInputWrap = styled.div`
 const CommentInput = styled.input`
   flex: 1;
   height: 50px;
-  border: 2px solid #a1a1a1;
-  border-radius: 15px;
+  border: 2px solid ${({ theme }) => theme.colors.gray[400]};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: 0 20px;
-  font-size: 18px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
   font-family: 'GyeonggiTitleOTF';
 `;
 
-const CommentSubmit = styled.button`
-  width: 100px;
-  height: 50px;
-  background: #ffeb8c;
-  border: 1px solid #000;
-  border-radius: 10px;
-  font-family: 'Godo B';
-  font-size: 18px;
-  cursor: pointer;
-`;
+const CommentSubmit = styled.button``;
 
 const CommentList = styled.div`
-  border: 2px solid #000;
-  border-radius: 15px 15px 0 0;
+  border: 2px solid ${({ theme }) => theme.colors.black};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
   padding: 20px;
 `;
 
@@ -255,19 +233,19 @@ const CommentItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.black};
   padding: 10px 0;
 `;
 
 const CommentUser = styled.span`
   font-weight: bold;
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
   font-family: 'GyeonggiTitleOTF';
 `;
 
 const CommentText = styled.span`
   margin-right: 750px;
-  font-size: 20px;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
 `;
 
 const CommentActions = styled.div`
@@ -276,11 +254,11 @@ const CommentActions = styled.div`
 `;
 
 const ActionBtn = styled.button`
-  background: #fff;
-  border: 1px solid #000;
-  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.black};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
   padding: 5px 10px;
-  font-size: 14px;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   cursor: pointer;
   font-family: 'Godo B';
 `;

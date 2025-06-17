@@ -18,9 +18,13 @@ const Layout = () => {
 
 const PageWrapper = styled.div`
   /* 페이지 전체를 덮는 배경색 설정 */
+<<<<<<< Artping
   background-color: ${({ theme }) => theme.colors.white};
+=======
+  background-color: #f8f9fa;
+>>>>>>> main
   min-height: 100vh;
-  position: relative; 
+  position: relative;
 `;
 
 const Content = styled.main`

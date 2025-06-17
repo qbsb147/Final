@@ -1,56 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../styles/Input.styles';
-import RadioButton from '../../common/RadioButton';
-import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb } from '../../../styles/Button.styles';
+import { ButtonBorder } from '../../../styles/Button.styles';
+import CustomTextArea from '../../common/TextArea';
 
 const Form = () => {
-  const [selected, setSelected] = useState('Office');
-  const [startDate, setStartDate] = useState(null);
+  const [address, setAddress] = useState('');
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
-  const radioOptions = [
-    { value: 'Office', label: '오피스' },
-    { value: 'Accommodation', label: '숙박' },
-    { value: 'OfficeAndStay', label: '오피스&숙박' },
-  ];
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  const handleSearch = () => {
+    if (!isPostcodeReady) {
+      alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const addr = data.address;
+        setAddress(addr);
+      },
+    }).open();
+  };
 
   return (
     <Body>
-      <Title>호스트 신청을 완료해주세요.</Title>
+      <Title>위치 / 주소를 입력해주세요.</Title>
       <Table>
         <TBody>
           <TR>
-            <TH>업체 유형</TH>
+            <TH>주소</TH>
             <TD>
-              <RadioButton options={radioOptions} selected={selected} onChange={setSelected} />
+              <InputLightGray type="text" value={address} readOnly placeholder="주소" />
+              <ButtonBorder type="button" onClick={handleSearch} disabled={!isPostcodeReady}>
+                주소 검색
+              </ButtonBorder>
             </TD>
           </TR>
           <TR>
-            <TH>사업자명</TH>
+            <TH>길 안내</TH>
             <TD>
-              <InputLightGray />
-            </TD>
-          </TR>
-          <TR>
-            <TH>상호명</TH>
-            <TD>
-              <InputLightGray />
-            </TD>
-          </TR>
-          <TR>
-            <TH>개업일</TH>
-            <TD>
-              <CustomDatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
-            </TD>
-          </TR>
-          <TR>
-            <TH>사업자등록번호</TH>
-            <TD>
-              <InputLightGray />
-            </TD>
-            <TD>
-              <ButtonYellow>진위확인</ButtonYellow>
+              <CustomTextArea rows={13}></CustomTextArea>
             </TD>
           </TR>
         </TBody>
@@ -60,12 +62,6 @@ const Form = () => {
 };
 
 export default Form;
-
-const ButtonYellow = styled(ButtonBorder)`
-  height: 30px;
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  margin-left: 50px;
-`;
 
 const Body = styled.div`
   gap: 40px;
@@ -84,7 +80,7 @@ const Title = styled.div`
 
 const Table = styled.table`
   width: 100%;
-  border-spacing: 16px 12px; /* 셀 간격 조정 */
+  border-spacing: 16px 12px;
 `;
 const TBody = styled.tbody`
   display: flex;
@@ -106,4 +102,5 @@ const TH = styled.th`
 
 const TD = styled.td`
   display: flex;
+  gap: 20px;
 `;
