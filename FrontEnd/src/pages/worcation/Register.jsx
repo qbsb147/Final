@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Menu from '../../components/worcation/register/Menu';
-import ApplicationForm from '../../components/worcation/register/ApplicationForm';
-import InfoForm from '../../components/worcation/register/InfoForm';
-import DescriptionForm from '../../components/worcation/register/DescriptionForm';
-import PhotoForm from '../../components/worcation/register/PhotoForm';
-import AmenitiesForm from '../../components/worcation/register/AmenitiesForm';
-import LocationForm from '../../components/worcation/register/LocationForm';
-import PolicyForm from '../../components/worcation/register/PolicyForm';
-import FeatureForm from '../../components/worcation/register/FeatureForm';
+import Menu from './element/Menu';
+import ApplicationForm from './element/register/ApplicationForm';
+import InfoForm from './element/register/InfoForm';
+import DescriptionForm from './element/register/DescriptionForm';
+import PhotoForm from './element/register/PhotoForm';
+import AmenitiesForm from './element/register/AmenitiesForm';
+import LocationForm from './element/register/LocationForm';
+import PolicyForm from './element/register/PolicyForm';
+import FeatureForm from './element/register/FeatureForm';
 import { BtnWhiteYellowBorder } from '../../styles/Button.styles';
 
 const Register = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import CustomTextArea from '../../common/TextArea';
+import CustomTextArea from '../../../../components/common/TextArea';
 
 const Form = () => {
   const [checkinPeriod, setCheckinPeriod] = useState('AM');
