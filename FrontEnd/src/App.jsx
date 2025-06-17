@@ -20,6 +20,10 @@ import MemberApplies from './pages/Member/MemberApplies';
 import WorcationApply from './pages/WorcationApply';
 import MainPage from './pages/MainPage';
 import WorcationAppliesList from './pages/Member/WorcationAppliesList';
+import StressTest from './pages/StressTest';
+import BurnoutTest from './pages/BurnoutTest';
+import TendencyTest from './pages/TendencyTest';
+import WorcationHistory from './pages/WorcationHistory';
 
 function App() {
   return (
@@ -27,7 +31,6 @@ function App() {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <Routes>
-
           {/* serachbar포함 */}
           <Route element={<Layout />}>
             {/* 메인페이지 */}
@@ -38,7 +41,7 @@ function App() {
 
             {/* 워케이션 */}
             <Route path="/worcation" element={<WorcationList />} />
-            
+
             {/* 워케이션 신청(회원용) */}
             <Route path="/worcation/apply" element={<WorcationApply />} />
 
@@ -59,9 +62,15 @@ function App() {
           <Route element={<Layout2 />}>
             {/* 마이페이지 */}
             <Route path="/my/info" element={<Mypage />} />
+            <Route path="/my/worcation-history" element={<WorcationHistory />} />
 
             {/* 신체 정보 */}
             <Route path="/my/body" element={<BodyInfo />} />
+
+            {/*심리테스트*/}
+            <Route path="/trial/stress" element={<StressTest />} />
+            <Route path="/trial/burnout" element={<BurnoutTest />} />
+            <Route path="/trial/tendency" element={<TendencyTest />} />
           </Route>
 
           {/* Footer미포함 */}
@@ -73,7 +82,6 @@ function App() {
           {/* 로그인, 회원가입 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
-          
         </Routes>
       </ThemeProvider>
     </BrowserRouter>
