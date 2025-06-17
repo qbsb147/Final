@@ -13,23 +13,21 @@ const Layout3 = () => {
   );
 };
 
+export default Layout3;
+
 const PageWrapper = styled.div`
-  /* 페이지 전체를 덮는 배경색 설정 */
-  background-color: ${({ theme }) => theme.colors.background}; 
+  background-color: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
-  position: relative; 
+  display: flex;
+  flex-direction: column;
 `;
 
 const Content = styled.main`
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
+  flex: 1;
 
-  /* Header가 position: absolute 속성으로 200px 높이를 가지므로,
-    컨텐츠가 헤더에 가려지지 않도록 상단에 패딩 부여
-    (헤더 높이 200px + 여백 20px)
-  */
+  /* Header 높이에 맞춘 상단 패딩 */
   padding: 220px 16px 20px 16px;
 `;
-
-export default Layout3;
