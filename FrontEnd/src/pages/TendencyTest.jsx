@@ -174,6 +174,8 @@ const Label = styled.label`
   gap: 6px;
   cursor: pointer;
   white-space: nowrap;
+  justify-content: flex-start; /* 왼쪽 정렬 추가 */
+  text-align: left; /* 텍스트 정렬 왼쪽 */
 `;
 
 const CheckBox = styled.div`
@@ -182,10 +184,11 @@ const CheckBox = styled.div`
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
+  width: 60%;
 `;
 
 const MainTest = styled.div`
-  width: 400px;
+  width: 30%;
   display: flex;
   justify-content: left;
   padding-left: ${({ theme }) => theme.spacing.s2};
@@ -201,7 +204,6 @@ const TestContent = styled.form`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   display: flex;
   align-items: center;
-  justify-content: space-between;
   transition: background-color 0.3s ease;
   flex-wrap: nowrap;
 `;

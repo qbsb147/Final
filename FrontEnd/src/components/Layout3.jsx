@@ -27,7 +27,5 @@ const Content = styled.main`
   max-width: 1280px;
   margin: 0 auto;
   flex: 1;
-
-  /* Header 높이에 맞춘 상단 패딩 */
   padding: 220px 16px 20px 16px;
 `;

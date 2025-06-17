@@ -24,6 +24,7 @@ import StressTest from './pages/StressTest';
 import BurnoutTest from './pages/BurnoutTest';
 import TendencyTest from './pages/TendencyTest';
 import WorcationHistory from './pages/WorcationHistory';
+import WorcationRegister from './pages/WorcationRegister';
 
 function App() {
   return (
@@ -71,12 +72,15 @@ function App() {
             <Route path="/trial/stress" element={<StressTest />} />
             <Route path="/trial/burnout" element={<BurnoutTest />} />
             <Route path="/trial/tendency" element={<TendencyTest />} />
+
+            {/* 워케이션 등록(워케이션 업체용) */}
+            <Route path="/worcation/register" element={<WorcationRegister />} />
           </Route>
 
           {/* Footer미포함 */}
           <Route element={<Layout3 />}>
             {/* 워케이션 등록(워케이션 업체용) */}
-            <Route path="/worcation/register" element={<Register />} />
+            <Route path="/worcation/register/re" element={<Register />} />
           </Route>
 
           {/* 로그인, 회원가입 */}
