@@ -46,7 +46,6 @@ public class Company {
     @Enumerated(EnumType.STRING)
     private CommonEnums.Status status;
 
-
     @Column(name = "create_at", nullable = false)
     private LocalDateTime createAt;
 
@@ -60,6 +59,10 @@ public class Company {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Member> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<CompanyProfile> companyProfiles = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
