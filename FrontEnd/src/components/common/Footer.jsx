@@ -8,7 +8,7 @@ const Footer = () => {
     <FooterContainer>
       <FooterWrapper>
         <LogoRow>
-          <Logo src={logo} alt="logo" /> {/* 임시 로고*/}
+          <Logo src={logo} alt="logo" />
         </LogoRow>
         <InfoText>
           주소: {SITE_CONFIG.contact.address} &nbsp;&nbsp;&nbsp; 대표전화: {SITE_CONFIG.contact.phone}{' '}
@@ -28,8 +28,6 @@ const FooterContainer = styled.footer`
   border-top: 1px solid ${({ theme }) => theme.colors.gray[300]};
   color: ${({ theme }) => theme.colors.gray[700]};
   padding: ${({ theme }) => theme.spacing[10]} 0;
-  position: relative;
-  bottom: 0;
   width: 100%;
   height: 150px;
 `;

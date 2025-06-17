@@ -1371,6 +1371,78 @@
       "sleep_hours": 6.2,
       "diet_type": "BALANCED",
       "update_date": "2025-06-01"
+=======
+  "companies": [
+    {
+      "companyName": "마인핑코퍼레이션",
+      "businessId": "1234567890",
+      "licensee": "홍길동",
+      "openDate": "2022-01-15",
+      "address": "서울특별시 강남구 테헤란로 123",
+      "email": "contact@mineping.com",
+      "companyTel": "02-1234-5678",
+      "status": "Y",
+      "createAt": "2024-06-01T09:00:00",
+      "updateAt": "2024-06-01T09:00:00"
+    },
+    {
+      "id": "07c5",
+      "companyName": "기업2",
+      "adress": "아아아아",
+      "businessId": "102041",
+      "email": "sdnav@naver.com",
+      "businessName": "사업자명",
+      "companyTel": "123",
+      "openDate": "012304934"
+    }
+  ],
+  "members": [
+    {
+      "id": "f29c",
+      "gender": "men",
+      "type": "A",
+      "userId": "아이1",
+      "address": "주1",
+      "userPwd": "123",
+      "birthday": "122123",
+      "email": "email@test.com",
+      "name": "이름1",
+      "phone": "1234987634"
+    },
+    {
+      "id": "4389",
+      "gender": "men",
+      "type": "B",
+      "userId": "아이디2",
+      "address": "주소2",
+      "userPwd": "123",
+      "birthday": "191919",
+      "email": "e3a@naver.com",
+      "name": "이름2",
+      "phone": "연락처2"
+    },
+    {
+      "id": "6718",
+      "gender": "men",
+      "type": "C",
+      "userId": "워1",
+      "address": "워1",
+      "userPwd": "123",
+      "birthday": "190292",
+      "email": "dnjqwjk",
+      "name": "워1",
+      "phone": "20301201234"
+    }
+  ],
+  "companyProfiles": [
+    {
+      "id": "4845",
+      "companyName": "마인핑코퍼레이션",
+      "address": "회사1",
+      "department": "부서1",
+      "companyEmail": "이메일2",
+      "position": "사원",
+      "companyPhone": "42"
     }
   ]
 }
