@@ -15,11 +15,9 @@ const Input = {
   },
   InputOrange: {
     boxSizing: 'border-box',
-
     width: '340px',
     height: '48px',
-    background: `${({ theme }) => theme.colors.white}`,
-
+    background: 'white',
     border: '3px solid #F8C470',
     borderRadius: '10px',
     color: 'black',

@@ -4,38 +4,39 @@ import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
+import axios from 'axios';
 
 // 1단계에서 사용할 입력 필드 정의
 const step1Inputs = [
   { name: 'userId', type: 'text', placeholder: '아이디', side: 'left' },
-  { name: 'password', type: 'password', placeholder: '비밀번호', side: 'left' },
-  { name: 'passwordCheck', type: 'password', placeholder: '비밀번호 확인', side: 'left' },
-  { name: 'username', type: 'text', placeholder: '이름', side: 'left' },
+  { name: 'userPwd', type: 'password', placeholder: '비밀번호', side: 'left' },
+  { name: 'userPwdCheck', type: 'password', placeholder: '비밀번호 확인', side: 'left' },
+  { name: 'name', type: 'text', placeholder: '이름', side: 'left' },
   { name: 'address', type: 'text', placeholder: '주소', side: 'right' },
-  { name: 'birth', type: 'text', placeholder: '생년월일', side: 'right' },
+  { name: 'birthday', type: 'text', placeholder: '생년월일', side: 'right' },
   { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
   { name: 'phone', type: 'text', placeholder: '연락처', side: 'right' },
 ];
 
 // 2단계 (직원)에서 사용할 입력 필드 정의
 const step2InputsForTypeA = [
-  { name: 'company', type: 'text', placeholder: '회사명', side: 'left' },
+  { name: 'companyName', type: 'text', placeholder: '회사명', side: 'left' },
   { name: 'department', type: 'text', placeholder: '부서명', side: 'left' },
   { name: 'position', type: 'text', placeholder: '직급', side: 'left' },
   { name: 'address', type: 'text', placeholder: '회사주소', side: 'right' },
-  { name: 'email', type: 'text', placeholder: '회사 이메일', side: 'right' },
-  { name: 'tellphone', type: 'text', placeholder: '회사 전화번호', side: 'right' },
+  { name: 'companyEmail', type: 'text', placeholder: '회사 이메일', side: 'right' },
+  { name: 'companyPhone', type: 'text', placeholder: '회사 전화번호', side: 'right' },
 ];
 
 // 2단계 (기업)에서 사용할 입력 필드 정의
 const step2InputsForTypeB = [
-  { name: 'company', type: 'text', placeholder: '기업명', side: 'left' },
-  { name: 'businessNumber', type: 'text', placeholder: '사업자번호', side: 'left' },
+  { name: 'companyName', type: 'text', placeholder: '기업명', side: 'left' },
+  { name: 'businessId', type: 'text', placeholder: '사업자번호', side: 'left' },
   { name: 'businessName', type: 'text', placeholder: '사업자명', side: 'left' },
-  { name: 'openingDate', type: 'text', placeholder: '개업일', side: 'left' },
+  { name: 'openDate', type: 'text', placeholder: '개업일', side: 'left' },
   { name: 'adress', type: 'text', placeholder: '기업주소', side: 'right' },
   { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
-  { name: 'tellphone', type: 'text', placeholder: '기업전화번호', side: 'right' },
+  { name: 'companyTel', type: 'text', placeholder: '기업전화번호', side: 'right' },
 ];
 
 const SignUp = () => {
@@ -75,11 +76,78 @@ const SignUp = () => {
     }
   };
 
-  // 제출 핸들러
-  const handleSubmit = () => {
-    console.log('1번 폼 데이터', formData1);
-    console.log('2번 폼 데이터', formData2);
-  };
+// 제출 핸들러
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (formData1.userPwd !== formData1.userPwdCheck) {
+    alert('비밀번호가 일치하지 않습니다.');
+    return;
+  }
+  const { userPwdCheck:_, ...sendData1 } = formData1;
+  const sendData2 = { ...formData2 };
+
+  try {
+    switch (formData1.type) {
+      // 직원 케이스
+      case 'A': {
+        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
+        const memberData = memberResponse.data;
+        console.log(memberData);
+
+        const companyProfileResponse = await axios.post('http://localhost:3001/companyProfiles', {
+          ...sendData2,
+          memberNo: memberData.memberNo,
+        });
+        const profileData = companyProfileResponse.data;
+        console.log(profileData);
+
+        alert('회원가입이 완료되었습니다.');
+        window.location.href = '/login';
+        break;
+      }
+
+      // 기업 케이스
+      case 'B': {
+        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
+        const memberData = memberResponse.data;
+        console.log(memberData);
+
+        const companyResponse = await axios.post('http://localhost:3001/companies', {
+          ...sendData2,
+          memberNo: memberData.memberNo,
+        });
+        const companyData = companyResponse.data;
+        console.log(companyData);
+
+        alert('회원가입이 완료되었습니다.');
+        window.location.href = '/login';
+        break;
+      }
+
+      // 워케이션 업체 케이스
+      case 'C': {
+        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
+        const memberData = memberResponse.data;
+        console.log(memberData);
+
+        alert('회원가입이 완료되었습니다.');
+        window.location.href = '/login';
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    console.log('1번 폼 데이터', sendData1);
+    console.log('2번 폼 데이터', sendData2);
+    console.log('2번 원래 폼 데이터', formData2);
+
+  } catch (error) {
+    console.error('회원가입 중 오류 발생:', error);
+    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+  }
+};
 
   return (
     <SignUpWrap>
