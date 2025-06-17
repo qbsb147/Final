@@ -19,7 +19,7 @@ public class WorcationDetail {
     private Long worcationNo;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "worcation_no", nullable = false)
     private Worcation worcation;
 

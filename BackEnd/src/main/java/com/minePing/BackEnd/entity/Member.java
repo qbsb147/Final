@@ -57,12 +57,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private CommonEnums.Role role;
 
-    @Column(name="department",length = 50)
-    private String department;
-
-    @Column(name="position",length = 30)
-    private String position;
-
     @Column(name="create_at",nullable = false)
     private LocalDateTime createAt;
 
@@ -95,6 +89,9 @@ public class Member {
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberPreference memberPreferences;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CompanyProfile companyProfile;
 
     @PrePersist
     protected void onCreate() {
