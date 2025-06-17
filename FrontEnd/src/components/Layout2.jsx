@@ -31,7 +31,7 @@ const Content = styled.main`
     컨텐츠가 헤더에 가려지지 않도록 상단에 패딩 부여
     (헤더 높이 200px + 여백 20px)
   */
-  padding: 220px 16px 20px 16px;
+    padding: 120px 16px 20px 16px;
 `;
 
 export default Layout2;
