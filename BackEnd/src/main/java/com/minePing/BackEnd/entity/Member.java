@@ -17,55 +17,55 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(indexes = {@Index(name = "idx_company", columnList = "company_no")})
+@Table(indexes = { @Index(name = "idx_company", columnList = "company_no") })
 public class Member {
     @Id // PK
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //pk값 자동생성(AUTO_INCREMENT방식)
-    @Column(name = "user_no") //DB컬럼명 지정
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)
+    @Column(name = "user_no") // DB컬럼명 지정
     private Long userNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="company_no")
+    @JoinColumn(name = "company_no")
     private Company company;
 
-    @Column(name="user_id", nullable = false, length = 50)
+    @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 
-    @Column(name="user_pwd", nullable = false)
+    @Column(name = "user_pwd", nullable = false)
     private String userPwd;
 
-    @Column(name="name",nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name="email",nullable = false, length = 100)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name="gender",nullable = false)
+    @Column(name = "gender", nullable = false)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Gender gender;
 
-    @Column(name="birthday",nullable = false)
+    @Column(name = "birthday", nullable = false)
     private LocalDate birthday;
 
-    @Column(name="address",nullable = false, length = 100)
+    @Column(name = "address", nullable = false, length = 100)
     private String address;
 
-    @Column(name="phone",nullable = false, length = 13)
+    @Column(name = "phone", nullable = false, length = 13)
     private String phone;
 
-    @Column(name="role",nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Role role;
 
-    @Column(name="create_at",nullable = false)
+    @Column(name = "create_at", nullable = false)
     private LocalDateTime createAt;
 
     @UpdateTimestamp
-    @Column(name="update_at",nullable = false)
+    @Column(name = "update_at", nullable = false)
     private Timestamp updateAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="status",nullable = false)
+    @Column(name = "status", nullable = false)
     private CommonEnums.Status status;
 
     @OneToMany(mappedBy = "member", orphanRemoval = false)
@@ -76,7 +76,7 @@ public class Member {
     @Builder.Default
     private List<WorcationApplication> worcationApplications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = false)
+    @OneToMany(mappedBy = "member", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = false)
     @Builder.Default
     private List<Worcation> worcations = new ArrayList<>();
 
@@ -96,8 +96,14 @@ public class Member {
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
-        if (this.status == null){
-            status = CommonEnums.Status.Y;
+
+        if (this.status == null) {
+            this.status = CommonEnums.Status.Y;
+        }
+
+        if (this.role == null) {
+            this.role = CommonEnums.Role.employee;
         }
     }
+
 }
