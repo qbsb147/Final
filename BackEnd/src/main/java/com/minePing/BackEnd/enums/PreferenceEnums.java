@@ -1,4 +1,4 @@
-package com.minePing.BackEnd.enums;
+    package com.minePing.BackEnd.enums;
 
 public class PreferenceEnums {
 
