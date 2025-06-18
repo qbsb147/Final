@@ -1,17 +1,20 @@
 // WorcationDetail.jsx (theme 활용 최적화)
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import seoulImage from '../assets/seoul1.jpg';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const WorcationDetail = () => {
+  const navigate = useNavigate();
   return (
     <PageContainer>
       <Wrapper>
         <MainImageWrapper>
           <TopButtons>
-            <ButtonBorder>제휴 신청</ButtonBorder>
-            <ButtonBorder>예약</ButtonBorder>
+            <ButtonBorder onClick={() => navigate(`/worcation/${item.worcation_no}`)}>제휴 신청</ButtonBorder>
+            <ButtonBorder onClick={() => navigate(`/worcation/${item.worcation_no}`)}>예약</ButtonBorder>
           </TopButtons>
         </MainImageWrapper>
 

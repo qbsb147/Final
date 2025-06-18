@@ -5,6 +5,7 @@ import seoul1 from '../assets/seoul1.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const data = [
   {
@@ -42,7 +43,7 @@ const WorcationList = () => {
   };
 
   const handleDetail = () => {
-    navgigate('/');
+    navgigate('/worcation/deat');
   };
 
   return (
