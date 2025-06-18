@@ -10,7 +10,7 @@ import Login from './pages/Login/Login';
 import SignUp from './pages/Login/SignUp';
 import Mypage from './pages/Mypage';
 import BodyInfo from './pages/BodyInfo';
-import Trial from './pages/Trial';
+import Trial from './pages/test/Trial';
 import MemberList from './pages/Member/MemberList';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
@@ -22,6 +22,9 @@ import MainPage from './pages/MainPage';
 import WorcationAppliesList from './pages/Member/WorcationAppliesList';
 import WorcationHistory from './pages/WorcationHistory';
 import Eat from './pages/eat/Eat';
+import StressTest from './pages/test/StressTest';
+import BurnoutTest from './pages/test/BurnoutTest';
+import TendencyTest from './pages/test/TendencyTest';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
 
             {/* 심리검사 */}
             <Route path="/trial" element={<Trial />} />
+            <Route path="/trial/stress" element={<StressTest />} />
+            <Route path="/trial/burnout" element={<BurnoutTest />} />
+            <Route path="/trial/tendency" element={<TendencyTest />} />
 
             {/* 워케이션 */}
             <Route path="/worcation" element={<WorcationList />} />
