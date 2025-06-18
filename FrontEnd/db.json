@@ -788,7 +788,7 @@
       "ref_worcation_no": 1,
       "start_date": "2025-07-01",
       "end_date": "2025-07-05",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-10T10:00:00",
       "update_at": "2025-06-12T14:00:00"
     },
@@ -798,7 +798,7 @@
       "ref_worcation_no": 2,
       "start_date": "2025-07-03",
       "end_date": "2025-07-07",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-11T09:00:00",
       "update_at": "2025-06-11T09:00:00"
     },
@@ -808,7 +808,7 @@
       "ref_worcation_no": 3,
       "start_date": "2025-07-10",
       "end_date": "2025-07-15",
-      "app_status": "REJECTED",
+      "approve": "N",
       "create_at": "2025-06-13T08:30:00",
       "update_at": "2025-06-14T11:00:00"
     },
@@ -818,7 +818,7 @@
       "ref_worcation_no": 4,
       "start_date": "2025-07-20",
       "end_date": "2025-07-25",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-15T10:00:00",
       "update_at": "2025-06-16T10:00:00"
     },
@@ -828,7 +828,7 @@
       "ref_worcation_no": 5,
       "start_date": "2025-07-05",
       "end_date": "2025-07-09",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-17T14:00:00",
       "update_at": "2025-06-17T14:00:00"
     },
@@ -838,7 +838,7 @@
       "ref_worcation_no": 6,
       "start_date": "2025-07-08",
       "end_date": "2025-07-12",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-18T09:30:00",
       "update_at": "2025-06-19T10:00:00"
     },
@@ -848,7 +848,7 @@
       "ref_worcation_no": 7,
       "start_date": "2025-07-15",
       "end_date": "2025-07-19",
-      "app_status": "REJECTED",
+      "approve": "N",
       "create_at": "2025-06-20T08:00:00",
       "update_at": "2025-06-21T08:00:00"
     },
@@ -858,7 +858,7 @@
       "ref_worcation_no": 8,
       "start_date": "2025-07-18",
       "end_date": "2025-07-22",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-22T10:00:00",
       "update_at": "2025-06-22T10:00:00"
     }
@@ -1243,7 +1243,7 @@
       "update_date": "2025-06-01"
     }
   ],
-    "health": [
+  "health": [
     {
       "health_no": 1,
       "user_no": 1,
@@ -1371,7 +1371,8 @@
       "sleep_hours": 6.2,
       "diet_type": "BALANCED",
       "update_date": "2025-06-01"
-=======
+    }
+  ],
   "companies": [
     {
       "companyName": "마인핑코퍼레이션",
