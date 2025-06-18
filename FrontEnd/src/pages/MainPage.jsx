@@ -234,6 +234,8 @@ const InfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10%;
+  align-items: flex-start;
+  justify-content: space-between;
 `;
 
 const PlaceLocation = styled.p`

@@ -8,13 +8,25 @@ import { useNavigate } from 'react-router-dom';
 
 const WorcationDetail = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/worcation')
+      .then((res) => setWorcations(res.data))
+      .catch((err) => console.error(err));
+
+    axios
+      .get('http://localhost:3001/review')
+      .then((res) => setReviews(res.data))
+      .catch((err) => console.error(err));
+  }, []);
   return (
     <PageContainer>
       <Wrapper>
         <MainImageWrapper>
           <TopButtons>
-            <ButtonBorder onClick={() => navigate(`/worcation/${item.worcation_no}`)}>제휴 신청</ButtonBorder>
-            <ButtonBorder onClick={() => navigate(`/worcation/${item.worcation_no}`)}>예약</ButtonBorder>
+            <ButtonBorder>제휴 신청</ButtonBorder>
+            <ButtonBorder>예약</ButtonBorder>
           </TopButtons>
         </MainImageWrapper>
 
