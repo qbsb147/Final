@@ -10,10 +10,24 @@ import LocationForm from './element/register/LocationForm';
 import PolicyForm from './element/register/PolicyForm';
 import FeatureForm from './element/register/FeatureForm';
 import { BtnWhiteYellowBorder } from '../../styles/Button.styles';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../styles/SwalStyles';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
 
+  const handleSave = () =>
+    Swal.fire({
+      title: '저장하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '저장',
+      cancelButtonText: '취소',
+      buttonsStyling: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('저장');
+      }
+    });
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -39,6 +53,7 @@ const Register = () => {
 
   return (
     <RegisterContainer>
+      <SwalStyles />
       <RegisterForm>
         <FormContent>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
@@ -48,7 +63,9 @@ const Register = () => {
           </FormActions>
         </FormContent>
         <FormFooter>
-          <ActionButton>임시 저장</ActionButton>
+          <ActionButton type="button" onClick={handleSave}>
+            임시 저장
+          </ActionButton>
           <ActionButton>등록</ActionButton>
         </FormFooter>
       </RegisterForm>
@@ -57,7 +74,6 @@ const Register = () => {
 };
 
 export default Register;
-
 const FormContent = styled.div`
   display: flex;
   gap: 20px;
