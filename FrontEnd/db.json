@@ -1243,7 +1243,7 @@
       "update_date": "2025-06-01"
     }
   ],
-    "health": [
+  "health": [
     {
       "health_no": 1,
       "user_no": 1,
@@ -1371,7 +1371,8 @@
       "sleep_hours": 6.2,
       "diet_type": "BALANCED",
       "update_date": "2025-06-01"
-=======
+    }
+  ],
   "companies": [
     {
       "companyName": "마인핑코퍼레이션",
