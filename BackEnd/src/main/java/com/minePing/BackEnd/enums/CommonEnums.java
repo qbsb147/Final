@@ -8,7 +8,7 @@ public class CommonEnums {
     }
 
     public enum Gender {
-        M, Y
+        M, W
     }
 
     public enum Role {

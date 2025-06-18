@@ -20,6 +20,10 @@ import MemberApplies from './pages/Member/MemberApplies';
 import WorcationApply from './pages/WorcationApply';
 import MainPage from './pages/MainPage';
 import WorcationAppliesList from './pages/Member/WorcationAppliesList';
+import StressTest from './pages/StressTest';
+import BurnoutTest from './pages/BurnoutTest';
+import TendencyTest from './pages/TendencyTest';
+import WorcationHistory from './pages/WorcationHistory';
 import Eat from './pages/eat/Eat';
 
 function App() {
@@ -59,12 +63,10 @@ function App() {
           <Route element={<Layout2 />}>
             {/* 마이페이지 */}
             <Route path="/my/info" element={<Mypage />} />
+            <Route path="/my/worcation-history" element={<WorcationHistory />} />
 
             {/* 신체 정보 */}
             <Route path="/my/body" element={<BodyInfo />} />
-
-            {/* 식단 정보 */}
-            <Route path="/eat" element={<Eat />} />
           </Route>
 
           {/* Footer미포함 */}
