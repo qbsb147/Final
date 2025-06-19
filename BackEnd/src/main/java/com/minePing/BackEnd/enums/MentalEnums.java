@@ -7,7 +7,7 @@ public class MentalEnums {
     }
 
     public enum Separation {
-        S,B
+        STRESS,BURNOUT
     }
 
 }

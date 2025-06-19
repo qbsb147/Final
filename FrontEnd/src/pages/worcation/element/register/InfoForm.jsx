@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../styles/Input.styles';
-import CustomSelect from '../../common/Select';
-import NumberInput from '../../common/NumberInput';
-import CustomTextArea from '../../common/TextArea';
-import { ButtonBorder } from '../../../styles/Button.styles';
+import { InputLightGray } from '../../../../styles/Input.styles';
+import CustomSelect from '../../../../components/common/Select';
+import NumberInput from '../../../../components/common/NumberInput';
+import CustomTextArea from '../../../../components/common/TextArea';
+import { ButtonBorder } from '../../../../styles/Button.styles';
 
 const Form = () => {
   const [theme, setTheme] = useState('');

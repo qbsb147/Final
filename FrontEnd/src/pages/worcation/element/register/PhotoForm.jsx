@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../styles/Input.styles';
-import AddButton from '../../common/AddButton';
-import ImageUploader from '../../common/ImageUploader';
-import { ButtonBorder } from '../../../styles/Button.styles';
+import { InputLightGray } from '../../../../styles/Input.styles';
+import AddButton from '../../../../components/common/AddButton';
+import ImageUploader from '../../../../components/common/ImageUploader';
+import { ButtonBorder } from '../../../../styles/Button.styles';
 
 const Form = () => {
   const [officeImages, setOfficeImages] = useState([]);
