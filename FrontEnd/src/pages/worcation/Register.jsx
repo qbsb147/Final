@@ -1,19 +1,33 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Menu from '../../components/worcation/register/Menu';
-import ApplicationForm from '../../components/worcation/register/ApplicationForm';
-import InfoForm from '../../components/worcation/register/InfoForm';
-import DescriptionForm from '../../components/worcation/register/DescriptionForm';
-import PhotoForm from '../../components/worcation/register/PhotoForm';
-import AmenitiesForm from '../../components/worcation/register/AmenitiesForm';
-import LocationForm from '../../components/worcation/register/LocationForm';
-import PolicyForm from '../../components/worcation/register/PolicyForm';
-import FeatureForm from '../../components/worcation/register/FeatureForm';
+import Menu from './element/Menu';
+import ApplicationForm from './element/register/ApplicationForm';
+import InfoForm from './element/register/InfoForm';
+import DescriptionForm from './element/register/DescriptionForm';
+import PhotoForm from './element/register/PhotoForm';
+import AmenitiesForm from './element/register/AmenitiesForm';
+import LocationForm from './element/register/LocationForm';
+import PolicyForm from './element/register/PolicyForm';
+import FeatureForm from './element/register/FeatureForm';
 import { BtnWhiteYellowBorder } from '../../styles/Button.styles';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../styles/SwalStyles';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
 
+  const handleSave = () =>
+    Swal.fire({
+      title: '저장하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '저장',
+      cancelButtonText: '취소',
+      buttonsStyling: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log('저장');
+      }
+    });
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -39,6 +53,7 @@ const Register = () => {
 
   return (
     <RegisterContainer>
+      <SwalStyles />
       <RegisterForm>
         <FormContent>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
@@ -48,7 +63,9 @@ const Register = () => {
           </FormActions>
         </FormContent>
         <FormFooter>
-          <ActionButton>임시 저장</ActionButton>
+          <ActionButton type="button" onClick={handleSave}>
+            임시 저장
+          </ActionButton>
           <ActionButton>등록</ActionButton>
         </FormFooter>
       </RegisterForm>
@@ -57,7 +74,6 @@ const Register = () => {
 };
 
 export default Register;
-
 const FormContent = styled.div`
   display: flex;
   gap: 20px;

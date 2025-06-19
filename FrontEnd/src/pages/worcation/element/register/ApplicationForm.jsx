@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../styles/Input.styles';
-import RadioButton from '../../common/RadioButton';
-import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb } from '../../../styles/Button.styles';
+import { InputLightGray } from '../../../../styles/Input.styles';
+import RadioButton from '../../../../components/common/RadioButton';
+import CustomDatePicker from '../../../../components/common/DatePicker';
+import { ButtonBorder } from '../../../../styles/Button.styles';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
