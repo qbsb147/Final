@@ -8,11 +8,14 @@ const questions = [
     id: 'stress1',
     question: 'MBTI가 무엇입니까?',
     options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
+      { value: '1', label: 'E' },
+      { value: '2', label: 'I' },
+      { value: '3', label: 'S' },
+      { value: '4', label: 'N' },
+      { value: '5', label: 'F' },
+      { value: '6', label: 'T' },
+      { value: '7', label: 'P' },
+      { value: '8', label: 'J' },
     ],
   },
   {
@@ -174,6 +177,8 @@ const Label = styled.label`
   gap: 6px;
   cursor: pointer;
   white-space: nowrap;
+  justify-content: flex-start; /* 왼쪽 정렬 추가 */
+  text-align: left; /* 텍스트 정렬 왼쪽 */
 `;
 
 const CheckBox = styled.div`
@@ -182,10 +187,11 @@ const CheckBox = styled.div`
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
+  width: 60%;
 `;
 
 const MainTest = styled.div`
-  width: 400px;
+  width: 30%;
   display: flex;
   justify-content: left;
   padding-left: ${({ theme }) => theme.spacing.s2};
@@ -201,7 +207,6 @@ const TestContent = styled.form`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   display: flex;
   align-items: center;
-  justify-content: space-between;
   transition: background-color 0.3s ease;
   flex-wrap: nowrap;
 `;

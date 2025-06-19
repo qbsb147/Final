@@ -1,7 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import ReusableTable from './ReusableTable';
 
+const calculateAge = (birthday) => {
+  const birthDate = new Date(birthday);
+  const today = new Date();
+
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const isBirthdayPassed =
+    today.getMonth() > birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+
+  if (!isBirthdayPassed) {
+    age--;
+  }
+
+  return age;
+};
+
 const MemberTable = () => {
+  const [members, setMembers] = useState([]);
   const columns = [
     { header: '부서', accessor: 'department' },
     { header: '직급', accessor: 'position' },
@@ -13,33 +31,41 @@ const MemberTable = () => {
     { header: '근무 현황', accessor: 'status' },
   ];
 
-  const [members, setMembers] = useState([  
-    {
-      department: '기술팀',
-      position: '팀장',
-      name: '홍길동',
-      gender: '남성',
-      age: 30,
-      level: '총 책임자',
-      email: 'master@email.com',
-      status: '근무중',
-    },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [membersRes, profilesRes] = await Promise.all([
+          axios.get('http://localhost:3001/member'),
+          axios.get('http://localhost:3001/company_profile'),
+        ]);
 
-  const handleLevelChange = (index, newLevel) => {
-    const oldLevel = members[index].level;
+        const memberData = membersRes.data;
+        const profileData = profilesRes.data;
 
-    if (oldLevel === newLevel) return; // 변경이 없으면 무시
+        // user_no 기준으로 member + profile 매칭
+        const merged = memberData.map((member) => {
+          const profile = profileData.find((p) => p.user_no === member.user_no);
 
-    const isConfirmed = window.confirm(`[${oldLevel}] → [${newLevel}] 로 변경하시겠습니까?`);
-    if (!isConfirmed) return;
+          return {
+            name: member.name,
+            email: member.email,
+            gender: member.gender === 'M' ? '남성' : '여성',
+            age: calculateAge(member.birthday),
+            department: profile?.department || '정보 없음',
+            position: profile?.position || '정보 없음',
+          };
+        });
 
-    const updated = [...members];
-    updated[index].level = newLevel;
-    setMembers(updated);
-  };
+        setMembers(merged);
+      } catch (error) {
+        console.error('데이터 로딩 실패:', error);
+      }
+    };
 
-  return <ReusableTable columns={columns} data={members} onLevelChange={handleLevelChange} />;
+    fetchData();
+  }, []);
+
+  return <ReusableTable columns={columns} data={members} />;
 };
 
 export default MemberTable;

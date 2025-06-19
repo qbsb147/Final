@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import WorcationCalendar from '../components/common/Calendar';
 import Button from '../styles/Button';
 import Input from '../styles/Input';
+import axios from 'axios';
 
 const WorcationApply = () => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [worcationInfo, setWorcationInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchWorcationInfo = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/worcation?worcation_no=1');
+        setWorcationInfo(response.data[0]); // 리스트에서 첫 번째 워케이션
+      } catch (error) {
+        console.error('워케이션 정보 불러오기 실패:', error);
+      }
+    };
+
+    fetchWorcationInfo();
+  }, []);
   const events = [
     {
       title: '예약된 일정',
@@ -13,12 +30,42 @@ const WorcationApply = () => {
     },
   ];
 
+  const handleSubmit = async () => {
+    if (!worcationInfo) {
+      alert('워케이션 정보를 불러오는 중입니다.');
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      alert('시작일과 종료일을 모두 선택해주세요.');
+      return;
+    }
+    const newApplication = {
+      application_no: 9999999999, // 임시 ID
+      ref_member_no: 1,
+      ref_worcation_no: worcationInfo.worcation_no,
+      start_date: startDate,
+      end_date: endDate,
+      approve: 'N',
+      create_at: new Date().toISOString(),
+      update_at: new Date().toISOString(),
+    };
+
+    try {
+      await axios.post('http://localhost:3001/worcation_application', newApplication);
+      alert('워케이션 신청 완료!');
+    } catch (error) {
+      console.error('신청 실패:', error);
+      alert('신청 중 오류 발생');
+    }
+  };
+
   return (
     <Container>
       <Card>
         <Header>
           <Title>워케이션 신청</Title>
-          <Subtitle>간세</Subtitle>
+          <Subtitle>{worcationInfo?.worcation_name}</Subtitle>
         </Header>
         <CalendarSection>
           <WorcationCalendar events={events} />
@@ -28,26 +75,38 @@ const WorcationApply = () => {
             <ReadOnlyInput value="최예찬" readOnly />
 
             <Label>금액</Label>
-            <ReadOnlyInput value="45500" readOnly />
+            <ReadOnlyInput value={worcationInfo?.partner_price ?? ''} readOnly />
           </InfoBox>
         </CalendarSection>
         <DateSection>
           <DateRangeWrapper>
             <DateBlock>
               <Label>시작 일</Label>
-              <DateInput type="date" style={Input.InputOrange} />
+              <DateInput
+                type="date"
+                style={Input.InputOrange}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </DateBlock>
             <Tilde>~</Tilde>
             <DateBlock>
               <Label>종료 일</Label>
-              <DateInput type="date" style={Input.InputOrange} />
+              <DateInput
+                type="date"
+                style={Input.InputOrange}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
             </DateBlock>
           </DateRangeWrapper>
         </DateSection>
 
         <ButtonSection>
           <CancelButton style={Button.buttonYb}>취소</CancelButton>
-          <SubmitButton style={Button.buttonWhite}>신청</SubmitButton>
+          <SubmitButton style={Button.buttonWhite} onClick={handleSubmit}>
+            신청
+          </SubmitButton>
         </ButtonSection>
       </Card>
     </Container>

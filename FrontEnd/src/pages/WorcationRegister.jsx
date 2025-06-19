@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../styles/Button.styles';
 import seoul1 from '../assets/seoul1.jpg';
 import siheung1 from '../assets/siheung1.jpg';
@@ -59,10 +60,17 @@ const Bdata = [
 ];
 
 const WorcationHistory = () => {
+  const navigate = useNavigate();
+
+  const handleAddClick = () => {
+    navigate('/worcation/register/re');
+  };
+
   return (
     <Container>
       <NameBox>
-        <SectionTitle>예약</SectionTitle>
+        <SectionTitle>워케이션 등록 목록</SectionTitle>
+        <button onClick={handleAddClick}>+추가</button>
       </NameBox>
       <CardList>
         {Adata.map((item) => (
@@ -77,8 +85,8 @@ const WorcationHistory = () => {
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.theme}</ThemeText>
                 <BtnBox>
-                  <Btn>상세보기</Btn>
-                  <Btn>예약취소</Btn>
+                  <Btn>수정하기</Btn>
+                  <Btn>삭제하기</Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
@@ -87,8 +95,7 @@ const WorcationHistory = () => {
       </CardList>
 
       <NameBox>
-        <SectionTitle>예약 내역</SectionTitle>
-        <SmallTitle>(이용후)</SmallTitle>
+        <SectionTitle>미등록 목록</SectionTitle>
       </NameBox>
 
       <CardList>
@@ -104,7 +111,8 @@ const WorcationHistory = () => {
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.theme}</ThemeText>
                 <BtnBox>
-                  <BeforeBtn>업체상세 보기</BeforeBtn>
+                  <Btn>수정하기</Btn>
+                  <Btn>삭제하기</Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
@@ -116,12 +124,6 @@ const WorcationHistory = () => {
 };
 export default WorcationHistory;
 
-const BeforeBtn = styled(ButtonDetail)`
-  width: 200px;
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  background: ${({ theme }) => theme.colors.secondary};
-`;
-
 const Btn = styled(ButtonDetail)`
   font-size: ${({ theme }) => theme.fontSizes.base};
   background: ${({ theme }) => theme.colors.secondary};
@@ -132,16 +134,12 @@ const BtnBox = styled.div`
   display: flex;
 `;
 
-const SmallTitle = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  font-weight: bold;
-`;
-
 const NameBox = styled.div`
   border-bottom: 1px solid ${({ theme }) => theme.colors.black};
   display: flex;
   align-items: end;
   padding-bottom: ${({ theme }) => theme.spacing.s2};
+  justify-content: space-between;
 `;
 
 const Container = styled.div`
