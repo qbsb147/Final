@@ -11,5 +11,9 @@ export const API_CONFIG = {
 };
 
 export const API_ENDPOINTS = {
-  //필요한endpoint작성
+  MENTALS: {
+    STRESS: '/mental_stress',
+    BURNOUT: '/mental_burnout',
+    TENDENCY: '/mental_tendency',
+  },
 };

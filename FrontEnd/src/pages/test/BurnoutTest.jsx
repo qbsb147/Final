@@ -1,7 +1,9 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import Input from '../../styles/Input';
+import { useNavigate } from 'react-router-dom';
+import { mentalService } from '../../api/mentals';
+import { toast } from 'react-toastify';
 
 const questions = [
   {
@@ -172,8 +174,8 @@ const questions = [
 ];
 
 const BurnoutTest = () => {
+  const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
-
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
       ...prev,
@@ -181,8 +183,28 @@ const BurnoutTest = () => {
     }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const unansweredQuestions = questions.filter(({ id }) => !answers[id]);
+
+    if (unansweredQuestions.length > 0) {
+      alert('모든 질문에 답변을 해주세요!');
+    } else {
+      try {
+        await mentalService.postBurnout({
+          stress: answers,
+        });
+        toast.success('번아웃 검사를 마쳤습니다.');
+        navigate('/trial');
+      } catch (error) {
+        toast.error('번아웃 검사에 문제가 발생했습니다.');
+        console.error('제출 에러 : ', error);
+      }
+    }
+  };
+
   return (
-    <Content>
+    <Content onSubmit={handleSubmit}>
       <TitleBox>
         <Title>번아웃 자가진단테스트</Title>
       </TitleBox>
@@ -280,7 +302,7 @@ const Test = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
 
-const TestContent = styled.form`
+const TestContent = styled.div`
   background: ${({ theme, checked }) => (checked ? theme.colors.primary : theme.colors.white)};
   padding: 10px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -298,7 +320,7 @@ const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xl};
 `;
 
-const Content = styled.div`
+const Content = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
