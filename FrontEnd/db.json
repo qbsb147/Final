@@ -1068,7 +1068,7 @@
       "preference_no": 1,
       "user_no": 1,
       "mbti": "INTJ",
-      "preferenced_color": "BLUE",
+      "preferenced_color": "green_brown",
       "preferenced_location": "SEA",
       "space_mood": "COZY",
       "important_factor": "QUIETNESS",
@@ -1081,7 +1081,7 @@
       "preference_no": 2,
       "user_no": 2,
       "mbti": "ENFP",
-      "preferenced_color": "GREEN",
+      "preferenced_color": "blue_sky",
       "preferenced_location": "MOUNTAIN",
       "space_mood": "TRADITIONAL",
       "important_factor": "AMENITIES",
@@ -1094,7 +1094,7 @@
       "preference_no": 3,
       "user_no": 3,
       "mbti": "ISFP",
-      "preferenced_color": "PINK",
+      "preferenced_color": "yellow_orange",
       "preferenced_location": "CITY",
       "space_mood": "MODERN",
       "important_factor": "PRICE",
@@ -1107,7 +1107,7 @@
       "preference_no": 4,
       "user_no": 4,
       "mbti": "ESTJ",
-      "preferenced_color": "BLACK",
+      "preferenced_color": "achromatic",
       "preferenced_location": "COUNTRYSIDE",
       "space_mood": "TRADITIONAL",
       "important_factor": "DISTANCE",
@@ -1120,7 +1120,7 @@
       "preference_no": 5,
       "user_no": 5,
       "mbti": "INFP",
-      "preferenced_color": "BLUE",
+      "preferenced_color": "purple",
       "preferenced_location": "SEA",
       "space_mood": "COZY",
       "important_factor": "QUIETNESS",
@@ -1133,7 +1133,7 @@
       "preference_no": 6,
       "user_no": 6,
       "mbti": "ENTP",
-      "preferenced_color": "GREEN",
+      "preferenced_color": "purple",
       "preferenced_location": "MOUNTAIN",
       "space_mood": "MODERN",
       "important_factor": "PRICE",
@@ -1146,7 +1146,7 @@
       "preference_no": 7,
       "user_no": 7,
       "mbti": "INFJ",
-      "preferenced_color": "BLACK",
+      "preferenced_color": "achromatic",
       "preferenced_location": "CITY",
       "space_mood": "TRADITIONAL",
       "important_factor": "AMENITIES",
@@ -1159,7 +1159,7 @@
       "preference_no": 8,
       "user_no": 8,
       "mbti": "ESTP",
-      "preferenced_color": "PINK",
+      "preferenced_color": "yellow_orange",
       "preferenced_location": "COUNTRYSIDE",
       "space_mood": "COZY",
       "important_factor": "DISTANCE",
@@ -1243,7 +1243,7 @@
       "update_date": "2025-06-01"
     }
   ],
-    "health": [
+  "health": [
     {
       "health_no": 1,
       "user_no": 1,
@@ -1371,7 +1371,8 @@
       "sleep_hours": 6.2,
       "diet_type": "BALANCED",
       "update_date": "2025-06-01"
-=======
+    }
+  ],
   "companies": [
     {
       "companyName": "마인핑코퍼레이션",
@@ -1443,6 +1444,73 @@
       "companyEmail": "이메일2",
       "position": "사원",
       "companyPhone": "42"
+    }
+  ],
+
+  "review": [
+    {
+      "review_no": 1,
+      "application_no": 1,
+      "writer_id": "user1@example.com",
+      "review_content": "이 워케이션 정말 좋았습니다! 휴식과 업무의 밸런스를 잘 맞출 수 있었어요.",
+      "create_at": "2025-06-17T10:00:00",
+      "update_at": "2025-06-18T10:00:00"
+    },
+    {
+      "review_no": 2,
+      "application_no": 2,
+      "writer_id": "user2@example.com",
+      "review_content": "숙소가 깨끗하고 뷰도 정말 좋았어요. 다음에도 또 신청하고 싶습니다.",
+      "create_at": "2025-06-16T14:30:00",
+      "update_at": "2025-06-17T08:25:00"
+    },
+    {
+      "review_no": 3,
+      "application_no": 3,
+      "writer_id": "user3@example.com",
+      "review_content": "업무 공간이 조금 좁았지만 나머진 만족스러웠어요.",
+      "create_at": "2025-06-15T12:00:00",
+      "update_at": "2025-06-16T09:00:00"
+    },
+    {
+      "review_no": 4,
+      "application_no": 4,
+      "writer_id": "user4@example.com",
+      "review_content": "조용한 분위기에서 집중할 수 있어 생산성이 높아졌습니다.",
+      "create_at": "2025-06-14T17:45:00",
+      "update_at": "2025-06-15T10:30:00"
+    },
+    {
+      "review_no": 5,
+      "application_no": 5,
+      "writer_id": "user5@example.com",
+      "review_content": "식사 제공이 있었다면 더 좋았을 것 같아요.",
+      "create_at": "2025-06-13T11:15:00",
+      "update_at": "2025-06-14T08:10:00"
+    },
+    {
+      "review_no": 6,
+      "application_no": 6,
+      "writer_id": "user6@example.com",
+      "review_content": "시설이 깔끔하고 주변 관광지도 좋아요.",
+      "create_at": "2025-06-12T09:00:00",
+      "update_at": "2025-06-13T09:00:00"
+    },
+    {
+      "review_no": 7,
+      "application_no": 7,
+      "writer_id": "user7@example.com",
+      "review_content": "인터넷 속도가 느려서 화상회의에 불편함이 있었어요.",
+      "create_at": "2025-06-11T16:20:00",
+      "update_at": "2025-06-12T11:00:00"
+    },
+    {
+      "review_no": 8,
+      "application_no": 8,
+      "writer_id": "user8@example.com",
+      "review_content": "워크숍과 연계된 프로그램도 좋았어요.",
+      "create_at": "2025-06-10T18:00:00",
+      "update_at": "2025-06-11T13:30:00"
     }
   ]
 }

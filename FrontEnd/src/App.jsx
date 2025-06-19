@@ -14,6 +14,7 @@ import Trial from './pages/test/Trial';
 import MemberList from './pages/Member/MemberList';
 import Layout3 from './components/Layout3';
 import Register from './pages/worcation/Register';
+import PartnershipApplication from './pages/Partner/PartnershipApplication';
 import WorcationList from './pages/WorcationList';
 import NeedsConsult from './pages/Member/NeedsConsult';
 import MemberApplies from './pages/Member/MemberApplies';
@@ -25,6 +26,7 @@ import Eat from './pages/eat/Eat';
 import StressTest from './pages/test/StressTest';
 import BurnoutTest from './pages/test/BurnoutTest';
 import TendencyTest from './pages/test/TendencyTest';
+import WorcationDetail from './pages/WorcationDetail';
 
 function App() {
   return (
@@ -45,9 +47,6 @@ function App() {
 
             {/* 워케이션 */}
             <Route path="/worcation" element={<WorcationList />} />
-
-            {/* 워케이션 신청(회원용) */}
-            <Route path="/worcation/apply" element={<WorcationApply />} />
 
             {/* 직원 목록 리스트 */}
             <Route path="/member/list" element={<MemberList />} />
@@ -77,6 +76,12 @@ function App() {
           <Route element={<Layout3 />}>
             {/* 워케이션 등록(워케이션 업체용) */}
             <Route path="/worcation/register" element={<Register />} />
+            {/* 워케이션 상세보기 */}
+            <Route path="/worcation/:id" element={<WorcationDetail />} />
+            {/* 워케이션 신청(회원용) */}
+            <Route path="/worcation/apply" element={<WorcationApply />} />
+            {/* 제휴 신청 (회사용) */}
+            <Route path="/partnership/apply" element={<PartnershipApplication />} />
           </Route>
 
           {/* 로그인, 회원가입 */}
