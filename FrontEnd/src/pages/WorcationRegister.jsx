@@ -63,7 +63,7 @@ const WorcationHistory = () => {
   const navigate = useNavigate();
 
   const handleAddClick = () => {
-    navigate('/worcation/register/re');
+    navigate('/worcation/register');
   };
 
   return (
