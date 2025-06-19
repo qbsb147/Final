@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const WorcationDetail = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { worcationNo } = useParams();
   const [worcation, setWorcation] = useState(null);
   const [detail, setDetail] = useState(null);
