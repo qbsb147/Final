@@ -19,7 +19,7 @@ const hangleLogin = () => {
                 <LogoImg src={logo} alt="logo" />
                 <img src={logoText}/>
             </LogoWrap>
-                <InputBox variant="orange" type="text" placeholder="아이디 입력" />
+                <InputBox variant="yellow" type="text" placeholder="아이디 입력" />
                 <InputBox variant="yellow" type="password" placeholder="비밀번호 입력" />
             <BtnFlex>
                 <SignInBtn type='button' onClick={hangleLogin}>로그인</SignInBtn>
@@ -108,6 +108,11 @@ const CommonLoginPage = css`
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.orange};
+    color: ${({ theme }) => theme.colors.black};
+    text-decoration: none;
+  }
 `;
 
 const SignInBtn = styled.button`

@@ -11,5 +11,10 @@ export const API_CONFIG = {
 };
 
 export const API_ENDPOINTS = {
-  //필요한endpoint작성
+  MEMBER: '/members',
+  COMPANY: '/companies',
+  COMPANY_PROFILE: '/companyProfiles',
+  WORCATION: '/worcations',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
 };
