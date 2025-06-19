@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import CustomTextArea from '../../common/TextArea';
-import { ButtonBorder } from '../../../styles/Button.styles';
+import CustomTextArea from '../../../../components/common/TextArea';
+import { ButtonBorder } from '../../../../styles/Button.styles';
 
 const Form = () => {
   const [policy, setPolicy] = useState('');

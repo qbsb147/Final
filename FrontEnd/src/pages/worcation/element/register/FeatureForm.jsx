@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import CustomSelect from '../../common/Select';
-import CustomTextArea from '../../common/TextArea';
-import Checkbox from '../../common/Checkbox';
+import CustomSelect from '../../../../components/common/Select';
+import CustomTextArea from '../../../../components/common/TextArea';
+import Checkbox from '../../../../components/common/Checkbox';
 
 const Form = () => {
   const [locationType, setLocationType] = useState('');

@@ -40,7 +40,7 @@ export const Text = styled.p`
 
 export const SmallText = styled(Text)`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.gray[500]};
 
   ${media.md`
     font-size: ${({ theme }) => theme.fontSizes.sm};
@@ -55,4 +55,15 @@ export const Price = styled.span`
   ${media.md`
     font-size: ${({ theme }) => theme.fontSizes.base};
   `}
+`;
+
+export const MiniTitle = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  font-weight: ${({ theme }) => theme.fontWeights.black};
+`;
+
+export const MiniContent = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.thin};
+  font-family: ${({ theme }) => theme.fontFamily.secondary};
 `;

@@ -64,6 +64,10 @@ public class Company {
     @Builder.Default
     private List<CompanyProfile> companyProfiles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<CompanyDepartment> companyDepartments = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createAt = LocalDateTime.now();

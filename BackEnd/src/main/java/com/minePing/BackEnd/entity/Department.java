@@ -24,7 +24,7 @@ public class Department {
     @Column(name = "department_name", nullable = false, length = 50)
     private String departmentName;
 
-    @OneToMany(mappedBy = "company_department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "department", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})
     @Builder.Default
     private List<CompanyDepartment> companyDepartments = new ArrayList<>();
 

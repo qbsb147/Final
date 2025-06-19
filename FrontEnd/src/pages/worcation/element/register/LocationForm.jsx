@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../styles/Input.styles';
-import { ButtonBorder } from '../../../styles/Button.styles';
-import CustomTextArea from '../../common/TextArea';
+import { InputLightGray } from '../../../../styles/Input.styles';
+import { ButtonBorder } from '../../../../styles/Button.styles';
+import CustomTextArea from '../../../../components/common/TextArea';
 
 const Form = () => {
   const [address, setAddress] = useState('');

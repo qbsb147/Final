@@ -58,7 +58,7 @@ const Header = () => {
         <HeaderInner>
           <LogoWrap>
             <Link to="/">
-            <LogoImg src={logo} alt="logo"/>
+              <LogoImg src={logo} alt="logo" />
             </Link>
           </LogoWrap>
           <NavWrap>
