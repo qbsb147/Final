@@ -22,6 +22,7 @@ const theme = {
       800: '#1f2937',
       900: '#111827',
     },
+    orange: '#F8C470',
   },
   fontSizes: {
     xs: '12px',
