@@ -1,6 +1,7 @@
 {
   "worcation": [
     {
+      "id": 1,
       "worcation_no": 1,
       "ref_writer": 1,
       "ref_area_id": 101,
@@ -462,96 +463,221 @@
       "sido_id": 1,
       "sido_name": "서울특별시",
       "area_list": [
-        { "area_id": 101, "area_name": "강남구" },
-        { "area_id": 102, "area_name": "마포구" },
-        { "area_id": 103, "area_name": "송파구" }
+        {
+          "area_id": 101,
+          "area_name": "강남구"
+        },
+        {
+          "area_id": 102,
+          "area_name": "마포구"
+        },
+        {
+          "area_id": 103,
+          "area_name": "송파구"
+        }
       ]
     },
     {
       "sido_id": 2,
       "sido_name": "부산광역시",
       "area_list": [
-        { "area_id": 201, "area_name": "해운대구" },
-        { "area_id": 202, "area_name": "서구" }
+        {
+          "area_id": 201,
+          "area_name": "해운대구"
+        },
+        {
+          "area_id": 202,
+          "area_name": "서구"
+        }
       ]
     },
     {
       "sido_id": 3,
       "sido_name": "대전광역시",
       "area_list": [
-        { "area_id": 301, "area_name": "유성구" },
-        { "area_id": 302, "area_name": "서구" }
+        {
+          "area_id": 301,
+          "area_name": "유성구"
+        },
+        {
+          "area_id": 302,
+          "area_name": "서구"
+        }
       ]
     },
     {
       "sido_id": 4,
       "sido_name": "경기도",
       "area_list": [
-        { "area_id": 401, "area_name": "가평군" },
-        { "area_id": 402, "area_name": "성남시" }
+        {
+          "area_id": 401,
+          "area_name": "가평군"
+        },
+        {
+          "area_id": 402,
+          "area_name": "성남시"
+        }
       ]
     },
     {
       "sido_id": 5,
       "sido_name": "강원도",
-      "area_list": [{ "area_id": 501, "area_name": "평창군" }]
+      "area_list": [
+        {
+          "area_id": 501,
+          "area_name": "평창군"
+        }
+      ]
     },
     {
       "sido_id": 6,
       "sido_name": "전라북도",
-      "area_list": [{ "area_id": 601, "area_name": "완주군" }]
+      "area_list": [
+        {
+          "area_id": 601,
+          "area_name": "완주군"
+        }
+      ]
     },
     {
       "sido_id": 7,
       "sido_name": "경상북도",
-      "area_list": [{ "area_id": 701, "area_name": "경주시" }]
+      "area_list": [
+        {
+          "area_id": 701,
+          "area_name": "경주시"
+        }
+      ]
     },
     {
       "sido_id": 8,
       "sido_name": "제주특별자치도",
-      "area_list": [{ "area_id": 801, "area_name": "제주시" }]
+      "area_list": [
+        {
+          "area_id": 801,
+          "area_name": "제주시"
+        }
+      ]
     }
   ],
   "sigg_areas": [
-    { "sigg_id": 101, "sigg_name": "강남구", "sido_id": 1 },
-    { "sigg_id": 102, "sigg_name": "마포구", "sido_id": 1 },
-    { "sigg_id": 103, "sigg_name": "송파구", "sido_id": 1 },
-
-    { "sigg_id": 201, "sigg_name": "해운대구", "sido_id": 2 },
-    { "sigg_id": 202, "sigg_name": "서구", "sido_id": 2 },
-
-    { "sigg_id": 301, "sigg_name": "유성구", "sido_id": 3 },
-    { "sigg_id": 302, "sigg_name": "서구", "sido_id": 3 },
-
-    { "sigg_id": 401, "sigg_name": "가평군", "sido_id": 4 },
-    { "sigg_id": 402, "sigg_name": "성남시", "sido_id": 4 },
-
-    { "sigg_id": 501, "sigg_name": "평창군", "sido_id": 5 },
-
-    { "sigg_id": 601, "sigg_name": "완주군", "sido_id": 6 },
-
-    { "sigg_id": 701, "sigg_name": "경주시", "sido_id": 7 },
-
-    { "sigg_id": 801, "sigg_name": "제주시", "sido_id": 8 }
+    {
+      "sigg_id": 101,
+      "sigg_name": "강남구",
+      "sido_id": 1
+    },
+    {
+      "sigg_id": 102,
+      "sigg_name": "마포구",
+      "sido_id": 1
+    },
+    {
+      "sigg_id": 103,
+      "sigg_name": "송파구",
+      "sido_id": 1
+    },
+    {
+      "sigg_id": 201,
+      "sigg_name": "해운대구",
+      "sido_id": 2
+    },
+    {
+      "sigg_id": 202,
+      "sigg_name": "서구",
+      "sido_id": 2
+    },
+    {
+      "sigg_id": 301,
+      "sigg_name": "유성구",
+      "sido_id": 3
+    },
+    {
+      "sigg_id": 302,
+      "sigg_name": "서구",
+      "sido_id": 3
+    },
+    {
+      "sigg_id": 401,
+      "sigg_name": "가평군",
+      "sido_id": 4
+    },
+    {
+      "sigg_id": 402,
+      "sigg_name": "성남시",
+      "sido_id": 4
+    },
+    {
+      "sigg_id": 501,
+      "sigg_name": "평창군",
+      "sido_id": 5
+    },
+    {
+      "sigg_id": 601,
+      "sigg_name": "완주군",
+      "sido_id": 6
+    },
+    {
+      "sigg_id": 701,
+      "sigg_name": "경주시",
+      "sido_id": 7
+    },
+    {
+      "sigg_id": 801,
+      "sigg_name": "제주시",
+      "sido_id": 8
+    }
   ],
   "photo": [
-    { "photo_no": 1, "worcation_no": 1, "change_name": "https://picsum.photos/seed/photo1/800/600" },
-    { "photo_no": 2, "worcation_no": 1, "change_name": "https://picsum.photos/seed/photo2/800/600" },
-
-    { "photo_no": 3, "worcation_no": 2, "change_name": "https://picsum.photos/seed/photo3/800/600" },
-    { "photo_no": 4, "worcation_no": 2, "change_name": "https://picsum.photos/seed/photo4/800/600" },
-
-    { "photo_no": 5, "worcation_no": 3, "change_name": "https://picsum.photos/seed/photo5/800/600" },
-
-    { "photo_no": 6, "worcation_no": 4, "change_name": "https://picsum.photos/seed/photo6/800/600" },
-
-    { "photo_no": 7, "worcation_no": 5, "change_name": "https://picsum.photos/seed/photo7/800/600" },
-
-    { "photo_no": 8, "worcation_no": 6, "change_name": "https://picsum.photos/seed/photo8/800/600" },
-
-    { "photo_no": 9, "worcation_no": 7, "change_name": "https://picsum.photos/seed/photo9/800/600" },
-
-    { "photo_no": 10, "worcation_no": 8, "change_name": "https://picsum.photos/seed/photo10/800/600" }
+    {
+      "photo_no": 1,
+      "worcation_no": 1,
+      "change_name": "https://picsum.photos/seed/photo1/800/600"
+    },
+    {
+      "photo_no": 2,
+      "worcation_no": 1,
+      "change_name": "https://picsum.photos/seed/photo2/800/600"
+    },
+    {
+      "photo_no": 3,
+      "worcation_no": 2,
+      "change_name": "https://picsum.photos/seed/photo3/800/600"
+    },
+    {
+      "photo_no": 4,
+      "worcation_no": 2,
+      "change_name": "https://picsum.photos/seed/photo4/800/600"
+    },
+    {
+      "photo_no": 5,
+      "worcation_no": 3,
+      "change_name": "https://picsum.photos/seed/photo5/800/600"
+    },
+    {
+      "photo_no": 6,
+      "worcation_no": 4,
+      "change_name": "https://picsum.photos/seed/photo6/800/600"
+    },
+    {
+      "photo_no": 7,
+      "worcation_no": 5,
+      "change_name": "https://picsum.photos/seed/photo7/800/600"
+    },
+    {
+      "photo_no": 8,
+      "worcation_no": 6,
+      "change_name": "https://picsum.photos/seed/photo8/800/600"
+    },
+    {
+      "photo_no": 9,
+      "worcation_no": 7,
+      "change_name": "https://picsum.photos/seed/photo9/800/600"
+    },
+    {
+      "photo_no": 10,
+      "worcation_no": 8,
+      "change_name": "https://picsum.photos/seed/photo10/800/600"
+    }
   ],
   "member": [
     {
@@ -788,7 +914,7 @@
       "ref_worcation_no": 1,
       "start_date": "2025-07-01",
       "end_date": "2025-07-05",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-10T10:00:00",
       "update_at": "2025-06-12T14:00:00"
     },
@@ -798,7 +924,7 @@
       "ref_worcation_no": 2,
       "start_date": "2025-07-03",
       "end_date": "2025-07-07",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-11T09:00:00",
       "update_at": "2025-06-11T09:00:00"
     },
@@ -808,7 +934,7 @@
       "ref_worcation_no": 3,
       "start_date": "2025-07-10",
       "end_date": "2025-07-15",
-      "app_status": "REJECTED",
+      "approve": "N",
       "create_at": "2025-06-13T08:30:00",
       "update_at": "2025-06-14T11:00:00"
     },
@@ -818,7 +944,7 @@
       "ref_worcation_no": 4,
       "start_date": "2025-07-20",
       "end_date": "2025-07-25",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-15T10:00:00",
       "update_at": "2025-06-16T10:00:00"
     },
@@ -828,7 +954,7 @@
       "ref_worcation_no": 5,
       "start_date": "2025-07-05",
       "end_date": "2025-07-09",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-17T14:00:00",
       "update_at": "2025-06-17T14:00:00"
     },
@@ -838,7 +964,7 @@
       "ref_worcation_no": 6,
       "start_date": "2025-07-08",
       "end_date": "2025-07-12",
-      "app_status": "APPROVED",
+      "approve": "Y",
       "create_at": "2025-06-18T09:30:00",
       "update_at": "2025-06-19T10:00:00"
     },
@@ -848,7 +974,7 @@
       "ref_worcation_no": 7,
       "start_date": "2025-07-15",
       "end_date": "2025-07-19",
-      "app_status": "REJECTED",
+      "approve": "N",
       "create_at": "2025-06-20T08:00:00",
       "update_at": "2025-06-21T08:00:00"
     },
@@ -858,9 +984,31 @@
       "ref_worcation_no": 8,
       "start_date": "2025-07-18",
       "end_date": "2025-07-22",
-      "app_status": "PENDING",
+      "approve": "Y",
       "create_at": "2025-06-22T10:00:00",
       "update_at": "2025-06-22T10:00:00"
+    },
+    {
+      "id": "7907",
+      "application_no": 9999,
+      "ref_member_no": 1,
+      "ref_worcation_no": 1,
+      "start_date": "",
+      "end_date": "",
+      "approve": "Y",
+      "create_at": "2025-06-19T06:38:16.861Z",
+      "update_at": "2025-06-19T06:38:16.861Z"
+    },
+    {
+      "id": "9d33",
+      "application_no": 9999999999,
+      "ref_member_no": 1,
+      "ref_worcation_no": 1,
+      "start_date": "2025-06-19",
+      "end_date": "2025-06-20",
+      "approve": "Y",
+      "create_at": "2025-06-19T06:40:41.781Z",
+      "update_at": "2025-06-19T06:40:41.781Z"
     }
   ],
   "worcation_partner": [
@@ -962,24 +1110,80 @@
     }
   ],
   "department": [
-    { "department_no": 1, "department_name": "인사팀" },
-    { "department_no": 2, "department_name": "개발팀" },
-    { "department_no": 3, "department_name": "마케팅팀" },
-    { "department_no": 4, "department_name": "디자인팀" },
-    { "department_no": 5, "department_name": "영업팀" },
-    { "department_no": 6, "department_name": "기획팀" },
-    { "department_no": 7, "department_name": "재무팀" },
-    { "department_no": 8, "department_name": "고객지원팀" }
+    {
+      "department_no": 1,
+      "department_name": "인사팀"
+    },
+    {
+      "department_no": 2,
+      "department_name": "개발팀"
+    },
+    {
+      "department_no": 3,
+      "department_name": "마케팅팀"
+    },
+    {
+      "department_no": 4,
+      "department_name": "디자인팀"
+    },
+    {
+      "department_no": 5,
+      "department_name": "영업팀"
+    },
+    {
+      "department_no": 6,
+      "department_name": "기획팀"
+    },
+    {
+      "department_no": 7,
+      "department_name": "재무팀"
+    },
+    {
+      "department_no": 8,
+      "department_name": "고객지원팀"
+    }
   ],
   "company_department": [
-    { "company_depart_no": 1, "company_no": 1, "department_no": 1 },
-    { "company_depart_no": 2, "company_no": 1, "department_no": 2 },
-    { "company_depart_no": 3, "company_no": 2, "department_no": 3 },
-    { "company_depart_no": 4, "company_no": 2, "department_no": 4 },
-    { "company_depart_no": 5, "company_no": 3, "department_no": 5 },
-    { "company_depart_no": 6, "company_no": 3, "department_no": 6 },
-    { "company_depart_no": 7, "company_no": 4, "department_no": 7 },
-    { "company_depart_no": 8, "company_no": 5, "department_no": 8 }
+    {
+      "company_depart_no": 1,
+      "company_no": 1,
+      "department_no": 1
+    },
+    {
+      "company_depart_no": 2,
+      "company_no": 1,
+      "department_no": 2
+    },
+    {
+      "company_depart_no": 3,
+      "company_no": 2,
+      "department_no": 3
+    },
+    {
+      "company_depart_no": 4,
+      "company_no": 2,
+      "department_no": 4
+    },
+    {
+      "company_depart_no": 5,
+      "company_no": 3,
+      "department_no": 5
+    },
+    {
+      "company_depart_no": 6,
+      "company_no": 3,
+      "department_no": 6
+    },
+    {
+      "company_depart_no": 7,
+      "company_no": 4,
+      "department_no": 7
+    },
+    {
+      "company_depart_no": 8,
+      "company_no": 5,
+      "department_no": 8
+    }
   ],
   "company_profile": [
     {
@@ -1247,8 +1451,8 @@
     {
       "health_no": 1,
       "user_no": 1,
-      "weight": 65.0,
-      "height": 170.0,
+      "weight": 65,
+      "height": 170,
       "bmi": 22.5,
       "blood_pressure": "120/80",
       "blood_sugar": 90.5,
@@ -1263,59 +1467,59 @@
     {
       "health_no": 2,
       "user_no": 2,
-      "weight": 75.0,
-      "height": 175.0,
+      "weight": 75,
+      "height": 175,
       "bmi": 24.5,
       "blood_pressure": "130/85",
-      "blood_sugar": 95.0,
+      "blood_sugar": 95,
       "health_condition": "NORMAL",
       "cholesterol_level": 200,
       "smoking_status": "EX_SMOKER",
       "physical_activity": "MODERATE",
-      "sleep_hours": 6.0,
+      "sleep_hours": 6,
       "diet_type": "HIGH_PROTEIN",
       "update_date": "2025-06-01"
     },
     {
       "health_no": 3,
       "user_no": 3,
-      "weight": 80.0,
-      "height": 180.0,
+      "weight": 80,
+      "height": 180,
       "bmi": 24.7,
       "blood_pressure": "140/90",
-      "blood_sugar": 105.0,
+      "blood_sugar": 105,
       "health_condition": "POOR",
       "cholesterol_level": 250,
       "smoking_status": "SMOKER",
       "physical_activity": "SEDENTARY",
-      "sleep_hours": 5.0,
+      "sleep_hours": 5,
       "diet_type": "FASTFOOD",
       "update_date": "2025-06-01"
     },
     {
       "health_no": 4,
       "user_no": 4,
-      "weight": 60.0,
-      "height": 165.0,
-      "bmi": 22.0,
+      "weight": 60,
+      "height": 165,
+      "bmi": 22,
       "blood_pressure": "115/75",
-      "blood_sugar": 88.0,
+      "blood_sugar": 88,
       "health_condition": "GOOD",
       "cholesterol_level": 170,
       "smoking_status": "NON_SMOKER",
       "physical_activity": "ACTIVE",
-      "sleep_hours": 8.0,
+      "sleep_hours": 8,
       "diet_type": "VEGETARIAN",
       "update_date": "2025-06-01"
     },
     {
       "health_no": 5,
       "user_no": 5,
-      "weight": 85.0,
-      "height": 178.0,
+      "weight": 85,
+      "height": 178,
       "bmi": 26.8,
       "blood_pressure": "135/88",
-      "blood_sugar": 110.0,
+      "blood_sugar": 110,
       "health_condition": "NORMAL",
       "cholesterol_level": 220,
       "smoking_status": "EX_SMOKER",
@@ -1327,11 +1531,11 @@
     {
       "health_no": 6,
       "user_no": 6,
-      "weight": 95.0,
-      "height": 172.0,
+      "weight": 95,
+      "height": 172,
       "bmi": 32.1,
       "blood_pressure": "150/95",
-      "blood_sugar": 130.0,
+      "blood_sugar": 130,
       "health_condition": "POOR",
       "cholesterol_level": 270,
       "smoking_status": "SMOKER",
@@ -1343,24 +1547,24 @@
     {
       "health_no": 7,
       "user_no": 7,
-      "weight": 68.0,
-      "height": 168.0,
+      "weight": 68,
+      "height": 168,
       "bmi": 24.1,
       "blood_pressure": "125/82",
-      "blood_sugar": 92.0,
+      "blood_sugar": 92,
       "health_condition": "GOOD",
       "cholesterol_level": 190,
       "smoking_status": "NON_SMOKER",
       "physical_activity": "ACTIVE",
-      "sleep_hours": 7.0,
+      "sleep_hours": 7,
       "diet_type": "BALANCED",
       "update_date": "2025-06-01"
     },
     {
       "health_no": 8,
       "user_no": 8,
-      "weight": 72.0,
-      "height": 176.0,
+      "weight": 72,
+      "height": 176,
       "bmi": 23.2,
       "blood_pressure": "128/84",
       "blood_sugar": 97.5,

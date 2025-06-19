@@ -22,6 +22,7 @@ import WorcationApply from './pages/WorcationApply';
 import MainPage from './pages/MainPage';
 import WorcationAppliesList from './pages/Member/WorcationAppliesList';
 import WorcationHistory from './pages/WorcationHistory';
+import WorcationRegister from './pages/WorcationRegister';
 import Eat from './pages/eat/Eat';
 import StressTest from './pages/test/StressTest';
 import BurnoutTest from './pages/test/BurnoutTest';
@@ -69,12 +70,21 @@ function App() {
 
             {/* 신체 정보 */}
             <Route path="/my/body" element={<BodyInfo />} />
+
+            {/*심리테스트*/}
+            <Route path="/trial/stress" element={<StressTest />} />
+            <Route path="/trial/burnout" element={<BurnoutTest />} />
+            <Route path="/trial/tendency" element={<TendencyTest />} />
+
+            {/* 워케이션 등록(워케이션 업체용) */}
+            <Route path="/worcation/register" element={<WorcationRegister />} />
             <Route path="/eat" element={<Eat />} />
           </Route>
 
           {/* Footer미포함 */}
           <Route element={<Layout3 />}>
             {/* 워케이션 등록(워케이션 업체용) */}
+            <Route path="/worcation/register/re" element={<Register />} />
             <Route path="/worcation/register" element={<Register />} />
             {/* 워케이션 상세보기 */}
             <Route path="/worcation/:id" element={<WorcationDetail />} />
