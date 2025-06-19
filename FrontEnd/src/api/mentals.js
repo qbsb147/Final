@@ -2,13 +2,23 @@ import api from './axios';
 import { API_ENDPOINTS } from './config';
 
 export const mentalService = {
-  postStress: async (stressData, user_no) => {
-    console.log('user_no : ', user_no);
+  postStress: async ({ stress, user_no }) => {
+    console.log('stress : ', stress);
     try {
-      const { data } = await api.post(API_ENDPOINTS.MENTALS.STRESS, {
-        ...stressData,
+      //스프링 구현하면 살릴 내용//
+      // const { data } = await api.post(API_ENDPOINTS.MENTALS.STRESS, {
+      //   stress: stress,
+      //   user_no,
+      // });
+      //스프링 구현하면 살릴 내용//
+
+      //스프링 구현하면 지울 내용//
+      let { data } = await api.post(API_ENDPOINTS.MENTALS.STRESS, {
+        stress: stress,
         user_no,
       });
+      data = await api.get(API_ENDPOINTS.MENTALS.BASE(1));
+      //스프링 구현하면 지울 내용//
 
       return data;
     } catch (error) {

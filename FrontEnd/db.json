@@ -1508,7 +1508,7 @@
       "score": 85,
       "psychological_state": "STABLE",
       "result_content": "정상적인 심리 상태로 판단됨.",
-      "separation": "NO",
+      "separation": "stress",
       "update_date": "2025-06-01",
       "id": "4296"
     },
@@ -1518,7 +1518,7 @@
       "score": 42,
       "psychological_state": "UNSTABLE",
       "result_content": "불안정한 정서 상태로 주의 필요.",
-      "separation": "YES",
+      "separation": "burnout",
       "update_date": "2025-06-01",
       "id": "db9e"
     },
@@ -1528,7 +1528,7 @@
       "score": 29,
       "psychological_state": "CRITICAL",
       "result_content": "정신적 위기 상태. 즉각적 조치 필요.",
-      "separation": "YES",
+      "separation": "burnout",
       "update_date": "2025-06-01",
       "id": "ddfb"
     },
@@ -1538,7 +1538,7 @@
       "score": 75,
       "psychological_state": "STABLE",
       "result_content": "정상 범주의 심리 상태.",
-      "separation": "NO",
+      "separation": "stress",
       "update_date": "2025-06-01",
       "id": "2bf8"
     },
@@ -1548,7 +1548,7 @@
       "score": 61,
       "psychological_state": "UNSTABLE",
       "result_content": "심리적 불안정 징후 있음.",
-      "separation": "UNKNOWN",
+      "separation": "stress",
       "update_date": "2025-06-01",
       "id": "4646"
     },
@@ -1558,7 +1558,7 @@
       "score": 90,
       "psychological_state": "STABLE",
       "result_content": "양호한 정신 건강 상태.",
-      "separation": "NO",
+      "separation": "stress",
       "update_date": "2025-06-01",
       "id": "63a0"
     },
@@ -1568,7 +1568,7 @@
       "score": 38,
       "psychological_state": "CRITICAL",
       "result_content": "심각한 정신적 불안정.",
-      "separation": "YES",
+      "separation": "burnout",
       "update_date": "2025-06-01",
       "id": "5656"
     },
@@ -1578,7 +1578,7 @@
       "score": 68,
       "psychological_state": "UNSTABLE",
       "result_content": "스트레스 수준이 다소 높음.",
-      "separation": "UNKNOWN",
+      "separation": "stress",
       "update_date": "2025-06-01",
       "id": "90ca"
     }
@@ -1871,34 +1871,82 @@
   ],
   "mental_stress": [
     {
-      "id": "95e4",
+      "id": "49df",
+      "stress1": "4",
+      "stress2": "3",
+      "stress3": "3",
+      "stress4": "1",
+      "stress5": "4",
+      "stress6": "3",
+      "stress7": "2",
+      "stress8": "4",
+      "stress9": "1",
+      "stress10": "1",
+      "user_no": 1
+    },
+    {
+      "id": "71ba",
       "stress": {
         "stress1": "5",
         "stress2": "4",
-        "stress3": "3",
-        "stress4": "2",
-        "stress5": "3",
-        "stress6": "3",
-        "stress7": "2",
-        "stress8": "2",
-        "stress9": "1",
-        "stress10": "1"
-      }
+        "stress3": "4",
+        "stress4": "3",
+        "stress5": "5",
+        "stress6": "5",
+        "stress7": "5",
+        "stress8": "5",
+        "stress9": "5",
+        "stress10": "5"
+      },
+      "user_no": 1
     },
     {
-      "id": "dc43",
+      "id": "4cdc",
       "stress": {
-        "stress1": "4",
+        "stress1": "5",
         "stress2": "3",
-        "stress3": "2",
-        "stress4": "3",
-        "stress5": "4",
+        "stress3": "3",
+        "stress4": "4",
+        "stress5": "2",
         "stress6": "3",
-        "stress7": "2",
-        "stress8": "2",
+        "stress7": "4",
+        "stress8": "4",
         "stress9": "2",
-        "stress10": "1"
-      }
+        "stress10": "2"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "41b6",
+      "stress": {
+        "stress2": "4",
+        "stress3": "4",
+        "stress1": "3",
+        "stress5": "3",
+        "stress4": "3",
+        "stress6": "3",
+        "stress7": "3",
+        "stress8": "3",
+        "stress9": "3",
+        "stress10": "3"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "9704",
+      "stress": {
+        "stress1": "3",
+        "stress2": "4",
+        "stress3": "4",
+        "stress4": "3",
+        "stress5": "3",
+        "stress6": "4",
+        "stress7": "4",
+        "stress8": "3",
+        "stress9": "3",
+        "stress10": "3"
+      },
+      "user_no": 1
     }
   ]
 }

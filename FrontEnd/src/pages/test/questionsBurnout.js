@@ -1,0 +1,167 @@
+export const questions = [
+  {
+    id: 'stress1',
+    question: '출근하는 생각만 해도 짜증과 함께 가슴이 답답함을 느낀다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress2',
+    question: '직장에서 칭찬을 들어도 썩 즐거운 기분이 들지 않는다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress3',
+    question: '직장생활 외에 개인적인 생활이나 시간이 거의 없다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress4',
+    question: '기력이 없고 쇠약해진 느낌이 든다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress5',
+    question: '일하는 것에 심적 부담과 자신의 한계를 느낀다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress6',
+    question: '충분한 시간의 잠을 자도 계속 피곤함을 느낀다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress7',
+    question: '이전에는 그냥 넘어가던 일에도 화를 참을 수 없다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress8',
+    question: '혼자 지내는 시간이 많아졌다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress9',
+    question: '현재 업무에 대한 관심이 크게 줄었다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress10',
+    question: '주변 사람에게 실망하는 일이 잦다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress11',
+    question: '주변에서 고민이 많거나 아파보인다는 말을 자주 듣는다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress12',
+    question: '성욕이 감소했다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress13',
+    question: '나의 직무 기여도에 대해 스스로 매우 낮다는 생각을 한다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress14',
+    question: '만성피로, 감기나 두통, 요통, 소화불량이 늘었다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+  {
+    id: 'stress15',
+    question: '주변 사람과 대화를 나누는 것이 힘들게 느껴진다.',
+    options: [
+      { value: '1', label: '전혀없었다.' },
+      { value: '2', label: '거의없었다.' },
+      { value: '3', label: '때때로 있었다.' },
+      { value: '4', label: '자주 있었다.' },
+      { value: '5', label: '매우 자주 있었다.' },
+    ],
+  },
+]; 
