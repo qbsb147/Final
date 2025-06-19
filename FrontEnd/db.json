@@ -129,7 +129,7 @@
       "status": "Y"
     }
   ],
-  "worcation__features": [
+  "worcation_features": [
     {
       "worcation_no": 1,
       "location_type": "산",
@@ -203,7 +203,7 @@
       "accommodation_type": "자연형 숙소"
     }
   ],
-  "worcation__deatil": [
+  "worcation_detail": [
     {
       "worcation_no": 1,
       "licensee": "포포인츠 주식회사",
@@ -335,7 +335,7 @@
       "amenity_name": "휴게 공간"
     }
   ],
-  "worcation__amenity": [
+  "worcation_amenity": [
     {
       "worc_amenity_no": 1,
       "worcation_no": 1,
