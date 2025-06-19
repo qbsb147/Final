@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
 import busan1 from '../assets/busan1.jpg';
@@ -7,6 +7,8 @@ import seoul1 from '../assets/seoul1.jpg';
 import seoul2 from '../assets/seoul2.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const data = [
   {
@@ -36,62 +38,75 @@ const data = [
 ];
 
 const MainPage = () => {
+  const [partners, setPartners] = useState([]);
+  const [worcations, setWorcations] = useState([]);
   const [showAISection, setShowAISection] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
 
   const handleShowAI = () => {
     setShowAISection(true);
   };
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/worcation_partner')
+      .then((res) => setPartners(res.data.filter((p) => p.approve === 'Y')))
+      .catch(console.error);
+
+    axios
+      .get('http://localhost:3001/worcation')
+      .then((res) => setWorcations(res.data))
+      .catch((err) => console.error(err));
+
+    axios
+      .get('http://localhost:3001/review')
+      .then((res) => setReviews(res.data))
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <Container>
       <SectionTitle>제휴업체</SectionTitle>
       <PartnerGrid>
-        <PartnerCard>
-          <PartnerImage src={busan1} alt="인천 서해앞바다 호텔" />
-          <ImageLabel>
-            <ImageLabelT>인천</ImageLabelT>
-            서해앞바다
-            <br />
-            3성급 호텔
-          </ImageLabel>
-        </PartnerCard>
-        <PartnerCard>
-          <PartnerImage src={busan2} alt="부산 광안해수욕장 호텔" />
-          <ImageLabel>
-            <ImageLabelT>부산</ImageLabelT>
-            광안해수욕장
-            <br />
-            3성급 호텔
-          </ImageLabel>
-        </PartnerCard>
-        <PartnerCard>
-          <PartnerImage src={seoul2} alt="서울 동대문 호텔" />
-          <ImageLabel>
-            <ImageLabelT>서울</ImageLabelT>
-            동대문프라자
-            <br />
-            5성급 호텔
-          </ImageLabel>
-        </PartnerCard>
+        {partners.map((partner) => {
+          const matchedWorcation = worcations.find((w) => w.worcation_no === partner.worcation_no);
+          if (!matchedWorcation) return null;
+
+          return (
+            <PartnerCard key={partner.partner_no}>
+              <PartnerImage
+                src={matchedWorcation.main_change_photo}
+                alt={matchedWorcation.worcation_name}
+                onClick={() => navigate(`/worcation/${partner.worcation_no}`)}
+              />
+              <ImageLabel>
+                <ImageLabelT>{matchedWorcation.address.split(' ')[0]}</ImageLabelT>
+                {matchedWorcation.worcation_name}
+                <br />
+                {matchedWorcation.grade || '등급 미지정'}
+              </ImageLabel>
+            </PartnerCard>
+          );
+        })}
       </PartnerGrid>
 
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
       </SectionTitle>
       <CardList>
-        {data.map((item) => (
-          <PlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
+        {worcations.map((item) => (
+          <PlaceCard key={item.worcation_no}>
+            <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
-                <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
+                <PlaceLocation>{item.address}</PlaceLocation>
+                <PlaceName>{item.worcation_thema}</PlaceName>
+                <PlaceReview>리뷰 ({reviews.filter((r) => r.application_no === item.worcation_no).length})</PlaceReview>
               </InfoBlock>
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
-                <ButtonDetail>상세보기</ButtonDetail>
+                <ThemeText>{item.worcation_thema}</ThemeText>
+                <ButtonDetail onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</ButtonDetail>
               </ThemeBlock>
             </CardContent>
           </PlaceCard>
@@ -166,6 +181,7 @@ const PartnerImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  cursor: pointer;
 `;
 
 const ImageLabel = styled.div`
@@ -176,6 +192,7 @@ const ImageLabel = styled.div`
   font-size: 100%;
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.75);
+  text-align: left;
 `;
 
 const ImageLabelT = styled.div`
@@ -199,25 +216,26 @@ const PlaceCard = styled.div`
 `;
 
 const PlaceImage = styled.img`
-  width: 25%;
-  height: auto;
+  width: 250px;
+  height: 150px;
   object-fit: cover;
   border-radius: 20px;
-  margin: 5% 0 5% 5%;
+  margin: 3% 0 3% 3%;
 `;
 
 const CardContent = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
   width: 100%;
-  padding: 5%;
+  padding: 5% 5% 3% 5%;
 `;
 
 const InfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10%;
+  align-items: flex-start;
+  justify-content: space-between;
 `;
 
 const PlaceLocation = styled.p`

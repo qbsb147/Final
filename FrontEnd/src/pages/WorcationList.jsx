@@ -4,6 +4,8 @@ import { ButtonBorder, ButtonDetail } from '../styles/Button.styles';
 import seoul1 from '../assets/seoul1.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const data = [
   {
@@ -34,9 +36,14 @@ const data = [
 
 const WorcationList = () => {
   const [showAISection, setShowAISection] = useState(false);
+  const navgigate = useNavigate();
 
   const handleShowAI = () => {
     setShowAISection(true);
+  };
+
+  const handleDetail = () => {
+    navgigate('/worcation/deat');
   };
 
   return (
@@ -60,7 +67,7 @@ const WorcationList = () => {
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.theme}</ThemeText>
-                <ButtonDetail>상세보기</ButtonDetail>
+                <ButtonDetail onClick={handleDetail}>상세보기</ButtonDetail>
               </ThemeBlock>
             </CardContent>
           </PlaceCard>
