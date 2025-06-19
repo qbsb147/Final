@@ -2,24 +2,80 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
-import seoulImage from '../assets/seoul1.jpg';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const WorcationDetail = () => {
   const navigate = useNavigate();
+  const { worcationNo } = useParams();
+  const [detail, setDetail] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     axios
-      .get('http://localhost:3001/worcation')
-      .then((res) => setWorcations(res.data))
-      .catch((err) => console.error(err));
+      .get(`http://localhost:3001/worcation/${worcationNo}`)
+      .then((res) => setDetail(res.data))
+      .catch(console.error);
 
     axios
-      .get('http://localhost:3001/review')
+      .get(`http://localhost:3001/review/${worcationNo}`)
       .then((res) => setReviews(res.data))
       .catch((err) => console.error(err));
-  }, []);
+  }, [worcationNo]);
+
+  const renderBlocks = () => {
+    switch (detail?.worcation_category) {
+      case 'Office':
+        return (
+          <Block>
+            <BlockTitle>오피스</BlockTitle>
+            <BlockText>
+              - 운용시간 : 09:00 ~ 18:00
+              <br />- 연락처 : 010-1111-5555
+              <br />- 수용인원 : 40
+              <br />- 홈페이지 : https://office.example.com
+            </BlockText>
+          </Block>
+        );
+      case 'Accommodation':
+        return (
+          <Block>
+            <BlockTitle>숙소</BlockTitle>
+            <BlockText>
+              - 입실 : 14:00 퇴실: 12:00
+              <br />- 연락처 : 010-1111-5555
+              <br />- 최대인원 : 50
+              <br />- 홈페이지 : https://stay.example.com
+            </BlockText>
+          </Block>
+        );
+      case 'OfficeAndStay':
+        return (
+          <>
+            <Block>
+              <BlockTitle>오피스</BlockTitle>
+              <BlockText>
+                - 운용시간 : 09:00 ~ 18:00
+                <br />- 연락처 : 010-1111-5555
+                <br />- 수용인원 : 40
+                <br />- 홈페이지 : https://office.example.com
+              </BlockText>
+            </Block>
+            <Block>
+              <BlockTitle>숙소</BlockTitle>
+              <BlockText>
+                - 입실 : 14:00 퇴실: 12:00
+                <br />- 연락처 : 010-1111-5555
+                <br />- 최대인원 : 50
+                <br />- 홈페이지 : https://stay.example.com
+              </BlockText>
+            </Block>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
   return (
     <PageContainer>
       <Wrapper>
@@ -30,10 +86,10 @@ const WorcationDetail = () => {
           </TopButtons>
         </MainImageWrapper>
 
-        <Title>포포인츠 알파이 워케이션</Title>
-        <MainImage src={seoulImage} />
+        <Title>{detail.worcation_name}</Title>
+        <MainImage src={detail.main_change_photo} />
         <PriceWrapper>
-          <Price>50,000원</Price>
+          <Price>{detail.non_partner_price?.toLocaleString()}원</Price>
         </PriceWrapper>
 
         <ContentSection>
@@ -99,7 +155,7 @@ const WorcationDetail = () => {
         </ContentSection>
       </Wrapper>
 
-      <CommentTitle>댓글 (1)</CommentTitle>
+      <CommentTitle>댓글 ({reviews.length})</CommentTitle>
       <Wrapper2>
         <ContentSection>
           <CommentInputWrap>
