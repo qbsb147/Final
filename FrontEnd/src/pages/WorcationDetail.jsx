@@ -1,10 +1,25 @@
 // WorcationDetail.jsx (theme 활용 최적화)
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import seoulImage from '../assets/seoul1.jpg';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const WorcationDetail = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/worcation')
+      .then((res) => setWorcations(res.data))
+      .catch((err) => console.error(err));
+
+    axios
+      .get('http://localhost:3001/review')
+      .then((res) => setReviews(res.data))
+      .catch((err) => console.error(err));
+  }, []);
   return (
     <PageContainer>
       <Wrapper>
