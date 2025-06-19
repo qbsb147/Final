@@ -1,6 +1,6 @@
-import Button from '../styles/Button';
+import Button from '../../styles/Button';
 import styled from 'styled-components';
-import { Col } from 'antd';
+import { WhiteButtonLink } from '../../styles/Link.styles';
 
 const Trial = () => {
   return (
@@ -10,50 +10,38 @@ const Trial = () => {
           <NameBox>
             <TestName>스트레스 검사</TestName>
             <ExplanationBox>
-              <Img
-                src="src/assets/stress.png"
-                alt="Rectangle"
-                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
-              />
+              <Img src="src/assets/stress.png" alt="Rectangle" />
               <Explanation>마음이 무겁게 느껴질 때, 스트레스 검사를 통해 내 상태를 한 번 체크해보세요.</Explanation>
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <button style={Button.buttonWhite2}>테스트하러 가기</button>
+            <WhiteButtonLink to="/trial/stress">테스트하러 가기</WhiteButtonLink>
           </Textbox>
         </TestBox>
         <TestBox>
           <NameBox>
             <TestName>번아웃 검사</TestName>
             <ExplanationBox>
-              <Img
-                src="src/assets/bunout.png"
-                alt="Rectangle"
-                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
-              />
+              <Img src="src/assets/bunout.png" alt="Rectangle" />
               <Explanation>
                 요즘 유난히 피로하고 무기력하다면, 번아웃 검사를 통해 나의 소진 상태를 점검해보세요.
               </Explanation>
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <button style={Button.buttonWhite2}>테스트하러 가기</button>
+            <WhiteButtonLink to="/trial/burnout">테스트하러 가기</WhiteButtonLink>{' '}
           </Textbox>
         </TestBox>
         <TestBox>
           <NameBox>
             <TestName>성향 검사</TestName>
             <ExplanationBox>
-              <Img
-                src="src/assets/tendency.png"
-                alt="Rectangle"
-                style={{ width: '130px', height: '100px', objectFit: 'cover' }}
-              />
+              <Img src="src/assets/tendency.png" alt="Rectangle" />
               <Explanation>워케이션 전, 성향검사로 나에게 맞는 휴식을 찾아보세요.</Explanation>
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <button style={Button.buttonWhite2}>테스트하러 가기</button>
+            <WhiteButtonLink to="/trial/tendency">테스트하러 가기</WhiteButtonLink>{' '}
           </Textbox>
         </TestBox>
       </Content>
@@ -63,6 +51,9 @@ const Trial = () => {
 
 const Img = styled.img`
   box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+  width: 130px;
+  height: 100px;
+  object-fit: cover;
 `;
 
 const TestBox = styled.div`

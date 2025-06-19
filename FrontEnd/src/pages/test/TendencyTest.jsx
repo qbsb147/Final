@@ -1,7 +1,7 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
-import { ButtonDetail } from '../styles/Button.styles';
-import Input from '../styles/Input';
+import { ButtonDetail } from '../../styles/Button.styles';
+import Input from '../../styles/Input';
 
 const questions = [
   {

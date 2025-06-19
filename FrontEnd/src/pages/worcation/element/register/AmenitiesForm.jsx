@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../styles/Input.styles';
-import RadioButton from '../../common/RadioButton';
-import CustomDatePicker from '../../common/DatePicker';
-import { ButtonBorder, ButtonYb } from '../../../styles/Button.styles';
-import Checkbox from '../../common/Checkbox';
+import { ButtonBorder } from '../../../../styles/Button.styles';
+import Checkbox from '../../../../components/common/Checkbox';
 
 const Form = () => {
   const [selectedAmenities, setSelectedAmenities] = useState([]);
