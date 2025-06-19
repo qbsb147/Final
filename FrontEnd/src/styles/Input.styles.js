@@ -24,7 +24,6 @@ export const InputOrange = styled.input`
   color: ${({ theme }) => theme.colors.black};
 `;
 
-
 export const InputLightGray = styled.input`
   padding: 0 12px;
   height: ${({ theme }) => theme.heightes.input};
@@ -46,5 +45,29 @@ export const InputLightGray = styled.input`
   &::placeholder {
     font-family: ${({ theme }) => theme.fontFamily.secondary};
     font-weight: ${({ theme }) => theme.fontWeights.medium};
+  }
+`;
+
+export const InputRadio = styled.input`
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #adadad;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-left: 10px;
+  cursor: pointer;
+  position: relative;
+
+  &:checked::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 10px;
+    height: 10px;
+    background-color: ${({ theme }) => theme.colors.primary};
+    border-radius: 50%;
   }
 `;

@@ -4,7 +4,8 @@ import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
-import axios from 'axios';
+import CustomRadioButton from '../../components/common/CustomRadioButton';
+import { register } from '../../api/auth/register';
 
 // 1단계에서 사용할 입력 필드 정의
 const step1Inputs = [
@@ -76,78 +77,24 @@ const SignUp = () => {
     }
   };
 
-// 제출 핸들러
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (formData1.userPwd !== formData1.userPwdCheck) {
-    alert('비밀번호가 일치하지 않습니다.');
-    return;
-  }
-  const { userPwdCheck:_, ...sendData1 } = formData1;
-  const sendData2 = { ...formData2 };
-
-  try {
-    switch (formData1.type) {
-      // 직원 케이스
-      case 'A': {
-        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
-        const memberData = memberResponse.data;
-        console.log(memberData);
-
-        const companyProfileResponse = await axios.post('http://localhost:3001/companyProfiles', {
-          ...sendData2,
-          memberNo: memberData.memberNo,
-        });
-        const profileData = companyProfileResponse.data;
-        console.log(profileData);
-
-        alert('회원가입이 완료되었습니다.');
-        window.location.href = '/login';
-        break;
-      }
-
-      // 기업 케이스
-      case 'B': {
-        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
-        const memberData = memberResponse.data;
-        console.log(memberData);
-
-        const companyResponse = await axios.post('http://localhost:3001/companies', {
-          ...sendData2,
-          memberNo: memberData.memberNo,
-        });
-        const companyData = companyResponse.data;
-        console.log(companyData);
-
-        alert('회원가입이 완료되었습니다.');
-        window.location.href = '/login';
-        break;
-      }
-
-      // 워케이션 업체 케이스
-      case 'C': {
-        const memberResponse = await axios.post('http://localhost:3001/members', sendData1);
-        const memberData = memberResponse.data;
-        console.log(memberData);
-
-        alert('회원가입이 완료되었습니다.');
-        window.location.href = '/login';
-        break;
-      }
-
-      default:
-        break;
+  // 제출 핸들러
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (formData1.userPwd !== formData1.userPwdCheck) {
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
     }
-
-    console.log('1번 폼 데이터', sendData1);
-    console.log('2번 폼 데이터', sendData2);
-    console.log('2번 원래 폼 데이터', formData2);
-
-  } catch (error) {
-    console.error('회원가입 중 오류 발생:', error);
-    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
-  }
-};
+  
+    try {
+      await register(formData1, formData2);
+      alert('회원가입이 완료되었습니다.');
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('회원가입 중 오류 발생:', error);
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
 
   return (
     <SignUpWrap>
@@ -207,63 +154,49 @@ const handleSubmit = async (e) => {
                 {/* 라디오 버튼 포함 */}
                 <div>
                   <Label>성별</Label>
+
                   <RadioGroup>
-                    <label>
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="men"
-                        checked={formData1.gender === 'men'}
-                        onChange={(e) => handleChange(e, 1)}
-                      />
-                      남성
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="women"
-                        checked={formData1.gender === 'women'}
-                        onChange={(e) => handleChange(e, 1)}
-                      />
-                      여성
-                    </label>
+                    <CustomRadioButton
+                      label="남성"
+                      name="gender"
+                      value="men"
+                      checked={formData1.gender === 'men'}
+                      onChange={(e) => handleChange(e, 1)}
+                    />
+                    <CustomRadioButton
+                      label="여성"
+                      name="gender"
+                      value="women"
+                      checked={formData1.gender === 'women'}
+                      onChange={(e) => handleChange(e, 1)}
+                    />
                   </RadioGroup>
-                </div>
+                </div>{' '}
                 <div /> {/* 중간 여백 */}
                 <div>
                   <Label>회원 유형</Label>
                   <RadioGroup>
-                    <label>
-                      <input
-                        type="radio"
-                        name="type"
-                        value="A"
-                        checked={formData1.type === 'A'}
-                        onChange={handleRadioChange}
-                      />
-                      직원
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="type"
-                        value="B"
-                        checked={formData1.type === 'B'}
-                        onChange={handleRadioChange}
-                      />
-                      기업
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="type"
-                        value="C"
-                        checked={formData1.type === 'C'}
-                        onChange={handleRadioChange}
-                      />
-                      워케이션 업체
-                    </label>
+                    <CustomRadioButton
+                      label="직원"
+                      name="type"
+                      value="A"
+                      checked={formData1.type === 'A'}
+                      onChange={handleRadioChange}
+                    />
+                    <CustomRadioButton
+                      label="기업"
+                      name="type"
+                      value="B"
+                      checked={formData1.type === 'B'}
+                      onChange={handleRadioChange}
+                    />
+                    <CustomRadioButton
+                      label="워케이션 업체"
+                      name="type"
+                      value="C"
+                      checked={formData1.type === 'C'}
+                      onChange={handleRadioChange}
+                    />
                   </RadioGroup>
                 </div>
               </InputWrap>
@@ -481,27 +414,14 @@ const RadioGroup = styled.div`
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing.s10};
   margin: ${({ theme }) => theme.spacing.s9} ${({ theme }) => theme.spacing.s0};
-
-  label {
-    font-size: ${({ theme }) => theme.fontSizes.base};
-    font-weight: ${({ theme }) => theme.fontWeights.medium};
-    display: flex;
-    align-items: center;
-    gap: ${({ theme }) => theme.spacing.s2};
-  }
-
-  input[type='radio'] {
-    width: 18px;
-    height: 18px;
-    accent-color: ${({ theme }) => theme.colors.primary}; /* 브라우저 지원 시 테마색 */
-  }
 `;
 
 const Label = styled.label`
   display: block;
   text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing.s2};
-  margin-left: ${({ theme }) => theme.spacing.s3};
+  margin-left: ${({ theme }) => theme.spacing.s1};
 `;
 
 export default SignUp;
+0

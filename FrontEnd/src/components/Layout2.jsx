@@ -29,7 +29,5 @@ const Content = styled.main`
   max-width: 1280px;
   margin: 0 auto;
   flex: 1;
-
-  /* 헤더 높이 만큼 상단 패딩 */
-  padding: 120px 16px 20px 16px;
+  padding: 180px 16px 20px 16px;
 `;

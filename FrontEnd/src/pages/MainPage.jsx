@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
-import busan1 from '../assets/busan1.jpg';
-import busan2 from '../assets/busan2.jpg';
 import seoul1 from '../assets/seoul1.jpg';
-import seoul2 from '../assets/seoul2.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
 import axios from 'axios';

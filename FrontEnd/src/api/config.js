@@ -11,6 +11,12 @@ export const API_CONFIG = {
 };
 
 export const API_ENDPOINTS = {
+  MEMBER: '/members',
+  COMPANY: '/companies',
+  COMPANY_PROFILE: '/companyProfiles',
+  WORCATION: '/worcations',
+  LOGIN: '/login',
+  SIGNUP: '/signup',
   MENTALS: {
     STRESS: '/mental_stress',
     BURNOUT: '/mental_burnout',

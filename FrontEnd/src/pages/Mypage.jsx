@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Input from '../styles/Input';
 import btn from '../styles/Button';
+import { InputRadio } from '../styles/Input.styles';
 
 const Mypage = () => {
   return (
@@ -45,50 +46,20 @@ const Mypage = () => {
             <InputGroup>
               <InputName>성별</InputName>
               <RadioGroup>
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
+                <InputRadio type="radio" name="gender" />
                 남성
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
+                <InputRadio type="radio" name="gender" />
                 여성
               </RadioGroup>
             </InputGroup>
             <InputGroup>
               <InputName>등록</InputName>
               <RadioGroup>
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
+                <InputRadio type="radio" />
                 직원
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
+                <InputRadio type="radio" />
                 기업
-                <input
-                  type="radio"
-                  style={{
-                    ...Input.InputRadio,
-                    marginLeft: 0,
-                  }}
-                />
+                <InputRadio type="radio" />
                 워케이션 업체
               </RadioGroup>
             </InputGroup>
@@ -130,6 +101,7 @@ const Mypage = () => {
     </>
   );
 };
+
 const ButnContent = styled.div`
   width: 100%;
   display: flex;
