@@ -108,3 +108,5 @@ sketch
 
 # jscodeshift script
 /scripts/
+.vite/
+vite/
