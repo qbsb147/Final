@@ -2,6 +2,10 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import Input from '../../styles/Input';
+import { mentalService } from '../../api/mentals';
+import { toast } from 'react-toastify';
+import { Navigate, useNavigate } from 'react-router-dom';
+import useUserStore from '../../store/userStore';
 
 const questions = [
   {
@@ -117,7 +121,8 @@ const questions = [
 ];
 
 const StressTest = () => {
-  const [answers, setAnswers] = useState({}); // 선택 상태 저장
+  const navigate = useNavigate();
+  const [answers, setAnswers] = useState({});
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -125,9 +130,30 @@ const StressTest = () => {
       [id]: value,
     }));
   };
+  const loginUser = useUserStore((state) => state.user);
+  console.log('loginUser.user_no : ', loginUser.user_no);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const unansweredQuestions = questions.filter(({ id }) => !answers[id]);
+    if (unansweredQuestions.length > 0) {
+      alert('모든 질문에 답변을 해주세요!');
+    } else {
+      try {
+        await mentalService.postStress({
+          stress: answers,
+          user_no: loginUser.user_no,
+        });
+        toast.success('스트레스 검사를 마쳤습니다.');
+        navigate('/trial');
+      } catch (error) {
+        toast.error('스트레스 검사에 문제가 발생했습니다.');
+        console.error('제출 에러 : ', error);
+      }
+    }
+  };
 
   return (
-    <Content>
+    <Content onSubmit={handleSubmit}>
       <TitleBox>
         <Title>스트레스 자가진단테스트</Title>
       </TitleBox>
@@ -170,6 +196,7 @@ const Btn = styled(ButtonDetail)`
   width: 130px;
   height: 40px;
 `;
+
 const Inputs = styled.input`
   appearance: none;
   -webkit-appearance: none;
@@ -225,7 +252,7 @@ const Test = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
 
-const TestContent = styled.form`
+const TestContent = styled.div`
   background: ${({ theme, checked }) => (checked ? theme.colors.primary : theme.colors.white)};
   padding: 10px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -243,7 +270,7 @@ const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xl};
 `;
 
-const Content = styled.div`
+const Content = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
