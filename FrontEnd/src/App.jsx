@@ -77,7 +77,7 @@ function App() {
             <Route path="/trial/tendency" element={<TendencyTest />} />
 
             {/* 워케이션 등록(워케이션 업체용) */}
-            <Route path="/worcation/register" element={<WorcationRegister />} />
+            <Route path="/worcation/register-list" element={<WorcationRegister />} />
             <Route path="/eat" element={<Eat />} />
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
             {/*심리테스트*/}
@@ -89,7 +89,6 @@ function App() {
           {/* Footer미포함 */}
           <Route element={<Layout3 />}>
             {/* 워케이션 등록(워케이션 업체용) */}
-            <Route path="/worcation/register/re" element={<Register />} />
             <Route path="/worcation/register" element={<Register />} />
             {/* 워케이션 신청(회원용) */}
             <Route path="/worcation/apply" element={<WorcationApply />} />

@@ -108,5 +108,8 @@ sketch
 
 # jscodeshift script
 /scripts/
+.env
+.env.*
 .vite/
 vite/
+

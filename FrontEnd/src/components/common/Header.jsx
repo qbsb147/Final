@@ -21,7 +21,7 @@ const menuData = [
       { title: '전체보기', path: '/worcation' },
       { title: '제휴업체', path: '/worcation/partners' },
       { title: 'AI 추천', path: '/worcation/ai' },
-      { title: '워케이션 등록', path: '/worcation/register' },
+      { title: '워케이션 등록', path: '/worcation/register-list' },
     ],
   },
   {
