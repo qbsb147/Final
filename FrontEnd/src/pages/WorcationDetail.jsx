@@ -9,6 +9,7 @@ import Slider from 'react-slick';
 // import { useUserStore } from '../store/useUserStore';
 
 const WorcationDetail = () => {
+  // const navigate = useNavigate();
   const loginUserId = 'user01@example.com'; //추후 불러오는걸로 수정 필요
   // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
   const navigate = useNavigate();
