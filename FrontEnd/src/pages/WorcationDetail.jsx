@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
+// import { useUserStore } from '../store/useUserStore';
 
 const WorcationDetail = () => {
   // const navigate = useNavigate();
@@ -13,6 +17,9 @@ const WorcationDetail = () => {
   const [features, setFeatures] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [photos, setPhotos] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editedContent, setEditedContent] = useState('');
 
   useEffect(() => {
     axios
@@ -34,6 +41,11 @@ const WorcationDetail = () => {
       .then((res) => setFeatures(res.data))
       .catch(console.error);
 
+    axios
+      .get(`http://localhost:3001/photo?worcation_no=${worcationNo}`)
+      .then((res) => setPhotos(res.data))
+      .catch(console.error);
+
     const fetchAmenities = async () => {
       try {
         const amRes = await axios.get(`http://localhost:3001/worcation_amenity?worcation_no=${worcationNo}`);
@@ -53,24 +65,17 @@ const WorcationDetail = () => {
   if (!detail) return null;
   const [officeTime, accomTime] = detail?.available_time?.split('/') || ['', ''];
 
-  const handleAddComment = () => {
-    const newReview = {
-      application_no: Number(worcationNo),
-      writer_id: 'user01@example.com', // 실제 로그인 유저 ID로 교체
-      review_content: newComment,
-      create_at: new Date().toISOString(),
-      update_at: new Date().toISOString(),
-    };
-
-    axios
-      .post('http://localhost:3001/review', newReview)
-      .then(() => {
-        setReviews((prev) => [...prev, newReview]);
-        setNewComment('');
-      })
-      .catch(console.error);
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
   };
 
+  //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
     switch (worcation?.worcation_category) {
       case 'Office':
@@ -125,20 +130,80 @@ const WorcationDetail = () => {
     }
   };
 
+  //댓글
+
+  const handleAddComment = () => {
+    const review = {
+      application_no: Number(worcationNo),
+      writer_id: loginUserId,
+      review_content: newComment,
+      create_at: new Date().toISOString(),
+      update_at: new Date().toISOString(),
+    };
+
+    axios
+      .post('http://localhost:3001/review', review)
+      .then(() => {
+        setReviews((prev) => [...prev, review]);
+        setNewComment('');
+      })
+      .catch(console.error);
+  };
+  const handleEditClick = (review) => {
+    setEditingId(review.review_no);
+    setEditedContent(review.review_content);
+  };
+
+  const handleSaveEdit = (reviewNo) => {
+    axios
+      .patch(`http://localhost:3001/review/${reviewNo}`, {
+        review_content: editedContent,
+        update_at: new Date().toISOString(),
+      })
+      .then(() => {
+        setReviews((prev) =>
+          prev.map((r) =>
+            r.review_no === reviewNo ? { ...r, review_content: editedContent, update_at: new Date().toISOString() } : r
+          )
+        );
+        setEditingId(null);
+        setEditedContent('');
+      })
+      .catch(console.error);
+  };
+  const handleDelete = (reviewNo) => {
+    axios
+      .delete(`http://localhost:3001/review/${reviewNo}`)
+      .then(() => {
+        //UI에서 삭제
+        setReviews((prev) => prev.filter((r) => r.review_no !== reviewNo));
+      })
+      .catch(console.error);
+  };
+
+  //UI
   return (
     <PageContainer>
       <Wrapper>
         <MainImageWrapper>
           <TopButtons>
-            <ButtonBorder>제휴 신청</ButtonBorder>
-            <ButtonBorder>예약</ButtonBorder>
+            <ButtonBorder onClick={() => navigate(`/partnership/apply/`)}>제휴 신청</ButtonBorder>
+            <ButtonBorder onClick={() => navigate(`/worcation/apply/`)}>예약</ButtonBorder>
           </TopButtons>
         </MainImageWrapper>
 
         <Title>{worcation.worcation_name}</Title>
-        <MainImage src={worcation.main_change_photo} />
+        <PhotoGallery>
+          <PhotoSliderWrapper>
+            <Slider {...settings}>
+              {[worcation.main_change_photo, ...photos.map((p) => p.change_name)].map((src, idx) => (
+                <SliderImage key={idx} src={src} alt={`slide-${idx}`} />
+              ))}
+            </Slider>
+          </PhotoSliderWrapper>
+        </PhotoGallery>
         <PriceWrapper>
-          <Price>{worcation.non_partner_price?.toLocaleString()}원</Price>
+          <Price>{worcation.non_partner_price?.toLocaleString()} 원</Price>
         </PriceWrapper>
 
         <ContentSection>
@@ -202,11 +267,28 @@ const WorcationDetail = () => {
             {reviews.map((review) => (
               <CommentItem key={review.review_no}>
                 <CommentUser>{review.writer_id} :</CommentUser>
-                <CommentText>{review.review_content}</CommentText>
-                <CommentActions>
-                  <ActionBtn>수정</ActionBtn>
-                  <ActionBtn>삭제</ActionBtn>
-                </CommentActions>
+
+                {editingId === review.review_no ? (
+                  <>
+                    <CommentText>
+                      <CommentInput value={editedContent} onChange={(e) => setEditedContent(e.target.value)} />
+                    </CommentText>
+                    <CommentActions>
+                      <ActionBtn onClick={() => handleSaveEdit(review.review_no)}>저장</ActionBtn>
+                      <ActionBtn onClick={() => setEditingId(null)}>취소</ActionBtn>
+                    </CommentActions>
+                  </>
+                ) : (
+                  <>
+                    <CommentText>{review.review_content}</CommentText>
+                    {review.writer_id === loginUserId && (
+                      <CommentActions>
+                        <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
+                        <ActionBtn onClick={() => handleDelete(review.review_no)}>삭제</ActionBtn>
+                      </CommentActions>
+                    )}
+                  </>
+                )}
               </CommentItem>
             ))}
           </CommentList>
@@ -242,12 +324,23 @@ const MainImageWrapper = styled.div`
   position: relative;
 `;
 
-const MainImage = styled.img`
-  width: 100%;
-  object-fit: cover;
-  border-radius: ${({ theme }) => theme.borderRadius.md};
+const PhotoSliderWrapper = styled.div`
+  width: 80%;
+  margin: 30px auto;
 `;
 
+const SliderImage = styled.img`
+  height: 400px;
+  object-fit: cover;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+`;
+
+const PhotoGallery = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+`;
 const TopButtons = styled.div`
   position: absolute;
   right: 20px;
