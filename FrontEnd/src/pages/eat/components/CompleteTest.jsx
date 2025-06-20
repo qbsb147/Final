@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Today from './Today';
 import styled from 'styled-components';
 import Card from './Card';
-import eatStore from '../../../store/eatStore';
-import { MiniContent, MiniTitle, Subtitle } from '../../../styles/Typography';
+import userStore from '../../../store/userStore';
+import { recommended_intake } from './recommendedIntake';
+import { MiniContent, MiniTitle } from '../../../styles/Typography';
 
 const CompleteTest = () => {
-  const { eats, recommended_intake } = eatStore();
+  const { eats } = userStore();
   const [gender, setGender] = useState('woman');
 
-  useEffect;
   const recommended = recommended_intake[gender];
 
   return (

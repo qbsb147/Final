@@ -175,6 +175,7 @@ const TH = styled.th`
   display: table-cell;
   text-align: left;
   vertical-align: middle;
+  white-space: nowrap;
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-family: ${({ theme }) => theme.fontFamily.primary};

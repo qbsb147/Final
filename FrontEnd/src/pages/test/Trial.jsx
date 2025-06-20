@@ -1,8 +1,10 @@
 import Button from '../../styles/Button';
 import styled from 'styled-components';
 import { WhiteButtonLink } from '../../styles/Link.styles';
+import useUserStore from '../../store/userStore';
 
 const Trial = () => {
+  const { stress, burnout, tendency } = useUserStore();
   return (
     <>
       <Content>
@@ -15,7 +17,14 @@ const Trial = () => {
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <WhiteButtonLink to="/trial/stress">테스트하러 가기</WhiteButtonLink>
+            {stress ? (
+              <ResultContent>
+                <Result>{stress.result_content}</Result>
+                <Score>{stress.score}점</Score>
+              </ResultContent>
+            ) : (
+              <WhiteButtonLink to="/trial/stress">테스트하러 가기</WhiteButtonLink>
+            )}
           </Textbox>
         </TestBox>
         <TestBox>
@@ -29,9 +38,17 @@ const Trial = () => {
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <WhiteButtonLink to="/trial/burnout">테스트하러 가기</WhiteButtonLink>{' '}
+            {burnout ? (
+              <ResultContent>
+                <Result>{burnout.result_content}</Result>
+                <Score>{burnout.score}점</Score>
+              </ResultContent>
+            ) : (
+              <WhiteButtonLink to="/trial/burnout">테스트하러 가기</WhiteButtonLink>
+            )}
           </Textbox>
         </TestBox>
+
         <TestBox>
           <NameBox>
             <TestName>성향 검사</TestName>
@@ -41,13 +58,44 @@ const Trial = () => {
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            <WhiteButtonLink to="/trial/tendency">테스트하러 가기</WhiteButtonLink>{' '}
+            {tendency ? (
+              <ResultContent>
+                <Result>{tendency.result_content}</Result>
+              </ResultContent>
+            ) : (
+              <WhiteButtonLink to="/trial/tendency">테스트하러 가기</WhiteButtonLink>
+            )}
           </Textbox>
         </TestBox>
       </Content>
     </>
   );
 };
+
+const Result = styled.div`
+  width: calc(100% - 50px);
+  height: 100%;
+  overflow: auto;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Score = styled.div`
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 50px;
+  height: 30px;
+  background: white;
+`;
+
+const ResultContent = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+`;
 
 const Img = styled.img`
   box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
@@ -68,6 +116,7 @@ const Textbox = styled.div`
   width: 500px;
   height: 150px;
   background: ${({ theme }) => theme.colors.primary};
+  position: relative;
 `;
 
 const Content = styled.div`
