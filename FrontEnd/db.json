@@ -1501,63 +1501,48 @@
       "id": "b664"
     },
     {
-      "id": "a055",
+      "id": "5a35",
       "tendency": {
-        "stress1": "6",
-        "stress2": "4",
-        "stress3": "2",
-        "stress4": "5",
-        "stress5": "4",
-        "stress6": "2",
-        "stress7": "3"
+        "MBTI": "entj",
+        "PREFERRED_COLOR": "2",
+        "PREFERRED_LOCATION": "4",
+        "SPACE_MOOD": "3",
+        "IMPORTANT_FACTOR": "3",
+        "LEISURE_ACTIVITY": "2",
+        "ACCOMMODATION_TYPE": "2"
       },
       "user_no": 1
     },
     {
-      "id": "a415",
+      "id": "034a",
+      "user_no": 1
+    },
+    {
+      "id": "216c",
+      "user_no": 1
+    },
+    {
+      "id": "b234",
       "tendency": {
-        "stress1": "7",
-        "stress2": "5",
-        "stress3": "3",
-        "stress4": "4",
-        "stress5": "4",
-        "stress6": "3",
-        "stress7": "2"
+        "MBTI": "estp",
+        "PREFERRED_COLOR": "2",
+        "PREFERRED_LOCATION": "3",
+        "SPACE_MOOD": "3",
+        "IMPORTANT_FACTOR": "2",
+        "LEISURE_ACTIVITY": "2",
+        "ACCOMMODATION_TYPE": "2"
       },
       "user_no": 1
     },
     {
-      "id": "4370",
-      "tendency": {
-        "mbti_ei": "E",
-        "mbti_ns": "S",
-        "mbti_tf": "T",
-        "mbti_pj": "J",
-        "mbti": "estj",
-        "stress2": "2",
-        "stress3": "2",
-        "stress4": "4",
-        "stress5": "2",
-        "stress6": "2",
-        "stress7": "3"
-      },
-      "user_no": 1
-    },
-    {
-      "id": "8ff6",
-      "tendency": {
-        "mbti_ei": "I",
-        "mbti_ns": "N",
-        "mbti_tf": "F",
-        "mbti_pj": "P",
-        "mbti": "infp",
-        "stress2": "5",
-        "stress3": "2",
-        "stress4": "3",
-        "stress5": "2",
-        "stress6": "2",
-        "stress7": "2"
-      },
+      "id": "ea26",
+      "MBTI": "estp",
+      "PREFERRED_COLOR": "4",
+      "PREFERRED_LOCATION": "5",
+      "SPACE_MOOD": "4",
+      "IMPORTANT_FACTOR": "3",
+      "LEISURE_ACTIVITY": "2",
+      "ACCOMMODATION_TYPE": "2",
       "user_no": 1
     }
   ],

@@ -24,6 +24,11 @@ export const API_ENDPOINTS = {
     BASE: (mental_no) => `/mental?mental_no=${mental_no}`,
     //스프링 구현하면 지울 내용//
   },
+  // 스프링 구현하면 지울 내용//
   MEMBER_PREFERENCE: '/member_preference',
+  // 스프링 구현하면 지울 내용//
+  // 스프링 구현하면 쓰일 내용//
+  // MEMBER_PREFERENCE: (uesr_no) => `/member_preference/${uesr_no}`,
+  // 스프링 구현하면 쓰일 내용//
   MEMBER_PREFERENCE_GET: (preference_no) => `/member_preference?preference_no=${preference_no}`,
 };

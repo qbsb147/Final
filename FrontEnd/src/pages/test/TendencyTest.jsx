@@ -34,9 +34,20 @@ const TendencyTest = () => {
     const unansweredQuestions = tendency.slice(1).filter(({ id }) => !answers[id]);
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
-    } else {
-      postTendency(answers, navigate);
+      return;
     }
+
+    const payload = {
+      MBTI: answers.mbti,
+      PREFERRED_COLOR: answers['tendency2'],
+      PREFERRED_LOCATION: answers['tendency3'],
+      SPACE_MOOD: answers['tendency4'],
+      IMPORTANT_FACTOR: answers['tendency5'],
+      LEISURE_ACTIVITY: answers['tendency6'],
+      ACCOMMODATION_TYPE: answers['tendency7'],
+    };
+
+    postTendency(payload, navigate);
   };
 
   return (
@@ -180,6 +191,15 @@ const Content = styled.form`
   padding: 20px;
   background: ${({ theme }) => theme.colors.gray['100']};
   width: 100%;
+`;
+
+const Select = styled.select`
+  margin: 0 8px;
+  padding: 4px 8px;
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  border-radius: 4px;
+  border: 1px solid #d3d3d3;
+  background: #fff;
 `;
 
 export default TendencyTest;

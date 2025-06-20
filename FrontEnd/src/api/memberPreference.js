@@ -13,7 +13,7 @@ export const memberPreferenceService = {
 
       //스프링 구현하면 지울 내용//
       await api.post(API_ENDPOINTS.MEMBER_PREFERENCE, {
-        tendency: tendency,
+        ...tendency,
         user_no,
       });
       const { data } = await api.get(API_ENDPOINTS.MEMBER_PREFERENCE_GET(1));
