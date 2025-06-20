@@ -10,7 +10,7 @@ import styled from 'styled-components';
  * @param {Function} onLevelChange - 등급 변경 시 호출될 콜백 함수 (rowIndex, newValue)
  */
 
-const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange  }) => {
+const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange }) => {
   return (
     <TableWrap>
       <thead>
@@ -25,16 +25,15 @@ const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange  }) =
           <tr key={rowIndex}>
             {columns.map((col) => (
               <Td key={col.accessor}>
-                {col.accessor === 'actions' ? (
+                {col.Cell ? (
+                  col.Cell({ rowIndex, row })
+                ) : col.accessor === 'actions' ? (
                   <ButtonWrap>
                     <ApproveBtn onClick={() => onApprove?.(row)}>승인</ApproveBtn>
                     <RejectBtn onClick={() => onReject?.(row)}>거부</RejectBtn>
                   </ButtonWrap>
                 ) : col.accessor === 'level' ? (
-                  <Select
-                    value={row.level}
-                    onChange={(e) => onLevelChange?.(rowIndex, e.target.value)}
-                  >
+                  <Select value={row.level} onChange={(e) => onLevelChange?.(rowIndex, e.target.value)}>
                     <option value="총관리자">총관리자</option>
                     <option value="관리자">관리자</option>
                     <option value="직원">직원</option>

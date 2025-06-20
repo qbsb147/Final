@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
 import MemberSearchBar from '../../components/Member/MemberSearchBar';
 import MemberTable from '../../components/Member/table/MemberTable ';
 
 const MemberList = () => {
+  const [searchKeyword, setSearchKeyword] = useState('');
+
   return (
     <MemberListWrap>
       <LeftNav>
@@ -13,8 +15,8 @@ const MemberList = () => {
       <MainContent>
         <Title>직원 정보</Title>
         <Container>
-          <MemberSearchBar />
-          <MemberTable />
+          <MemberSearchBar onSearch={setSearchKeyword} />
+          <MemberTable searchKeyword={searchKeyword} />
         </Container>
       </MainContent>
     </MemberListWrap>

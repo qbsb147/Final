@@ -681,6 +681,7 @@
   ],
   "member": [
     {
+      "id": "1",
       "user_no": 1,
       "company_no": 1,
       "user_id": "user1@example.com",
@@ -691,7 +692,7 @@
       "birthday": "1987-09-28",
       "address": "서울특별시 구로구 1길 11번지",
       "phone": "010-1000-1001",
-      "role": "manager",
+      "role": "master",
       "create_at": "2025-06-02T09:00:00",
       "update_at": "2025-06-02T09:00:00",
       "status": "Y"
@@ -912,8 +913,8 @@
       "application_no": 1,
       "ref_member_no": 1,
       "ref_worcation_no": 1,
-      "start_date": "2025-07-01",
-      "end_date": "2025-07-05",
+      "start_date": "2025-06-18",
+      "end_date": "2025-06-19",
       "approve": "Y",
       "create_at": "2025-06-10T10:00:00",
       "update_at": "2025-06-12T14:00:00"
@@ -1638,7 +1639,6 @@
       "companyPhone": "42"
     }
   ],
-
   "review": [
     {
       "review_no": 1,
