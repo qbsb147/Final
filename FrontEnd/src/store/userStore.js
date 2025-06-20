@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { mentalService } from '../api/mentals';
+import { memberPreferenceService } from '../api/memberPreference';
 
 const useUserStore = create((set) => ({
   user: {
@@ -42,6 +44,54 @@ const useUserStore = create((set) => ({
       explain: '세로토닌 분비 시작을 도와주는 아침식단 귀리 + 견과류 + 과일 조합은  천연 항우울/항스트레스 조합입니다.',
     },
   ],
+
+  postStress: async (answers, navigate) => {
+    const user_no = useUserStore.getState().user.user_no;
+    try {
+      const stress = await mentalService.postStress({
+        stress: answers,
+        user_no: user_no,
+      });
+      console.log('stress', stress);
+      set({ stress });
+
+      navigate('/trial');
+    } catch (error) {
+      console.error('제출 에러 : ', error);
+    }
+  },
+
+  postBurnout: async (answers, navigate) => {
+    const user_no = useUserStore.getState().user.user_no;
+    try {
+      const burnout = await mentalService.postBurnout({
+        burnout: answers,
+        user_no: user_no,
+      });
+
+      set({ burnout });
+
+      navigate('/trial');
+    } catch (error) {
+      console.error('제출 에러 : ', error);
+    }
+  },
+
+  postTendency: async (answers, navigate) => {
+    const user_no = useUserStore.getState().user.user_no;
+    try {
+      const tendency = await memberPreferenceService.postTendency({
+        tendency: answers,
+        user_no: user_no,
+      });
+
+      set({ tendency });
+
+      navigate('/trial');
+    } catch (error) {
+      console.error('제출 에러 : ', error);
+    }
+  },
   login: () => {
     set({
       user: {},

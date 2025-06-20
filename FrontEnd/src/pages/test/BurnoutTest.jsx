@@ -2,13 +2,14 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
-import { mentalService } from '../../api/mentals';
-import { toast } from 'react-toastify';
-import { questions } from './questionsBurnout';
+import useUserStore from '../../store/userStore';
+import { burnout } from './questions';
 
 const BurnoutTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
+  const { postBurnout } = useUserStore.getState();
+
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
       ...prev,
@@ -18,21 +19,12 @@ const BurnoutTest = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const unansweredQuestions = questions.filter(({ id }) => !answers[id]);
+    const unansweredQuestions = burnout.filter(({ id }) => !answers[id]);
 
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
     } else {
-      try {
-        await mentalService.postBurnout({
-          stress: answers,
-        });
-        toast.success('번아웃 검사를 마쳤습니다.');
-        navigate('/trial');
-      } catch (error) {
-        toast.error('번아웃 검사에 문제가 발생했습니다.');
-        console.error('제출 에러 : ', error);
-      }
+      postBurnout(answers, navigate);
     }
   };
 
@@ -42,7 +34,7 @@ const BurnoutTest = () => {
         <Title>번아웃 자가진단테스트</Title>
       </TitleBox>
 
-      {questions.map(({ id, question, options }) => (
+      {burnout.map(({ id, question, options }) => (
         <TestContent key={id} checked={!!answers[id]}>
           <MainTest>
             <Test>{question}</Test>

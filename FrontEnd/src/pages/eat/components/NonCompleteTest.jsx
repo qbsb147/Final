@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Title, Subtitle } from '../../../styles/Typography';
-import eatStore from '../../../store/eatStore';
+import userStore from '../../../store/userStore';
+import { Link } from 'react-router-dom';
 
 const NonCompleteTest = () => {
-  const { body, brain } = eatStore();
+  const { body, stress, burnout, tendency } = userStore();
   return (
     <div>
       {' '}
@@ -23,14 +24,18 @@ const NonCompleteTest = () => {
           )}
         </Element>
         <Element>
-          <Image src="src/assets/brain.png" alt="brain"></Image>
-          {brain ? (
+          {stress && burnout && tendency ? (
             <>
+              <Image src="src/assets/brain.png" alt="brain"></Image>
+
               <Subtitle>심리 테스트를 마쳤어요</Subtitle>
             </>
           ) : (
             <>
-              <Subtitle>심리 테스트 하기</Subtitle>
+              <Link to="/trial">
+                <Image src="src/assets/brain.png" alt="brain"></Image>
+                <Subtitle>심리 테스트 하기</Subtitle>
+              </Link>
             </>
           )}
         </Element>

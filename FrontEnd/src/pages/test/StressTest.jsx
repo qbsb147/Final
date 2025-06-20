@@ -1,16 +1,14 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import Input from '../../styles/Input';
-import { mentalService } from '../../api/mentals';
-import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useUserStore from '../../store/userStore';
-import { questions } from './questionsStress';
+import { stress } from './questions';
 
 const StressTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({});
+  const { postStress } = useUserStore.getState();
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -18,24 +16,13 @@ const StressTest = () => {
       [id]: value,
     }));
   };
-  const loginUser = useUserStore((state) => state.user);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const unansweredQuestions = questions.filter(({ id }) => !answers[id]);
+    const unansweredQuestions = stress.filter(({ id }) => !answers[id]);
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
     } else {
-      try {
-        await mentalService.postStress({
-          stress: answers,
-          user_no: loginUser.user_no,
-        });
-        toast.success('스트레스 검사를 마쳤습니다.');
-        navigate('/trial');
-      } catch (error) {
-        toast.error('스트레스 검사에 문제가 발생했습니다.');
-        console.error('제출 에러 : ', error);
-      }
+      postStress(answers, navigate);
     }
   };
 
@@ -45,7 +32,7 @@ const StressTest = () => {
         <Title>스트레스 자가진단테스트</Title>
       </TitleBox>
 
-      {questions.map(({ id, question, options }) => (
+      {stress.map(({ id, question, options }) => (
         <TestContent key={id} checked={!!answers[id]}>
           <MainTest>
             <Test>{question}</Test>

@@ -2,10 +2,14 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import Input from '../../styles/Input';
-import { questions } from './questionsTendency';
+import { tendency } from './questions';
+import useUserStore from '../../store/userStore';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const TendencyTest = () => {
+  const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
+  const { postTendency } = useUserStore.getState();
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -13,14 +17,23 @@ const TendencyTest = () => {
       [id]: value,
     }));
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const unansweredQuestions = tendency.filter(({ id }) => !answers[id]);
+    if (unansweredQuestions.length > 0) {
+      alert('모든 질문에 답변을 해주세요!');
+    } else {
+      postTendency(answers, navigate);
+    }
+  };
 
   return (
-    <Content>
+    <Content onSubmit={handleSubmit}>
       <TitleBox>
         <Title>성향 분석 테스트</Title>
       </TitleBox>
 
-      {questions.map(({ id, question, options }) => (
+      {tendency.map(({ id, question, options }) => (
         <TestContent key={id} checked={!!answers[id]}>
           <MainTest>
             <Test>{question}</Test>
@@ -119,7 +132,7 @@ const Test = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
 
-const TestContent = styled.form`
+const TestContent = styled.div`
   background: ${({ theme, checked }) => (checked ? theme.colors.primary : theme.colors.white)};
   padding: 10px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -138,7 +151,7 @@ const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xl};
 `;
 
-const Content = styled.div`
+const Content = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
