@@ -46,6 +46,7 @@ public class WorcationPartner {
     private LocalDate endTime;
 
     @Column(name = "approve", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
 
     @Column(name = "create_at", nullable = false)

@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+@Table(name = "company_profile")
 public class CompanyProfile {
 
     @Id
@@ -42,6 +43,7 @@ public class CompanyProfile {
     private String companyEmail;
 
     @Column(name = "approve", nullable = false)
+    @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
 
     @PrePersist

@@ -22,15 +22,19 @@ public class WorcationFeatures {
     private Worcation worcation;
 
     @Column(name = "location_type")
+    @Enumerated(EnumType.STRING)
     private WorcationEnums.LocationType locationType;
 
     @Column(name = "dominant_color")
+    @Enumerated(EnumType.STRING)
     private WorcationEnums.DominantColor dominantColor;
 
     @Column(name = "space_mood")
+    @Enumerated(EnumType.STRING)
     private WorcationEnums.SpaceMood spaceMood;
 
     @Column(name = "besr_for")
+    @Enumerated(EnumType.STRING)
     private WorcationEnums.BestFor besrFor;
 
     @Lob
@@ -38,5 +42,6 @@ public class WorcationFeatures {
     private String activities;
 
     @Column(name = "accommodation_type")
+    @Enumerated(EnumType.STRING)
     private WorcationEnums.AccommodationType accommodationType;
 }

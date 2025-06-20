@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 // import 'slick-carousel/slick/slick.css';
 // import 'slick-carousel/slick/slick-theme.css';
 // import Slider from 'react-slick';
-// import { useUserStore } from '../store/useUserStore';
+// import { useUserStore } from '../store/userStore';
 
 const WorcationDetail = () => {
   // const navigate = useNavigate();
