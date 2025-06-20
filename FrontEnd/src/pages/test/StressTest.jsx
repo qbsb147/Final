@@ -1,123 +1,14 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import Input from '../../styles/Input';
-
-const questions = [
-  {
-    id: 'stress1',
-    question: '예상 밖의 일 때문에 속상한 적은 얼마나 있었나요?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress2',
-    question: '인생에서 중요한 일을 제어할 수 없다고 느낀 경우는 얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress3',
-    question: '긴장되고 스트레스를 받았다고 느낀 경우는 얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress4',
-    question: '개인적인 문제들을 처리하는 능력에 대해 몇 번이나 확신했는가?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress5',
-    question: '얼마나 자주 화를 억누를 수 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress6',
-    question: '해야 할 일을 감당할 수 없다고 느낀적은 얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress7',
-    question: '기분이 매우 좋다고 느낀 적은 얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress8',
-    question: '일들이 잘 안 풀릴 때 얼마나 자주 화를 냈나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress9',
-    question: '어려운 일이 과도하게 누적돼 극복할 수 없다고 생각한 경우는얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-  {
-    id: 'stress10',
-    question: '일들이 당신의 뜻대로 된다고 느낀 경우는 얼마나 있었나?',
-    options: [
-      { value: '1', label: '전혀없었다.' },
-      { value: '2', label: '거의없었다.' },
-      { value: '3', label: '때때로 있었다.' },
-      { value: '4', label: '자주 있었다.' },
-      { value: '5', label: '매우 자주 있었다.' },
-    ],
-  },
-];
+import { Navigate, useNavigate } from 'react-router-dom';
+import useUserStore from '../../store/userStore';
+import { stress } from './questions';
 
 const StressTest = () => {
-  const [answers, setAnswers] = useState({}); // 선택 상태 저장
+  const navigate = useNavigate();
+  const [answers, setAnswers] = useState({});
+  const { postStress } = useUserStore.getState();
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -125,14 +16,23 @@ const StressTest = () => {
       [id]: value,
     }));
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const unansweredQuestions = stress.filter(({ id }) => !answers[id]);
+    if (unansweredQuestions.length > 0) {
+      alert('모든 질문에 답변을 해주세요!');
+    } else {
+      postStress(answers, navigate);
+    }
+  };
 
   return (
-    <Content>
+    <Content onSubmit={handleSubmit}>
       <TitleBox>
         <Title>스트레스 자가진단테스트</Title>
       </TitleBox>
 
-      {questions.map(({ id, question, options }) => (
+      {stress.map(({ id, question, options }) => (
         <TestContent key={id} checked={!!answers[id]}>
           <MainTest>
             <Test>{question}</Test>
@@ -170,6 +70,7 @@ const Btn = styled(ButtonDetail)`
   width: 130px;
   height: 40px;
 `;
+
 const Inputs = styled.input`
   appearance: none;
   -webkit-appearance: none;
@@ -225,7 +126,7 @@ const Test = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
 
-const TestContent = styled.form`
+const TestContent = styled.div`
   background: ${({ theme, checked }) => (checked ? theme.colors.primary : theme.colors.white)};
   padding: 10px;
   border-radius: ${({ theme }) => theme.borderRadius.md};
@@ -243,7 +144,7 @@ const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xl};
 `;
 
-const Content = styled.div`
+const Content = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
