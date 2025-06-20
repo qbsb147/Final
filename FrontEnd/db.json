@@ -1525,6 +1525,40 @@
         "stress7": "2"
       },
       "user_no": 1
+    },
+    {
+      "id": "4370",
+      "tendency": {
+        "mbti_ei": "E",
+        "mbti_ns": "S",
+        "mbti_tf": "T",
+        "mbti_pj": "J",
+        "mbti": "estj",
+        "stress2": "2",
+        "stress3": "2",
+        "stress4": "4",
+        "stress5": "2",
+        "stress6": "2",
+        "stress7": "3"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "8ff6",
+      "tendency": {
+        "mbti_ei": "I",
+        "mbti_ns": "N",
+        "mbti_tf": "F",
+        "mbti_pj": "P",
+        "mbti": "infp",
+        "stress2": "5",
+        "stress3": "2",
+        "stress4": "3",
+        "stress5": "2",
+        "stress6": "2",
+        "stress7": "2"
+      },
+      "user_no": 1
     }
   ],
   "mental": [

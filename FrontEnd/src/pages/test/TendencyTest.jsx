@@ -5,6 +5,8 @@ import Input from '../../styles/Input';
 import { tendency } from './questions';
 import useUserStore from '../../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
+import MbtiSelect from './components/mbtiSelect';
 
 const TendencyTest = () => {
   const navigate = useNavigate();
@@ -12,14 +14,24 @@ const TendencyTest = () => {
   const { postTendency } = useUserStore.getState();
 
   const handleChange = (id, value) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
+    setAnswers((prev) => {
+      const updated = {
+        ...prev,
+        [id]: value,
+      };
+      if (updated.mbti_ei && updated.mbti_ns && updated.mbti_tf && updated.mbti_pj) {
+        updated.mbti = (updated.mbti_ei + updated.mbti_ns + updated.mbti_tf + updated.mbti_pj).toLowerCase();
+      }
+      return updated;
+    });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const unansweredQuestions = tendency.filter(({ id }) => !answers[id]);
+    if (!answers.mbti) {
+      alert('MBTI 4가지를 모두 선택해주세요!');
+      return;
+    }
+    const unansweredQuestions = tendency.slice(1).filter(({ id }) => !answers[id]);
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
     } else {
@@ -33,7 +45,16 @@ const TendencyTest = () => {
         <Title>성향 분석 테스트</Title>
       </TitleBox>
 
-      {tendency.map(({ id, question, options }) => (
+      {/* MBTI Selects */}
+      <TestContent checked={answers.mbti_ei && answers.mbti_ns && answers.mbti_tf && answers.mbti_pj}>
+        <MainTest>
+          <Test>MBTI를 선택해주세요.</Test>
+        </MainTest>
+        <MbtiSelect answers={answers} handleChange={handleChange} />
+      </TestContent>
+
+      {/* 나머지 문항 (1번 제외) */}
+      {tendency.slice(1).map(({ id, question, options }) => (
         <TestContent key={id} checked={!!answers[id]}>
           <MainTest>
             <Test>{question}</Test>
@@ -60,6 +81,7 @@ const TendencyTest = () => {
     </Content>
   );
 };
+
 const BtnBox = styled.div`
   display: flex;
   align-items: center;
