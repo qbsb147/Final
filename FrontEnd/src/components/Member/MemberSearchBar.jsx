@@ -1,17 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import SearchBtn from '../../assets/SearchBtn.png';
 import btn from '../../styles/Button';
-const MemberSearchBar = () => {
+
+const MemberSearchBar = ({ onSearch }) => {
+  const [searchText, setSearchText] = useState('');
+
+  const handleInputChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleSearchClick = () => {
+    onSearch(searchText.trim());
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      onSearch(searchText.trim());
+    }
+  };
+
   return (
     <BarWrap>
       <LeftSide>
-      <SearchWrapper>
-        <BtnImg src={SearchBtn} />
-        <SearchInput type="text" placeholder="직원 이름을 입력해주세요" />
+        <SearchWrapper>
+          <BtnImg src={SearchBtn} />
+          <SearchInput
+            type="text"
+            placeholder="직원 이름을 입력해주세요"
+            value={searchText}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+          />
         </SearchWrapper>
       </LeftSide>
-        <RightBtn style={btn.buttonYb}>검색</RightBtn>
+      <RightBtn style={btn.buttonYb} onClick={handleSearchClick}>
+        검색
+      </RightBtn>
     </BarWrap>
   );
 };
@@ -25,7 +50,7 @@ const BarWrap = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius['3xl']};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-family: ${({ theme }) => theme.fontFamily.secondary};
-  background-color : ${({ theme }) => theme.colors.white};;
+  background-color: ${({ theme }) => theme.colors.white};
 `;
 
 const BtnImg = styled.img`
