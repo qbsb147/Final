@@ -35,7 +35,7 @@ const step2InputsForTypeB = [
   { name: 'businessId', type: 'text', placeholder: '사업자번호', side: 'left' },
   { name: 'businessName', type: 'text', placeholder: '사업자명', side: 'left' },
   { name: 'openDate', type: 'text', placeholder: '개업일', side: 'left' },
-  { name: 'adress', type: 'text', placeholder: '기업주소', side: 'right' },
+  { name: 'address', type: 'text', placeholder: '기업주소', side: 'right' },
   { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
   { name: 'companyTel', type: 'text', placeholder: '기업전화번호', side: 'right' },
 ];
@@ -424,4 +424,3 @@ const Label = styled.label`
 `;
 
 export default SignUp;
-0
