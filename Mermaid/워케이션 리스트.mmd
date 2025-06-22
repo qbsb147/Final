@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor User as 사용자 (사원)
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+
+    %% 워케이션 장소 리스트 조회
+    User->>Frontend: 리스트 보기 (전체 / 제휴 / 추천만)
+    Frontend->>SpringBoot: 리스트 요청 (필터 타입 포함)
+    SpringBoot->>DB: 워케이션 장소 필터별 조회
+    DB-->>SpringBoot: 장소 리스트 반환
+    SpringBoot-->>Frontend: 리스트 응답
+    Frontend->>User: 장소 리스트 렌더링
+
+    %% 내 예약 보기
+    User->>Frontend: "내 예약 보기" 클릭
+    Frontend->>SpringBoot: 해당 사용자 예약 목록 요청
+    SpringBoot->>DB: 예약 테이블에서 현재 및 지난 예약 조회
+    DB-->>SpringBoot: 예약 리스트 반환
+    SpringBoot-->>Frontend: 예약 정보 응답
+    Frontend->>User: 예약된 장소 / 이용 완료 장소 표시 (각 항목에 상세보기, 취소 버튼 포함)
+
+    %% 상세보기 (선택적)
+    User->>Frontend: 상세보기 버튼 클릭
+    Frontend->>SpringBoot: 장소 상세 정보 요청
+    SpringBoot->>DB: 상세 정보 조회
+    DB-->>SpringBoot: 정보 반환
+    SpringBoot-->>Frontend: 상세 정보 응답
+    Frontend->>User: 상세 정보 화면 표시
+
+    %% 예약 취소 (리스트에서 직접 가능)
+    User->>Frontend: 예약 항목의 "예약 취소" 버튼 클릭
+    Frontend->>SpringBoot: 예약 취소 요청
+    SpringBoot->>DB: 예약 상태 '취소'로 업데이트
+    DB-->>SpringBoot: 업데이트 완료
+    SpringBoot-->>Frontend: 취소 완료 응답
+    Frontend->>User: "예약이 취소되었습니다" 메시지 표시

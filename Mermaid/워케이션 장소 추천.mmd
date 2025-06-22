@@ -1,0 +1,30 @@
+sequenceDiagram
+    actor User as 사용자 (사원 or 관리자)
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot + Spring AI)
+    participant DB as 데이터베이스
+
+    %% 추천 요청 트리거
+    User->>Frontend: AI 추천 받기 버튼 클릭 (메인화면 or 목록)
+    Frontend->>SpringBoot: 추천 요청
+
+    %% 사용자 유형 분기
+    alt 관리자
+        SpringBoot->>DB: 전체 직원 성향 및 심리 통계 조회
+        DB-->>SpringBoot: 통계 데이터 반환
+    else 일반 사원
+        SpringBoot->>DB: 해당 사원의 성향 및 심리 정보 조회
+        DB-->>SpringBoot: 사원 데이터 반환
+    end
+
+    %% Spring AI 요청
+    SpringBoot->>SpringBoot: 성향 및 심리 데이터 → Spring AI 전달
+    SpringBoot->>SpringBoot: AI로부터 추천 필터 json 수신
+
+    %% 필터 저장
+    SpringBoot->>DB: 추천 필터 설정 저장 (회원 기준 1:1, updated_date 포함)
+    SpringBoot-->>Frontend: 추천 필터 json 응답
+    Frontend->>User: 필터 적용된 워케이션 리스트 표시
+
+    %% 하루 지나면 다시 추천 필요
+    Note over Frontend,User: 하루 경과 시 필터 자동 만료 → "AI 추천 받기" 버튼 재노출

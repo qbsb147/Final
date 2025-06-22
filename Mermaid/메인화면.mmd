@@ -1,0 +1,52 @@
+sequenceDiagram
+    actor User as 사용자
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot + Spring AI)
+    participant DB as 데이터베이스
+
+    Note over User, Frontend: [검색 기능]
+
+    Frontend->>User: 일정 선택 캘린더 노출
+    User->>Frontend: 일정 선택 + 검색어 입력
+    Frontend->>SpringBoot: 지역/업체명 검색 API 호출
+    SpringBoot-->>Frontend: 검색 결과(지역 리스트 등)
+    Frontend->>User: 검색 결과 표시
+    
+    Note over User, Frontend: [심리 정보 표시]
+    Frontend->>SpringBoot: 심리 정보 API 요청
+    SpringBoot->>DB: 사용자 심리 정보 조회
+    DB-->>SpringBoot: 스트레스/번아웃 점수 or 없음
+    SpringBoot-->>Frontend: 심리 정보 응답
+    alt 검사 완료
+        Frontend->>User: 점수 및 상태 표시
+    else 검사 안함
+        Frontend->>User: "테스트 하기" 버튼 표시
+    end
+
+    Note over User, Frontend: [인기 명소 표시]
+    Frontend->>SpringBoot: 인기 명소 API 요청
+    SpringBoot->>DB: 최근 한 달 예약 많은 장소 조회
+    DB-->>SpringBoot: 인기 명소 리스트
+    SpringBoot-->>Frontend: 명소 데이터 전달
+    Frontend->>User: 인기 명소 보여주기
+    
+    Note over User, Frontend: [제휴 업체 표시]
+    Frontend->>SpringBoot: 제휴 업체 API 요청
+    SpringBoot->>DB: 회원의 회사 제휴 업체 조회
+    DB-->>SpringBoot: 제휴 업체 리스트
+    SpringBoot-->>Frontend: 업체 데이터 전달
+    Frontend->>User: 제휴 업체 보여주기
+
+    Note over User, Frontend: [AI추천 명소 표시]
+
+    User->>Frontend: "AI 추천 받기" 클릭
+    Frontend->>SpringBoot: AI 추천 요청
+
+    SpringBoot->>DB: 사용자 선호도
+    DB-->>SpringBoot: 추천용 데이터 반환
+
+    Note right of SpringBoot: Spring AI Prompt 구성
+
+    SpringBoot->>SpringBoot: Spring AI로 프롬프트 전송 및 응답 수신
+    SpringBoot-->>Frontend: AI 추천 장소 목록
+    Frontend->>User: 추천 결과 표시

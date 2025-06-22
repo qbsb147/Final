@@ -45,7 +45,7 @@ public class WorcationPartner {
     @Column(name = "end_date", nullable = false)
     private LocalDate endTime;
 
-    @Column(name = "approve", nullable = false)
+    @Column(name = "approve", nullable = true)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
 
@@ -59,9 +59,6 @@ public class WorcationPartner {
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
-        if(this.approve == null) {
-            approve = CommonEnums.Approve.N;
-        }
     }
 
 }

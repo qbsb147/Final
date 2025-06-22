@@ -1,0 +1,31 @@
+sequenceDiagram
+    actor User as 사용자(사원)
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+
+%% 워케이션 상세 → 신청
+    User->>Frontend: 워케이션 상세 페이지 접속
+    User->>Frontend: "신청하기" 버튼 클릭
+    Frontend->>User: 워케이션 신청 페이지 렌더링 (캘린더 포함)
+
+%% 자동 기입 및 금액 표시
+    Frontend->>User: 이름 자동 기입, 비제휴 금액 표시
+
+%% 일정 선택
+    User->>Frontend: 캘린더에서 시작일/종료일 선택
+    Frontend->>User: 선택한 일정 input에 자동 기입
+
+%% 신청
+    User->>Frontend: "신청" 버튼 클릭
+    Frontend->>SpringBoot: 신청 정보 전달
+    SpringBoot->>DB: 워케이션 신청 INSERT
+    DB-->>SpringBoot: 저장 완료
+    SpringBoot-->>Frontend: 신청 완료 응답
+    Frontend->>User: "신청 완료되었습니다" 메시지 표시
+
+%% 취소
+    alt 취소 버튼 클릭 시
+        User->>Frontend: "취소" 버튼 클릭
+        Frontend->>User: 이전 페이지(상세 화면)로 이동
+    end

@@ -33,9 +33,9 @@ public class WorcationFeatures {
     @Enumerated(EnumType.STRING)
     private WorcationEnums.SpaceMood spaceMood;
 
-    @Column(name = "besr_for")
+    @Column(name = "best_for")
     @Enumerated(EnumType.STRING)
-    private WorcationEnums.BestFor besrFor;
+    private WorcationEnums.BestFor bestFor;
 
     @Lob
     @Column(name = "activities")

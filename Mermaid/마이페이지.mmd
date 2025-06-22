@@ -1,0 +1,23 @@
+sequenceDiagram
+    actor User as 사용자
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+
+    Note over User, Frontend: 마이페이지 접근
+
+    User->>Frontend: 마이페이지 클릭
+    Frontend->>SpringBoot: 회원 정보 + 신체 정보 조회 API
+    SpringBoot->>DB: 사용자 정보, 건강 정보 쿼리
+    DB-->>SpringBoot: 데이터 반환
+    SpringBoot-->>Frontend: 사용자 정보 + 운동 정보
+    Frontend->>User: 정보 렌더링 (회원 + 건강 정보)
+
+    Note over User, Frontend: 정보 수정 또는 등록
+
+    User->>Frontend: 정보 수정 or 등록 후 저장 클릭
+    Frontend->>SpringBoot: 사용자 정보 수정/등록 API
+    SpringBoot->>DB: 정보 업데이트 or INSERT
+    DB-->>SpringBoot: 반영 완료 응답
+    SpringBoot-->>Frontend: 성공 메시지
+    Frontend->>User: 수정 완료 알림 표시

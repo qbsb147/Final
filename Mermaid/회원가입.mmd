@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    actor 사용자
+    participant 클라이언트
+    participant 서버
+    participant 국세청API
+    actor 회사관리자
+
+    %% 1. 회원 유형 선택 및 정보 입력
+    사용자->>클라이언트: 회원가입 유형 선택 (master/employee/worcation)
+    사용자->>클라이언트: 회원 정보 입력 (user_id, user_pwd, name,email, gender, birthday, address, phone)
+
+    %% 2. 기업/사업장 등록 (master, manager, worcation)
+    alt 기업/숙박 사업자 등록 필요
+        사용자->>클라이언트: 사업자 등록번호 등 입력
+        클라이언트->>국세청API: 사업자등록번호 진위 조회
+        국세청API-->>클라이언트: 사업자 유효 응답
+        클라이언트->>서버: 사업장 정보 등록 요청
+        서버-->>클라이언트: 등록 완료
+    end
+
+    %% 3. 일반 사원 가입 (employee)
+    alt 일반 사원(employee)
+        사용자->>클라이언트: 회사명 검색어 입력
+        클라이언트->>서버: 회사명 검색 API 호출
+        서버-->>클라이언트: 회사 목록 응답 (company_name, address, company_no)
+        사용자->>클라이언트: 회사 선택
+        클라이언트->>서버: company_no 포함하여 사원 정보 제출
+        서버-->>클라이언트: 가입 완료(대기 상태)
+
+        note right of 사용자: 사원은 승인 전까지 제한된 기능만 사용 가능
+
+        서버->>회사관리자: 사원 승인 요청 알림
+        회사관리자->>서버: 사원 승인 처리
+        서버-->>사용자: 승인 완료 알림
+    end
+
+    %% 4. 최종 완료
+    클라이언트-->>사용자: 회원가입 완료 메시지
