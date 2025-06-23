@@ -5,6 +5,8 @@ import seoul1 from '../assets/seoul1.jpg';
 import siheung1 from '../assets/siheung1.jpg';
 import siheung2 from '../assets/siheung2.jpg';
 import { Link, useNavigate } from 'react-router-dom';
+import useWorcationStore from '../store/useWorcationStore';
+import useUserStore from '../store/UserStore';
 import axios from 'axios';
 
 const data = [
@@ -37,23 +39,12 @@ const data = [
 const WorcationList = () => {
   const [viewMode, setViewMode] = useState('all');
   const navigate = useNavigate();
-  const [worcations, setWorcations] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [partners, setPartners] = useState([]);
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/worcation')
-      .then((res) => setWorcations(res.data))
-      .catch(console.error);
+  const { user } = useUserStore();
 
-    axios
-      .get('http://localhost:3001/worcation_partner')
-      .then((res) => setPartners(res.data.filter((p) => p.approve === 'Y')))
-      .catch(console.error);
-    axios
-      .get('http://localhost:3001/review')
-      .then((res) => setReviews(res.data))
-      .catch(console.error);
+  const { worcations, partners, reviews, initWorcationData } = useWorcationStore();
+
+  useEffect(() => {
+    initWorcationData();
   }, []);
 
   const handleToggleView = (mode) => {
@@ -76,12 +67,7 @@ const WorcationList = () => {
       </ButtonWrapper>
 
       <SectionTitle>
-        {
-          {
-            all: '전체 리스트 보기',
-            partner: '제휴 업체 보기',
-          }[viewMode]
-        }
+        {{ all: '전체 리스트 보기', partner: '제휴 업체 보기', ai: 'AI 추천 제휴 업체' }[viewMode]}
       </SectionTitle>
 
       {viewMode === 'all' && (
@@ -111,26 +97,24 @@ const WorcationList = () => {
       {viewMode === 'partner' && (
         <CardList>
           {partners.map((partner) => {
-            const matchedWorcation = worcations.find((w) => w.worcation_no === partner.worcation_no);
-            if (!matchedWorcation) return null;
-
+            const matched = worcations.find((w) => w.worcation_no === partner.worcation_no);
+            console.log('matched:', matched);
+            if (!matched) return null;
             return (
               <PlaceCard key={partner.partner_no}>
-                <PlaceImage src={matchedWorcation.main_change_photo} alt={matchedWorcation.worcation_name} />
+                <PlaceImage src={matched.main_change_photo} alt={matched.worcation_name} />
                 <CardContent>
                   <InfoBlock>
-                    <PlaceLocation>{matchedWorcation.address}</PlaceLocation>
-                    <PlaceName>{matchedWorcation.worcation_name}</PlaceName>
+                    <PlaceLocation>{matched.address}</PlaceLocation>
+                    <PlaceName>{matched.worcation_name}</PlaceName>
                     <PlaceReview>
-                      리뷰 ({reviews.filter((r) => r.application_no === matchedWorcation.worcation_no).length})
+                      리뷰 ({reviews.filter((r) => r.application_no === matched.worcation_no).length})
                     </PlaceReview>
                   </InfoBlock>
                   <ThemeBlock>
                     <ThemeLabel>테마</ThemeLabel>
-                    <ThemeText>{matchedWorcation.worcation_thema || '미지정'}</ThemeText>
-                    <ButtonDetail onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}>
-                      상세보기
-                    </ButtonDetail>
+                    <ThemeText>{matched.worcation_thema || '미지정'}</ThemeText>
+                    <ButtonDetail onClick={() => navigate(`/worcation/${matched.worcation_no}`)}>상세보기</ButtonDetail>
                   </ThemeBlock>
                 </CardContent>
               </PlaceCard>
@@ -138,35 +122,37 @@ const WorcationList = () => {
           })}
         </CardList>
       )}
+
       {viewMode === 'ai' && (
         <>
-          <SectionTitle>AI 추천 제휴 업체</SectionTitle>
           <CardList>
-            {partners.map((partner) => {
-              const matched = worcations.find((w) => w.worcation_no === partner.worcation_no);
-              if (!matched) return null;
-              return (
-                <PlaceCard key={partner.partner_no}>
-                  <PlaceImage src={matched.main_change_photo} alt={matched.worcation_name} />
-                  <CardContent>
-                    <InfoBlock>
-                      <PlaceLocation>{matched.address}</PlaceLocation>
-                      <PlaceName>{matched.worcation_name}</PlaceName>
-                      <PlaceReview>
-                        리뷰 ({reviews.filter((r) => r.application_no === matched.worcation_no).length})
-                      </PlaceReview>
-                    </InfoBlock>
-                    <ThemeBlock>
-                      <ThemeLabel>테마</ThemeLabel>
-                      <ThemeText>{matched.worcation_thema || '미지정'}</ThemeText>
-                      <ButtonDetail onClick={() => navigate(`/worcation/${matched.worcation_no}`)}>
-                        상세보기
-                      </ButtonDetail>
-                    </ThemeBlock>
-                  </CardContent>
-                </PlaceCard>
-              );
-            })}
+            {partners
+              .filter((partner) => (user?.company_no ? partner.company_no === user.company_no : true))
+              .map((partner) => {
+                const matched = worcations.find((w) => w.worcation_no === partner.worcation_no);
+                if (!matched) return null;
+                return (
+                  <PlaceCard key={partner.partner_no}>
+                    <PlaceImage src={matched.main_change_photo} alt={matched.worcation_name} />
+                    <CardContent>
+                      <InfoBlock>
+                        <PlaceLocation>{matched.address}</PlaceLocation>
+                        <PlaceName>{matched.worcation_name}</PlaceName>
+                        <PlaceReview>
+                          리뷰 ({reviews.filter((r) => r.application_no === matched.worcation_no).length})
+                        </PlaceReview>
+                      </InfoBlock>
+                      <ThemeBlock>
+                        <ThemeLabel>테마</ThemeLabel>
+                        <ThemeText>{matched.worcation_thema || '미지정'}</ThemeText>
+                        <ButtonDetail onClick={() => navigate(`/worcation/${matched.worcation_no}`)}>
+                          상세보기
+                        </ButtonDetail>
+                      </ThemeBlock>
+                    </CardContent>
+                  </PlaceCard>
+                );
+              })}
           </CardList>
 
           <Container2>
@@ -196,6 +182,7 @@ const WorcationList = () => {
     </Container>
   );
 };
+
 export default WorcationList;
 
 const Container = styled.div`

@@ -9,6 +9,7 @@ import Slider from 'react-slick';
 import useUserStore from '../store/userStore.js';
 
 const WorcationDetail = () => {
+  // const navigate = useNavigate();
   const loginUserId = 'user01@example.com'; //추후 불러오는걸로 수정 필요
   // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
   const navigate = useNavigate();
@@ -283,6 +284,7 @@ const WorcationDetail = () => {
                 ) : (
                   <>
                     <CommentText>{review.review_content}</CommentText>
+
                     {review.writer_id === loginUserId && (
                       <CommentActions>
                         <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
@@ -443,17 +445,20 @@ const CommentUser = styled.span`
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-family: 'GyeonggiTitleOTF';
+  width: 20%;
 `;
 
 const CommentText = styled.span`
   margin-right: 200px;
   width: auto;
   font-size: ${({ theme }) => theme.fontSizes.lg};
+  flex: 1;
 `;
 
 const CommentActions = styled.div`
   display: flex;
   gap: 10px;
+  width: 10%;
 `;
 
 const ActionBtn = styled.button`
