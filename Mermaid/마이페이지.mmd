@@ -13,11 +13,20 @@ sequenceDiagram
     SpringBoot-->>Frontend: 사용자 정보 + 운동 정보
     Frontend->>User: 정보 렌더링 (회원 + 건강 정보)
 
-    Note over User, Frontend: 정보 수정 또는 등록
+    Note over User, Frontend: 정보 수정
 
-    User->>Frontend: 정보 수정 or 등록 후 저장 클릭
-    Frontend->>SpringBoot: 사용자 정보 수정/등록 API
-    SpringBoot->>DB: 정보 업데이트 or INSERT
+    User->>Frontend: 정보 수정 후 저장 클릭
+    Frontend->>SpringBoot: 사용자 정보 수정 API
+    SpringBoot->>DB: 정보 업데이트
     DB-->>SpringBoot: 반영 완료 응답
     SpringBoot-->>Frontend: 성공 메시지
     Frontend->>User: 수정 완료 알림 표시
+
+    Note over User, Frontend: 회원 탈퇴
+
+    User->>Frontend: 회원 탈퇴
+    Frontend->>SpringBoot: 사용자 탈퇴 API
+    SpringBoot->>DB: 정보 'STATUS = N' 업데이트
+    DB-->>SpringBoot: 반영 완료 응답
+    SpringBoot-->>Frontend: 성공 메시지
+    Frontend->>User: 수정 완료 후 로그인 페이지
