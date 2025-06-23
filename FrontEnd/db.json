@@ -767,7 +767,6 @@
   ],
   "member": [
     {
-      "id": "a3fb",
       "user_no": 1,
       "company_no": 1,
       "user_id": "user1@example.com",
@@ -1849,6 +1848,22 @@
       "email": "dnjqwjk",
       "name": "워1",
       "phone": "20301201234"
+    },
+    {
+      "user_no": 1,
+      "company_no": 1,
+      "userId": "user1",
+      "userPwd": "hashed",
+      "name": "홍길동1",
+      "email": "user1@example.com",
+      "gender": "W",
+      "birthday": "1987-09-28",
+      "address": "서울특별시 구로구 1길 11번지",
+      "phone": "010-1000-1001",
+      "role": "master",
+      "create_at": "2025-06-02T09:00:00",
+      "update_at": "2025-06-02T09:00:00",
+      "status": "Y"
     }
   ],
   "companyProfiles": [
