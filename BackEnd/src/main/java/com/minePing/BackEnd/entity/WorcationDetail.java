@@ -23,7 +23,7 @@ public class WorcationDetail {
     @JoinColumn(name = "worcation_no", nullable = false)
     private Worcation worcation;
 
-    @Column(name="licensee", length=20, nullable = false)
+    @Column(name="licensee", length=100, nullable = false)
     private String licensee;
 
     @Column(name="business_id", length=10, nullable = false)
