@@ -10,11 +10,9 @@
     "lint:fix": "eslint . --ext .js,.jsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "preview": "vite preview",
-    "server": "json-server --watch db.json --port 3001",
-    "convert-css": "jscodeshift -t scripts/transform-css-theme.js src/"
+    "server": "json-server --watch db.json --port 3001"
   },
   "dependencies": {
-    "antd": "^5.26.0",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
@@ -30,10 +28,12 @@
     "react-icons": "^5.5.0",
     "react-modal": "^3.16.3",
     "react-router-dom": "^7.6.2",
+    "react-slick": "^0.30.3",
     "react-spinners": "^0.17.0",
     "react-time-picker": "^7.0.0",
     "react-toastify": "^11.0.5",
     "recoil": "^0.7.7",
+    "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.19",
     "sweetalert2": "^11.22.0",
     "yup": "^1.6.1",
