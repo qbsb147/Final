@@ -1566,6 +1566,17 @@
       "LEISURE_ACTIVITY": "2",
       "ACCOMMODATION_TYPE": "2",
       "user_no": 1
+    },
+    {
+      "id": "5126",
+      "MBTI": "infp",
+      "PREFERRED_COLOR": "3",
+      "PREFERRED_LOCATION": "5",
+      "SPACE_MOOD": "4",
+      "IMPORTANT_FACTOR": "4",
+      "LEISURE_ACTIVITY": "3",
+      "ACCOMMODATION_TYPE": "3",
+      "user_no": 1
     }
   ],
   "mental": [
@@ -1791,15 +1802,9 @@
   "companies": [
     {
       "companyName": "마인핑코퍼레이션",
-      "businessId": "1234567890",
-      "licensee": "홍길동",
-      "openDate": "2022-01-15",
       "address": "서울특별시 강남구 테헤란로 123",
       "email": "contact@mineping.com",
       "companyTel": "02-1234-5678",
-      "status": "Y",
-      "createAt": "2024-06-01T09:00:00",
-      "updateAt": "2024-06-01T09:00:00",
       "id": "436e"
     },
     {
@@ -1815,16 +1820,13 @@
   ],
   "members": [
     {
-      "id": "f29c",
-      "gender": "men",
-      "type": "A",
       "userId": "아이1",
-      "address": "주1",
-      "userPwd": "123",
-      "birthday": "122123",
+      "password": "123",
       "email": "email@test.com",
-      "name": "이름1",
-      "phone": "1234987634"
+      "name": "이름12",
+      "address": "주1",
+      "gender": "M",
+      "id": "f29c"
     },
     {
       "id": "4389",
@@ -1849,17 +1851,38 @@
       "email": "dnjqwjk",
       "name": "워1",
       "phone": "20301201234"
+    },
+    {
+      "id": "d970",
+      "gender": "women",
+      "type": "C",
+      "userId": "아이이",
+      "address": "아이아이",
+      "userPwd": "123",
+      "birthday": "2345",
+      "email": "amdmsm",
+      "name": "아이야어어",
+      "phone": "120930203"
+    },
+    {
+      "id": "4044",
+      "gender": "men",
+      "type": "C",
+      "userId": "ㅇㅇㅇ"
+    },
+    {
+      "id": "9b61",
+      "gender": "men",
+      "type": "C",
+      "userId": "test",
+      "userPwd": "123"
     }
   ],
   "companyProfiles": [
     {
-      "id": "4845",
-      "companyName": "마인핑코퍼레이션",
-      "address": "회사1",
-      "department": "부서1",
-      "companyEmail": "이메일2",
       "position": "사원",
-      "companyPhone": "42"
+      "department": "부서1",
+      "id": "4845"
     }
   ],
   "review": [
@@ -2292,6 +2315,27 @@
         "stress15": "4"
       },
       "user_no": 1
+    },
+    {
+      "id": "ca67",
+      "stress": {
+        "stress1": "3",
+        "stress2": "3",
+        "stress3": "3",
+        "stress4": "3",
+        "stress5": "3",
+        "stress6": "3",
+        "stress7": "3",
+        "stress8": "3",
+        "stress9": "3",
+        "stress10": "3",
+        "stress11": "3",
+        "stress12": "3",
+        "stress13": "3",
+        "stress14": "3",
+        "stress15": "3"
+      },
+      "user_no": 1
     }
   ],
   "mental_burnout": [
@@ -2340,6 +2384,22 @@
         "burnout8": "4",
         "burnout9": "4",
         "burnout10": "4"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "6b83",
+      "burnout": {
+        "burnout1": "3",
+        "burnout2": "3",
+        "burnout3": "3",
+        "burnout4": "3",
+        "burnout5": "3",
+        "burnout6": "3",
+        "burnout7": "3",
+        "burnout8": "3",
+        "burnout9": "3",
+        "burnout10": "3"
       },
       "user_no": 1
     }
