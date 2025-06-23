@@ -28,6 +28,7 @@ import StressTest from './pages/test/StressTest';
 import BurnoutTest from './pages/test/BurnoutTest';
 import TendencyTest from './pages/test/TendencyTest';
 import WorcationDetail from './pages/WorcationDetail';
+import NotFound from './pages/error/NotFound';
 
 function App() {
   return (
@@ -99,6 +100,9 @@ function App() {
           {/* 로그인, 회원가입 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
+
+          {/* 에러 페이지 */}
+          <Route path="/*" element={<NotFound />} />
         </Routes>
       </ThemeProvider>
     </BrowserRouter>

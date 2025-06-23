@@ -33,7 +33,7 @@ public class WorcationApplication {
     private Worcation worcation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="approve", nullable = false)
+    @Column(name="approve", nullable = true)
     private CommonEnums.Approve approve;
 
     @Column(name = "start_date", nullable = false)
@@ -53,10 +53,4 @@ public class WorcationApplication {
     @OneToOne(mappedBy = "worcationApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Review review;
 
-    @PrePersist
-    protected void onCreate() {
-        if(approve == null) {
-            approve = CommonEnums.Approve.N;
-        }
-    }
 }

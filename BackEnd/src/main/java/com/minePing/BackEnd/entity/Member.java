@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(indexes = { @Index(name = "idx_company", columnList = "company_no") })
+@Table(name = "member",indexes = { @Index(name = "idx_company", columnList = "company_no") })
 public class Member {
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)

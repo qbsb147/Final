@@ -25,7 +25,4 @@ public class WorcationEnums {
         clean_convenient, nature_lodging, camping_car, emotional_style, shared_space
     }
 
-    public enum WorcationThema {
-
-    }
 }

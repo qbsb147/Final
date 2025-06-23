@@ -1,0 +1,37 @@
+sequenceDiagram
+    actor User as 사용자
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+
+    Note over User, Frontend: [심리 검사 진입]
+
+    User->>Frontend: 심리 검사 메뉴 클릭
+    Frontend->>SpringBoot: 사용자 심리 검사 결과 조회 API
+    SpringBoot->>DB: 검사 결과(스트레스, 번아웃, 성향 분석) 조회
+    DB-->>SpringBoot: 검사 결과 반환
+    SpringBoot-->>Frontend: 검사 결과 or 미응시 상태 전달
+
+    alt 검사 결과 있음
+        Frontend->>User: 검사 결과 렌더링
+    else 검사 결과 없음
+        Frontend->>User: "테스트하러 가기" 버튼 표시
+    end
+
+    Note over User, Frontend: [검사 진행 흐름]
+
+    User->>Frontend: 테스트하러 가기 클릭
+    Frontend->>User: 설문폼 렌더링
+    User->>Frontend: 질문 응답 모두 완료 후 "진단 결과 확인" 클릭
+    Frontend->>SpringBoot: 검사 결과 저장 API (POST)
+    SpringBoot->>DB: 사용자 응답 기반 결과 생성 + 저장
+    DB-->>SpringBoot: 검사 결과 반환
+    SpringBoot-->>Frontend: 검사 결과 or 미응시 상태 전달
+
+    alt 검사 결과 있음
+        Frontend->>User: 검사 결과 렌더링
+    else 검사 결과 없음
+        Frontend->>User: "테스트하러 가기" 버튼 표시
+    end
+
+    Frontend->>User: 검사 첫 화면으로 리디렉션

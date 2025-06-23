@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+@Table(name = "health")
 public class Health {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +45,7 @@ public class Health {
     @Column(name="cholesterol_level", nullable = false)
     private Integer cholesterolLevel;
 
-    @Column(name="smoking_status", nullable = false)
+    @Column(name="smoking_status", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private HealthEnums.SmokingStatus smokingStatus;
 
