@@ -1,10 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import FolderIcon from './Folder';
+import FolderIcon from '../element/Folder';
+import useWorcationStore from '../../../store/worcationStore';
 
 const Menu = ({ onMenuSelect, selectedMenu }) => {
+  const isValidate = useWorcationStore((state) => state.isValidate);
+
   const menuItems = [
-    { id: 'Application', label: '호스트 신청' },
     { id: 'Info', label: '업체 정보' },
     { id: 'Description', label: '소개' },
     { id: 'Photo', label: '사진' },
@@ -18,12 +20,27 @@ const Menu = ({ onMenuSelect, selectedMenu }) => {
     <MenuContainer>
       <MenuHeader>워케이션 관리</MenuHeader>
       <MenuList>
-        {menuItems.map((item) => (
-          <MenuItem key={item.id} isActive={selectedMenu === item.id} onClick={() => onMenuSelect(item.id)}>
-            <FolderIcon />
-            <MenuLabel>{item.label}</MenuLabel>
-          </MenuItem>
-        ))}
+        <MenuItem
+          key="Application"
+          isActive={selectedMenu === 'Application'}
+          onClick={() => onMenuSelect('호스트 신청')}
+        >
+          <FolderIcon />
+          <MenuLabel>호스트 신청</MenuLabel>
+        </MenuItem>
+        {isValidate
+          ? menuItems.map((item) => (
+              <MenuItem key={item.id} isActive={selectedMenu === item.id} onClick={() => onMenuSelect(item.id)}>
+                <FolderIcon />
+                <MenuLabel>{item.label}</MenuLabel>
+              </MenuItem>
+            ))
+          : menuItems.map((item) => (
+              <MenuItem key={item.id} style={{ cursor: 'not-allowed', PointerEvent: 'none' }}>
+                <FolderIcon style={{ color: '#aaa' }} />
+                <MenuLabel style={{ color: '#aaa' }}>{item.label}</MenuLabel>
+              </MenuItem>
+            ))}
       </MenuList>
     </MenuContainer>
   );

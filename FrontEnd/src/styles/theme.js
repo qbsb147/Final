@@ -7,6 +7,7 @@ const theme = {
     info: '#61dafb',
     success: '#22c55e',
     warning: '#f59e0b',
+    error: '#ef4444',
     danger: '#ef4444',
     white: '#ffffff',
     black: '#000000',
