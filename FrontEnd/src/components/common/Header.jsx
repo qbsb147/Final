@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import bgImg from '../../assets/backgroundImg.jpg';
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
+
 
 const menuData = [
   {
@@ -46,14 +49,50 @@ const menuData = [
       { title: '신체 정보', path: '/my/body' },
       { title: '워케이션 신청내역', path: '/my/worcation-history' },
     ],
-  },
+  }, 
 ];
 
 const Header = () => {
   const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+
+  // 로그인 상태 판단 (user가 있으면 로그인된 상태)
+  const isLoggedIn = Boolean(user);
+
+  // 메뉴 데이터 로그인 상태에 따라 변경
+  const menus = menuData.map((menu) => {
+    if (menu.title === '로그인') {
+      if (isLoggedIn) {
+        return {
+          ...menu,
+          title: user.name || '내 정보',
+          path: '/my/info',
+          items: [
+            { title: '내 정보', path: '/my/info' },
+            { title: '신체 정보', path: '/my/body' },
+            { title: '워케이션 신청내역', path: '/my/worcation-history' },
+            { title: '로그아웃', path: '/logout' },
+          ],
+        };
+      }
+      return menu; // 비로그인 시 '로그인' 버튼 유지
+    }
+    return menu;
+  });
+
+  // 로그아웃 클릭 핸들러
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
-    <HeaderWrap onMouseEnter={() => setDropdownVisible(true)} onMouseLeave={() => setDropdownVisible(false)}>
+    <HeaderWrap
+      onMouseEnter={() => setDropdownVisible(true)}
+      onMouseLeave={() => setDropdownVisible(false)}
+    >
       <HeaderBg>
         <HeaderInner>
           <LogoWrap>
@@ -63,14 +102,14 @@ const Header = () => {
           </LogoWrap>
           <NavWrap>
             <Nav>
-              {menuData.map((menu, idx) => (
+              {menus.map((menu, idx) => (
                 <NavItem key={idx} className="nav-item">
-                  {menu.title === '로그인' ? (
+                  {menu.title === '로그인' && !isLoggedIn ? (
                     <StyleLinkButton to="/login">{menu.title}</StyleLinkButton>
-                  ) : menu.path ? (
+                  ) : menu.title === (user?.name || '내 정보') && isLoggedIn ? (
                     <StyleLink to={menu.path}>{menu.title}</StyleLink>
                   ) : (
-                    menu.title
+                    <StyleLink to={menu.path}>{menu.title}</StyleLink>
                   )}
                 </NavItem>
               ))}
@@ -82,13 +121,20 @@ const Header = () => {
       {isDropdownVisible && (
         <DropdownWrap>
           <DropdownContent>
-            {menuData
+            {menus
               .filter((menu) => menu.items && menu.items.length > 0)
               .map((menu, idx) => (
                 <DropdownColumn key={idx}>
                   <ul>
                     {menu.items.map((item, subIdx) => (
-                      <li key={subIdx}>
+                      <li
+                        key={subIdx}
+                        onClick={() => {
+                          if (item.title === '로그아웃') {
+                            handleLogout();
+                          }
+                        }}
+                      >
                         <StyleLink to={item.path}>{item.title}</StyleLink>
                       </li>
                     ))}
