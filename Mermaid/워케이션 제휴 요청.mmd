@@ -1,0 +1,30 @@
+sequenceDiagram
+    actor Company as 사용자(회사)
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+    actor Host as 사용자(업체)
+
+    %% 1. 회사 측: 제휴 요청 보내기
+    Company->>Frontend: 워케이션 제휴 요청 작성
+    Frontend->>Company: 입력 폼 (기업명, 인원수, 사업자정보, 연락처 등)
+    Company->>Frontend: 요청 내용 입력 후 제출
+    Frontend->>SpringBoot: 제휴 요청 전송 API
+    SpringBoot->>DB: 제휴 요청 INSERT
+    SpringBoot-->>Frontend: 요청 완료 응답
+    Frontend->>Company: "요청 완료" 알림 표시
+
+    %% 2. 호스트 측: 요청 목록 확인
+    Host->>Frontend: 제휴 요청 목록 보기
+    Frontend->>SpringBoot: 자신에게 온 제휴 요청 리스트 요청
+    SpringBoot->>DB: 해당 업체 대상 요청 SELECT
+    DB-->>SpringBoot: 요청 목록 반환
+    SpringBoot-->>Frontend: 요청 리스트 전달
+    Frontend->>Host: 요청 리스트 렌더링
+
+    %% 3. 승인 또는 거부 처리
+    Host->>Frontend: 승인 or 거부 클릭
+    Frontend->>SpringBoot: 제휴 요청 상태 변경 API (승인/거부)
+    SpringBoot->>DB: 요청 상태 UPDATE (approve = 'Y' or 'N')
+    SpringBoot-->>Frontend: 처리 완료 응답
+    Frontend->>Host: 처리 완료 메시지 표시

@@ -1,0 +1,96 @@
+sequenceDiagram
+    actor User as 사용자(회사 관리자)
+    participant Frontend as 프론트엔드
+    participant SpringBoot as 백엔드(Spring Boot)
+    participant DB as 데이터베이스
+
+    Note over User, Frontend: 직원 관리 진입
+
+    User->>Frontend: 직원 관리 메뉴 클릭
+    Frontend->>SpringBoot: 금일 일정 없는 사원 조회 API
+    SpringBoot->>DB: 오늘 일정 없는 직원 쿼리
+    DB-->>SpringBoot: 직원 리스트
+    SpringBoot-->>Frontend: 응답
+    Frontend->>User: 직원 리스트 렌더링
+
+    alt 직원 목록 탭 클릭
+        User->>Frontend: 직원 이름 입력
+        alt 검색어 있음
+            Frontend->>SpringBoot: 직원 이름 포함 검색 API
+            SpringBoot->>DB: 이름 LIKE 검색 쿼리
+            DB-->>SpringBoot: 결과 반환
+            SpringBoot-->>Frontend: 필터된 직원 리스트
+        else 검색어 없음
+            Frontend->>SpringBoot: 전체 직원 리스트 요청
+            SpringBoot->>DB: 전체 직원 쿼리
+            DB-->>SpringBoot: 전체 리스트
+            SpringBoot-->>Frontend: 전체 직원 정보 반환
+        end
+        Frontend->>User: 근무중/워케이션 상태 포함 리스트 표시
+    else 워케이션 신청자 탭 클릭
+        Frontend->>SpringBoot: 신청자 목록 요청
+        SpringBoot->>DB: 신청자 + 일정 + 장소 + 심리 정보 조회
+        DB-->>SpringBoot: 응답
+        SpringBoot-->>Frontend: 신청자 리스트 반환
+        Frontend->>User: 신청자 정보 렌더링
+        User->>Frontend: 장소 클릭
+        Frontend->>SpringBoot: 장소 상세 요청
+        SpringBoot->>DB: 장소 정보 조회
+        DB-->>SpringBoot: 응답
+        SpringBoot-->>Frontend: 장소 상세 페이지 이동
+        User->>Frontend: 승인 or 거부 클릭
+        Frontend->>SpringBoot: 신청 상태 변경 API
+        SpringBoot->>DB: 승인 상태 업데이트
+	DB->>SpringBoot: 승인 상태 정보 반환
+	SpringBoot-->>Frontend: 응답 처리 여부 반환
+	Frontend->> User: 성공 시 요소 제거
+
+        Note over Frontend, SpringBoot: 상담 필요자 하단 일정표 포함
+
+        Frontend->>SpringBoot: 일별 인원수 요약 요청
+        SpringBoot->>DB: 일정 통계 쿼리
+        DB-->>SpringBoot: 인원수 데이터 반환
+        SpringBoot-->>Frontend: 캘린더 렌더링
+
+        User->>Frontend: 특정 날짜 상세보기
+        Frontend->>SpringBoot: 당일 근무자 리스트 요청
+        SpringBoot->>DB: 근무자 쿼리
+        DB-->>SpringBoot: 직원 리스트 반환
+        SpringBoot-->>Frontend: 상세 근무자 표시
+
+    else 상담 필요자 탭 클릭
+        Frontend->>SpringBoot: 심리 위험 직원 요청
+        SpringBoot->>DB: 검사 중 하나 이상 중증 이상인 사원 쿼리
+        DB-->>SpringBoot: 직원 리스트 반환
+        SpringBoot-->>Frontend: 상담 필요자 리스트 표시
+
+        Note over Frontend, SpringBoot: 상담 필요자 하단 일정표 포함
+
+        Frontend->>SpringBoot: 일별 인원수 요약 요청
+        SpringBoot->>DB: 일정 통계 쿼리
+        DB-->>SpringBoot: 인원수 데이터 반환
+        SpringBoot-->>Frontend: 캘린더 렌더링
+
+        User->>Frontend: 특정 날짜 상세보기
+        Frontend->>SpringBoot: 당일 근무자 리스트 요청
+        SpringBoot->>DB: 근무자 쿼리
+        DB-->>SpringBoot: 직원 리스트 반환
+        SpringBoot-->>Frontend: 상세 근무자 표시
+
+    else 직원 승인 목록 탭 클릭
+        User->>Frontend: 이름 검색어 입력
+        alt 검색어 있음
+            Frontend->>SpringBoot: 승인 대기자 중 이름 검색 API
+            SpringBoot->>DB: 가입 대기자 WHERE 이름 LIKE 쿼리
+            DB-->>SpringBoot: 필터된 결과
+            SpringBoot-->>Frontend: 응답
+        else 검색어 없음
+            Frontend->>SpringBoot: 전체 승인 대기자 요청
+            SpringBoot->>DB: 가입 승인 대기 사원 조회
+            DB-->>SpringBoot: 전체 리스트
+            SpringBoot-->>Frontend: 응답
+        end
+        User->>Frontend: 승인 or 거부 클릭
+        Frontend->>SpringBoot: 회원 승인/거부 처리
+        SpringBoot->>DB: role 및 상태 업데이트
+    end

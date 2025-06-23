@@ -219,7 +219,7 @@
       "id": "fb8a"
     }
   ],
-  "worcation_deatil": [
+  "worcation_detail": [
     {
       "worcation_no": 1,
       "licensee": "포포인츠 주식회사",
@@ -767,7 +767,7 @@
   ],
   "member": [
     {
-      "id": "1",
+      "id": "a3fb",
       "user_no": 1,
       "company_no": 1,
       "user_id": "user1@example.com",
@@ -781,8 +781,7 @@
       "role": "master",
       "create_at": "2025-06-02T09:00:00",
       "update_at": "2025-06-02T09:00:00",
-      "status": "Y",
-      "id": "a3fb"
+      "status": "Y"
     },
     {
       "user_no": 2,
@@ -1018,7 +1017,6 @@
       "start_date": "2025-06-18",
       "end_date": "2025-06-19",
       "approve": "Y",
-
       "create_at": "2025-06-10T10:00:00",
       "update_at": "2025-06-12T14:00:00",
       "id": "e146"
@@ -1097,7 +1095,8 @@
       "end_date": "2025-07-22",
       "app_status": "PENDING",
       "create_at": "2025-06-22T10:00:00",
-      "update_at": "2025-06-22T10:00:00"
+      "update_at": "2025-06-22T10:00:00",
+      "id": "67e5"
     },
     {
       "application_no": 1,
@@ -1553,6 +1552,17 @@
       "PREFERRED_LOCATION": "5",
       "SPACE_MOOD": "4",
       "IMPORTANT_FACTOR": "3",
+      "LEISURE_ACTIVITY": "2",
+      "ACCOMMODATION_TYPE": "2",
+      "user_no": 1
+    },
+    {
+      "id": "e131",
+      "MBTI": "entj",
+      "PREFERRED_COLOR": "1",
+      "PREFERRED_LOCATION": "2",
+      "SPACE_MOOD": "2",
+      "IMPORTANT_FACTOR": "2",
       "LEISURE_ACTIVITY": "2",
       "ACCOMMODATION_TYPE": "2",
       "user_no": 1
@@ -2261,6 +2271,27 @@
         "stress11": "3"
       },
       "user_no": 1
+    },
+    {
+      "id": "676e",
+      "stress": {
+        "stress1": "4",
+        "stress2": "4",
+        "stress3": "4",
+        "stress4": "4",
+        "stress5": "4",
+        "stress6": "4",
+        "stress7": "4",
+        "stress8": "4",
+        "stress9": "4",
+        "stress10": "4",
+        "stress11": "4",
+        "stress12": "4",
+        "stress13": "4",
+        "stress14": "4",
+        "stress15": "4"
+      },
+      "user_no": 1
     }
   ],
   "mental_burnout": [
@@ -2293,6 +2324,22 @@
         "stress8": "3",
         "stress9": "5",
         "stress10": "5"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "bd7b",
+      "burnout": {
+        "burnout1": "4",
+        "burnout2": "4",
+        "burnout3": "4",
+        "burnout4": "4",
+        "burnout5": "4",
+        "burnout6": "4",
+        "burnout7": "4",
+        "burnout8": "4",
+        "burnout9": "4",
+        "burnout10": "4"
       },
       "user_no": 1
     }
