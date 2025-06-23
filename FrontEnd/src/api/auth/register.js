@@ -1,5 +1,6 @@
 import api from "../axios";
 
+//회원가입
 export const register = async (formData1,formData2) => {
     const {userPwdCheck : _, ...sendData1 } = formData1;
     const sendData2 = { ...formData2 };
@@ -34,6 +35,16 @@ export const register = async (formData1,formData2) => {
             throw new Error('유효하지 않은 회원 유형입니다.');
     }
     return member;
-
-
 };
+
+//로그인
+export const login = async ({userId,userPwd}) => {
+    const { data } = await api.get(`/members?userId=${userId}`);
+
+  if (data.length === 0) throw new Error('존재하지 않는 아이디입니다.');
+
+  const member = data[0];
+
+  if (member.userPwd !== userPwd) throw new Error('비밀번호가 틀렸습니다.');
+  return member;
+}

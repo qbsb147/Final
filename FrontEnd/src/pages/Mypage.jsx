@@ -1,10 +1,42 @@
 import React from 'react';
 import styled from 'styled-components';
 import Input from '../styles/Input';
-import btn from '../styles/Button';
 import { InputRadio } from '../styles/Input.styles';
+import useAuthStore from '../store/authStore';
+import api from '../api/axios';
+import { useState, useEffect } from 'react';
+import btn from '../styles/Button';
+
 
 const Mypage = () => {
+  const { user } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(null);
+
+  console.log('Mypage 렌더링됨');
+  console.log('스토어 user:', user);
+
+  useEffect(() => {
+    if (!user?.userId) {
+      console.log('userId 없음. 요청 안함');
+      return;
+    }
+
+    const fetchUserInfo = async () => {
+      try {
+        console.log('요청 시작');
+        const res = await api.get(`/members?userId=${user.userId}`);
+        console.log('요청 성공', res.data);
+        setUserInfo(res.data);
+      } catch (err) {
+        console.error('회원정보 불러오기 실패:', err);
+      }
+    };
+
+    fetchUserInfo();
+  }, [user?.userId]);
+
+  if (!userInfo) return <div>로딩중...</div>;
+
   return (
     <>
       <Content>
@@ -93,8 +125,8 @@ const Mypage = () => {
         </Form>
         <ButnContent>
           <ButnBox>
-            <button style={btn.buttonYbShadow}>취소</button>
-            <button style={btn.buttonWbShadow}>완료</button>
+          <button style={btn.buttonYbShadow}>취소</button>
+          <button style={btn.buttonWbShadow}>완료</button>
           </ButnBox>
         </ButnContent>
       </Content>
