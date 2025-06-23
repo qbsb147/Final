@@ -3,13 +3,12 @@ import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
-// import Slider from 'react-slick';
-// import { useUserStore } from '../store/userStore';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
+import useUserStore from '../store/userStore.js';
 
 const WorcationDetail = () => {
-  // const navigate = useNavigate();
   const loginUserId = 'user01@example.com'; //추후 불러오는걸로 수정 필요
   // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
   const navigate = useNavigate();
