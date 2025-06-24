@@ -2405,7 +2405,10 @@
         "stress13": "4",
         "stress14": "4",
         "stress15": "4"
-
+      },
+      "user_no": 1
+    },
+    {
       "id": "ca67",
       "stress": {
         "stress1": "3",
@@ -2489,7 +2492,10 @@
         "burnout8": "4",
         "burnout9": "4",
         "burnout10": "4"
-
+      },
+      "user_no": 1
+    },
+    {
       "id": "6b83",
       "burnout": {
         "burnout1": "3",
