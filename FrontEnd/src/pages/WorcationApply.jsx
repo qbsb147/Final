@@ -5,6 +5,7 @@ import Button from '../styles/Button';
 import Input from '../styles/Input';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 
 const WorcationApply = () => {
   const location = useLocation();
@@ -14,6 +15,7 @@ const WorcationApply = () => {
   const [endDate, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
   const [events, setEvents] = useState([]);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     if (passedWorcation) {
@@ -91,7 +93,7 @@ const WorcationApply = () => {
 
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value="최예찬" readOnly />
+            <ReadOnlyInput value={user?.name ?? ''} readOnly />
 
             <Label>금액</Label>
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
