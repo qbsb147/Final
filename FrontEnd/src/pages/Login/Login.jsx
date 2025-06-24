@@ -92,6 +92,7 @@ const LoginCard = styled.div`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
+
 const LogoWrap = styled.div`
   display: flex;
   align-items: center;
