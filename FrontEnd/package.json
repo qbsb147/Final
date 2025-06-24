@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "antd": "^5.26.0",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
