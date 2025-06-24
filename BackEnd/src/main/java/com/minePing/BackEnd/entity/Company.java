@@ -33,11 +33,11 @@ public class Company {
     @Column(name = "open_date", nullable = false)
     private LocalDate openDate;
 
-    @Column(name="address",nullable = false)
-    private String address;
+    @Column(name="company_address",nullable = false)
+    private String companyAddress;
 
-    @Column(name="email",nullable = false, length = 100)
-    private String email;
+    @Column(name="business_email",nullable = false, length = 100)
+    private String businessEmail;
 
     @Column(name="company_tel",nullable = false, length = 13)
     private String companyTel;

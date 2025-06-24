@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
@@ -9,6 +9,7 @@ import memberService from '../../api/members';
 import { inputsByStep } from '../../components/auth/authInput';
 import useValidation from '../../hooks/useAuth';
 import CustomDatePicker from '../../components/common/DatePicker';
+import api from '../../api/axios';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -19,6 +20,8 @@ const SignUp = () => {
   const [formData2, setFormData2] = useState({});
   const [selectedType, setSelectedType] = useState('employee');
   const { validateStep } = useValidation();
+  const companyNameTimeout = useRef();
+  const [companySearchResults, setCompanySearchResults] = useState([]);
 
   // 입력 필드 변경 핸들러
   const handleChange = (e, step) => {
@@ -74,6 +77,38 @@ const SignUp = () => {
       console.error('회원가입 중 오류 발생:', error);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');
     }
+  };
+
+  // 회사명 keyup 핸들러
+  const handleCompanyNameKeyUp = (e) => {
+    const value = e.target.value;
+    if (companyNameTimeout.current) clearTimeout(companyNameTimeout.current);
+    companyNameTimeout.current = setTimeout(async () => {
+      if (!value) {
+        setCompanySearchResults([]);
+        return;
+      }
+      try {
+        const { data } = await api.get(`/api/company/search`);
+        console.log('회사 검색 결과:', data); // 응답 구조 확인
+        setCompanySearchResults(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setCompanySearchResults([]);
+        console.error('회사명 검색 에러:', err);
+      }
+    }, 400);
+  };
+
+  // Dropdown item click handler
+  const handleCompanySelect = (company) => {
+    console.log('선택된 회사 정보:', company); // 선택된 회사 데이터 구조 확인
+    setFormData2((prev) => ({
+      ...prev,
+      companyName: company.company_name,
+      companyNo: company.company_no,
+      address: company.company_address, // 회사 주소도 함께 설정
+    }));
+    setCompanySearchResults([]);
   };
 
   return (
@@ -263,14 +298,38 @@ const SignUp = () => {
                       {/* 왼쪽 영역 */}
                       <div>
                         <Label htmlFor={left.name}>{left.placeholder}</Label>
-                        <InputBox
-                          name={left.name}
-                          type={left.type}
-                          placeholder={left.placeholder}
-                          value={formData2[left.name] || ''}
-                          onChange={(e) => handleChange(e, 2)}
-                          variant="yellow"
-                        />
+                        {left.name === 'companyName' ? (
+                          <div style={{ position: 'relative' }}>
+                            <InputBox
+                              name={left.name}
+                              type={left.type}
+                              placeholder={left.placeholder}
+                              value={formData2.companyName || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              onKeyUp={handleCompanyNameKeyUp}
+                              autoComplete="off"
+                              variant="yellow"
+                            />
+                            {companySearchResults.length > 0 && (
+                              <CompanyDropdown>
+                                {companySearchResults.map((company) => (
+                                  <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                                    {company.company_name}
+                                  </DropdownItem>
+                                ))}
+                              </CompanyDropdown>
+                            )}
+                          </div>
+                        ) : (
+                          <InputBox
+                            name={left.name}
+                            type={left.type}
+                            placeholder={left.placeholder}
+                            value={formData2[left.name] || ''}
+                            onChange={(e) => handleChange(e, 2)}
+                            variant="yellow"
+                          />
+                        )}
                       </div>
 
                       {/* 가운데 간격 */}
@@ -444,6 +503,30 @@ const StyledDatePickerWrapper = styled.div`
   .react-datepicker__input-container input:focus {
     border-color: #ffeb8c;
     background: #fff;
+  }
+`;
+
+const CompanyDropdown = styled.ul`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #fffbe6;
+  border: 1px solid #ffeb8c;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
+const DropdownItem = styled.li`
+  padding: 10px 16px;
+  cursor: pointer;
+  &:hover {
+    background: #fff3b0;
   }
 `;
 

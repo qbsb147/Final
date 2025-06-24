@@ -30,11 +30,59 @@ public class MemberDto {
     public Member toEntity() {
         return Member.builder().build();
     }
+
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class EmployeeSignUp {
+    public static class EmployeeJoin {
+
+        private String user_id;
+        private String user_pwd;
+        private String name;
+        private CommonEnums.Gender gender;
+        private String address;
+        private String birthday;
+        private String email;
+        private String phone;
+        private CommonEnums.Role role;
+        private String company_no;
+        private String department;
+        private String position;
+        private String company_email;
+        private String company_phone;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MasterJoin {
+
+        private String user_id;
+        private String user_pwd;
+        private String name;
+        private CommonEnums.Gender gender;
+        private String address;
+        private String birthday;
+        private String email;
+        private String phone;
+        private CommonEnums.Role role;
+        private String company_name;
+        private String company_address;
+        private String business_id;
+        private String company_email;
+        private String licensee;
+        private String company_tel;
+        private LocalDate open_date;
+        private String company_phone;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class WorcationJoin {
 
         private String user_id;
         private String user_pwd;
