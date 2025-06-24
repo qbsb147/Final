@@ -6,7 +6,7 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
-import { login } from '../../api/auth/register';
+import { login } from '../../api/auth/login';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const member = await login({ userId, userPwd });
-      console.log('로그인 응답 member:', member); // 🔍 구조 확인
+      console.log('로그인 응답 member:', member);
       setUser(member);
       alert('로그인 성공!');
       navigate('/');

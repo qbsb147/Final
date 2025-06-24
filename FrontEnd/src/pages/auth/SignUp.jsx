@@ -6,39 +6,8 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import CustomRadioButton from '../../components/common/CustomRadioButton';
 import { register } from '../../api/auth/register';
-
-// 1단계에서 사용할 입력 필드 정의
-const step1Inputs = [
-  { name: 'userId', type: 'text', placeholder: '아이디', side: 'left' },
-  { name: 'userPwd', type: 'password', placeholder: '비밀번호', side: 'left' },
-  { name: 'userPwdCheck', type: 'password', placeholder: '비밀번호 확인', side: 'left' },
-  { name: 'name', type: 'text', placeholder: '이름', side: 'left' },
-  { name: 'address', type: 'text', placeholder: '주소', side: 'right' },
-  { name: 'birthday', type: 'text', placeholder: '생년월일', side: 'right' },
-  { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
-  { name: 'phone', type: 'text', placeholder: '연락처', side: 'right' },
-];
-
-// 2단계 (직원)에서 사용할 입력 필드 정의
-const step2InputsForTypeA = [
-  { name: 'companyName', type: 'text', placeholder: '회사명', side: 'left' },
-  { name: 'department', type: 'text', placeholder: '부서명', side: 'left' },
-  { name: 'position', type: 'text', placeholder: '직급', side: 'left' },
-  { name: 'address', type: 'text', placeholder: '회사주소', side: 'right' },
-  { name: 'companyEmail', type: 'text', placeholder: '회사 이메일', side: 'right' },
-  { name: 'companyPhone', type: 'text', placeholder: '회사 전화번호', side: 'right' },
-];
-
-// 2단계 (기업)에서 사용할 입력 필드 정의
-const step2InputsForTypeB = [
-  { name: 'companyName', type: 'text', placeholder: '기업명', side: 'left' },
-  { name: 'businessId', type: 'text', placeholder: '사업자번호', side: 'left' },
-  { name: 'businessName', type: 'text', placeholder: '사업자명', side: 'left' },
-  { name: 'openDate', type: 'text', placeholder: '개업일', side: 'left' },
-  { name: 'address', type: 'text', placeholder: '기업주소', side: 'right' },
-  { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
-  { name: 'companyTel', type: 'text', placeholder: '기업전화번호', side: 'right' },
-];
+import { inputsByStep } from '../../components/auth/authInput';
+import useValidation from '../../hooks/useAuth';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -48,6 +17,7 @@ const SignUp = () => {
   });
   const [formData2, setFormData2] = useState({});
   const [selectedType, setSelectedType] = useState('A');
+  const { validateStep } = useValidation();
 
   // 입력 필드 변경 핸들러
   const handleChange = (e, step) => {
@@ -65,7 +35,9 @@ const SignUp = () => {
   };
 
   // 다음 버튼 핸들러
-  const handleNext = () => {
+  const handleNext = async () => {
+    const isValid = await validateStep(formData1, 1);
+    if (!isValid) return;
     setFormStep((prev) => prev + 1);
   };
 
@@ -84,6 +56,12 @@ const SignUp = () => {
     if (formData1.userPwd !== formData1.userPwdCheck) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
+    }
+  
+    let isValidStep2 = true;
+    if (formStep === 2) { // 2단계일 때만 formData2 유효성 검사
+      isValidStep2 = await validateStep(formData2, 2, `type${selectedType}`);
+      if (!isValidStep2) return;
     }
   
     try {
@@ -110,9 +88,9 @@ const SignUp = () => {
           {formStep === 1 && (
             <>
               <InputWrap>
-                {Array.from({ length: Math.ceil(step1Inputs.length / 2) }, (_, i) => {
-                  const left = step1Inputs[i];
-                  const right = step1Inputs[i + Math.ceil(step1Inputs.length / 2)];
+                {Array.from({ length: Math.ceil(inputsByStep.step1.length / 2) }, (_, i) => {
+                  const left = inputsByStep.step1[i];
+                  const right = inputsByStep.step1[i + Math.ceil(inputsByStep.step1.length / 2)];
 
                   return (
                     <React.Fragment key={i}>
@@ -207,9 +185,9 @@ const SignUp = () => {
           {formStep === 2 && formData1.type === 'A' && (
             <>
               <InputWrap>
-                {Array.from({ length: Math.ceil(step2InputsForTypeA.length / 2) }, (_, i) => {
-                  const left = step2InputsForTypeA[i];
-                  const right = step2InputsForTypeA[i + Math.ceil(step2InputsForTypeA.length / 2)];
+                {Array.from({ length: Math.ceil(inputsByStep.step2.typeA.length / 2) }, (_, i) => {
+                  const left = inputsByStep.step2.typeA[i];
+                  const right = inputsByStep.step2.typeA[i + Math.ceil(inputsByStep.step2.typeA.length / 2)];
 
                   return (
                     <React.Fragment key={i}>
@@ -256,9 +234,9 @@ const SignUp = () => {
           {formStep === 2 && formData1.type === 'B' && (
             <>
               <InputWrap>
-                {Array.from({ length: Math.ceil(step2InputsForTypeB.length / 2) }, (_, i) => {
-                  const left = step2InputsForTypeB[i];
-                  const right = step2InputsForTypeB[i + Math.ceil(step2InputsForTypeB.length / 2)];
+                {Array.from({ length: Math.ceil(inputsByStep.step2.typeB.length / 2) }, (_, i) => {
+                  const left = inputsByStep.step2.typeB[i];
+                  const right = inputsByStep.step2.typeB[i + Math.ceil(inputsByStep.step2.typeB.length / 2)];
 
                   return (
                     <React.Fragment key={i}>
