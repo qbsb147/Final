@@ -5,18 +5,19 @@ import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import CustomRadioButton from '../../components/common/CustomRadioButton';
-import { register } from '../../api/auth/register';
+import memberService from '../../api/members';
 import { inputsByStep } from '../../components/auth/authInput';
 import useValidation from '../../hooks/useAuth';
+import CustomDatePicker from '../../components/common/DatePicker';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'men',
-    type: 'A',
+    type: 'employee',
   });
   const [formData2, setFormData2] = useState({});
-  const [selectedType, setSelectedType] = useState('A');
+  const [selectedType, setSelectedType] = useState('employee');
   const { validateStep } = useValidation();
 
   // 입력 필드 변경 핸들러
@@ -52,20 +53,21 @@ const SignUp = () => {
   // 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (formData1.userPwd !== formData1.userPwdCheck) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
     }
-  
+
     let isValidStep2 = true;
-    if (formStep === 2) { // 2단계일 때만 formData2 유효성 검사
+    if (formStep === 2) {
+      // 2단계일 때만 formData2 유효성 검사
       isValidStep2 = await validateStep(formData2, 2, `type${selectedType}`);
       if (!isValidStep2) return;
     }
-  
+
     try {
-      await register(formData1, formData2);
+      await memberService.register(formData1, formData2);
       alert('회원가입이 완료되었습니다.');
       window.location.href = '/login';
     } catch (error) {
@@ -97,14 +99,23 @@ const SignUp = () => {
                       {/* 왼쪽 영역 */}
                       <div>
                         <Label htmlFor={left.name}>{left.placeholder}</Label>
-                        <InputBox
-                          name={left.name}
-                          type={left.type}
-                          placeholder={left.placeholder}
-                          value={formData1[left.name] || ''}
-                          onChange={(e) => handleChange(e, 1)}
-                          variant="yellow"
-                        />
+                        {left.name === 'birthday' ? (
+                          <StyledDatePickerWrapper>
+                            <CustomDatePicker
+                              selected={formData1.birthday || null}
+                              onChange={(date) => setFormData1((prev) => ({ ...prev, birthday: date }))}
+                            />
+                          </StyledDatePickerWrapper>
+                        ) : (
+                          <InputBox
+                            name={left.name}
+                            type={left.type}
+                            placeholder={left.placeholder}
+                            value={formData1[left.name] || ''}
+                            onChange={(e) => handleChange(e, 1)}
+                            variant="yellow"
+                          />
+                        )}
                       </div>
 
                       {/* 가운데 간격 */}
@@ -114,14 +125,23 @@ const SignUp = () => {
                       {right ? (
                         <div>
                           <Label htmlFor={right.name}>{right.placeholder}</Label>
-                          <InputBox
-                            name={right.name}
-                            type={right.type}
-                            placeholder={right.placeholder}
-                            value={formData1[right.name] || ''}
-                            onChange={(e) => handleChange(e, 1)}
-                            variant="yellow"
-                          />
+                          {right.name === 'birthday' ? (
+                            <StyledDatePickerWrapper>
+                              <CustomDatePicker
+                                selected={formData1.birthday || null}
+                                onChange={(date) => setFormData1((prev) => ({ ...prev, birthday: date }))}
+                              />
+                            </StyledDatePickerWrapper>
+                          ) : (
+                            <InputBox
+                              name={right.name}
+                              type={right.type}
+                              placeholder={right.placeholder}
+                              value={formData1[right.name] || ''}
+                              onChange={(e) => handleChange(e, 1)}
+                              variant="yellow"
+                            />
+                          )}
                         </div>
                       ) : (
                         <div /> // 오른쪽이 없으면 빈 칸
@@ -157,22 +177,22 @@ const SignUp = () => {
                     <CustomRadioButton
                       label="직원"
                       name="type"
-                      value="A"
-                      checked={formData1.type === 'A'}
+                      value="employee"
+                      checked={formData1.type === 'employee'}
                       onChange={handleRadioChange}
                     />
                     <CustomRadioButton
                       label="기업"
                       name="type"
-                      value="B"
-                      checked={formData1.type === 'B'}
+                      value="master"
+                      checked={formData1.type === 'master'}
                       onChange={handleRadioChange}
                     />
                     <CustomRadioButton
                       label="워케이션 업체"
                       name="type"
-                      value="C"
-                      checked={formData1.type === 'C'}
+                      value="worcation"
+                      checked={formData1.type === 'worcation'}
                       onChange={handleRadioChange}
                     />
                   </RadioGroup>
@@ -182,7 +202,7 @@ const SignUp = () => {
           )}
 
           {/* STEP 2 - 직원 */}
-          {formStep === 2 && formData1.type === 'A' && (
+          {formStep === 2 && formData1.type === 'employee' && (
             <>
               <InputWrap>
                 {Array.from({ length: Math.ceil(inputsByStep.step2.typeA.length / 2) }, (_, i) => {
@@ -231,7 +251,7 @@ const SignUp = () => {
           )}
 
           {/* STEP 2 - 회사 */}
-          {formStep === 2 && formData1.type === 'B' && (
+          {formStep === 2 && formData1.type === 'master' && (
             <>
               <InputWrap>
                 {Array.from({ length: Math.ceil(inputsByStep.step2.typeB.length / 2) }, (_, i) => {
@@ -285,8 +305,8 @@ const SignUp = () => {
             {formStep === 1 && (
               <>
                 <Btn onClick={() => window.history.back()}>취소</Btn>
-                <Btn onClick={selectedType === 'C' ? handleSubmit : handleNext}>
-                  {selectedType === 'C' ? '완료' : '다음'}
+                <Btn onClick={selectedType === 'worcation' ? handleSubmit : handleNext}>
+                  {selectedType === 'worcation' ? '완료' : '다음'}
                 </Btn>
               </>
             )}
@@ -399,6 +419,32 @@ const Label = styled.label`
   text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing.s2};
   margin-left: ${({ theme }) => theme.spacing.s1};
+`;
+
+const StyledDatePickerWrapper = styled.div`
+  .react-datepicker__input-container input {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 401.92px;
+    height: 52.41px;
+    background: #ffffff;
+    border: 3px solid #ffeb8c;
+    border-radius: 10px;
+    color: black;
+    padding: 0 12px;
+    font-size: ${({ theme }) => theme.fontSizes.base};
+    outline: none;
+    margin: 0;
+    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  }
+  .react-datepicker__input-container input::placeholder {
+    color: #adadad;
+    opacity: 1;
+  }
+  .react-datepicker__input-container input:focus {
+    border-color: #ffeb8c;
+    background: #fff;
+  }
 `;
 
 export default SignUp;
