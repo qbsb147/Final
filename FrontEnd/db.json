@@ -1567,6 +1567,14 @@
       "user_no": 1
     },
     {
+      "id": "d2e4",
+      "MBTI": "intp",
+      "PREFERRED_COLOR": "3",
+      "PREFERRED_LOCATION": "5",
+      "SPACE_MOOD": "4",
+      "IMPORTANT_FACTOR": "3",
+      "LEISURE_ACTIVITY": "2",
+      "ACCOMMODATION_TYPE": "2",
       "id": "5126",
       "MBTI": "infp",
       "PREFERRED_COLOR": "3",
@@ -2317,6 +2325,87 @@
       "user_no": 1
     },
     {
+      "id": "e38a",
+      "stress": {
+        "stress1": "4",
+        "stress2": "3",
+        "stress3": "4",
+        "stress4": "4",
+        "stress5": "3",
+        "stress6": "4",
+        "stress7": "3",
+        "stress8": "4",
+        "stress9": "3",
+        "stress10": "4",
+        "stress12": "4",
+        "stress11": "4",
+        "stress13": "3",
+        "stress14": "4",
+        "stress15": "3"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "af06",
+      "stress": {
+        "stress1": "3",
+        "stress2": "4",
+        "stress3": "4",
+        "stress4": "3",
+        "stress5": "2",
+        "stress6": "4",
+        "stress7": "5",
+        "stress8": "2",
+        "stress9": "4",
+        "stress10": "2",
+        "stress11": "3",
+        "stress12": "1",
+        "stress14": "5",
+        "stress13": "3",
+        "stress15": "4"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "f52d",
+      "stress": {
+        "stress1": "4",
+        "stress2": "4",
+        "stress3": "4",
+        "stress4": "3",
+        "stress5": "4",
+        "stress15": "3",
+        "stress14": "3",
+        "stress13": "3",
+        "stress12": "3",
+        "stress11": "4",
+        "stress10": "4",
+        "stress9": "4",
+        "stress8": "4",
+        "stress7": "3",
+        "stress6": "3"
+      },
+      "user_no": 1
+    },
+    {
+      "id": "0361",
+      "stress": {
+        "stress2": "2",
+        "stress1": "3",
+        "stress4": "3",
+        "stress3": "3",
+        "stress5": "4",
+        "stress6": "4",
+        "stress7": "4",
+        "stress8": "4",
+        "stress9": "4",
+        "stress10": "4",
+        "stress11": "4",
+        "stress12": "4",
+        "stress13": "4",
+        "stress14": "4",
+        "stress15": "4"
+
       "id": "ca67",
       "stress": {
         "stress1": "3",
@@ -2388,6 +2477,19 @@
       "user_no": 1
     },
     {
+      "id": "8c9f",
+      "burnout": {
+        "burnout1": "4",
+        "burnout2": "4",
+        "burnout3": "4",
+        "burnout4": "4",
+        "burnout5": "4",
+        "burnout6": "4",
+        "burnout7": "4",
+        "burnout8": "4",
+        "burnout9": "4",
+        "burnout10": "4"
+
       "id": "6b83",
       "burnout": {
         "burnout1": "3",

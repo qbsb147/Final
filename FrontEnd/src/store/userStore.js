@@ -17,7 +17,6 @@ const useUserStore = create((set) => ({
     create_at: '2015-07-30',
     update_at: '2020-08-25',
   },
-  isAuthenticated: true,
   body: null,
   stress: null,
   burnout: null,
@@ -96,14 +95,12 @@ const useUserStore = create((set) => ({
   login: () => {
     set({
       user: {},
-      isAuthenticated: true,
     });
   },
-
+  setUser: (user) => set({ user }),
   logout: () => {
     set({
       user: null,
-      isAuthenticated: false,
     });
   },
 }));

@@ -12,9 +12,12 @@ import FeatureForm from './element/register/FeatureForm';
 import { BtnWhiteYellowBorder } from '../../styles/Button.styles';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../styles/SwalStyles';
+import useWorcationStore from '../../store/worcationStore';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
+  const isValidate = useWorcationStore((state) => state.isValidate);
+  const isNonNull = useWorcationStore((state) => state.isNonNull);
 
   const handleSave = () =>
     Swal.fire({
@@ -63,10 +66,30 @@ const Register = () => {
           </FormActions>
         </FormContent>
         <FormFooter>
-          <ActionButton type="button" onClick={handleSave}>
-            임시 저장
-          </ActionButton>
-          <ActionButton>등록</ActionButton>
+          {isValidate ? (
+            <>
+              <ActionButton type="button" onClick={handleSave}>
+                임시 저장
+              </ActionButton>
+            </>
+          ) : (
+            <>
+              <ActionButton type="button" style={{ opacity: 0.3 }}>
+                임시 저장
+              </ActionButton>
+            </>
+          )}
+          {isNonNull ? (
+            <>
+              <ActionButton>등록</ActionButton>
+            </>
+          ) : (
+            <>
+              <ActionButton type="button" style={{ opacity: 0.3 }}>
+                등록
+              </ActionButton>
+            </>
+          )}
         </FormFooter>
       </RegisterForm>
     </RegisterContainer>

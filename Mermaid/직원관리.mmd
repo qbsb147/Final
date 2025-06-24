@@ -41,7 +41,8 @@ sequenceDiagram
         User->>Frontend: 승인 or 거부 클릭
         Frontend->>SpringBoot: 신청 상태 변경 API
         SpringBoot->>DB: 승인 상태 업데이트
-	DB->>SpringBoot: 승인 상태 정보 반환
+        DB->>DB: 동시성 제어 후 수용할 수 있으면 승인
+        DB->>SpringBoot: 승인 상태 정보 반환
 	SpringBoot-->>Frontend: 응답 처리 여부 반환
 	Frontend->> User: 성공 시 요소 제거
 

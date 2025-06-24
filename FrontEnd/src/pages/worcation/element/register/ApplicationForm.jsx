@@ -4,16 +4,19 @@ import { InputLightGray } from '../../../../styles/Input.styles';
 import RadioButton from '../../../../components/common/RadioButton';
 import CustomDatePicker from '../../../../components/common/DatePicker';
 import { ButtonBorder } from '../../../../styles/Button.styles';
+import { useValidateForm } from '../../../../hooks/useValidateForm';
+import { Controller } from 'react-hook-form';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
-  const [startDate, setStartDate] = useState(null);
 
   const radioOptions = [
     { value: 'Office', label: '오피스' },
     { value: 'Accommodation', label: '숙박' },
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
+
+  const { register, handleValidate, control, errors, isSubmitting } = useValidateForm();
 
   return (
     <Body>
@@ -29,28 +32,50 @@ const Form = () => {
           <TR>
             <TH>사업자명</TH>
             <TD>
-              <Input />
+              <Input id="licensee" type="text" {...register('licensee')} $error={errors.licensee} />
+              {errors.licensee && <ErrorMessage>{errors.licensee.message}</ErrorMessage>}
             </TD>
           </TR>
           <TR>
             <TH>상호명</TH>
             <TD>
-              <Input />
+              <Input id="worcation_name" type="text" {...register('worcation_name')} $error={errors.worcation_name} />
+              {errors.worcation_name && <ErrorMessage>{errors.worcation_name.message}</ErrorMessage>}
             </TD>
           </TR>
           <TR>
             <TH>개업일</TH>
             <TD>
-              <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+              <Controller
+                control={control}
+                name="open_date"
+                render={({ field }) => (
+                  <DatePicker
+                    selected={field.value}
+                    onChange={(date) => field.onChange(date)}
+                    $error={errors.open_date}
+                  />
+                )}
+              />
+              {errors.open_date && <ErrorMessage>{errors.open_date.message}</ErrorMessage>}
             </TD>
           </TR>
           <TR>
             <TH>사업자등록번호</TH>
             <TD>
-              <Input />
+              <Input
+                placeholder="숫자만 10글자 입력"
+                id="business_id"
+                type="text"
+                {...register('business_id')}
+                $error={errors.business_id}
+              />
+              {errors.business_id && <ErrorMessage>{errors.business_id.message}</ErrorMessage>}
             </TD>
             <TD>
-              <ButtonYellow>진위확인</ButtonYellow>
+              <ButtonYellow type="button" onClick={handleValidate} disabled={isSubmitting}>
+                {isSubmitting ? '확인 중...' : '진위확인'}
+              </ButtonYellow>
             </TD>
           </TR>
         </TBody>
@@ -116,4 +141,8 @@ const TH = styled.th`
 
 const TD = styled.td`
   display: flex;
+`;
+const ErrorMessage = styled.span`
+  color: ${({ theme }) => theme.colors.error};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 `;

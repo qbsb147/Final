@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FaUser, FaCalendarAlt } from 'react-icons/fa';
-import { ButtonYbShadow, ButtonWhite } from '../styles/Button.styles';
-import InputStyle from '../styles/Input.styles';
+import { ButtonYbShadow, ButtonWhite } from './Button.styles';
+import InputStyle from './Input.styles';
 
 const PartnershipForm = () => {
   return (
@@ -173,4 +173,9 @@ const ButtonGroup = styled.div`
   justify-content: center;
   gap: ${({ theme }) => theme.spacing.s6};
   margin-top: ${({ theme }) => theme.spacing.s10};
+`;
+
+export const ErrorMessage = styled.span`
+  color: ${({ theme }) => theme.colors.error};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 `;

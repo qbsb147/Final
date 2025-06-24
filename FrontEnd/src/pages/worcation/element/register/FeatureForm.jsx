@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import CustomSelect from '../../../../components/common/Select';
-import CustomTextArea from '../../../../components/common/TextArea';
 import Checkbox from '../../../../components/common/Checkbox';
 
 const Form = () => {
