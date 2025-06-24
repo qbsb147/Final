@@ -4,31 +4,50 @@ import WorcationCalendar from '../components/common/Calendar';
 import Button from '../styles/Button';
 import Input from '../styles/Input';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
 
 const WorcationApply = () => {
+  const location = useLocation();
+  const passedWorcation = location.state?.worcation;
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
+  const [events, setEvents] = useState([]);
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    const fetchWorcationInfo = async () => {
+    if (passedWorcation) {
+      setWorcationInfo({
+        name: passedWorcation.worcation_name,
+        price: passedWorcation.non_partner_price,
+        no: passedWorcation.worcation_no,
+      });
+    }
+  }, [passedWorcation]);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      if (!passedWorcation) return;
+
       try {
-        const response = await axios.get('http://localhost:3001/worcation?worcation_no=1');
-        setWorcationInfo(response.data[0]); // 리스트에서 첫 번째 워케이션
+        const response = await axios.get(
+          `http://localhost:3001/worcation_application?ref_worcation_no=${passedWorcation.worcation_no}`
+        );
+        const reservations = response.data.map((app) => ({
+          title: '예약됨',
+          start: new Date(app.start_date),
+          end: new Date(app.end_date),
+        }));
+        setEvents(reservations);
       } catch (error) {
-        console.error('워케이션 정보 불러오기 실패:', error);
+        console.error('예약 정보 불러오기 실패:', error);
       }
     };
 
-    fetchWorcationInfo();
-  }, []);
-  const events = [
-    {
-      title: '예약된 일정',
-      start: new Date(),
-      end: new Date(),
-    },
-  ];
+    fetchReservations();
+  }, [passedWorcation]);
 
   const handleSubmit = async () => {
     if (!worcationInfo) {
@@ -40,10 +59,11 @@ const WorcationApply = () => {
       alert('시작일과 종료일을 모두 선택해주세요.');
       return;
     }
+
     const newApplication = {
-      application_no: 9999999999, // 임시 ID
-      ref_member_no: 1,
-      ref_worcation_no: worcationInfo.worcation_no,
+      application_no: Date.now(), // 임시 ID
+      ref_member_no: 1, // 예시로 고정값
+      ref_worcation_no: worcationInfo.no,
       start_date: startDate,
       end_date: endDate,
       approve: 'N',
@@ -65,19 +85,21 @@ const WorcationApply = () => {
       <Card>
         <Header>
           <Title>워케이션 신청</Title>
-          <Subtitle>{worcationInfo?.worcation_name}</Subtitle>
+          <Subtitle>{worcationInfo?.name}</Subtitle>
         </Header>
+
         <CalendarSection>
           <WorcationCalendar events={events} />
 
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value="최예찬" readOnly />
+            <ReadOnlyInput value={user?.name ?? ''} readOnly />
 
             <Label>금액</Label>
-            <ReadOnlyInput value={worcationInfo?.partner_price ?? ''} readOnly />
+            <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
         </CalendarSection>
+
         <DateSection>
           <DateRangeWrapper>
             <DateBlock>

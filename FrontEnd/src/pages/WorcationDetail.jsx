@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../styles/Button.styles';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
-// import Slider from 'react-slick';
-// import { useUserStore } from '../store/userStore';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
+import useUserStore from '../store/userStore.js';
 
 const WorcationDetail = () => {
   // const navigate = useNavigate();
@@ -191,7 +191,7 @@ const WorcationDetail = () => {
         <MainImageWrapper>
           <TopButtons>
             <ButtonBorder onClick={() => navigate(`/partnership/apply/`)}>제휴 신청</ButtonBorder>
-            <ButtonBorder onClick={() => navigate(`/worcation/apply/`)}>예약</ButtonBorder>
+            <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>
           </TopButtons>
         </MainImageWrapper>
 
@@ -284,6 +284,7 @@ const WorcationDetail = () => {
                 ) : (
                   <>
                     <CommentText>{review.review_content}</CommentText>
+
                     {review.writer_id === loginUserId && (
                       <CommentActions>
                         <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
@@ -444,17 +445,20 @@ const CommentUser = styled.span`
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-family: 'GyeonggiTitleOTF';
+  width: 20%;
 `;
 
 const CommentText = styled.span`
   margin-right: 200px;
   width: auto;
   font-size: ${({ theme }) => theme.fontSizes.lg};
+  flex: 1;
 `;
 
 const CommentActions = styled.div`
   display: flex;
   gap: 10px;
+  width: 10%;
 `;
 
 const ActionBtn = styled.button`

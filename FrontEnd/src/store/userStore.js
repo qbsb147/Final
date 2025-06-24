@@ -6,6 +6,7 @@ const useUserStore = create((set) => ({
   user: {
     user_no: 1,
     user_id: 'qwer1234',
+    company_no: '1',
     name: '최예찬',
     email: 'qbsb147',
     gender: 'M',
