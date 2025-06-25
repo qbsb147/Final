@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 public class MentalDto {
 
     @Getter
@@ -13,5 +15,6 @@ public class MentalDto {
     @NoArgsConstructor
     public static class Create {
         private String userNo;
+        private Map<String, String> answers;
     }
 }

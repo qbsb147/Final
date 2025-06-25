@@ -23,7 +23,7 @@ public class ChatController {
     // application.yml에서 Gemini API 키를 주입받음
     @Value("${gemini.api-key}")
     private String geminiApiKey;
-    
+
     // HTTP 요청을 위한 RestTemplate 인스턴스
     // Gemini API에 HTTP 요청을 보낼 때 사용했던 RestTemplate 인스턴스
     private final RestTemplate restTemplate = new RestTemplate();
@@ -83,7 +83,7 @@ public class ChatController {
         responses.put("method", "POST");
         return responses;
     }
-    
+
     /**
      * Gemini API에 실제로 요청을 보내는 메서드
      * @param prompt 사용자 프롬프트(질문)
@@ -92,7 +92,7 @@ public class ChatController {
     private String callGeminiAPI(String prompt) {
         // Gemini API 호출 URL (모델명: gemini-1.5-flash)
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiApiKey;
-        
+
         // 요청 바디 생성
         Map<String, Object> requestBody = new HashMap<>();
         Map<String, Object> content = new HashMap<>();
@@ -100,7 +100,7 @@ public class ChatController {
         part.put("text", prompt);
         content.put("parts", List.of(part));
         requestBody.put("contents", List.of(content));
-        
+
         try {
             // Gemini API에 POST 요청
             Map response = restTemplate.postForObject(url, requestBody, Map.class);
@@ -121,4 +121,6 @@ public class ChatController {
             throw new RuntimeException("Gemini API 호출 실패: " + e.getMessage());
         }
     }
+
 }
+
