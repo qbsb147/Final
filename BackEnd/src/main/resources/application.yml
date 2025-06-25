@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+gemini:
+  api-key: ${GEMINI_API_KEY:AIzaSyAnqjIguhtWdlNorWwHinSIjJSWIOLMUz4}
+
+business:
+  api-key: ${BUSINESS_API_KEY:bHM92CZd4eRIBau2YkOh2hG5UpF9YxODPwSDqY%2FcJIdTQHYkOiDJIjABzgFpyelodd0eFsuZIYBrLjjzuwn%2BeQ%3D%3D}
+
