@@ -38,16 +38,18 @@ public class Health {
     @Column(name="blood_sugar", nullable = false)
     private Float bloodSugar;
 
-    @Column(name="health_condition", nullable = false)
+    @Column(name="alcohol_consumption", nullable = false)
     @Enumerated(EnumType.STRING)
-    private HealthEnums.HealthCondition healthCondition;
+    private HealthEnums.AlcoholConsumption alcoholConsumption;
+
+    @Column(name="health_condition", nullable = false)
+    private String healthCondition;
 
     @Column(name="cholesterol_level", nullable = false)
     private Integer cholesterolLevel;
 
     @Column(name="smoking_status", nullable = false, length = 10)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.SmokingStatus smokingStatus;
+    private String smokingStatus;
 
     @Column(name="physical_activity", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -57,8 +59,7 @@ public class Health {
     private Double sleepHours;
 
     @Column(name="diet_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.DietType dietType;
+    private String dietType;
 
     @Column(name = "update_date", nullable = false)
     private LocalDate updateDate;
