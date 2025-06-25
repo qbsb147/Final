@@ -35,16 +35,16 @@ public class HealthEnums {
         Low, Moderate, High
     }
 
-    public enum DietType{
-        Balanced, HighCard, HighProtein, Vegan;
-        @Override
-        public String toString(){
-            if(this == HighCard){
-                return "High Card";
-            }else if(this == HighProtein){
-                return "High Protein";
-            }
-            return super.toString();
-        }
-    }
+//    public enum DietType{
+//        Balanced, HighCard, HighProtein, Vegan;
+//        @Override
+//        public String toString(){
+//            if(this == HighCard){
+//                return "High Card";
+//            }else if(this == HighProtein){
+//                return "High Protein";
+//            }
+//            return super.toString();
+//        }
+//    }
 }

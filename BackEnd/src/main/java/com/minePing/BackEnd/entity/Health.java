@@ -49,6 +49,10 @@ public class Health {
     @Enumerated(EnumType.STRING)
     private HealthEnums.SmokingStatus smokingStatus;
 
+    @Column(name = "alcohol_consumption", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private HealthEnums.AlcoholConsumption alcoholConsumption;
+
     @Column(name="physical_activity", nullable = false)
     @Enumerated(EnumType.STRING)
     private HealthEnums.PhysicalActivity physicalActivity;
@@ -57,8 +61,9 @@ public class Health {
     private Double sleepHours;
 
     @Column(name="diet_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.DietType dietType;
+//    @Enumerated(EnumType.STRING)
+//    private HealthEnums.DietType dietType;
+    private String DietType;
 
     @Column(name = "update_date", nullable = false)
     private LocalDate updateDate;
