@@ -2,6 +2,7 @@ package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.HealthEnums;
+import com.minePing.BackEnd.enums.HealthEnums.AlcoholConsumption;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,22 +33,24 @@ public class Health {
     @Column(name="bmi",nullable = false)
     private Float bmi;
 
-    @Column(name="blood_pressure", nullable = false)
+    @Column(name = "AlcoholConsumption", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AlcoholConsumption alcoholConsumption;
+
+    @Column(name="blood_pressure", nullable = false, length = 7)
     private String bloodPressure;
 
     @Column(name="blood_sugar", nullable = false)
     private Float bloodSugar;
 
-    @Column(name="health_condition", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.HealthCondition healthCondition;
+    @Column(name="health_condition", nullable = false, length = 14)
+    private String healthCondition;
 
     @Column(name="cholesterol_level", nullable = false)
     private Integer cholesterolLevel;
 
     @Column(name="smoking_status", nullable = false, length = 10)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.SmokingStatus smokingStatus;
+    private String smokingStatus;
 
     @Column(name="physical_activity", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -56,9 +59,8 @@ public class Health {
     @Column(name = "sleep_hours", nullable = false)
     private Double sleepHours;
 
-    @Column(name="diet_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HealthEnums.DietType dietType;
+    @Column(name="diet_type", nullable = false, length = 12)
+    private String dietType;
 
     @Column(name = "update_date", nullable = false)
     private LocalDate updateDate;
