@@ -10,11 +10,12 @@ import { inputsByStep } from '../../components/auth/authInput';
 import useValidation from '../../hooks/useAuth';
 import CustomDatePicker from '../../components/common/DatePicker';
 import api from '../../api/axios';
+import { ButtonBorder } from '../../styles/Button.styles';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
-    gender: 'men',
+    gender: 'M',
     type: 'employee',
   });
   const [formData2, setFormData2] = useState({});
@@ -22,6 +23,21 @@ const SignUp = () => {
   const { validateStep } = useValidation();
   const companyNameTimeout = useRef();
   const [companySearchResults, setCompanySearchResults] = useState([]);
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  React.useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   // 입력 필드 변경 핸들러
   const handleChange = (e, step) => {
@@ -57,7 +73,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData1.userPwd !== formData1.userPwdCheck) {
+    if (formData1.user_pwd !== formData1.user_pwd_check) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
     }
@@ -89,14 +105,14 @@ const SignUp = () => {
         return;
       }
       try {
-        const { data } = await api.get(`/api/company/search`);
+        const data = await memberService.searchCompany(value);
         console.log('회사 검색 결과:', data); // 응답 구조 확인
         setCompanySearchResults(Array.isArray(data) ? data : []);
       } catch (err) {
         setCompanySearchResults([]);
         console.error('회사명 검색 에러:', err);
       }
-    }, 400);
+    }, 500);
   };
 
   // Dropdown item click handler
@@ -104,11 +120,24 @@ const SignUp = () => {
     console.log('선택된 회사 정보:', company); // 선택된 회사 데이터 구조 확인
     setFormData2((prev) => ({
       ...prev,
-      companyName: company.company_name,
+      company_name: company.company_name,
       companyNo: company.company_no,
       address: company.company_address, // 회사 주소도 함께 설정
     }));
     setCompanySearchResults([]);
+  };
+
+  const handleAddressSearch = () => {
+    if (!isPostcodeReady) {
+      alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const addr = data.address;
+        setFormData1((prev) => ({ ...prev, address: addr }));
+      },
+    }).open();
   };
 
   return (
@@ -141,6 +170,24 @@ const SignUp = () => {
                               onChange={(date) => setFormData1((prev) => ({ ...prev, birthday: date }))}
                             />
                           </StyledDatePickerWrapper>
+                        ) : left.name === 'address' ? (
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <InputBox
+                              name="address"
+                              type="text"
+                              value={formData1.address || ''}
+                              readOnly
+                              placeholder="주소"
+                              variant="yellow"
+                            />
+                            <AddressSearchButton
+                              type="button"
+                              onClick={handleAddressSearch}
+                              disabled={!isPostcodeReady}
+                            >
+                              검색
+                            </AddressSearchButton>
+                          </div>
                         ) : (
                           <InputBox
                             name={left.name}
@@ -167,6 +214,24 @@ const SignUp = () => {
                                 onChange={(date) => setFormData1((prev) => ({ ...prev, birthday: date }))}
                               />
                             </StyledDatePickerWrapper>
+                          ) : right.name === 'address' ? (
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <InputBox
+                                name="address"
+                                type="text"
+                                value={formData1.address || ''}
+                                readOnly
+                                placeholder="주소"
+                                variant="yellow"
+                              />
+                              <AddressSearchButton
+                                type="button"
+                                onClick={handleAddressSearch}
+                                disabled={!isPostcodeReady}
+                              >
+                                검색
+                              </AddressSearchButton>
+                            </div>
                           ) : (
                             <InputBox
                               name={right.name}
@@ -192,15 +257,15 @@ const SignUp = () => {
                     <CustomRadioButton
                       label="남성"
                       name="gender"
-                      value="men"
-                      checked={formData1.gender === 'men'}
+                      value="M"
+                      checked={formData1.gender === 'M'}
                       onChange={(e) => handleChange(e, 1)}
                     />
                     <CustomRadioButton
                       label="여성"
                       name="gender"
-                      value="women"
-                      checked={formData1.gender === 'women'}
+                      value="W"
+                      checked={formData1.gender === 'W'}
                       onChange={(e) => handleChange(e, 1)}
                     />
                   </RadioGroup>
@@ -248,7 +313,9 @@ const SignUp = () => {
                     <React.Fragment key={i}>
                       {/* 왼쪽 영역 */}
                       <div>
-                        <Label htmlFor={left.name}>{left.placeholder}</Label>
+                        <Label htmlFor={left.name}>
+                          {left.name === 'business_id' ? '사업자번호' : left.placeholder}
+                        </Label>
                         <InputBox
                           name={left.name}
                           type={left.type}
@@ -265,7 +332,9 @@ const SignUp = () => {
                       {/* 오른쪽 영역 */}
                       {right ? (
                         <div>
-                          <Label htmlFor={right.name}>{right.placeholder}</Label>
+                          <Label htmlFor={right.name}>
+                            {right.name === 'business_id' ? '사업자번호' : right.placeholder}
+                          </Label>
                           <InputBox
                             name={right.name}
                             type={right.type}
@@ -297,14 +366,16 @@ const SignUp = () => {
                     <React.Fragment key={i}>
                       {/* 왼쪽 영역 */}
                       <div>
-                        <Label htmlFor={left.name}>{left.placeholder}</Label>
-                        {left.name === 'companyName' ? (
+                        <Label htmlFor={left.name}>
+                          {left.name === 'business_id' ? '사업자번호' : left.placeholder}
+                        </Label>
+                        {left.name === 'company_name' ? (
                           <div style={{ position: 'relative' }}>
                             <InputBox
                               name={left.name}
                               type={left.type}
                               placeholder={left.placeholder}
-                              value={formData2.companyName || ''}
+                              value={formData2.company_name || ''}
                               onChange={(e) => handleChange(e, 2)}
                               onKeyUp={handleCompanyNameKeyUp}
                               autoComplete="off"
@@ -338,7 +409,9 @@ const SignUp = () => {
                       {/* 오른쪽 영역 */}
                       {right ? (
                         <div>
-                          <Label htmlFor={right.name}>{right.placeholder}</Label>
+                          <Label htmlFor={right.name}>
+                            {right.name === 'business_id' ? '사업자번호' : right.placeholder}
+                          </Label>
                           <InputBox
                             name={right.name}
                             type={right.type}
@@ -528,6 +601,22 @@ const DropdownItem = styled.li`
   &:hover {
     background: #fff3b0;
   }
+`;
+
+const AddressSearchButton = styled.button`
+  height: 52.41px; /* match InputBox height from DatePicker styles */
+  min-width: 80px;
+  padding: 0 12px;
+  background: #feffe0;
+  border: 3px solid #dda900;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: ${({ theme }) => theme.colors.black};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 export default SignUp;

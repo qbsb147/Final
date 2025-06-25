@@ -2,12 +2,12 @@ import React from 'react';
 import * as yup from 'yup';
 
 export const step1Schema = yup.object().shape({
-  userId: yup
+  user_id: yup
     .string()
     .matches(/^[a-zA-Z0-9]{4,12}$/, '아이디는 4~12자의 영문 및 숫자만 가능합니다.')
     .required('아이디를 입력해주세요.'),
 
-  userPwd: yup
+  user_pwd: yup
     .string()
     .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
     .matches(
@@ -16,9 +16,9 @@ export const step1Schema = yup.object().shape({
     )
     .required('비밀번호를 입력해주세요.'),
 
-  userPwdCheck: yup
+  user_pwd_check: yup
     .string()
-    .oneOf([yup.ref('userPwd')], '비밀번호가 일치하지 않습니다.')
+    .oneOf([yup.ref('user_pwd')], '비밀번호가 일치하지 않습니다.')
     .required('비밀번호 확인을 입력해주세요.'),
 
   name: yup
@@ -39,29 +39,29 @@ export const step1Schema = yup.object().shape({
 });
 
 export const step2SchemaTypeA = yup.object().shape({
-  companyName: yup.string().required('회사명을 입력해주세요.'),
+  company_name: yup.string().required('회사명을 입력해주세요.'),
   department: yup.string().required('부서명을 입력해주세요.'),
   position: yup.string().required('직급을 입력해주세요.'),
   address: yup.string().required('회사주소를 입력해주세요.'),
 
-  companyEmail: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
+  company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
 
-  companyPhone: yup
+  company_phone: yup
     .string()
     .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
     .required('회사 전화번호를 입력해주세요.'),
 });
 
 export const step2SchemaTypeB = yup.object().shape({
-  companyName: yup.string().required('기업명을 입력해주세요.'),
-  businessId: yup
+  company_name: yup.string().required('기업명을 입력해주세요.'),
+  business_id: yup
     .string()
     .matches(/^\d{3}-\d{2}-\d{5}$/, '사업자번호 형식은 000-00-00000입니다.')
     .required('사업자번호를 입력해주세요.'),
 
-  businessName: yup.string().required('사업자명을 입력해주세요.'),
+  business_name: yup.string().required('사업자명을 입력해주세요.'),
 
-  openDate: yup
+  open_date: yup
     .string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, '개업일 형식은 YYYY-MM-DD입니다.')
     .required('개업일을 입력해주세요.'),
@@ -70,17 +70,17 @@ export const step2SchemaTypeB = yup.object().shape({
 
   email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
 
-  companyTel: yup
+  company_tel: yup
     .string()
     .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
     .required('기업 전화번호를 입력해주세요.'),
 });
 
 export const loginSchema = yup.object().shape({
-  userId: yup
+  user_id: yup
     .string()
     .required('아이디를 입력해주세요.')
     .matches(/^[a-zA-Z0-9]{4,12}$/, '아이디는 4~12자의 영문 및 숫자만 가능합니다.'),
 
-  userPwd: yup.string().required('비밀번호를 입력해주세요.').min(8, '비밀번호는 최소 8자 이상이어야 합니다.'),
+  user_pwd: yup.string().required('비밀번호를 입력해주세요.').min(8, '비밀번호는 최소 8자 이상이어야 합니다.'),
 });

@@ -20,7 +20,9 @@ export const API_BUSINESS = {
 };
 
 export const API_ENDPOINTS = {
-  MEMBER: '/members',
+  MEMBER: {
+    SIGNUP: (role) => `/member/signUp/${role}`,
+  },
   COMPANY: '/companies',
   COMPANY_PROFILE: '/companyProfiles',
   WORCATION: '/worcations',

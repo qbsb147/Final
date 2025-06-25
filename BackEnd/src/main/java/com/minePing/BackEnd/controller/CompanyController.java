@@ -22,7 +22,7 @@ public class CompanyController {
     @GetMapping("/search")
     public ResponseEntity<List<CompanyDto.Search>> companySearch(@RequestParam String company_name) {
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(companyService.getCompanyList(company_name));
     }
 
     @PostMapping("/validate")
