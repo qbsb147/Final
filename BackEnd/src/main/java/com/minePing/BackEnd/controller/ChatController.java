@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
-
+    
     // application.yml에서 Gemini API 키를 주입받음
     @Value("${gemini.api-key}")
     private String geminiApiKey;
@@ -121,4 +121,6 @@ public class ChatController {
             throw new RuntimeException("Gemini API 호출 실패: " + e.getMessage());
         }
     }
+
 }
+
