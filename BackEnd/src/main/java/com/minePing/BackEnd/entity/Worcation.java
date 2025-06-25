@@ -94,7 +94,7 @@ public class Worcation {
         this.createAt = LocalDateTime.now();
         this.updateAt = LocalDateTime.now();
         if(status == null){
-            status = CommonEnums.Status.Y;
+            status = CommonEnums.Status.N;
         }
     }
 
