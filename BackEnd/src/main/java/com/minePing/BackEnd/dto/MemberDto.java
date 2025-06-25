@@ -13,23 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberDto {
-    private Long company_no;
-    private String user_id;
-    private String user_pwd;
-    private String name;
-    private String email;
-    private CommonEnums.Gender gender;
-    private LocalDate birthday;
-    private String address;
-    private String phone;
-    private CommonEnums.Role role;
-    private LocalDateTime create_at;
-    private Timestamp update_at;
-    private CommonEnums.Status status;
-
-    public Member toEntity() {
-        return Member.builder().build();
-    }
 
     @Getter
     @Setter

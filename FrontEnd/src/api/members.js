@@ -25,8 +25,27 @@ const memberService = {
 
     // 회원 유형별로 맞는 엔드포인트로 회원가입 요청
     const { data: member } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), {
-      ...sendData1,
-      ...sendData2,
+      // formData1
+      user_id: sendData1.user_id,
+      user_pwd: sendData1.user_pwd,
+      name: sendData1.name,
+      gender: sendData1.gender,
+      type: sendData1.type,
+      address: sendData1.address,
+      birthday: sendData1.birthday,
+      email: sendData1.email,
+      phone: sendData1.phone,
+      // formData2 (typeA: employee, typeB: master)
+      company_name: sendData2.company_name,
+      department: sendData2.department,
+      position: sendData2.position,
+      company_email: sendData2.company_email,
+      company_phone: sendData2.company_phone,
+      // typeB only
+      business_id: sendData2.business_id,
+      business_name: sendData2.business_name,
+      open_date: sendData2.open_date,
+      company_tel: sendData2.company_tel,
     });
     return member;
   },

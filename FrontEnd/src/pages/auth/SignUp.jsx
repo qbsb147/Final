@@ -316,14 +316,48 @@ const SignUp = () => {
                         <Label htmlFor={left.name}>
                           {left.name === 'business_id' ? '사업자번호' : left.placeholder}
                         </Label>
-                        <InputBox
-                          name={left.name}
-                          type={left.type}
-                          placeholder={left.placeholder}
-                          value={formData2[left.name] || ''}
-                          onChange={(e) => handleChange(e, 2)}
-                          variant="yellow"
-                        />
+                        {left.name === 'company_name' ? (
+                          <div style={{ position: 'relative' }}>
+                            <InputBox
+                              name={left.name}
+                              type={left.type}
+                              placeholder={left.placeholder}
+                              value={formData2.company_name || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              onKeyUp={handleCompanyNameKeyUp}
+                              autoComplete="off"
+                              variant="yellow"
+                            />
+                            {companySearchResults.length > 0 && (
+                              <CompanyDropdown>
+                                {companySearchResults.map((company) => (
+                                  <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                                    {company.company_name}
+                                  </DropdownItem>
+                                ))}
+                              </CompanyDropdown>
+                            )}
+                          </div>
+                        ) : left.name === 'address' ? (
+                          <InputBox
+                            name={left.name}
+                            type={left.type}
+                            placeholder={left.placeholder}
+                            value={formData2[left.name] || ''}
+                            onChange={(e) => handleChange(e, 2)}
+                            variant="yellow"
+                            readOnly
+                          />
+                        ) : (
+                          <InputBox
+                            name={left.name}
+                            type={left.type}
+                            placeholder={left.placeholder}
+                            value={formData2[left.name] || ''}
+                            onChange={(e) => handleChange(e, 2)}
+                            variant="yellow"
+                          />
+                        )}
                       </div>
 
                       {/* 가운데 간격 */}
@@ -335,14 +369,72 @@ const SignUp = () => {
                           <Label htmlFor={right.name}>
                             {right.name === 'business_id' ? '사업자번호' : right.placeholder}
                           </Label>
-                          <InputBox
-                            name={right.name}
-                            type={right.type}
-                            placeholder={right.placeholder}
-                            value={formData2[right.name] || ''}
-                            onChange={(e) => handleChange(e, 2)}
-                            variant="yellow"
-                          />
+                          {right.name === 'company_name' ? (
+                            <div style={{ position: 'relative' }}>
+                              <InputBox
+                                name={right.name}
+                                type={right.type}
+                                placeholder={right.placeholder}
+                                value={formData2.company_name || ''}
+                                onChange={(e) => handleChange(e, 2)}
+                                onKeyUp={handleCompanyNameKeyUp}
+                                autoComplete="off"
+                                variant="yellow"
+                              />
+                              {companySearchResults.length > 0 && (
+                                <CompanyDropdown>
+                                  {companySearchResults.map((company) => (
+                                    <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                                      {company.company_name}
+                                    </DropdownItem>
+                                  ))}
+                                </CompanyDropdown>
+                              )}
+                            </div>
+                          ) : right.name === 'address' ? (
+                            <InputBox
+                              name={right.name}
+                              type={right.type}
+                              placeholder={right.placeholder}
+                              value={formData2[right.name] || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              variant="yellow"
+                              readOnly
+                            />
+                          ) : (
+                            <InputBox
+                              name={right.name}
+                              type={right.type}
+                              placeholder={right.placeholder}
+                              value={formData2[right.name] || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              variant="yellow"
+                            />
+                          )}
+                          {left.name === 'open_date' ? (
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <InputBox
+                                name={left.name}
+                                type={left.type}
+                                placeholder={left.placeholder}
+                                value={formData2[left.name] || ''}
+                                onChange={(e) => handleChange(e, 2)}
+                                variant="yellow"
+                              />
+                              <Btn type="button" style={{ marginLeft: '8px', height: '40px' }}>
+                                부서 등록
+                              </Btn>
+                            </div>
+                          ) : (
+                            <InputBox
+                              name={left.name}
+                              type={left.type}
+                              placeholder={left.placeholder}
+                              value={formData2[left.name] || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              variant="yellow"
+                            />
+                          )}
                         </div>
                       ) : (
                         <div /> // 오른쪽이 없으면 빈 칸
@@ -369,38 +461,14 @@ const SignUp = () => {
                         <Label htmlFor={left.name}>
                           {left.name === 'business_id' ? '사업자번호' : left.placeholder}
                         </Label>
-                        {left.name === 'company_name' ? (
-                          <div style={{ position: 'relative' }}>
-                            <InputBox
-                              name={left.name}
-                              type={left.type}
-                              placeholder={left.placeholder}
-                              value={formData2.company_name || ''}
-                              onChange={(e) => handleChange(e, 2)}
-                              onKeyUp={handleCompanyNameKeyUp}
-                              autoComplete="off"
-                              variant="yellow"
-                            />
-                            {companySearchResults.length > 0 && (
-                              <CompanyDropdown>
-                                {companySearchResults.map((company) => (
-                                  <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
-                                    {company.company_name}
-                                  </DropdownItem>
-                                ))}
-                              </CompanyDropdown>
-                            )}
-                          </div>
-                        ) : (
-                          <InputBox
-                            name={left.name}
-                            type={left.type}
-                            placeholder={left.placeholder}
-                            value={formData2[left.name] || ''}
-                            onChange={(e) => handleChange(e, 2)}
-                            variant="yellow"
-                          />
-                        )}
+                        <InputBox
+                          name={left.name}
+                          type={left.type}
+                          placeholder={left.placeholder}
+                          value={formData2[left.name] || ''}
+                          onChange={(e) => handleChange(e, 2)}
+                          variant="yellow"
+                        />
                       </div>
 
                       {/* 가운데 간격 */}
@@ -412,14 +480,52 @@ const SignUp = () => {
                           <Label htmlFor={right.name}>
                             {right.name === 'business_id' ? '사업자번호' : right.placeholder}
                           </Label>
-                          <InputBox
-                            name={right.name}
-                            type={right.type}
-                            placeholder={right.placeholder}
-                            value={formData2[right.name] || ''}
-                            onChange={(e) => handleChange(e, 2)}
-                            variant="yellow"
-                          />
+                          {right.type === 'button' ? (
+                            <Btn type="button" style={{ width: '100%' }}>
+                              {right.placeholder}
+                            </Btn>
+                          ) : right.name === 'company_name' ? (
+                            <div style={{ position: 'relative' }}>
+                              <InputBox
+                                name={right.name}
+                                type={right.type}
+                                placeholder={right.placeholder}
+                                value={formData2.company_name || ''}
+                                onChange={(e) => handleChange(e, 2)}
+                                onKeyUp={handleCompanyNameKeyUp}
+                                autoComplete="off"
+                                variant="yellow"
+                              />
+                              {companySearchResults.length > 0 && (
+                                <CompanyDropdown>
+                                  {companySearchResults.map((company) => (
+                                    <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                                      {company.company_name}
+                                    </DropdownItem>
+                                  ))}
+                                </CompanyDropdown>
+                              )}
+                            </div>
+                          ) : right.name === 'address' ? (
+                            <InputBox
+                              name={right.name}
+                              type={right.type}
+                              placeholder={right.placeholder}
+                              value={formData2[right.name] || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              variant="yellow"
+                              readOnly
+                            />
+                          ) : (
+                            <InputBox
+                              name={right.name}
+                              type={right.type}
+                              placeholder={right.placeholder}
+                              value={formData2[right.name] || ''}
+                              onChange={(e) => handleChange(e, 2)}
+                              variant="yellow"
+                            />
+                          )}
                         </div>
                       ) : (
                         <div /> // 오른쪽이 없으면 빈 칸
@@ -589,7 +695,7 @@ const CompanyDropdown = styled.ul`
   border-radius: 0 0 10px 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   z-index: 10;
-  max-height: 180px;
+  max-height: 220px; /* 44px * 5 = 220px, show up to 5 items */
   overflow-y: auto;
   margin: 0;
   padding: 0;
@@ -597,6 +703,7 @@ const CompanyDropdown = styled.ul`
 `;
 const DropdownItem = styled.li`
   padding: 10px 16px;
+  height: 44px;
   cursor: pointer;
   &:hover {
     background: #fff3b0;

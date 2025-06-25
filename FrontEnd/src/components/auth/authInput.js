@@ -29,6 +29,7 @@
         { name: 'address', type: 'text', placeholder: '기업주소', side: 'right' },
         { name: 'email', type: 'text', placeholder: '이메일', side: 'right' },
         { name: 'company_tel', type: 'text', placeholder: '기업전화번호', side: 'right' },
+        { name: 'register_department', type: 'button', placeholder: '부서 등록', side: 'right' },
       ],
     },
   };

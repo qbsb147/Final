@@ -30,8 +30,8 @@ public class CompanyProfile {
     @JoinColumn(name = "company_no", nullable = false)
     private Company company;
 
-    @Column(name = "department", nullable = false, length = 50)
-    private String department;
+    @Column(name = "department_name", nullable = false, length = 50)
+    private String departmentName;
 
     @Column(name = "position", nullable = false, length = 30)
     private String position;
