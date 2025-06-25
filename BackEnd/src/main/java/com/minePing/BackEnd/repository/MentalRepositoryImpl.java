@@ -10,4 +10,5 @@ public class MentalRepositoryImpl implements MentalRepositoryV1{
 
     @PersistenceContext
     private EntityManager em;
+
 }
