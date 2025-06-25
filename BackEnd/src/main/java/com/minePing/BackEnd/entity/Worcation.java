@@ -4,9 +4,6 @@ import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.WorcationEnums;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +51,8 @@ public class Worcation {
     @Column(name = "non_partner_price")
     private Integer nonPartnerPrice;
 
-    @Column(name = "address",length = 100)
-    private String address;
+    @Column(name = "worcation_address",length = 100)
+    private String worcationAddress;
 
     @Column(name = "update_at",nullable = false)
     private LocalDateTime updateAt;
