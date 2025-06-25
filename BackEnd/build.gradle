@@ -24,16 +24,40 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'mysql:mysql-connector-java:8.0.32'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// 🔹 Spring Boot 주요 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA (Hibernate 기반) 사용을 위한 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 어플리케이션 (MVC, REST 등) 개발을 위한 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // Bean Validation 지원
+
+	// 🔹 데이터베이스 관련
+	implementation 'mysql:mysql-connector-java:8.0.32' // MySQL 연결을 위한 JDBC 드라이버
+	runtimeOnly 'com.h2database:h2' // 개발/테스트용 인메모리 H2 데이터베이스
+
+	// 🔹 Lombok: Getter, Setter 등 코드 자동 생성을 위한 도구
+	compileOnly 'org.projectlombok:lombok' // 컴파일 시에만 사용되는 Lombok 라이브러리
+	annotationProcessor 'org.projectlombok:lombok' // Lombok 애노테이션 처리기 (코드 생성)
+
+	// 🔹 MapStruct: DTO ↔ Entity 변환용 매핑 라이브러리
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final' // MapStruct 매핑 인터페이스 정의
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // MapStruct 구현 클래스 생성용 애노테이션 프로세서
+
+	// 🔹 개발 편의 도구
+	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 자동 리스타트 및 라이브 리로딩 지원
+
+	// 🔹 테스트 관련 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit, Mockito 등 포함된 테스트용 스타터
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit Platform 런타임 실행을 위한 의존성
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-parameters']
+
+    // Lombok과 MapStruct 애노테이션 프로세서 순서 설정
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.compilerArgs += [
+        '-Amapstruct.defaultComponentModel=spring',
+        '-Amapstruct.unmappedTargetPolicy=IGNORE'
+    ]
 }
 
 tasks.named('test') {
