@@ -66,7 +66,7 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<CompanyDepartment> companyDepartments = new ArrayList<>();
+    private List<Department> departments = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

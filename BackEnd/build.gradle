@@ -47,11 +47,13 @@ dependencies {
 	// 🔹 테스트 관련 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit, Mockito 등 포함된 테스트용 스타터
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit Platform 런타임 실행을 위한 의존성
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['-parameters']
-    
+
     // Lombok과 MapStruct 애노테이션 프로세서 순서 설정
     options.annotationProcessorPath = configurations.annotationProcessor
     options.compilerArgs += [

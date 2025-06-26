@@ -6,7 +6,7 @@ import { ko } from 'date-fns/locale';
 
 const CustomDatePicker = ({ selected, onChange }) => {
   return (
-    <StyledDatePicker
+    <DatePicker
       selected={selected}
       onChange={onChange}
       dateFormat="yyyy년 MM월 dd일"
@@ -17,21 +17,3 @@ const CustomDatePicker = ({ selected, onChange }) => {
 };
 
 export default CustomDatePicker;
-
-const StyledDatePicker = styled(DatePicker)`
-  width: 200px;
-  height: 30px;
-  padding: 0 12px;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
-  border-radius: ${({ theme }) => theme.borderRadius.base};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  color: ${({ theme }) => theme.colors.black};
-  background-color: ${({ theme }) => theme.colors.gray[100]};
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.colors.primary};
-    background: ${({ theme }) => theme.colors.white};
-  }
-`;
