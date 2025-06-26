@@ -49,6 +49,9 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit Platform 런타임 실행을 위한 의존성
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//이미지 API
+	implementation 'org.reactivestreams:reactive-streams:1.0.3'
 }
 
 tasks.withType(JavaCompile).configureEach {

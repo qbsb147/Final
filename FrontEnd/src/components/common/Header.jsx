@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 
-
 const menuData = [
   {
     title: '심리검사',
@@ -34,12 +33,12 @@ const menuData = [
   },
   {
     title: '직원관리',
-    path: '/member/list',
+    path: '/employee/list',
     items: [
-      { title: '직원목록', path: '/member/list' },
-      { title: '워케이션 신청자', path: '/member/worcation-applies' },
-      { title: '상담 필요자', path: '/member/needs-consult' },
-      { title: '직원 신청', path: '/member/applies' },
+      { title: '직원목록', path: '/employee/list' },
+      { title: '워케이션 신청자', path: '/employee/worcation-applies' },
+      { title: '상담 필요자', path: '/employee/needs-consult' },
+      { title: '직원 신청', path: '/employee/applies' },
     ],
   },
   {
@@ -49,7 +48,7 @@ const menuData = [
       { title: '신체 정보', path: '/my/body' },
       { title: '워케이션 신청내역', path: '/my/worcation-history' },
     ],
-  }, 
+  },
 ];
 
 const Header = () => {
@@ -89,10 +88,7 @@ const Header = () => {
   };
 
   return (
-    <HeaderWrap
-      onMouseEnter={() => setDropdownVisible(true)}
-      onMouseLeave={() => setDropdownVisible(false)}
-    >
+    <HeaderWrap onMouseEnter={() => setDropdownVisible(true)} onMouseLeave={() => setDropdownVisible(false)}>
       <HeaderBg>
         <HeaderInner>
           <LogoWrap>
