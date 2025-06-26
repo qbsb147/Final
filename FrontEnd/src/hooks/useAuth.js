@@ -51,11 +51,12 @@ export const useWorcationForm = yup.object().shape({
     .string()
     .matches(/^\d{3}-\d{2}-\d{5}$/, '사업자번호 형식은 000-00-00000입니다.')
     .required('사업자번호를 입력해주세요.'),
-  business_name: yup.string().required('사업자명을 입력해주세요.'),
+  licensee: yup.string().required('사업자명을 입력해주세요.'),
   open_date: yup
     .string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, '개업일 형식은 YYYY-MM-DD입니다.')
     .required('개업일을 입력해주세요.'),
+  department: yup.array().of(yup.string()).required('부서명을 입력해주세요.'),
   company_address: yup.string().required('기업주소를 입력해주세요.'),
   business_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
   company_tel: yup

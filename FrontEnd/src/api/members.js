@@ -39,12 +39,14 @@ const memberService = {
       company_name: sendData2.company_name,
       department: sendData2.department,
       position: sendData2.position,
+      company_address: sendData2.company_address,
       company_email: sendData2.company_email,
       company_phone: sendData2.company_phone,
       // typeB only
       business_id: sendData2.business_id,
-      business_name: sendData2.business_name,
+      licensee: sendData2.licensee,
       open_date: sendData2.open_date,
+      business_email: sendData2.business_email,
       company_tel: sendData2.company_tel,
     });
     return member;

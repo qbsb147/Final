@@ -139,12 +139,12 @@ const MasterStep = ({
               </div>
             </div>
             <div style={{ marginBottom: '16px' }}>
-              <Label htmlFor="email">이메일</Label>
+              <Label htmlFor="business_email">이메일</Label>
               <InputBox
-                name="email"
+                name="business_email"
                 type="text"
                 placeholder="이메일"
-                value={formData2.email || ''}
+                value={formData2.business_email || ''}
                 onChange={(e) => handleChange(e, 2)}
                 variant="yellow"
                 readOnly={showInput}
