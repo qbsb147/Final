@@ -28,25 +28,25 @@ const Mypage = () => {
   
         const mappedData = {
           // members에서 가져오는 필드
-          id: memberData.id,
-          userId: memberData.userId,
-          password: memberData.userPwd,
+          user_no: memberData.user_no,
+          user_id: memberData.user_id,
+          password: memberData.user_pwd,
           email: memberData.email,
           name: memberData.name,
           address: memberData.address,
           age: memberData.age,
-          gender: memberData.gender === 'men' ? 'M' : 'F',
-          registrationType: memberData.type === 'A' ? 'employee' : memberData.type === 'B' ? 'company' : 'worcation',
+          gender: memberData.gender,
+          registration_role: memberData.role,
   
           // companies에서 가져오는 필드
-          companyId: companyData?.id,
-          companyName: companyData?.companyName || '',
-          companyAddress: companyData?.address || '',
-          companyEmail: companyData?.email || '',
-          companyPhone: companyData?.companyTel || '',
+          company_no: companyData?.company_no,
+          company_name: companyData?.company_name || '',
+          company_address: companyData?.company_address || '',
+          company_email: companyData?.company_email || '',
+          company_phone: companyData?.company_tel || '',
 
           //companyProfiles에서 가져오는 필드
-          companyProfileId: companyProfileData?.id,
+          company_profile_no: companyProfileData?.company_profile_no,
           position: companyProfileData?.position || '',
           department: companyProfileData?.department || '',
 
@@ -59,7 +59,7 @@ const Mypage = () => {
     };
   
     fetchUserInfo();
-  }, [user?.userId]);
+  }, [user?.user_id]);
 
   if (!userInfo) return <div>로딩중...</div>;
 
@@ -73,8 +73,8 @@ const Mypage = () => {
 
     // 2. 데이터 분리
     const memberData = {
-      userId: userInfo.userId,
-      password: userInfo.password,
+      user_no: userInfo.user_no,
+      user_id: userInfo.user_id,
       email: userInfo.email,
       name: userInfo.name,
       address: userInfo.address,
@@ -82,10 +82,10 @@ const Mypage = () => {
       gender: userInfo.gender,
     };
     const companyData = {
-      companyName: userInfo.companyName,
-      address: userInfo.companyAddress,
-      email: userInfo.companyEmail,
-      companyTel: userInfo.companyPhone,
+      company_name: userInfo.company_name,
+      company_address: userInfo.company_address,
+      company_email: userInfo.company_email,
+      company_phone: userInfo.company_phone,
     };
     const companyProfileData = {
       position: userInfo.position,
@@ -94,9 +94,9 @@ const Mypage = () => {
 
     try {
       // json-server에서는 id(PK)로 접근해야 하므로 userInfo.id, userInfo.companyId, userInfo.companyProfileId 사용
-      await api.put(`/members/${userInfo.id}`, memberData);
-      await api.put(`/companies/${userInfo.companyId}`, companyData);
-      await api.put(`/companyProfiles/${userInfo.companyProfileId}`, companyProfileData);
+      await api.put(`/members/${userInfo.user_no}`, memberData);
+      await api.put(`/companies/${userInfo.company_id}`, companyData);
+      await api.put(`/companyProfiles/${userInfo.company_profile_id}`, companyProfileData);
       alert('수정 완료!');
     } catch (err) {
       console.error(err);
@@ -115,7 +115,7 @@ const Mypage = () => {
           <Box>
             <InputGroup>
               <InputName>아이디</InputName>
-              <InputText style={Input.InputGray} type="text" name="userId" value={userInfo.userId || ''} readOnly />
+              <InputText style={Input.InputGray} type="text" name="user_id" value={userInfo.user_id || ''} readOnly />
             </InputGroup>
             <InputGroup>
               <InputName>비밀번호</InputName>
@@ -148,14 +148,14 @@ const Mypage = () => {
               <InputName>성별</InputName>
               <RadioGroup>
                 <InputRadio type="radio" name="gender" value="M" checked={userInfo.gender === 'M'} onChange={handleInputChange} /> 남성
-                <InputRadio type="radio" name="gender" value="F" checked={userInfo.gender === 'F'} onChange={handleInputChange} /> 여성
+                <InputRadio type="radio" name="gender" value="W" checked={userInfo.gender === 'W'} onChange={handleInputChange} /> 여성
               </RadioGroup>
             </InputGroup>
             <InputGroup>
               <InputName>등록 유형</InputName>
               <RadioGroup>
                 <InputRadio type="radio" name="registrationType" value="employee" checked={userInfo.registrationType === 'employee'} onChange={handleInputChange} /> 직원
-                <InputRadio type="radio" name="registrationType" value="company" checked={userInfo.registrationType === 'company'} onChange={handleInputChange} /> 기업
+                <InputRadio type="radio" name="registrationType" value="master" checked={userInfo.registrationType === 'master'} onChange={handleInputChange} /> 기업
                 <InputRadio type="radio" name="registrationType" value="worcation" checked={userInfo.registrationType === 'worcation'} onChange={handleInputChange} /> 워케이션 업체
               </RadioGroup>
             </InputGroup>
@@ -164,7 +164,7 @@ const Mypage = () => {
           <Box>
             <InputGroup>
               <InputName>회사명</InputName>
-              <InputText style={Input.InputGray} type="text" name="companyName" value={userInfo.companyName || ''} onChange={handleInputChange} />
+              <InputText style={Input.InputGray} type="text" name="company_name" value={userInfo.company_name || ''} onChange={handleInputChange} />
             </InputGroup>
             <InputGroup>
               <InputName>부서명</InputName>
@@ -176,15 +176,15 @@ const Mypage = () => {
             </InputGroup>
             <InputGroup>
               <InputName>회사주소</InputName>
-              <InputText style={Input.InputGray} type="text" name="companyAddress" value={userInfo.companyAddress || ''} onChange={handleInputChange} />
+              <InputText style={Input.InputGray} type="text" name="company_address" value={userInfo.company_address || ''} onChange={handleInputChange} />
             </InputGroup>
             <InputGroup>
               <InputName>회사 이메일</InputName>
-              <InputText style={Input.InputGray} type="email" name="companyEmail" value={userInfo.companyEmail || ''} onChange={handleInputChange} />
+              <InputText style={Input.InputGray} type="email" name="company_email" value={userInfo.company_email || ''} onChange={handleInputChange} />
             </InputGroup>
             <InputGroup>
               <InputName>사내 전화번호</InputName>
-              <InputText style={Input.InputGray} type="text" name="companyPhone" value={userInfo.companyPhone || ''} onChange={handleInputChange} />
+              <InputText style={Input.InputGray} type="text" name="company_phone" value={userInfo.company_phone || ''} onChange={handleInputChange} />
             </InputGroup>
           </Box>
         </Form>

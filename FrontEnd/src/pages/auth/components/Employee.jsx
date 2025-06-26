@@ -1,6 +1,12 @@
 import React from 'react';
 import { CompanyDropdown, DropdownItem, InputBox, Label } from './sharedStyles';
-import { createHandleChange, createHandleCompanyNameKeyUp, createHandleCompanySelect } from './Handler';
+import {
+  createHandleChange,
+  createHandleCompanyNameKeyUp,
+  createHandleCompanySelect,
+  createHandleDepartmentSelect,
+  createHandlePositionSelect,
+} from './Handler';
 import styled from 'styled-components';
 
 const EmployeeStep = ({
@@ -54,7 +60,7 @@ const EmployeeStep = ({
             type="text"
             placeholder="부서명"
             value={formData2.department || ''}
-            onChange={(e) => handleChange(e, 2)}
+            onClick={handleDepartmentSelect}
             variant="yellow"
           />
         </div>
@@ -65,7 +71,7 @@ const EmployeeStep = ({
             type="text"
             placeholder="직급"
             value={formData2.position || ''}
-            onChange={(e) => handleChange(e, 2)}
+            onClick={handlePositionSelect}
             variant="yellow"
           />
         </div>

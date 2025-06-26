@@ -33,10 +33,9 @@ export const useDefaultForm = yup.object().shape({
 
 // Employee form validation schema
 export const useEmployeeForm = yup.object().shape({
-  company_name: yup.string().required('회사명을 입력해주세요.'),
+  worcation_no: yup.string().required('회사 선택은 필수입니다.'),
   department: yup.string().required('부서명을 입력해주세요.'),
   position: yup.string().required('직급을 입력해주세요.'),
-  company_address: yup.string().required('회사주소를 입력해주세요.'),
   company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
   company_phone: yup
     .string()
@@ -45,7 +44,7 @@ export const useEmployeeForm = yup.object().shape({
 });
 
 // Worcation form validation schema
-export const useWorcationForm = yup.object().shape({
+export const useMasterForm = yup.object().shape({
   company_name: yup.string().required('기업명을 입력해주세요.'),
   business_id: yup
     .string()
