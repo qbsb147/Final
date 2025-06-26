@@ -24,10 +24,6 @@ public class Member {
     @Column(name = "user_no") // DB컬럼명 지정
     private Long userNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_no")
-    private Company company;
-
     @Column(name = "user_id", nullable = false, length = 50)
     private String userId;
 

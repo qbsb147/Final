@@ -21,7 +21,7 @@ public class CompanyController {
 
     @GetMapping("/search")
     public ResponseEntity<List<CompanyDto.Search>> companySearch(@RequestParam String company_name) {
-
+        System.out.println("company_name = " + company_name);
         return ResponseEntity.ok(companyService.getCompanyList(company_name));
     }
 
