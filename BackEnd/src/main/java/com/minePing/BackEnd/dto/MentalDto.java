@@ -2,12 +2,14 @@ package com.minePing.BackEnd.dto;
 
 import lombok.*;
 
+
 public class MentalDto {
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @Data
     public static class Create {
         private String userNo;
         private java.util.Map<String, String> answers;
@@ -35,4 +37,10 @@ public class MentalDto {
                     .build();
         }
     }
+
+
+
+
+
+
 }
