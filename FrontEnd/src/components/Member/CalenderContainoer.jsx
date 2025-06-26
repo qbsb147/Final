@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Calender from '../common/Calendar';
 
 const InfoListData = [
   {
@@ -27,7 +28,7 @@ const CalenderContainoer = () => {
         <DateHeaderTitle>2025년 6월</DateHeaderTitle>
       </DateHeader>
       <Contents>
-        <Calender>Calender</Calender>
+        <Calender />
         <InfoList>
           <InfoListUl>
             {InfoListData.map((item, index) => (
@@ -77,12 +78,12 @@ const Contents = styled.div`
   align-items: center;
 `;
 
-const Calender = styled.div`
-  width: 60%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+// const Calender = styled.div`
+//   width: 60%;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// `;
 const InfoList = styled.div`
   width: 40%;
   display: flex;
