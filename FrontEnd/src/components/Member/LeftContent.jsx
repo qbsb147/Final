@@ -6,10 +6,10 @@ import { MdKeyboardArrowRight } from 'react-icons/md';
 
 const LeftContent = () => {
   const items = [
-    { label: '직원 목록', path: '/member/list' },
-    { label: '워케이션 신청자', path: '/member/worcation-applies' },
-    { label: '상담 필요자', path: '/member/needs-consult' },
-    { label: '직원 승인 목록', path: '/member/applies' },
+    { label: '직원 목록', path: '/employee/list' },
+    { label: '워케이션 신청자', path: '/employee/worcation-applies' },
+    { label: '상담 필요자', path: '/employee/needs-consult' },
+    { label: '직원 승인 목록', path: '/employee/applies' },
   ];
 
   return (

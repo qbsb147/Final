@@ -51,16 +51,16 @@ function App() {
             <Route path="/worcation" element={<WorcationList />} />
 
             {/* 직원 목록 리스트 */}
-            <Route path="/member/list" element={<MemberList />} />
+            <Route path="/employee/list" element={<MemberList />} />
 
             {/* 워케이션 신청 리스트 */}
-            <Route path="/member/worcation-applies" element={<WorcationAppliesList />} />
+            <Route path="/employee/worcation-applies" element={<WorcationAppliesList />} />
 
             {/* 상담 필요자 리스트 */}
-            <Route path="/member/needs-consult" element={<NeedsConsult />} />
+            <Route path="/employee/needs-consult" element={<NeedsConsult />} />
 
             {/* 직원 승인 목록 리스트 */}
-            <Route path="/member/applies" element={<MemberApplies />} />
+            <Route path="/employee/applies" element={<MemberApplies />} />
           </Route>
 
           {/* serachbar미포함 */}

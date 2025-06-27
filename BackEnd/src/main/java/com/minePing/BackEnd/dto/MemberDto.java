@@ -3,6 +3,7 @@ package com.minePing.BackEnd.dto;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
 import jakarta.persistence.*;
+import java.time.Period;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -142,6 +143,36 @@ public class MemberDto {
     public static class Login{
         private String user_id;
         private String user_pwd;
+    
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Response {
+
+        private String department_name;
+        private String position;
+        private String name;
+        private String gender;
+        private int age;
+        private String role;
+        private String email;
+        private String workStatus;
+
+        public static Response toDto(Member member, String workStatus) {
+            CompanyProfile profile = member.getCompanyProfile();
+            return Response.builder()
+                    .department_name(profile.getDepartmentName())
+                    .position(profile.getPosition())
+                    .name(member.getName())
+                    .gender(member.getGender().name())
+                    .age(Period.between(member.getBirthday(), LocalDate.now()).getYears())
+                    .role(member.getRole().name())
+                    .email(member.getEmail())
+                    .workStatus(workStatus)
+                    .build();
+        }
     }
 
 }

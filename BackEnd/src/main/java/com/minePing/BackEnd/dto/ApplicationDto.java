@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
 import lombok.*;
@@ -29,6 +30,24 @@ public class ApplicationDto {
         private LocalDate startDate;      // 예약 시작일
         private LocalDate endDate;        // 예약 종료일
         private String reviewContent;     // 작성된 리뷰가 있는 경우 내용
+
+        /**
+         * Entity → DTO 변환 메서드
+         * Mapper 없이 수동 변환
+         */
+        public static ApplicationResponseDto fromEntity(WorcationApplication entity) {
+            return ApplicationResponseDto.builder()
+                    .applicationNo(entity.getApplicationNo())
+                    .userNo(entity.getMember().getUserNo())
+                    .userName(entity.getMember().getName())
+                    .worcationNo(entity.getWorcation().getWorcationNo())
+                    .worcationName(entity.getWorcation().getWorcationName())
+                    .approve(entity.getApprove())
+                    .startDate(entity.getStartDate())
+                    .endDate(entity.getEndDate())
+                    .reviewContent(entity.getReview() != null ? entity.getReview().getReviewContent() : null)
+                    .build();
+        }
     }
 
     /**
