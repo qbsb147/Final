@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { CompanyDropdown, DropdownItem, InputBox, Label, Btn, AddressSearchButton, StyledDatePickerWrapper } from './sharedStyles';
+import {
+  CompanyDropdown,
+  DropdownItem,
+  InputBox,
+  Label,
+  Btn,
+  AddressSearchButton,
+  StyledDatePickerWrapper,
+} from './sharedStyles';
 import {
   createHandleChange,
   createHandleCompanyNameKeyUp,
@@ -73,7 +81,7 @@ const MasterStep = ({
           <InputBox
             name="business_id"
             type="text"
-            placeholder="숫자만 10자리 입력"
+            placeholder="숫자 10자리 입력"
             value={formData2.business_id || ''}
             onChange={(e) => handleChange(e, 2)}
             variant="yellow"

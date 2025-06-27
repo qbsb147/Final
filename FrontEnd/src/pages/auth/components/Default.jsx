@@ -4,9 +4,9 @@ import CustomDatePicker from '../../../components/common/DatePicker';
 import { createHandleChange, createHandleRadioChange, createHandleAddressSearch } from './Handler';
 import styled from 'styled-components';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedType, setFormData2, isPostcodeReady }) => {
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, isPostcodeReady }) => {
   const handleChange = createHandleChange(setFormData1, () => {});
-  const handleRadioChange = createHandleRadioChange(setSelectedType, setFormData1, setFormData2);
+  const handleRadioChange = createHandleRadioChange(setSelectedRole, setFormData1, setFormData2);
   const handleAddressSearch = createHandleAddressSearch(isPostcodeReady, setFormData1);
 
   return (
@@ -137,7 +137,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedType, setFormData2, i
               value="employee"
               checked={formData1.role === 'employee'}
               onChange={handleRadioChange}
-            />{' '}
+            />
             직원
             <input
               type="radio"
@@ -145,7 +145,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedType, setFormData2, i
               value="master"
               checked={formData1.role === 'master'}
               onChange={handleRadioChange}
-            />{' '}
+            />
             기업
             <input
               type="radio"
@@ -153,7 +153,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedType, setFormData2, i
               value="worcation"
               checked={formData1.role === 'worcation'}
               onChange={handleRadioChange}
-            />{' '}
+            />
             워케이션 업체
           </RadioGroup>
         </div>

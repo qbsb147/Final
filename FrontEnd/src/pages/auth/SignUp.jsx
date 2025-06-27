@@ -5,19 +5,19 @@ import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import memberService from '../../api/members';
-import { validateForm, useDefaultForm, useEmployeeForm, useWorcationForm } from '../../hooks/useAuth';
+import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '../../hooks/useAuth';
 import DefaultStep from './components/Default';
-import EmployeeStep from './components/Employee';
+import EmployeeStep from './components/employee';
 import MasterStep from './components/Master';
 
 const SignUp = () => {
-  const [formStep, setFormStep] = useState(2);
+  const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'M',
-    type: 'master',
+    role: 'employee',
   });
   const [formData2, setFormData2] = useState({});
-  const [selectedType, setSelectedType] = useState('employee');
+  const [selectedRole, setSelectedRole] = useState('employee');
   const companyNameTimeout = useRef();
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
@@ -59,8 +59,8 @@ const SignUp = () => {
     let isValidStep2 = true;
     if (formStep === 2) {
       let schema = null;
-      if (selectedType === 'employee') schema = useEmployeeForm;
-      else if (selectedType === 'master' || selectedType === 'worcation') schema = useWorcationForm;
+      if (selectedRole === 'employee') schema = useEmployeeForm;
+      else if (selectedRole === 'master') schema = useMasterForm;
       if (schema) {
         isValidStep2 = await validateForm(schema, formData2);
         setIsFormValid(isValidStep2);
@@ -92,14 +92,14 @@ const SignUp = () => {
             <DefaultStep
               formData1={formData1}
               setFormData1={setFormData1}
-              setSelectedType={setSelectedType}
+              setSelectedRole={setSelectedRole}
               setFormData2={setFormData2}
               isPostcodeReady={isPostcodeReady}
             />
           )}
 
           {/* STEP 2 - 직원 */}
-          {formStep === 2 && formData1.type === 'employee' && (
+          {formStep === 2 && formData1.role === 'employee' && (
             <EmployeeStep
               formData2={formData2}
               setFormData2={setFormData2}
@@ -111,7 +111,7 @@ const SignUp = () => {
           )}
 
           {/* STEP 2 - 회사 */}
-          {formStep === 2 && formData1.type === 'master' && (
+          {formStep === 2 && formData1.role === 'master' && (
             <MasterStep
               formData2={formData2}
               setFormData2={setFormData2}
@@ -129,8 +129,8 @@ const SignUp = () => {
             {formStep === 1 && (
               <>
                 <Btn onClick={() => window.history.back()}>취소</Btn>
-                <Btn onClick={selectedType === 'worcation' ? handleSubmit : handleNext}>
-                  {selectedType === 'worcation' ? '완료' : '다음'}
+                <Btn onClick={selectedRole === 'worcation' ? handleSubmit : handleNext}>
+                  {selectedRole === 'worcation' ? '완료' : '다음'}
                 </Btn>
               </>
             )}
@@ -138,9 +138,7 @@ const SignUp = () => {
             {formStep === 2 && (
               <>
                 <Btn onClick={handlePrev}>이전</Btn>
-                <Btn onClick={handleSubmit}>
-                  완료
-                </Btn>
+                <Btn onClick={handleSubmit}>완료</Btn>
               </>
             )}
           </BtnFlex>

@@ -8,11 +8,11 @@ export function createHandleChange(setFormData1, setFormData2) {
   };
 }
 
-export function createHandleRadioChange(setSelectedType, setFormData1, setFormData2) {
+export function createHandleRadioChange(setSelectedRole, setFormData1, setFormData2) {
   return (e) => {
     const { value } = e.target;
-    setSelectedType(value);
-    setFormData1((prev) => ({ ...prev, type: value }));
+    setSelectedRole(value);
+    setFormData1((prev) => ({ ...prev, role: value }));
     setFormData2({});
   };
 }
@@ -79,9 +79,8 @@ export function createHandleCompanySelect(setFormData2, setCompanySearchResults)
   return (company) => {
     setFormData2((prev) => ({
       ...prev,
-      company_name: company.company_name,
-      companyNo: company.company_no,
-      address: company.company_address,
+      worcation_no: company.company_no,
+      company_address: company.company_address,
     }));
     setCompanySearchResults([]);
   };

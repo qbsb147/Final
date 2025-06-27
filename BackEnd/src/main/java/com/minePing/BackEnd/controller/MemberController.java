@@ -22,20 +22,25 @@ public class MemberController {
 
     @PostMapping("/signUp/employee")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.EmployeeJoin employeeJoinDto) {
-        System.out.println("employeeJoinDto = " + employeeJoinDto);
+        memberService.saveEmployee(employeeJoinDto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signUp/master")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.MasterJoin masterJoinDto) {
-        System.out.println("masterJoinDto = " + masterJoinDto);
+        memberService.saveMaster(masterJoinDto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signUp/worcation")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.WorcationJoin worcationJoinDto) {
-        System.out.println("worcationJoinDto = " + worcationJoinDto.toString());
+        memberService.saveWorcation(worcationJoinDto);
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody MemberDto.Login loginDto) {
+        memberService.login(loginDto);
+        return ResponseEntity.ok().build();
+    }
 }
