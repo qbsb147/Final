@@ -6,6 +6,9 @@ import CustomDatePicker from '../../../../components/common/DatePicker';
 import { ButtonBorder } from '../../../../styles/Button.styles';
 import { useValidateForm } from '../../../../hooks/useValidateForm';
 import { Controller } from 'react-hook-form';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import useHostStore from '../../../../store/useBusinessStore';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
@@ -16,7 +19,29 @@ const Form = () => {
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
 
-  const { register, handleValidate, control, errors, isSubmitting } = useValidateForm();
+  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
+
+  const checkBusiness = async () => {
+    const formData = getValues(); // 현재 입력값 전부 가져오기
+
+    try {
+      const response = await axios.post('/api/business/validate', {
+        b_no: [formData.business_id],
+      });
+
+      const result = response?.data?.data?.[0];
+      if (result && result.b_stt_cd === '01') {
+        //  정상 사업자일 경우
+        useHostStore.getState().setHostForm({ ...formData, type: selected });
+        alert('사업자 등록번호 확인되었습니다.');
+      } else {
+        alert('유효하지 않은 사업자 등록번호입니다.');
+      }
+    } catch (error) {
+      console.error('사업자 진위확인 실패:', error);
+      alert('사업자 진위확인 중 오류가 발생했습니다.');
+    }
+  };
 
   return (
     <Body>
@@ -73,7 +98,7 @@ const Form = () => {
               {errors.business_id && <ErrorMessage>{errors.business_id.message}</ErrorMessage>}
             </TD>
             <TD>
-              <ButtonYellow type="button" onClick={handleValidate} disabled={isSubmitting}>
+              <ButtonYellow type="button" onClick={checkBusiness} disabled={isSubmitting}>
                 {isSubmitting ? '확인 중...' : '진위확인'}
               </ButtonYellow>
             </TD>
