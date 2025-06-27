@@ -10,10 +10,12 @@ import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
+import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.mapper.WorcationMapper;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
 import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
+import com.minePing.BackEnd.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,11 +31,17 @@ public class WorcationServiceImpl implements WorcationService {
     private final WorcationRepository worcationRepository;
     private final WorcationDetailRepository detailRepository;
     private final WorcationFeaturesRepository featuresRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
     public WorcationDto.Response create(WorcationDto.Request request) {
+        // member_id로 Member 엔티티 조회
+        Member member = memberRepository.findById(request.getMember_id())
+            .orElseThrow(() -> new RuntimeException("해당 멤버가 없습니다: " + request.getMember_id()));
+
         Worcation w = Worcation.builder()
+            .member(member)
             .worcationName(request.getWorcation_name())
             .worcationCategory(request.getWorcation_category())
             .mainChangePhoto(request.getMain_change_photo())
