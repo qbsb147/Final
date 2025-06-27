@@ -28,7 +28,7 @@ public class WorcationController {
     ) {
         WorcationDto.Response dto = worcationService.create(request);
         return ResponseEntity.created(
-                URI.create("/api/worcations/" + dto.getWorcationNo())
+                URI.create("/api/worcations/" + dto.getWorcation_no())
         ).body(dto);
     }
 
@@ -55,7 +55,7 @@ public class WorcationController {
     /**
      * 수정
      */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<WorcationDto.Response> update(
             @PathVariable("id") Long id,
             @RequestBody @Valid WorcationDto.Request request

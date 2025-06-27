@@ -52,4 +52,15 @@ public class WorcationDetail {
 
     @Column(name="open_date", nullable = false)
     private LocalDate openDate;
+
+    // changeXxx: setter 없이 값 변경을 위한 안전한 메서드 (MapStruct update 계열 미사용)
+    public void changeLicensee(String licensee) { this.licensee = licensee; }
+    public void changeBusinessId(String businessId) { this.businessId = businessId; }
+    public void changeWorcationTel(String tel) { this.worcationTel = tel; }
+    public void changeChargeAmount(Integer amount) { this.chargeAmount = amount; }
+    public void changeContent(String content) { this.content = content; }
+    public void changeNavigate(String navigate) { this.navigate = navigate; }
+    public void changeAvailableTime(String time) { this.availableTime = time; }
+    public void changeRefundPolicy(String policy) { this.refundPolicy = policy; }
+    public void changeOpenDate(java.time.LocalDate date) { this.openDate = date; }
 }

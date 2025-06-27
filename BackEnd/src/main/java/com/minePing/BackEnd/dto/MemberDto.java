@@ -143,6 +143,7 @@ public class MemberDto {
     public static class Login{
         private String user_id;
         private String user_pwd;
+    }
     
     @Getter
     @Setter

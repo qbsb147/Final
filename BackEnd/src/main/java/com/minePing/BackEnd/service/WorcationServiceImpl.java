@@ -16,10 +16,14 @@ import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
 public class WorcationServiceImpl implements WorcationService {
+    //데이터 확인용 로그
+    private static final Logger log = LoggerFactory.getLogger(WorcationServiceImpl.class);
 
     private final WorcationMapper mapper;
     private final WorcationRepository worcationRepository;
@@ -29,9 +33,43 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional
     public WorcationDto.Response create(WorcationDto.Request request) {
-        Worcation w = worcationRepository.save(mapper.toEntity(request));
-        WorcationDetail d = detailRepository.save(mapper.toDetailEntity(request));
-        WorcationFeatures f = featuresRepository.save(mapper.toFeaturesEntity(request));
+        Worcation w = Worcation.builder()
+            .worcationName(request.getWorcation_name())
+            .worcationCategory(request.getWorcation_category())
+            .mainChangePhoto(request.getMain_change_photo())
+            .worcationThema(request.getWorcation_thema())
+            .maxPeople(request.getMax_people())
+            .partnerPrice(request.getPartner_price())
+            .nonPartnerPrice(request.getNon_partner_price())
+            .worcationAddress(request.getWorcation_address())
+            .build();
+        w = worcationRepository.save(w);
+
+        WorcationDetail d = WorcationDetail.builder()
+            .worcation(w)
+            .licensee(request.getLicensee())
+            .businessId(request.getBusiness_id())
+            .worcationTel(request.getWorcation_tel())
+            .chargeAmount(request.getCharge_amount())
+            .content(request.getContent())
+            .navigate(request.getNavigate())
+            .availableTime(request.getAvailable_time())
+            .refundPolicy(request.getRefund_policy())
+            .openDate(request.getOpen_date())
+            .build();
+        d = detailRepository.save(d);
+
+        WorcationFeatures f = WorcationFeatures.builder()
+            .worcation(w)
+            .locationType(request.getLocation_type())
+            .dominantColor(request.getDominant_color())
+            .spaceMood(request.getSpace_mood())
+            .bestFor(request.getBest_for())
+            .activities(request.getActivities())
+            .accommodationType(request.getAccommodation_type())
+            .build();
+        f = featuresRepository.save(f);
+
         return mapper.toResponse(w, d, f);
     }
 
@@ -40,8 +78,8 @@ public class WorcationServiceImpl implements WorcationService {
     public WorcationDto.Response getById(Long worcationNo) {
         Worcation w = worcationRepository.findById(worcationNo)
                 .orElseThrow(() -> new RuntimeException("Worcation not found: " + worcationNo));
-        WorcationDetail d = detailRepository.findById(worcationNo).orElse(null);
-        WorcationFeatures f = featuresRepository.findById(worcationNo).orElse(null);
+        WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
+        WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
         return mapper.toResponse(w, d, f);
     }
 
@@ -60,26 +98,60 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional
     public WorcationDto.Response update(Long worcationNo, WorcationDto.Request request) {
-        // 기존 엔티티 조회 후 변경 감지(dirty checking) 사용
         Worcation existing = worcationRepository.findById(worcationNo)
                 .orElseThrow(() -> new RuntimeException("Worcation not found: " + worcationNo));
+        // PATCH 요청 전/후 값 확인용 로그
+        log.info("Before update: worcation_name={}, max_people={}", existing.getWorcationName(), existing.getMaxPeople());
 
-        // MapStruct를 사용하여 엔티티 업데이트
-        mapper.updateFromDto(request, existing);
-        // @PreUpdate에 의해 updateAt 자동 변경
+        // MapStruct의 updateFromDto(@BeanMapping) 대신 직접 커스텀 매퍼 사용
+        // 이유: 엔티티에 setter가 없어서 MapStruct update 계열 사용 불가
+        patchWorcation(request, existing);
 
-        // Detail 엔티티 업데이트
+        log.info("After update: worcation_name={}, max_people={}", existing.getWorcationName(), existing.getMaxPeople());
+
         WorcationDetail existingDetail = detailRepository.findById(worcationNo)
                 .orElseThrow(() -> new RuntimeException("WorcationDetail not found: " + worcationNo));
-        mapper.updateDetailFromDto(request, existingDetail);
+        patchWorcationDetail(request, existingDetail);
 
-        // Features 엔티티 업데이트
         WorcationFeatures existingFeatures = featuresRepository.findById(worcationNo)
                 .orElseThrow(() -> new RuntimeException("WorcationFeatures not found: " + worcationNo));
-        mapper.updateFeaturesFromDto(request, existingFeatures);
+        patchWorcationFeatures(request, existingFeatures);
 
-        // 트랜잭션 커밋 시점에 dirty checking으로 자동 업데이트
         return mapper.toResponse(existing, existingDetail, existingFeatures);
+    }
+
+    // 커스텀 매퍼: DTO의 null이 아닌 값만 엔티티에 반영
+    // changeXxx 메서드는 엔티티에 직접 구현되어 있음 (setter 없이 안전하게 값 변경)
+    private void patchWorcation(WorcationDto.Request dto, Worcation entity) {
+        if (dto.getWorcation_name() != null) entity.changeWorcationName(dto.getWorcation_name());
+        if (dto.getWorcation_category() != null) entity.changeWorcationCategory(dto.getWorcation_category());
+        if (dto.getMain_change_photo() != null) entity.changeMainChangePhoto(dto.getMain_change_photo());
+        if (dto.getWorcation_thema() != null) entity.changeWorcationThema(dto.getWorcation_thema());
+        if (dto.getMax_people() != null) entity.changeMaxPeople(dto.getMax_people());
+        if (dto.getPartner_price() != null) entity.changePartnerPrice(dto.getPartner_price());
+        if (dto.getNon_partner_price() != null) entity.changeNonPartnerPrice(dto.getNon_partner_price());
+        if (dto.getWorcation_address() != null) entity.changeWorcationAddress(dto.getWorcation_address());
+    }
+
+    private void patchWorcationDetail(WorcationDto.Request dto, WorcationDetail entity) {
+        if (dto.getLicensee() != null) entity.changeLicensee(dto.getLicensee());
+        if (dto.getBusiness_id() != null) entity.changeBusinessId(dto.getBusiness_id());
+        if (dto.getWorcation_tel() != null) entity.changeWorcationTel(dto.getWorcation_tel());
+        if (dto.getCharge_amount() != null) entity.changeChargeAmount(dto.getCharge_amount());
+        if (dto.getContent() != null) entity.changeContent(dto.getContent());
+        if (dto.getNavigate() != null) entity.changeNavigate(dto.getNavigate());
+        if (dto.getAvailable_time() != null) entity.changeAvailableTime(dto.getAvailable_time());
+        if (dto.getRefund_policy() != null) entity.changeRefundPolicy(dto.getRefund_policy());
+        if (dto.getOpen_date() != null) entity.changeOpenDate(dto.getOpen_date());
+    }
+
+    private void patchWorcationFeatures(WorcationDto.Request dto, WorcationFeatures entity) {
+        if (dto.getLocation_type() != null) entity.changeLocationType(dto.getLocation_type());
+        if (dto.getDominant_color() != null) entity.changeDominantColor(dto.getDominant_color());
+        if (dto.getSpace_mood() != null) entity.changeSpaceMood(dto.getSpace_mood());
+        if (dto.getBest_for() != null) entity.changeBestFor(dto.getBest_for());
+        if (dto.getActivities() != null) entity.changeActivities(dto.getActivities());
+        if (dto.getAccommodation_type() != null) entity.changeAccommodationType(dto.getAccommodation_type());
     }
 
     @Override

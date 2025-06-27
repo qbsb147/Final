@@ -16,38 +16,38 @@ public class WorcationDto {
     @Builder
     public static class Request {
         //Worcation
-        private String worcationName;
-        private WorcationEnums.Category worcationCategory;
-        private String mainChangePhoto;
-        private String worcationThema;
-        private Integer maxPeople;
-        private String partnerPrice;
-        private Integer nonPartnerPrice;
-        private String worcationAddress;
-        private Long memberId;
-        private Long areaId;
+        private String worcation_name;
+        private WorcationEnums.Category worcation_category;
+        private String main_change_photo;
+        private String worcation_thema;
+        private Integer max_people;
+        private String partner_price;
+        private Integer non_partner_price;
+        private String worcation_address;
+        private Long member_id;
+        private Long area_id;
 
         // Detail
         private String licensee;
-        private String businessId;
-        private String worcationTel;
-        private Integer chargeAmount;
+        private String business_id;
+        private String worcation_tel;
+        private Integer charge_amount;
         private String content;
         private String navigate;
-        private String availableTime;
-        private String refundPolicy;
-        private LocalDate openDate;
+        private String available_time;
+        private String refund_policy;
+        private LocalDate open_date;
 
         // Features
-        private WorcationEnums.LocationType locationType;
-        private WorcationEnums.DominantColor dominantColor;
-        private WorcationEnums.SpaceMood spaceMood;
-        private WorcationEnums.BestFor bestFor;
+        private WorcationEnums.LocationType location_type;
+        private WorcationEnums.DominantColor dominant_color;
+        private WorcationEnums.SpaceMood space_mood;
+        private WorcationEnums.BestFor best_for;
         private String activities;
-        private WorcationEnums.AccommodationType accommodationType;
+        private WorcationEnums.AccommodationType accommodation_type;
 
         private List<String> amenities;
-        private List<String> photoUrls;
+        private List<String> photo_urls;
     }
 
     @Getter
@@ -56,42 +56,42 @@ public class WorcationDto {
     @Builder
     public static class Response {
         //Worcation
-        private Long worcationNo;
-        private String worcationName;
-        private WorcationEnums.Category worcationCategory;
-        private String mainChangePhoto;
-        private String worcationThema;
-        private Integer maxPeople;
-        private String partnerPrice;
-        private Integer nonPartnerPrice;
-        private String worcationAddress;
-        private LocalDateTime updateAt;
-        private LocalDateTime createAt;
+        private Long worcation_no;
+        private String worcation_name;
+        private WorcationEnums.Category worcation_category;
+        private String main_change_photo;
+        private String worcation_thema;
+        private Integer max_people;
+        private String partner_price;
+        private Integer non_partner_price;
+        private String worcation_address;
+        private LocalDateTime update_at;
+        private LocalDateTime create_at;
         private CommonEnums.Status status;
 
-        private Long memberId;
-        private Long areaId;
+        private Long member_id;
+        private Long area_id;
 
         // Detail
         private String licensee;
-        private String businessId;
-        private String worcationTel;
-        private Integer chargeAmount;
+        private String business_id;
+        private String worcation_tel;
+        private Integer charge_amount;
         private String content;
         private String navigate;
-        private String availableTime;
-        private String refundPolicy;
-        private LocalDate openDate;
+        private String available_time;
+        private String refund_policy;
+        private LocalDate open_date;
 
         // Features
-        private WorcationEnums.LocationType locationType;
-        private WorcationEnums.DominantColor dominantColor;
-        private WorcationEnums.SpaceMood spaceMood;
-        private WorcationEnums.BestFor bestFor;
+        private WorcationEnums.LocationType location_type;
+        private WorcationEnums.DominantColor dominant_color;
+        private WorcationEnums.SpaceMood space_mood;
+        private WorcationEnums.BestFor best_for;
         private String activities;
-        private WorcationEnums.AccommodationType accommodationType;
+        private WorcationEnums.AccommodationType accommodation_type;
 
         private List<String> amenities;
-        private List<String> photoUrls;
+        private List<String> photo_urls;
     }
 }
