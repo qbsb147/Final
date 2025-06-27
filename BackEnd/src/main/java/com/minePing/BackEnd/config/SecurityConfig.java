@@ -26,7 +26,13 @@ public class SecurityConfig {
                         return config;
                     }))
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable);
+                .formLogin(AbstractHttpConfigurer::disable)
+
+                //  여기서 경로별 허용 추가
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/worcations/validate").permitAll() // 이 API 허용
+                        .anyRequest().permitAll() // or 필요한 경우만 제한
+                );
         return http.build();
     }
     /*
