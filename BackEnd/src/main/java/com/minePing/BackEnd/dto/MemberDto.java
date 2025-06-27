@@ -144,36 +144,5 @@ public class MemberDto {
         private String user_id;
         private String user_pwd;
     }
-    
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class Response {
-
-        private String department_name;
-        private String position;
-        private String name;
-        private String gender;
-        private int age;
-        private String role;
-        private String email;
-        private String workStatus;
-
-        public static Response toDto(Member member, String workStatus) {
-            CompanyProfile profile = member.getCompanyProfile();
-            return Response.builder()
-                    .department_name(profile.getDepartmentName())
-                    .position(profile.getPosition())
-                    .name(member.getName())
-                    .gender(member.getGender().name())
-                    .age(Period.between(member.getBirthday(), LocalDate.now()).getYears())
-                    .role(member.getRole().name())
-                    .email(member.getEmail())
-                    .workStatus(workStatus)
-                    .build();
-        }
-    }
 
 }
