@@ -4,8 +4,6 @@ import {
   createHandleChange,
   createHandleCompanyNameKeyUp,
   createHandleCompanySelect,
-  createHandleDepartmentSelect,
-  createHandlePositionSelect,
 } from './Handler';
 import styled from 'styled-components';
 

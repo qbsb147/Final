@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ButtonBorder } from '../../../../styles/Button.styles';
-import Checkbox from '../../../../components/common/Checkbox';
+import { ButtonBorder } from '../../../../styles/Button.styles.js';
+import Checkbox from '../../../../components/common/Checkbox.jsx';
 
 const Form = () => {
   const [selectedAmenities, setSelectedAmenities] = useState([]);

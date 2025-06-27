@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import FolderIcon from '../element/Folder';
+import FolderIcon from '../../../components/common/Folder.jsx';
 import useWorcationStore from '../../../store/worcationStore';
 
 const Menu = ({ onMenuSelect, selectedMenu }) => {
