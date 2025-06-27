@@ -1,12 +1,6 @@
 import React from 'react';
 import { CompanyDropdown, DropdownItem, InputBox, Label } from './sharedStyles';
-import {
-  createHandleChange,
-  createHandleCompanyNameKeyUp,
-  createHandleCompanySelect,
-  createHandleDepartmentSelect,
-  createHandlePositionSelect,
-} from './Handler';
+import { createHandleChange, createHandleCompanyNameKeyUp, createHandleCompanySelect } from './Handler';
 import styled from 'styled-components';
 
 const EmployeeStep = ({

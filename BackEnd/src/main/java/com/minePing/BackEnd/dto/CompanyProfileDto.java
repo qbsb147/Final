@@ -19,25 +19,26 @@ public class CompanyProfileDto {
     @Builder
     public static class Response {
 
-        private String department_name;
-        private String position;
-        private String name;
-        private String gender;
-        private int age;
-        private String role;
-        private String email;
-        private String workStatus;
+        private String department_name; // 부서명
+        private String position;        // 직급
+        private String name;            // 이름
+        private String gender;          // 성별 (Enum -> String)
+        private int age;                // 생년월일 -> 나이 계산
+        private String role;            // 역할 (Enum -> String)
+        private String company_email;           // 회사 이메일 아님
+        private String workStatus;      // 근무 상태 (외부 전달 값)
 
-        public static Response toDto(Member member, String workStatus) {
+        public static Response toDto(Member member, String workStatus, int age) {
             CompanyProfile profile = member.getCompanyProfile();
+
             return Response.builder()
                     .department_name(profile.getDepartmentName())
                     .position(profile.getPosition())
                     .name(member.getName())
                     .gender(member.getGender().name())
-                    .age(Period.between(member.getBirthday(), LocalDate.now()).getYears())
+                    .age(age)
                     .role(member.getRole().name())
-                    .email(member.getEmail())
+                    .company_email(profile.getCompanyEmail())
                     .workStatus(workStatus)
                     .build();
         }
