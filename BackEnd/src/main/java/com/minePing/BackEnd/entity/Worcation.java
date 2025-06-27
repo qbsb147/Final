@@ -99,4 +99,14 @@ public class Worcation {
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
     }
+
+    // changeXxx: setter 없이 값 변경을 위한 안전한 메서드 (MapStruct update 계열 미사용)
+    public void changeWorcationName(String name) { this.worcationName = name; }
+    public void changeWorcationCategory(WorcationEnums.Category category) { this.worcationCategory = category; }
+    public void changeMainChangePhoto(String photo) { this.mainChangePhoto = photo; }
+    public void changeWorcationThema(String thema) { this.worcationThema = thema; }
+    public void changeMaxPeople(Integer maxPeople) { this.maxPeople = maxPeople; }
+    public void changePartnerPrice(String price) { this.partnerPrice = price; }
+    public void changeNonPartnerPrice(Integer price) { this.nonPartnerPrice = price; }
+    public void changeWorcationAddress(String address) { this.worcationAddress = address; }
 }
