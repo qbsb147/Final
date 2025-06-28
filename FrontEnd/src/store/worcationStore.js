@@ -11,4 +11,9 @@ const useWorcationStore = create((set, get) => ({
   setIsNonNull: (value) => set({ isValidate: value }),
 }));
 
+const useHostStore = create((set) => ({
+  hostForm: {},
+  setHostForm: (form) => set({ hostForm: form }),
+}));
+
 export default useWorcationStore;
