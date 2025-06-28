@@ -8,7 +8,7 @@ import { useValidateForm } from '../../../hooks/useValidateForm.js';
 import { Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import useHostStore from '../../../../store/useBusinessStore';
+import useHostStore from '../../../store/useBusinessStore.js'
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
