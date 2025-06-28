@@ -6,7 +6,7 @@ import { tendency } from './questions';
 import useUserStore from '../../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
-import MbtiSelect from './components/mbtiSelect';
+import MbtiSelect from '../../components/test/mbtiSelect.jsx';
 
 const TendencyTest = () => {
   const navigate = useNavigate();

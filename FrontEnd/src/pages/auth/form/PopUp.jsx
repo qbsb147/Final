@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Btn, InputBox } from './sharedStyles';
 import styled from 'styled-components';
 import { ButtonBorder } from '../../../styles/Button.styles';
 
@@ -128,4 +127,37 @@ const MinusButton = styled.button`
   display: flex;
   align-items: center;
   cursor: pointer;
+`;
+const InputBox = styled.input`
+  ${({ variant }) => {
+  switch (variant) {
+    case 'yellow':
+      return `
+          background: #ffffff;
+          border: 3px solid #ffeb8c;
+          border-radius: 10px;
+          color: black;
+        `;
+    case 'gray':
+      return `
+          background: #f3f3f3;
+          border: 3px solid #d1d5db;
+          border-radius: 10px;
+          color: black;
+        `;
+    case 'orange':
+      return `
+          background: #ffffff;
+          border: 3px solid #f59e0b;
+          border-radius: 10px;
+          color: black;
+        `;
+    default:
+      return '';
+  }
+}};
+  width: 400px;
+  padding: ${({ theme }) => theme.spacing.s3};
+  box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  margin: ${({ theme }) => theme.spacing.s0};
 `;

@@ -1,7 +1,4 @@
-import React from 'react';
 import styled from 'styled-components';
-import { ChevronDown } from 'lucide-react';
-
 const MbtiSelect = ({ answers, handleChange, disabled }) => (
   <CheckBox>
     <SelectWrapper>
