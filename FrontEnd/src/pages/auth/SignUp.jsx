@@ -6,9 +6,9 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import memberService from '../../api/members';
 import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '../../hooks/useAuth';
-import DefaultStep from './components/Default';
-import EmployeeStep from './components/employee';
-import MasterStep from './components/Master';
+import DefaultStep from './form/Default';
+import EmployeeStep from './form/employee';
+import MasterStep from './form/Master';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);

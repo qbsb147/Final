@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../../styles/Input.styles.js';
-import RadioButton from '../../../../components/common/RadioButton.jsx';
-import CustomDatePicker from '../../../../components/common/DatePicker.jsx';
-import { ButtonBorder } from '../../../../styles/Button.styles.js';
-import { useValidateForm } from '../../../../hooks/useValidateForm.js';
+import { InputLightGray } from '../../../styles/Input.styles.js';
+import RadioButton from '../../../components/common/RadioButton.jsx';
+import CustomDatePicker from '../../../components/common/DatePicker.jsx';
+import { ButtonBorder } from '../../../styles/Button.styles.js';
+import { useValidateForm } from '../../../hooks/useValidateForm.js';
 import { Controller } from 'react-hook-form';
 
 const Form = () => {

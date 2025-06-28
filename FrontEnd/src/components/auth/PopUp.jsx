@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Btn, InputBox } from '../../pages/auth/components/sharedStyles';
+import { Btn, InputBox } from '../../pages/auth/form/sharedStyles';
 import styled from 'styled-components';
 import { ButtonBorder } from '../../styles/Button.styles';
 

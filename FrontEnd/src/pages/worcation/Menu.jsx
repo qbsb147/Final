@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import FolderIcon from '../../../components/common/Folder.jsx';
-import useWorcationStore from '../../../store/worcationStore';
+import FolderIcon from '../../components/common/Folder.jsx';
+import useWorcationStore from '../../store/worcationStore.js';
 
 const Menu = ({ onMenuSelect, selectedMenu }) => {
   const isValidate = useWorcationStore((state) => state.isValidate);
