@@ -43,4 +43,68 @@ public class CompanyProfileDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Approval {
+        private String department_name;
+        private String position;
+        private String name;
+        private String gender;
+        private int age;
+        private String role;
+        private String company_email;
+        private String approve;
+
+        public static Approval toDto(Member member, int age) {
+            CompanyProfile profile = member.getCompanyProfile();
+
+            return Approval.builder()
+                    .department_name(profile.getDepartmentName())
+                    .position(profile.getPosition())
+                    .name(member.getName())
+                    .gender(member.getGender().name())
+                    .age(age)
+                    .role(member.getRole().name())
+                    .company_email(profile.getCompanyEmail())
+                    .approve(profile.getApprove().name())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Consult {
+        private String department_name;
+        private String position;
+        private String name;
+        private String gender;
+        private int age;
+        private String company_email;
+        private String workStatus;
+        private String resultContent;
+
+        public static Consult toDto(Member member,String workStatus,int age, String resultContent) {
+            CompanyProfile profile = member.getCompanyProfile();
+
+            return Consult.builder()
+                    .department_name(profile.getDepartmentName())
+                    .position(profile.getPosition())
+                    .name(member.getName())
+                    .gender(member.getGender().name())
+                    .age(age)
+                    .company_email(profile.getCompanyEmail())
+                    .workStatus(workStatus)
+                    .resultContent(resultContent)
+                    .build();
+
+        }
+    }
+
 }

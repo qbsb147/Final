@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,20 +25,49 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<CompanyProfileDto.Response> findAllMember(Long companyNo) {
         LocalDate today = LocalDate.now();
 
-        return employeeRepository.findAllByCompany_CompanyNo(companyNo).stream()
-                .map(companyProfile -> {
-                    Member member = companyProfile.getMember();
+        return employeeRepository.findAllByCompanyNo(companyNo).stream()
+                .map(profile -> {
+                    Member member = profile.getMember();
 
-                    // 워케이션 상태 계산
                     String workStatus = member.getWorcationApplications().stream()
-                            .filter(app -> app.getApprove() == CommonEnums.Approve.Y)
+                            .anyMatch(app -> !today.isBefore(app.getStartDate()) && !today.isAfter(app.getEndDate()))
+                            ? "워케이션 중" : "근무 중";
+                    int age = Period.between(member.getBirthday(), today).getYears();
+                    return CompanyProfileDto.Response.toDto(member, workStatus, age);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CompanyProfileDto.Approval> findgetApprovalList(Long companyNo) {
+        LocalDate today = LocalDate.now();
+
+        return employeeRepository.findAllApprovalByCompanyNoAndApproveN(companyNo).stream()
+                .map(profile -> {
+                    Member member = profile.getMember();
+                    int age = Period.between(member.getBirthday(), today).getYears();
+                    return CompanyProfileDto.Approval.toDto(member, age);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CompanyProfileDto.Consult> findConsultList(Long companyNo) {
+        LocalDate today = LocalDate.now();
+
+        return employeeRepository.findAllConsultByCompanyNo(companyNo).stream()
+                .map(profile -> {
+                    Member member = profile.getMember();
+
+                    String workStatus = member.getWorcationApplications().stream()
                             .anyMatch(app -> !today.isBefore(app.getStartDate()) && !today.isAfter(app.getEndDate()))
                             ? "워케이션 중" : "근무 중";
 
-                    // 나이 계산
                     int age = Period.between(member.getBirthday(), today).getYears();
+                    
+                    String resultContent = member.getMentals().get(0).getResultContent();
 
-                    return CompanyProfileDto.Response.toDto(member, workStatus, age);
+                    return CompanyProfileDto.Consult.toDto(member, workStatus, age, resultContent);
                 })
                 .collect(Collectors.toList());
     }
