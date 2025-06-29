@@ -16,7 +16,7 @@ public class CompanyRepositoryImpl implements CompanyRepositoryV1 {
 
     @Override
     public Optional<List<Company>> findByCompanyName(String company_name, CommonEnums.Status status) {
-        String query = "SELECT c FROM Company c WHERE c.companyName LIKE :company_name AND c.status =:status";
+        String query = "SELECT c.companyNo, c.companyName, c.companyAddress FROM Company c WHERE c.companyName LIKE :company_name AND c.status =:status";
         List<Company> companyList = em.createQuery(query, Company.class)
                 .setParameter("company_name", "%"+company_name+"%")
                 .setParameter("status", status)

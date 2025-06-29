@@ -83,8 +83,16 @@ public class Worcation {
     @OneToOne(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorcationDetail worcationDetail;
 
+    public void assignWorcationDetail(WorcationDetail worcationDetail) {
+        this.worcationDetail = worcationDetail;
+    }
+
     @OneToOne(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorcationFeatures worcationFeatures;
+
+    public void assignWorcationFeatures(WorcationFeatures worcationFeatures) {
+        this.worcationFeatures = worcationFeatures;
+    }
 
     @PrePersist
     protected void onCreate() {

@@ -9,12 +9,13 @@ const memberService = {
       user_pwd: userPwd,
     });
 
-    if (data.length === 0) throw new Error('존재하지 않는 아이디입니다.');
+    // 서버에서 JWT 토큰을 포함한 응답을 보내므로 data 구조가 다름
+    // data.token 형태로 응답이 올 것으로 예상
+    if (!data || !data.token) {
+      throw new Error('로그인에 실패했습니다.');
+    }
 
-    const member = data[0];
-
-    if (member.userPwd !== userPwd) throw new Error('비밀번호가 틀렸습니다.');
-    return member;
+    return data;
   },
 
   //회원가입
@@ -23,43 +24,59 @@ const memberService = {
     const sendData2 = { ...formData2 };
     const role = formData1.role;
 
-    let payload = {
+    // MemberDto 객체 구성
+    const memberJoinDto = {
       user_id: sendData1.user_id,
       user_pwd: sendData1.user_pwd,
       name: sendData1.name,
       gender: sendData1.gender,
       role: sendData1.role,
       address: sendData1.address,
-      birthday: sendData1.birthday.split('T')[0],
+      birthday: sendData1.birthday,
       email: sendData1.email,
       phone: sendData1.phone,
     };
 
+    // role에 따라 다른 객체 구성
+    let payload;
     if (role === 'employee') {
-      payload = {
-        ...payload,
-        worcation_no: sendData2.worcation_no,
-        department: sendData2.department,
-        position: sendData2.position,
+      const companyProfileJoinDto = {
+        company_no: sendData2.company_no,
+        department_name: sendData2.department_name,
+        position: sendData2.position_name,
         company_email: sendData2.company_email,
         company_phone: sendData2.company_phone,
       };
-    } else if (role === 'master') {
+
       payload = {
-        ...payload,
+        memberJoinDto: memberJoinDto,
+        companyProfileJoinDto: companyProfileJoinDto,
+      };
+    } else if (role === 'master') {
+      const companyJoinDto = {
         company_name: sendData2.company_name,
-        business_id: sendData2.business_id,
-        licensee: sendData2.licensee,
-        open_date: sendData2.open_date.split('T')[0],
-        department: sendData2.department,
         company_address: sendData2.company_address,
+        business_id: sendData2.business_id,
         business_email: sendData2.business_email,
+        licensee: sendData2.licensee,
+        department_name: sendData2.department_name,
         company_tel: sendData2.company_tel,
+        open_date: sendData2.open_date,
+      };
+
+      payload = {
+        memberJoinDto: memberJoinDto,
+        companyJoinDto: companyJoinDto,
+      };
+    } else if (role === 'worcation') {
+      payload = {
+        memberJoinDto: memberJoinDto,
       };
     }
+    console.log('payload', payload);
 
-    const { data: member } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
-    return member;
+    const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
+    return result;
   },
 
   // 회사명 검색

@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
+import memberService from '../../../api/members';
 
-const EmployeeStep = ({
-  formData2,
-  setFormData2,
-  companyNameTimeout,
-  setCompanySearchResults,
-  memberService,
-  companySearchResults,
-}) => {
+const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
+  const [companySearchResults, setCompanySearchResults] = useState([]);
+  const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
+  const [positionList, setPositionList] = useState([]);
+  const companyNameTimeout = useRef();
+  const positions = [
+    { position_name: '사원' },
+    { position_name: '주임' },
+    { position_name: '대리' },
+    { position_name: '과장' },
+    { position_name: '차장' },
+    { position_name: '부장' },
+    { position_name: '이사' },
+    { position_name: '상무' },
+    { position_name: '전무' },
+    { position_name: '부사장' },
+    { position_name: '사장' },
+    { position_name: '회장' },
+  ];
+
   const handleChange = (e, step) => {
     const { name, value } = e.target;
     if (step === 1) setFormData1((prev) => ({ ...prev, [name]: value }));
@@ -30,24 +43,46 @@ const EmployeeStep = ({
         setCompanySearchResults([]);
         console.error('회사명 검색 에러:', err);
       }
-    }, 500);
+    }, 330);
+  };
+
+  const handleDepartmentClick = async (e) => {
+    try {
+      const data = await memberService.searchDepartment(formData2.company_no);
+      setDepartmentSearchResults(data);
+    } catch (err) {
+      setDepartmentSearchResults([]);
+    }
+  };
+
+  const handlePositionClick = async (e) => {
+    setPositionList(positions);
   };
 
   const handleCompanySelect = (company) => {
     setFormData2((prev) => ({
       ...prev,
-      worcation_no: company.company_no,
+      company_no: company.company_no,
+      company_name: company.company_name,
       company_address: company.company_address,
     }));
     setCompanySearchResults([]);
   };
 
-  const handleDepartmentSelect = () => {
-    // 부서 선택 로직
+  const handleDepartmentSelect = (department) => {
+    setFormData2((prev) => ({
+      ...prev,
+      department_name: department.department_name,
+    }));
+    setDepartmentSearchResults([]);
   };
 
-  const handlePositionSelect = () => {
-    // 직급 선택 로직
+  const handlePositionSelect = (position) => {
+    setFormData2((prev) => ({
+      ...prev,
+      position_name: position.position_name,
+    }));
+    setPositionList([]);
   };
 
   return (
@@ -80,25 +115,49 @@ const EmployeeStep = ({
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="department">부서명</Label>
-          <InputBox
-            name="department"
-            type="text"
-            placeholder="부서명"
-            value={formData2.department || ''}
-            onClick={handleDepartmentSelect}
-            variant="yellow"
-          />
+          <div style={{ position: 'relative' }}>
+            <InputBox
+              name="department"
+              type="text"
+              placeholder="부서명"
+              value={formData2.department_name || ''}
+              onClick={handleDepartmentClick}
+              variant="yellow"
+              readOnly
+            />
+            {departmentSearchResults.length > 0 && (
+              <CompanyDropdown>
+                {departmentSearchResults.map((department) => (
+                  <DropdownItem key={department.department_no} onClick={() => handleDepartmentSelect(department)}>
+                    {department.department_name}
+                  </DropdownItem>
+                ))}
+              </CompanyDropdown>
+            )}
+          </div>
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="position">직급</Label>
-          <InputBox
-            name="position"
-            type="text"
-            placeholder="직급"
-            value={formData2.position || ''}
-            onClick={handlePositionSelect}
-            variant="yellow"
-          />
+          <div style={{ position: 'relative' }}>
+            <InputBox
+              name="position"
+              type="text"
+              placeholder="직급"
+              value={formData2.position_name || ''}
+              onClick={handlePositionClick}
+              variant="yellow"
+              readOnly
+            />
+            {positionList.length > 0 && (
+              <CompanyDropdown>
+                {positionList.map((position) => (
+                  <DropdownItem key={position.position_no} onClick={() => handlePositionSelect(position)}>
+                    {position.position_name}
+                  </DropdownItem>
+                ))}
+              </CompanyDropdown>
+            )}
+          </div>
         </div>
       </Left>
       {/* 오른쪽 컬럼 */}

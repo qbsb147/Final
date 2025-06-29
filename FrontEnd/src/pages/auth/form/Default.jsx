@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CustomDatePicker from '../../../components/common/DatePicker';
 import styled from 'styled-components';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, isPostcodeReady }) => {
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 }) => {
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
   const handleChange = (e, step) => {
     const { name, value } = e.target;
     if (step === 1) setFormData1((prev) => ({ ...prev, [name]: value }));

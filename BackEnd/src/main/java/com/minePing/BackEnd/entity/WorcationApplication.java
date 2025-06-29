@@ -53,4 +53,8 @@ public class WorcationApplication {
     @OneToOne(mappedBy = "worcationApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Review review;
 
+    public void assignReview(Review review) {
+        this.review = review;
+    }
+
 }
