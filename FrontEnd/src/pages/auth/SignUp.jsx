@@ -3,12 +3,11 @@ import styled from 'styled-components';
 import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
-import Input from '../../styles/Input';
 import memberService from '../../api/members';
 import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '../../hooks/useAuth';
-import DefaultStep from './form/Default';
-import EmployeeStep from './form/employee';
-import MasterStep from './form/Master';
+import DefaultStep from '../../components/auth/Default';
+import EmployeeStep from '../../components/auth/Employee';
+import MasterStep from '../../components/auth/Master';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
