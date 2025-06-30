@@ -38,9 +38,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/worcations/validate",
                                 "/api/v1/member/login",
-                                "/api/v1/member/signUp/worcation",
-                                "/api/v1/member/signUp/master",
-                                "/api/v1/member/signUp/employee")
+                                "/api/v1/member/signUp/WORCATION",
+                                "/api/v1/member/signUp/MASTER",
+                                "/api/v1/member/signUp/EMPLOYEE")
                         .permitAll() // 이 API 허용
                         .anyRequest().permitAll() // or 필요한 경우만 제한
                 )

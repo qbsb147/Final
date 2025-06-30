@@ -39,7 +39,7 @@ const memberService = {
 
     // role에 따라 다른 객체 구성
     let payload;
-    if (role === 'employee') {
+    if (role === 'EMPLOYEE') {
       const companyProfileJoinDto = {
         company_no: sendData2.company_no,
         department_name: sendData2.department_name,
@@ -52,7 +52,7 @@ const memberService = {
         memberJoinDto: memberJoinDto,
         companyProfileJoinDto: companyProfileJoinDto,
       };
-    } else if (role === 'master') {
+    } else if (role === 'MASTER') {
       const companyJoinDto = {
         company_name: sendData2.company_name,
         company_address: sendData2.company_address,
@@ -68,7 +68,7 @@ const memberService = {
         memberJoinDto: memberJoinDto,
         companyJoinDto: companyJoinDto,
       };
-    } else if (role === 'worcation') {
+    } else if (role === 'WORCATION') {
       payload = {
         memberJoinDto: memberJoinDto,
       };

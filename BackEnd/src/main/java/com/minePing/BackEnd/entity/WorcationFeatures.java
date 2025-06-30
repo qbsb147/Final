@@ -18,7 +18,7 @@ public class WorcationFeatures {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY,optional = false)
-    @JoinColumn(name = "worcation_no", nullable = false)
+    @JoinColumn(name = "worcation_no", nullable = false, unique = true)
     private Worcation worcation;
 
     @Column(name = "location_type")
