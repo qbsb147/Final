@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { isValid } from 'date-fns';
 
 const useWorcationStore = create((set, get) => ({
-  isValidate: false,
+  isValidate: true,
   setIsValidate: (value) => set({ isValidate: value }),
   isNonNull: false,
   setIsNonNull: (value) => set({ isValidate: value }),
@@ -17,16 +17,22 @@ const useHostStore = create((set) => ({
 }));
 
 const checkBusiness = async () => {
-  const formData = getValues(); // 입력된 전체 값
+  const formData = getValues(); // react-hook-form에서 현재 값 가져오기
+  console.log('API 키:', import.meta.env.VITE_ODCLOUD_SERVICE_KEY);
+
+  if (!formData.business_id || formData.business_id.length !== 10) {
+    alert('사업자등록번호를 10자리로 정확히 입력해주세요.');
+    return;
+  }
 
   const businessData = {
     businesses: [
       {
         b_no: formData.business_id,
-        start_dt: '20000101',
-        p_nm: formData.licensee,
-        p_nm2: formData.licensee,
-        b_nm: formData.worcation_name,
+        start_dt: formData.start_dt,
+        p_nm: formData.licensee || '',
+        p_nm2: formData.licensee || '',
+        b_nm: formData.worcation_name || '',
         corp_no: '',
         b_sector: '',
         b_type: '',
@@ -36,19 +42,19 @@ const checkBusiness = async () => {
   };
 
   try {
-    const serviceKey =
-      'bHM92CZd4eRIBau2YkOh2hG5UpF9YxODPwSDqY%2FcJIdTQHYkOiDJIjABzgFpyelodd0eFsuZIYBrLjjzuwn%2BeQ%3D%3D'; // 실제 발급받은 인증키
-    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${encodeURIComponent(serviceKey)}`;
+    const serviceKey = import.meta.env.VITE_ODCLOUD_SERVICE_KEY;
+    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${serviceKey}`;
 
     const response = await axios.post(url, businessData, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
+    console.log('최종 요청 URL:', url);
 
     const result = response?.data?.data?.[0];
 
-    if (result && result.b_stt_cd === '01') {
+    if (result?.b_stt_cd === '01') {
       // 정상 사업자인 경우
       useHostStore.getState().setHostForm({ ...formData, type: selected });
       alert('사업자 등록번호 확인되었습니다.');
@@ -57,7 +63,8 @@ const checkBusiness = async () => {
     }
   } catch (error) {
     console.error('사업자 진위확인 실패:', error);
-    alert('사업자 진위확인 중 오류가 발생했습니다.');
+    alert('오류가 발생했습니다. 다시 시도해주세요.');
   }
 };
+
 export default useWorcationStore;

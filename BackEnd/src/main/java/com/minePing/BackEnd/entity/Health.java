@@ -33,7 +33,7 @@ public class Health {
     @Column(name="bmi",nullable = false)
     private Float bmi;
 
-    @Column(name = "AlcoholConsumption", nullable = false)
+    @Column(name = "alcohol_consumption", nullable = false)
     @Enumerated(EnumType.STRING)
     private AlcoholConsumption alcoholConsumption;
 

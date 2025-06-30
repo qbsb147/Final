@@ -7,11 +7,46 @@ import { ButtonBorder } from '../../../styles/Button.styles.js';
 import { useValidateForm } from '../../../hooks/useValidateForm.js';
 import { Controller } from 'react-hook-form';
 import axios from 'axios';
+import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import useHostStore from '../../../store/useBusinessStore.js'
+import useHostStore from '../../../store/useBusinessStore.js';
+import useBusinessStore from '../../../store/useBusinessStore';
 
+// const Form = () => {
+//   const [selected, setSelected] = useState('Office');
+
+//   const radioOptions = [
+//     { value: 'Office', label: '오피스' },
+//     { value: 'Accommodation', label: '숙박' },
+//     { value: 'OfficeAndStay', label: '오피스&숙박' },
+//   ];
+
+//   const { register, control, errors, isSubmitting, getValues } = useValidateForm();
+
+//   const checkBusiness = async () => {
+//     const formData = getValues(); // 현재 입력값 전부 가져오기
+
+//     try {
+//       const response = await axios.post('/api/business/validate', {
+//         b_no: [formData.business_id],
+//       });
+
+//       const result = response?.data?.data?.[0];
+//       if (result && result.b_stt_cd === '01') {
+//         //  정상 사업자일 경우
+//         useHostStore.getState().setHostForm({ ...formData, type: selected });
+//         alert('사업자 등록번호 확인되었습니다.');
+//       } else {
+//         alert('유효하지 않은 사업자 등록번호입니다.');
+//       }
+//     } catch (error) {
+//       console.error('사업자 진위확인 실패:', error);
+//       alert('사업자 진위확인 중 오류가 발생했습니다.');
+//     }
+//   };
 const Form = () => {
   const [selected, setSelected] = useState('Office');
+  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
 
   const radioOptions = [
     { value: 'Office', label: '오피스' },
@@ -19,26 +54,78 @@ const Form = () => {
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
 
-  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
-
   const checkBusiness = async () => {
-    const formData = getValues(); // 현재 입력값 전부 가져오기
+    const formData = getValues(); // useValidateForm 훅의 getValues()
+
+    // 기본 유효성 검사
+    if (!formData.business_id || formData.business_id.length !== 10) {
+      alert('사업자등록번호는 숫자 10자리를 입력해야 합니다.');
+      return;
+    }
+
+    // 개업일 날짜 포맷 변환
+    let formattedDate = '';
+    try {
+      if (!(formData.open_date instanceof Date)) {
+        formData.open_date = new Date(formData.open_date); // 방어 처리
+      }
+      formattedDate = format(formData.open_date, 'yyyyMMdd'); // '20240101' 형식
+    } catch (e) {
+      alert('개업일을 선택해주세요.');
+      return;
+    }
+
+    // 사업자 요청 데이터 구성
+    const businessData = {
+      businesses: [
+        {
+          b_no: formData.business_id.trim(),
+          start_dt: formattedDate,
+          p_nm: formData.licensee?.trim() || '',
+          p_nm2: formData.licensee?.trim() || '',
+          b_nm: formData.worcation_name?.trim() || '',
+          corp_no: '',
+          b_sector: '',
+          b_type: '',
+          b_adr: '',
+        },
+      ],
+    };
 
     try {
-      const response = await axios.post('/api/business/validate', {
-        b_no: [formData.business_id],
+      const serviceKey = import.meta.env.VITE_ODCLOUD_SERVICE_KEY;
+      if (!serviceKey) {
+        console.error('serviceKey가 정의되지 않았습니다.');
+        return alert('API 키 오류: .env 파일을 확인하세요.');
+      }
+
+      const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${encodeURIComponent(serviceKey)}`;
+      console.log('요청 URL:', url);
+
+      const response = await axios.post(url, businessData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       const result = response?.data?.data?.[0];
-      if (result && result.b_stt_cd === '01') {
-        //  정상 사업자일 경우
-        useHostStore.getState().setHostForm({ ...formData, type: selected });
+      console.log('응답 결과:', result);
+
+      if (result?.b_stt_cd === '01') {
+        // 💡 이 부분이 '정상 사업자'일 때만 실행됨
+        useBusinessStore.getState().setFormData({
+          businessId: formData.business_id,
+          licensee: formData.licensee,
+          worcationName: formData.worcation_name,
+          openDate: formattedDate,
+          category: selected, // 업체 유형 (Office 등)
+        });
         alert('사업자 등록번호 확인되었습니다.');
       } else {
         alert('유효하지 않은 사업자 등록번호입니다.');
       }
     } catch (error) {
-      console.error('사업자 진위확인 실패:', error);
+      console.error('사업자 진위확인 실패:', error.response?.data || error.message);
       alert('사업자 진위확인 중 오류가 발생했습니다.');
     }
   };
@@ -110,11 +197,6 @@ const Form = () => {
 };
 
 export default Form;
-
-const Input = styled(InputLightGray)`
-  width: 200px;
-  height: 30px;
-`;
 
 const DatePicker = styled(CustomDatePicker)`
   width: 200px;
