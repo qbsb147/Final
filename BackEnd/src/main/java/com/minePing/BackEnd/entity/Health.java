@@ -21,7 +21,7 @@ public class Health {
     private Long healthNo;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @JoinColumn(name = "user_no", nullable = false, unique = true)
     private Member member;
 
     @Column(name="weight",nullable = false)
@@ -33,7 +33,7 @@ public class Health {
     @Column(name="bmi",nullable = false)
     private Float bmi;
 
-    @Column(name = "AlcoholConsumption", nullable = false)
+    @Column(name = "alcohol_consumption", nullable = false)
     @Enumerated(EnumType.STRING)
     private AlcoholConsumption alcoholConsumption;
 

@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Approve;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -45,7 +46,7 @@ public class WorcationPartner {
     @Column(name = "end_date", nullable = false)
     private LocalDate endTime;
 
-    @Column(name = "approve", nullable = true)
+    @Column(name = "approve", nullable = false)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
 
@@ -59,6 +60,9 @@ public class WorcationPartner {
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
+        if(this.approve == null) {
+            this.approve = Approve.W;
+        }
     }
 
 }

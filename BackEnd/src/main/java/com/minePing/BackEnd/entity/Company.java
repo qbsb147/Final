@@ -24,7 +24,7 @@ public class Company {
     @Column(name = "company_name", nullable = false, length = 150)
     private String companyName;
 
-    @Column(name = "business_id", nullable = false, length = 10)
+    @Column(name = "business_id", nullable = false, length = 10, unique = true)
     private String businessId;
 
     @Column(name = "licensee", nullable = false, length = 20)
@@ -36,10 +36,10 @@ public class Company {
     @Column(name="company_address",nullable = false)
     private String companyAddress;
 
-    @Column(name="business_email",nullable = false, length = 100)
+    @Column(name="business_email",nullable = false, length = 100, unique = true)
     private String businessEmail;
 
-    @Column(name="company_tel",nullable = false, length = 13)
+    @Column(name="company_tel",nullable = false, length = 13, unique = true)
     private String companyTel;
 
     @Column(name="status",nullable = false)

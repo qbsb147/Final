@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -46,7 +47,7 @@ public class Member {
     @Column(name = "address", nullable = false, length = 100)
     private String address;
 
-    @Column(name = "phone", nullable = false, length = 13)
+    @Column(name = "phone", nullable = false, length = 13, unique = true)
     private String phone;
 
     @Column(name = "role", nullable = false)
@@ -110,7 +111,7 @@ public class Member {
         }
 
         if (this.role == null) {
-            this.role = CommonEnums.Role.employee;
+            this.role = Role.EMPLOYEE;
         }
     }
 
