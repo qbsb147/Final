@@ -17,14 +17,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(name = "member",indexes = { @Index(name = "idx_company", columnList = "company_no") })
+@Table(name = "member")
 public class Member {
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)
     @Column(name = "user_no") // DB컬럼명 지정
     private Long userNo;
 
-    @Column(name = "user_id", nullable = false, length = 50)
+    @Column(name = "user_id", nullable = false, length = 50, unique = true)
     private String userId;
 
     @Column(name = "user_pwd", nullable = false)
@@ -33,7 +33,7 @@ public class Member {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
 
     @Column(name = "gender", nullable = false)
@@ -79,6 +79,10 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private Health health;
 
+    public void assignHealth(Health health) {
+        this.health = health;
+    }
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Mental> mentals = new ArrayList<>();
@@ -86,8 +90,16 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberPreference memberPreferences;
 
+    public void assignMemberPreference(MemberPreference memberPreferences) {
+        this.memberPreferences = memberPreferences;
+    }
+
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private CompanyProfile companyProfile;
+
+    public void assignCompanyProfile(CompanyProfile companyProfile) {
+        this.companyProfile = companyProfile;
+    }
 
     @PrePersist
     protected void onCreate() {

@@ -1,3 +1,4 @@
+/*
 package com.minePing.BackEnd.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -127,7 +128,8 @@ public class AIChatServiceImpl implements AIChatService {
                 String healthJson = objectMapper.writeValueAsString(healthList);
 
                 // 기존 finalPrompt 생성 부분 주석처리 (수정된 prompt 사용으로 대체)
-                /*
+                */
+/*
                 finalPrompt = String.format("""
                 [사용자 정신 상태]
                 %s
@@ -159,7 +161,8 @@ public class AIChatServiceImpl implements AIChatService {
                           내가준형식에 맞춰서 만들어야합니다.맨처음알려주는 문구만 없애고 내기준의 형식은 있어야합니다 추가설명은 필요없습니다.
 
                 """, mentalJson, healthJson);
-                */
+                *//*
+
                 // 새롭게 구성된 prompt로 변경
                 finalPrompt = String.format("""
                 [사용자 정신 상태]
@@ -246,3 +249,4 @@ public class AIChatServiceImpl implements AIChatService {
     }
 
 }
+*/

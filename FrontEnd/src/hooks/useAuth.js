@@ -33,9 +33,9 @@ export const useDefaultForm = yup.object().shape({
 
 // Employee form validation schema
 export const useEmployeeForm = yup.object().shape({
-  worcation_no: yup.string().required('회사 선택은 필수입니다.'),
-  department: yup.string().required('부서명을 입력해주세요.'),
-  position: yup.string().required('직급을 입력해주세요.'),
+  company_no: yup.number().required('회사 선택은 필수입니다.'),
+  department_name: yup.string().required('부서명을 입력해주세요.'),
+  position_name: yup.string().required('직급을 입력해주세요.'),
   company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
   company_phone: yup
     .string()
@@ -48,13 +48,10 @@ export const useMasterForm = yup.object().shape({
   company_name: yup.string().required('기업명을 입력해주세요.'),
   business_id: yup
     .string()
-    .matches(/^\d{3}-\d{2}-\d{5}$/, '사업자번호 형식은 000-00-00000입니다.')
+    .matches(/^\d{10}$/, '사업자번호 형식은 10자리 번호입니다.')
     .required('사업자번호를 입력해주세요.'),
   licensee: yup.string().required('사업자명을 입력해주세요.'),
-  open_date: yup
-    .string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, '개업일 형식은 YYYY-MM-DD입니다.')
-    .required('개업일을 입력해주세요.'),
+  open_date: yup.string().required('개업일을 선택해주세요.'),
   department: yup.array().of(yup.string()).required('부서명을 입력해주세요.'),
   company_address: yup.string().required('기업주소를 입력해주세요.'),
   business_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),

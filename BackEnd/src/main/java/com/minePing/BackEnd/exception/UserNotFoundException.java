@@ -5,8 +5,8 @@ public class UserNotFoundException extends BaseException {
         super(ErrorCode.USER_NOT_FOUND);
     }
 
-    public UserNotFoundException(ErrorCode errorCode) {
-        super(ErrorCode.USER_NOT_FOUND);
+    public UserNotFoundException(String message) {
+        super(ErrorCode.USER_NOT_FOUND, message);
     }
 
     public UserNotFoundException(ErrorCode errorCode, String message) {

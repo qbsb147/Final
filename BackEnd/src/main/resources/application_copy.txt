@@ -5,6 +5,16 @@ spring:
     active: dev  # 실행 환경에 따라 dev 또는 prod로 변경
 gemini:
   api-key: ${GEMINI_API_KEY:발급받은 API키}
+logging:
+  level:
+    root: info
+
+jwt:
+  secret: #gitbash에 < /dev/urandom tr -dc 'A-Za-z0-9' | head -c64 입력
+  expiration: 만료시간
+business:
+  api-key: EvXNxqKNWH0I%2BH0glM3%2FxHbjHG0ctJs6WB6HVfEqL5wazLbpaeMFvx8sCsEZLhxr7iQqtwnW57i%2FprOP9BnfXw%3D%3D
+
 ---
 spring:
   config:
@@ -72,6 +82,3 @@ server:
       charset: UTF-8
       enabled: true
       force: true
-logging:
-  level:
-    root: info

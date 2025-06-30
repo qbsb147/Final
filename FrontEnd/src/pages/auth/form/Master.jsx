@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Popup from './Popup';
 import CustomDatePicker from '../../../components/common/DatePicker';
+import memberService from '../../../api/members';
 
 const HIDDEN_FIELDS = ['address', 'email', 'company_tel'];
 
-const MasterStep = ({
-  formData2,
-  setFormData2,
-  companyNameTimeout,
-  setCompanySearchResults,
-  memberService,
-  companySearchResults,
-  isPostcodeReady,
-}) => {
+const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [showInput, setShowInput] = useState(false);
   const [departments, setDepartments] = useState([]);
+  const [companySearchResults, setCompanySearchResults] = useState([]);
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+  const companyNameTimeout = useRef();
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   const handleChange = (e, step) => {
     const { name, value } = e.target;
@@ -76,27 +86,15 @@ const MasterStep = ({
       <Left>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="company_name">기업명</Label>
-          <div style={{ position: 'relative' }}>
-            <InputBox
-              name="company_name"
-              type="text"
-              placeholder="기업명"
-              value={formData2.company_name || ''}
-              onChange={(e) => handleChange(e, 2)}
-              onKeyUp={handleCompanyNameKeyUp}
-              autoComplete="off"
-              variant="yellow"
-            />
-            {companySearchResults.length > 0 && (
-              <CompanyDropdown>
-                {companySearchResults.map((company) => (
-                  <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
-                    {company.company_name}
-                  </DropdownItem>
-                ))}
-              </CompanyDropdown>
-            )}
-          </div>
+          <InputBox
+            name="company_name"
+            type="text"
+            placeholder="기업명"
+            value={formData2.company_name || ''}
+            onChange={(e) => handleChange(e, 2)}
+            autoComplete="off"
+            variant="yellow"
+          />
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="business_id">사업자 등록 번호</Label>
