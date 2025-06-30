@@ -16,6 +16,6 @@ public class CommonEnums {
     }
 
     public enum Approve {
-        Y, N
+        Y, N , W
     }
 }
