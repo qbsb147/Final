@@ -49,6 +49,13 @@ const WorcationList = () => {
         {{ all: '전체 리스트 보기', partner: '제휴 업체 보기', ai: 'AI 추천 제휴 업체' }[viewMode]}
       </SectionTitle>
 
+      <WorcationCardList
+  data={getFilteredWorcations()}
+  reviews={reviews}
+  navigate={navigate}
+/>
+
+
       {viewMode === 'all' && (
         <CardList>
           {worcations.map((item) => (
