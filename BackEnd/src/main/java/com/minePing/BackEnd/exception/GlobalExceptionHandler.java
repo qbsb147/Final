@@ -49,6 +49,7 @@ public class GlobalExceptionHandler {
         Throwable cause = ex.getCause();
         if (cause instanceof ConstraintViolationException) {
             String sqlMessage = cause.getMessage();
+            System.out.println("sqlMessage = " + sqlMessage);
             if (sqlMessage != null && sqlMessage.contains("UK_user_id")) {
                 message = "이미 사용 중인 아이디입니다.";
             } else if (sqlMessage.contains("UK_email")) {
