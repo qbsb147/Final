@@ -16,6 +16,8 @@ public class CommonEnums {
     }
 
     public enum Approve {
+
         Y, N, W
+
     }
 }

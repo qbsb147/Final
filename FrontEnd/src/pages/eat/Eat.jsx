@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import NonCompleteTest from './form/NonCompleteTest';
+import NonCompleteTest from './NonCompleteTest';
 import userStore from '../../store/userStore';
-import CompleteTest from './form/CompleteTest';
+import CompleteTest from './CompleteTest';
 
 const Eat = () => {
   const { body, stress, burnout, tendency } = userStore();

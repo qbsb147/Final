@@ -2,7 +2,7 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import Input from '../../styles/Input';
-import { tendency } from './questions';
+import { tendency } from '../../components/test/questions';
 import useUserStore from '../../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';

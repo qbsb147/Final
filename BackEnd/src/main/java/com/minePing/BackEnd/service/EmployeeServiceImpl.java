@@ -1,16 +1,15 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Applies;
 import com.minePing.BackEnd.entity.Member;
-import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,10 +63,35 @@ public class EmployeeServiceImpl implements EmployeeService {
                             ? "워케이션 중" : "근무 중";
 
                     int age = Period.between(member.getBirthday(), today).getYears();
-                    
-                    String resultContent = member.getMentals().get(0).getResultContent();
 
-                    return CompanyProfileDto.Consult.toDto(member, workStatus, age, resultContent);
+                    String psychologicalState = member.getMentals().stream()
+                            .filter(m -> m.getPsychologicalState() == MentalEnums.PsychologicalState.Severe
+                                    || m.getPsychologicalState() == MentalEnums.PsychologicalState.Critical)
+                            .map(m -> m.getPsychologicalState().name())
+                            .findFirst()
+                            .orElse("Unknown");
+
+                    return CompanyProfileDto.Consult.toDto(member, workStatus, age, psychologicalState);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Applies> findWorcationAppliesList(Long companyNo) {
+        LocalDate today = LocalDate.now();
+
+        return employeeRepository.findallWorcationAppliesByCompanNo(companyNo).stream()
+                .flatMap(profile -> {
+                    Member member = profile.getMember();
+                    int age = Period.between(member.getBirthday(), today).getYears();
+
+                    return member.getWorcationApplications().stream()
+                            .map(application -> {
+                                String worcationDate = application.getStartDate() + " ~ " + application.getEndDate();
+                                String worcationPlace = application.getWorcation().getWorcationName();
+
+                                return Applies.toDto(member, worcationDate, age, worcationPlace);
+                            });
                 })
                 .collect(Collectors.toList());
     }

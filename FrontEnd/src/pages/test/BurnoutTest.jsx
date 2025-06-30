@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '../../store/userStore';
-import { burnout } from './questions';
+import { burnout } from '../../components/test/questions';
 
 const BurnoutTest = () => {
   const navigate = useNavigate();
