@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import static com.minePing.BackEnd.exception.ConstraintExtractor.extractConstraintName;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,7 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex,
                                                                        HttpServletRequest request) {
-        log.error("핸드러를 찾을 수 없음 : {}", ex.getMessage());
+        log.error("핸들러를 찾을 수 없음 : {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.of(ErrorCode.RESOURCE_NOT_FOUND, request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -48,13 +50,35 @@ public class GlobalExceptionHandler {
 
         Throwable cause = ex.getCause();
         if (cause instanceof ConstraintViolationException) {
-            String sqlMessage = cause.getMessage();
-            System.out.println("sqlMessage = " + sqlMessage);
-            if (sqlMessage != null && sqlMessage.contains("UK_user_id")) {
-                message = "이미 사용 중인 아이디입니다.";
-            } else if (sqlMessage.contains("UK_email")) {
+            String constraintName = extractConstraintName(cause.getMessage());
+            System.out.println("sqlMessage = " + constraintName);
+            if (constraintName != null && constraintName.contains("business_id")) {
+                message = "이미 등록된 사업자 등록번호입니다.";
+            } else if (constraintName.contains("email")) {
                 message = "이미 사용 중인 이메일입니다.";
+            } else if (constraintName.contains("tel")) {
+                message = "이미 사용 중인 전화번호입니다.";
+            } else if (constraintName.contains("user_id")) {
+                message = "이미 사용 중인 아이디입니다.";
+            } else if (constraintName.contains("phone")) {
+                message = "이미 사용 중인 전화번호입니다.";
             }
+/*
+            서비스 구현할 때 각각 서비스에 넣을 예외 내용들
+            } else if (sqlMessage.contains("uk_company_profile_user_no")) {
+                message = "이미 직원 신청한 사용자입니다.";
+            } else if (sqlMessage.contains("uk_health_user_no")) {
+                message = "이미 등록된 신체 정보가 있습니다.";
+            } else if (sqlMessage.contains("uk_member_preference_user_no")) {
+                message = "이미 등록된 성향 정보가 있습니다.";
+            } else if (sqlMessage.contains("uk_review_application_no")) {
+                message = "이미 등록된 리뷰가 있습니다.";
+            } else if (sqlMessage.contains("uk_worcation_features_worcation_no")) {
+                message = "이미 등록된 워케이션 특성이 있습니다.";
+            }
+            서비스 구현할 때 각각 서비스에 넣을 예외 내용들
+*/
+
         }
 
         ErrorResponse error = ErrorResponse.of(
@@ -67,3 +91,4 @@ public class GlobalExceptionHandler {
     }
 
 }
+

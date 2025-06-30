@@ -73,9 +73,16 @@ const memberService = {
         memberJoinDto: memberJoinDto,
       };
     }
-    console.log('payload', payload);
 
-    const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
+    let result;
+
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
+      result = data;
+    } catch (error) {
+      throw error?.response?.data?.message;
+    }
+
     return result;
   },
 
