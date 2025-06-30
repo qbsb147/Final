@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Approve;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class CompanyProfile {
     private Long profileNo;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @JoinColumn(name = "user_no", nullable = false, unique = true)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,15 +38,22 @@ public class CompanyProfile {
     @Column(name = "position", nullable = false, length = 30)
     private String position;
 
-    @Column(name = "company_phone", nullable = false, length = 13)
+    @Column(name = "company_phone", nullable = false, length = 13, unique = true)
     private String companyPhone;
 
-    @Column(name = "company_email", nullable = false, length = 100)
+    @Column(name = "company_email", nullable = false, length = 100, unique = true)
     private String companyEmail;
 
-    @Column(name = "approve", nullable = true)
+    @Column(name = "approve", nullable = false)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
+
+    @PrePersist
+    protected void onCreate() {
+        if (approve == null) {
+            approve = CommonEnums.Approve.W;
+        }
+    }
 
     public void changeMember(Member member) {
         this.member = member;
