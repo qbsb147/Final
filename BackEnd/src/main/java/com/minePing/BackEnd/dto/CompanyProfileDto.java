@@ -51,7 +51,7 @@ public class CompanyProfileDto {
         private int age; // 생년월일 -> 나이 계산
         private String role; // 역할 (Enum -> String)
         private String company_email; // 회사 이메일 아님
-        private String workStatus; // 근무 상태 (외부 전달 값)
+        private String work_status; // 근무 상태 (외부 전달 값)
 
         public static Response toDto(Member member, String workStatus, int age) {
             CompanyProfile profile = member.getCompanyProfile();
@@ -64,7 +64,7 @@ public class CompanyProfileDto {
                     .age(age)
                     .role(member.getRole().name())
                     .company_email(profile.getCompanyEmail())
-                    .workStatus(workStatus)
+                    .work_status(workStatus)
                     .build();
         }
     }
@@ -112,10 +112,10 @@ public class CompanyProfileDto {
         private String gender;
         private int age;
         private String company_email;
-        private String workStatus;
-        private String resultContent;
+        private String work_status;
+        private String PSYCHOLOGICAL_STATE;
 
-        public static Consult toDto(Member member,String workStatus,int age, String resultContent) {
+        public static Consult toDto(Member member,String workStatus,int age, String psychologicalState) {
             CompanyProfile profile = member.getCompanyProfile();
 
             return Consult.builder()
@@ -125,11 +125,43 @@ public class CompanyProfileDto {
                     .gender(member.getGender().name())
                     .age(age)
                     .company_email(profile.getCompanyEmail())
-                    .workStatus(workStatus)
-                    .resultContent(resultContent)
+                    .work_status(workStatus)
+                    .PSYCHOLOGICAL_STATE(psychologicalState)
                     .build();
 
         }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Applies {
+        private String department_name;
+        private String position;
+        private String name;
+        private String gender;
+        private int age;
+        private String company_email;
+        private String worcation_date;
+        private String worcation_place;
+
+        public static Applies toDto(Member member, String worcationDate, int age, String worcationPlace) {
+            CompanyProfile profile = member.getCompanyProfile();
+
+            return Applies.builder()
+                    .department_name(profile.getDepartmentName())
+                    .position(profile.getPosition())
+                    .name(member.getName())
+                    .gender(member.getGender().name())
+                    .age(age)
+                    .company_email(profile.getCompanyEmail())
+                    .worcation_date(worcationDate)
+                    .worcation_place(worcationPlace)
+                    .build();
+        }
+
     }
 
 }

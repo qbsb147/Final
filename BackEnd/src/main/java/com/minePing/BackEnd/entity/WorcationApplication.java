@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Approve;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,7 +34,7 @@ public class WorcationApplication {
     private Worcation worcation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="approve", nullable = true)
+    @Column(name="approve", nullable = false)
     private CommonEnums.Approve approve;
 
     @Column(name = "start_date", nullable = false)
@@ -52,6 +53,13 @@ public class WorcationApplication {
 
     @OneToOne(mappedBy = "worcationApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Review review;
+
+    @PrePersist
+    protected void onCreate() {
+        if(approve == null) {
+            this.approve = Approve.W;
+        }
+    }
 
     public void assignReview(Review review) {
         this.review = review;

@@ -170,24 +170,24 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             <input
               type="radio"
               name="role"
-              value="employee"
-              checked={formData1.role === 'employee'}
+              value="EMPLOYEE"
+              checked={formData1.role === 'EMPLOYEE'}
               onChange={handleRadioChange}
             />
             직원
             <input
               type="radio"
               name="role"
-              value="master"
-              checked={formData1.role === 'master'}
+              value="MASTER"
+              checked={formData1.role === 'MASTER'}
               onChange={handleRadioChange}
             />
             기업
             <input
               type="radio"
               name="role"
-              value="worcation"
-              checked={formData1.role === 'worcation'}
+              value="WORCATION"
+              checked={formData1.role === 'WORCATION'}
               onChange={handleRadioChange}
             />
             워케이션 업체

@@ -11,4 +11,6 @@ public interface EmployeeService {
     List<CompanyProfileDto.Approval> findgetApprovalList(Long companyNo);
 
     List<CompanyProfileDto.Consult> findConsultList(Long companyNo);
+
+    List<CompanyProfileDto.Applies> findWorcationAppliesList(Long companyNo);
 }

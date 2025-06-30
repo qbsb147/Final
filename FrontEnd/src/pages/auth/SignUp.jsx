@@ -13,10 +13,10 @@ const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'M',
-    role: 'employee',
+    role: 'EMPLOYEE',
   });
   const [formData2, setFormData2] = useState({});
-  const [selectedRole, setSelectedRole] = useState('employee');
+  const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
   const [isFormValid, setIsFormValid] = useState(false);
 
   const handleNext = async () => {
@@ -41,8 +41,8 @@ const SignUp = () => {
     let isValidStep2 = true;
     if (formStep === 2) {
       let schema = null;
-      if (selectedRole === 'employee') schema = useEmployeeForm;
-      else if (selectedRole === 'master') schema = useMasterForm;
+      if (selectedRole === 'EMPLOYEE') schema = useEmployeeForm;
+      else if (selectedRole === 'MASTER') schema = useMasterForm;
       if (schema) {
         isValidStep2 = await validateForm(schema, formData2);
         setIsFormValid(isValidStep2);
@@ -80,12 +80,12 @@ const SignUp = () => {
           )}
 
           {/* STEP 2 - 직원 */}
-          {formStep === 2 && formData1.role === 'employee' && (
+          {formStep === 2 && formData1.role === 'EMPLOYEE' && (
             <EmployeeStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
           )}
 
           {/* STEP 2 - 회사 */}
-          {formStep === 2 && formData1.role === 'master' && (
+          {formStep === 2 && formData1.role === 'MASTER' && (
             <MasterStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
           )}
 
@@ -95,8 +95,8 @@ const SignUp = () => {
             {formStep === 1 && (
               <>
                 <Btn onClick={() => window.history.back()}>취소</Btn>
-                <Btn onClick={selectedRole === 'worcation' ? handleSubmit : handleNext}>
-                  {selectedRole === 'worcation' ? '완료' : '다음'}
+                <Btn onClick={selectedRole === 'WORCATION' ? handleSubmit : handleNext}>
+                  {selectedRole === 'WORCATION' ? '완료' : '다음'}
                 </Btn>
               </>
             )}

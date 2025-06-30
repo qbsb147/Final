@@ -23,7 +23,7 @@ public class MemberPreference {
     private Long preferenceNo;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @JoinColumn(name = "user_no", nullable = false, unique = true)
     private Member member;
 
     @Enumerated(EnumType.STRING)
