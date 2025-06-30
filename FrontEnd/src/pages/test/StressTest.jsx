@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useUserStore from '../../store/userStore';
-import { stress } from './questions';
+import { stress } from '../../components/test/questions';
 
 const StressTest = () => {
   const navigate = useNavigate();

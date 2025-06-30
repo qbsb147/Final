@@ -25,19 +25,19 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/signUp/employee")
+    @PostMapping("/signUp/EMPLOYEE")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.EmployeeJoin employeeJoinDto) {
         memberService.createEmployeeMember(employeeJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/signUp/master")
+    @PostMapping("/signUp/MASTER")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.MasterJoin masterJoinDto) {
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/signUp/worcation")
+    @PostMapping("/signUp/WORCATION")
     public ResponseEntity<Void> singUp(@RequestBody MemberDto.WorcationJoin worcationJoinDto) {
         memberService.createWorcationMember(worcationJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();

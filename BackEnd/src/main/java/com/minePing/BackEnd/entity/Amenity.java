@@ -10,10 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @AllArgsConstructor
@@ -27,7 +23,7 @@ public class Amenity {
     @Column(name = "amenity_no")
     private Long amenityNo;
 
-    @Column(name = "amenity_name",nullable = false, length = 50)
+    @Column(name = "amenity_name",nullable = false, length = 50, unique = true)
     private String amenityName;
 
     @OneToMany(mappedBy = "amenity", cascade = CascadeType.ALL, orphanRemoval = true)

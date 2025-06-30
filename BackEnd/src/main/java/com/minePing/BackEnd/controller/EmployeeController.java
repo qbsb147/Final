@@ -29,9 +29,13 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.findgetApprovalList(companyNo));
     }
 
-    @GetMapping("//needs-consult/{companyNo}")
+    @GetMapping("/needs-consult/{companyNo}")
     public ResponseEntity<List<CompanyProfileDto.Consult>> getNeedsConsult(@PathVariable Long companyNo){
         return ResponseEntity.ok(employeeService.findConsultList(companyNo));
     }
 
+    @GetMapping("/worcation-applies/{companyNo}")
+    public ResponseEntity<List<CompanyProfileDto.Applies>> getWorcationApplies(@PathVariable Long companyNo){
+        return ResponseEntity.ok(employeeService.findWorcationAppliesList(companyNo));
+    }
 }

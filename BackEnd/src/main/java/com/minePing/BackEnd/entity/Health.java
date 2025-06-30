@@ -21,7 +21,7 @@ public class Health {
     private Long healthNo;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @JoinColumn(name = "user_no", nullable = false, unique = true)
     private Member member;
 
     @Column(name="weight",nullable = false)
