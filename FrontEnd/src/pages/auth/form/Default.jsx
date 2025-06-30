@@ -1,13 +1,49 @@
-import React from 'react';
-import { RadioGroup, Label, InputBox, AddressSearchButton, StyledDatePickerWrapper } from './sharedStyles';
+import React, { useState, useEffect } from 'react';
 import CustomDatePicker from '../../../components/common/DatePicker';
-import { createHandleChange, createHandleRadioChange, createHandleAddressSearch } from './Handler';
 import styled from 'styled-components';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, isPostcodeReady }) => {
-  const handleChange = createHandleChange(setFormData1, () => {});
-  const handleRadioChange = createHandleRadioChange(setSelectedRole, setFormData1, setFormData2);
-  const handleAddressSearch = createHandleAddressSearch(isPostcodeReady, setFormData1);
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 }) => {
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  const handleChange = (e, step) => {
+    const { name, value } = e.target;
+    if (step === 1) setFormData1((prev) => ({ ...prev, [name]: value }));
+    else if (step === 2) setFormData2((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRadioChange = (e) => {
+    const { value } = e.target;
+    setSelectedRole(value);
+    setFormData1((prev) => ({ ...prev, role: value }));
+    setFormData2({});
+  };
+
+  const handleAddressSearch = () => {
+    if (!isPostcodeReady) {
+      alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const addr = data.address;
+        setFormData1((prev) => ({ ...prev, address: addr }));
+      },
+    }).open();
+  };
 
   return (
     <Body className="InputWrap">
@@ -176,8 +212,99 @@ const Left = styled.div`
   flex-direction: column;
   align-items: flex-start;
 `;
+
 const Right = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+`;
+
+const InputBox = styled.input`
+  ${({ variant }) => {
+    switch (variant) {
+      case 'yellow':
+        return `
+          background: #ffffff;
+          border: 3px solid #ffeb8c;
+          border-radius: 10px;
+          color: black;
+        `;
+      case 'gray':
+        return `
+          background: #f3f3f3;
+          border: 3px solid #d1d5db;
+          border-radius: 10px;
+          color: black;
+        `;
+      case 'orange':
+        return `
+          background: #ffffff;
+          border: 3px solid #f59e0b;
+          border-radius: 10px;
+          color: black;
+        `;
+      default:
+        return '';
+    }
+  }};
+  width: 400px;
+  padding: ${({ theme }) => theme.spacing.s3};
+  box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  margin: ${({ theme }) => theme.spacing.s0};
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  gap: ${({ theme }) => theme.spacing.s10};
+  margin: ${({ theme }) => theme.spacing.s9} ${({ theme }) => theme.spacing.s0};
+`;
+
+const Label = styled.label`
+  display: block;
+  text-align: left;
+  margin-bottom: ${({ theme }) => theme.spacing.s2};
+  margin-left: ${({ theme }) => theme.spacing.s1};
+`;
+
+const StyledDatePickerWrapper = styled.div`
+  .react-datepicker__input-container input {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 400px;
+    height: 52.41px;
+    background: #ffffff;
+    border: 3px solid #ffeb8c;
+    border-radius: 10px;
+    color: black;
+    padding: 0 12px;
+    font-size: ${({ theme }) => theme.fontSizes.base};
+    outline: none;
+    margin: 0;
+    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  }
+  .react-datepicker__input-container input::placeholder {
+    color: #adadad;
+    opacity: 1;
+  }
+  .react-datepicker__input-container input:focus {
+    border-color: #ffeb8c;
+    background: #fff;
+  }
+`;
+
+const AddressSearchButton = styled.button`
+  height: 52.41px;
+  min-width: 80px;
+  padding: 0 12px;
+  background: #feffe0;
+  border: 3px solid #dda900;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: ${({ theme }) => theme.colors.black};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;

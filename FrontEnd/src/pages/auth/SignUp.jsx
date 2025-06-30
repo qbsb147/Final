@@ -6,9 +6,9 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import memberService from '../../api/members';
 import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '../../hooks/useAuth';
-import DefaultStep from './components/Default';
-import EmployeeStep from './components/employee';
-import MasterStep from './components/Master';
+import DefaultStep from './form/Default';
+import EmployeeStep from './form/employee';
+import MasterStep from './form/Master';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -18,24 +18,7 @@ const SignUp = () => {
   });
   const [formData2, setFormData2] = useState({});
   const [selectedRole, setSelectedRole] = useState('employee');
-  const companyNameTimeout = useRef();
-  const [companySearchResults, setCompanySearchResults] = useState([]);
-  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
-
-  React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-    script.async = true;
-    script.onload = () => setIsPostcodeReady(true);
-    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
-    document.body.appendChild(script);
-    return () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, []);
 
   const handleNext = async () => {
     const valid = await validateForm(useDefaultForm, formData1);
@@ -94,33 +77,17 @@ const SignUp = () => {
               setFormData1={setFormData1}
               setSelectedRole={setSelectedRole}
               setFormData2={setFormData2}
-              isPostcodeReady={isPostcodeReady}
             />
           )}
 
           {/* STEP 2 - 직원 */}
           {formStep === 2 && formData1.role === 'employee' && (
-            <EmployeeStep
-              formData2={formData2}
-              setFormData2={setFormData2}
-              companyNameTimeout={companyNameTimeout}
-              setCompanySearchResults={setCompanySearchResults}
-              memberService={memberService}
-              companySearchResults={companySearchResults}
-            />
+            <EmployeeStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
           )}
 
           {/* STEP 2 - 회사 */}
           {formStep === 2 && formData1.role === 'master' && (
-            <MasterStep
-              formData2={formData2}
-              setFormData2={setFormData2}
-              companyNameTimeout={companyNameTimeout}
-              setCompanySearchResults={setCompanySearchResults}
-              memberService={memberService}
-              companySearchResults={companySearchResults}
-              isPostcodeReady={isPostcodeReady}
-            />
+            <MasterStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
           )}
 
           {/* 버튼 영역 */}

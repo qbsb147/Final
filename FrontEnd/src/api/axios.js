@@ -7,6 +7,32 @@ const api = axios.create({
   headers: API_CONFIG.HEADERS,
 });
 
+// 요청 인터셉터 - 토큰 자동 추가
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 만료 인터셉터 - 토큰 만료시 서버에서 만료 응답 오면 자동 제거
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {

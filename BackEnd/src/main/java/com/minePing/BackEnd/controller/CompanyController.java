@@ -1,19 +1,15 @@
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.CompanyDto;
+import com.minePing.BackEnd.dto.DepartmentDto;
 import com.minePing.BackEnd.service.CompanyService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/company")
+@RequestMapping("/api/v1/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
@@ -21,7 +17,6 @@ public class CompanyController {
 
     @GetMapping("/search")
     public ResponseEntity<List<CompanyDto.Search>> companySearch(@RequestParam String company_name) {
-        System.out.println("company_name = " + company_name);
         return ResponseEntity.ok(companyService.getCompanyList(company_name));
     }
 
@@ -30,4 +25,8 @@ public class CompanyController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/search/department/{company_no}")
+    public ResponseEntity<List<DepartmentDto.Search>> departmentSearch(@PathVariable Long company_no) {
+        return ResponseEntity.ok(companyService.getDepartmentList(company_no));
+    }
 }

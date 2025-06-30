@@ -1,3 +1,4 @@
+/*
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.service.AIChatService;
@@ -36,4 +37,4 @@ public class ChatController {
         Long userNo = 2L;  // 임시 고정값
         return aiChatService.processChat(userNo, message);
     }
-}
+}*/

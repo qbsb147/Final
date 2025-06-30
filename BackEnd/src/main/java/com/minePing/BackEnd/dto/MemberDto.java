@@ -4,6 +4,8 @@ import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
 import jakarta.persistence.*;
 import java.time.Period;
+
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,53 +16,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberDto {
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class MemberJoinDto {
+        @NotBlank(message = "아이디는 필수입니다.")
+        private String user_id;
+
+        @NotBlank(message = "비밀번호는 필수입니다.")
+        @Pattern(
+                regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
+                message = "비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다."
+        )
+        private String user_pwd;
+
+        @NotBlank(message = "이름은 필수입니다.")
+        private String name;
+
+        @NotNull(message = "성별 설정은 필수입니다.")
+        private CommonEnums.Gender gender;
+
+        @NotNull(message = "권한 설정은 필수입니다.")
+        private CommonEnums.Role role;
+
+        @NotBlank(message = "주소는 필수입니다.")
+        private String address;
+
+        @NotNull(message = "생년월일은 필수입니다.")
+        @Past(message = "생년월일은 과거 날짜여야 합니다.")
+        private LocalDate birthday;
+
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String email;
+
+        @NotBlank(message = "전화번호는 필수입니다.")
+        @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "올바른 전화번호 형식이 아닙니다.(010-xxxx-xxxx)")
+        private String phone;
+    }
+
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ToString
     public static class EmployeeJoin {
 
-        private String user_id;
-        private String user_pwd;
-        private String name;
-        private CommonEnums.Gender gender;
-        private String address;
-        private LocalDate birthday;
-        private String email;
-        private String phone;
-        private CommonEnums.Role role;
-        private String company_no;
-        private String department;
-        private String position;
-        private String company_email;
-        private String company_phone;
-        private Member member;
-        private Company company;
-
-        public Member toMemberEntity() {
-            return Member.builder()
-                    .userId(this.user_id)
-                    .userPwd(this.user_pwd)
-                    .name(this.name)
-                    .gender(this.gender)
-                    .address(this.address)
-                    .birthday(this.birthday)
-                    .email(this.email)
-                    .phone(this.phone)
-                    .role(this.role)
-                    .build();
-        }
+        private MemberJoinDto memberJoinDto;
+        private CompanyProfileDto.CompanyProfileJoinDto companyProfileJoinDto;
 
         public CompanyProfile toCompanyProfileEntity() {
             return CompanyProfile.builder()
-                    .member(this.member)
-                    .company(this.company)
-                    .departmentName(this.department)
-                    .position(this.position)
-                    .companyPhone(this.company_phone)
-                    .companyEmail(this.company_email)
+                    .departmentName(this.companyProfileJoinDto.getDepartment_name())
+                    .position(this.companyProfileJoinDto.getPosition())
+                    .companyPhone(this.companyProfileJoinDto.getCompany_phone())
+                    .companyEmail(this.companyProfileJoinDto.getCompany_email())
                     .build();
         }
     }
@@ -72,66 +87,20 @@ public class MemberDto {
     @Builder
     public static class MasterJoin {
 
-        private String user_id;
-        private String user_pwd;
-        private String name;
-        private CommonEnums.Gender gender;
-        private String address;
-        private LocalDate birthday;
-        private String email;
-        private String phone;
-        private CommonEnums.Role role;
-        private String company_name;
-        private String company_address;
-        private String business_id;
-        private String business_email;
-        private String licensee;
-        private String company_tel;
-        private LocalDate open_date;
-        private String company_phone;
-
-        public Member toMemberEntity() {
-            return Member.builder()
-                    .userId(this.user_id)
-                    .userPwd(this.user_pwd)
-                    .name(this.name)
-                    .gender(this.gender)
-                    .address(this.address)
-                    .birthday(this.birthday)
-                    .email(this.email)
-                    .phone(this.phone)
-                    .role(this.role)
-                    .build();
-        }
+        private MemberJoinDto memberJoinDto;
+        private CompanyDto.CompanyJoinDto companyJoinDto;
 
         public Company toCompanyEntity() {
             return Company.builder()
-                    .companyName(this.company_name)
-                    .companyAddress(this.company_address)
-                    .businessId(this.business_id)
-                    .businessEmail(this.business_email)
-                    .licensee(this.licensee)
-                    .companyTel(this.company_tel)
+                    .companyName(this.companyJoinDto.getCompany_name())
+                    .companyAddress(this.companyJoinDto.getCompany_address())
+                    .businessId(this.companyJoinDto.getBusiness_id())
+                    .businessEmail(this.companyJoinDto.getBusiness_email())
+                    .licensee(this.companyJoinDto.getLicensee())
+                    .companyTel(this.companyJoinDto.getCompany_tel())
+                    .openDate(this.companyJoinDto.getOpen_date())
                     .build();
         }
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class WorcationJoin {
-
-        private String user_id;
-        private String user_pwd;
-        private String name;
-        private CommonEnums.Gender gender;
-        private String address;
-        private String birthday;
-        private String email;
-        private String phone;
-        private CommonEnums.Role role;
     }
 
     @Getter
@@ -140,40 +109,39 @@ public class MemberDto {
     @NoArgsConstructor
     @Builder
     @ToString
-    public static class Login{
-        private String user_id;
-        private String user_pwd;
+    public static class WorcationJoin {
+
+        private MemberJoinDto memberJoinDto;
+
     }
-    
+
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class Response {
+    @ToString
+    public static class Login {
+        private String user_id;
+        private String user_pwd;
+    }
 
-        private String department_name;
-        private String position;
-        private String name;
-        private String gender;
-        private int age;
-        private String role;
-        private String email;
-        private String workStatus;
 
-        public static Response toDto(Member member, String workStatus) {
-            CompanyProfile profile = member.getCompanyProfile();
-            return Response.builder()
-                    .department_name(profile.getDepartmentName())
-                    .position(profile.getPosition())
-                    .name(member.getName())
-                    .gender(member.getGender().name())
-                    .age(Period.between(member.getBirthday(), LocalDate.now()).getYears())
-                    .role(member.getRole().name())
-                    .email(member.getEmail())
-                    .workStatus(workStatus)
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class LoginResponse {
+        private String user_id;
+        private CommonEnums.Role role;
+
+        public static LoginResponse toDto(Member member) {
+            return LoginResponse.builder()
+                    .user_id(member.getUserId())
+                    .role(member.getRole())
                     .build();
         }
     }
-
 }

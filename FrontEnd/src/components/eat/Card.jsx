@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Subtitle, SmallText, Text } from '../../../styles/Typography';
+import { Subtitle, SmallText, Text } from '../../styles/Typography.js';
 
 const Card = ({ eat }) => {
   return (

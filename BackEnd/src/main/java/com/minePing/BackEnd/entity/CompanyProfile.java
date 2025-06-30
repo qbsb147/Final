@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(name = "company_profile")
+@Table(name = "company_profile",indexes = { @Index(name = "idx_company", columnList = "company_no") })
 public class CompanyProfile {
 
     @Id
@@ -45,5 +45,17 @@ public class CompanyProfile {
     @Column(name = "approve", nullable = true)
     @Enumerated(EnumType.STRING)
     private CommonEnums.Approve approve;
+
+    public void changeMember(Member member) {
+        this.member = member;
+        member.assignCompanyProfile(this);
+    }
+
+    public void changeCompany(Company company){
+        this.company = company;
+        if(!company.getCompanyProfiles().contains(this)){
+            company.getCompanyProfiles().add(this);
+        }
+    }
 
 }

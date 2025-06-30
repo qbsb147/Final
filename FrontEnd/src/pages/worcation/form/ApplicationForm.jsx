@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { InputLightGray } from '../../../../styles/Input.styles';
-import RadioButton from '../../../../components/common/RadioButton';
-import CustomDatePicker from '../../../../components/common/DatePicker';
-import { ButtonBorder } from '../../../../styles/Button.styles';
-import { useValidateForm } from '../../../../hooks/useValidateForm';
+import { InputLightGray } from '../../../styles/Input.styles.js';
+import RadioButton from '../../../components/common/RadioButton.jsx';
+import CustomDatePicker from '../../../components/common/DatePicker.jsx';
+import { ButtonBorder } from '../../../styles/Button.styles.js';
+import { useValidateForm } from '../../../hooks/useValidateForm.js';
 import { Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import useHostStore from '../../../../store/useBusinessStore';
+import useHostStore from '../../../store/useBusinessStore.js'
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');

@@ -1,8 +1,8 @@
 const { VITE_API_URL, VITE_API_TIMEOUT = 5000, VITE_API_VERSION = 'v1', VITE_API_BUSINESS } = import.meta.env;
 
 export const API_CONFIG = {
-  // BASE_URL: `${VITE_API_URL}/${VITE_API_VERSION}`, localhost:8001/api/v1
-  BASE_URL: `${VITE_API_URL}`,
+  BASE_URL: `${VITE_API_URL}/${VITE_API_VERSION}`, //localhost:8080/api/v1
+  // BASE_URL: `${VITE_API_URL}`,
   TIMEOUT: VITE_API_TIMEOUT,
   HEADERS: {
     'Content-Type': 'application/json', //내가 서버로 보내는 데이터는 json이야
@@ -29,8 +29,7 @@ export const API_ENDPOINTS = {
   },
   COMPANY_PROFILE: '/companyProfiles',
   WORCATION: '/worcations',
-  LOGIN: '/login',
-  SIGNUP: '/signup',
+  LOGIN: '/member/login',
   MENTALS: {
     STRESS: '/mental_stress',
     BURNOUT: '/mental_burnout',

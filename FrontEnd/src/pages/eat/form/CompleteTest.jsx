@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Today from './Today';
 import styled from 'styled-components';
-import Card from './Card';
+import Card from '../../../components/eat/Card.jsx';
 import userStore from '../../../store/userStore';
 import { recommended_intake } from './recommendedIntake';
 import { MiniContent, MiniTitle } from '../../../styles/Typography';
