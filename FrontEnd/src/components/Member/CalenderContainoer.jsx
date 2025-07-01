@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Calender from '../common/Calendar';
-
+import Calender from './Calender/Calendar';
 const InfoListData = [
   {
     icon: '아이콘',
@@ -73,17 +72,13 @@ const DateHeaderTitle = styled.h1`
 const Contents = styled.div`
   width: 100%;
   max-height: 300px;
+  height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing.s6};
 `;
 
-// const Calender = styled.div`
-//   width: 60%;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
 const InfoList = styled.div`
   width: 40%;
   display: flex;
