@@ -7,7 +7,6 @@ import Input from '../../styles/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
-import jwt_decode from 'jwt-decode';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
@@ -19,12 +18,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const member = await memberService.login({ userId, userPwd });
-      const { token } = member;
       console.log('로그인 응답 member:', member);
-      console.log('로그인 응답 token:', token);
-      const decodedToken = jwt_decode(token);
-      console.log('로그인 응답 decodedToken:', decodedToken);
-
       setUser(member);
       alert('로그인 성공!');
       navigate('/');

@@ -13,12 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(
-        name = "health",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_health_user_no", columnNames = "user_no")
-        }
-)
+@Table(name = "health")
 public class Health {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
