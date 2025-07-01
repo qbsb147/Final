@@ -7,50 +7,11 @@ const useBusinessStore = create((set) => ({
     worcationName: '',
     openDate: '',
     category: '',
-    address: '',
-    tel: '',
-    email: '',
-    description: '',
-    amenities: [],
-    features: [],
-    photos: [],
-    website: '',
   },
-
-  setFormData: (data) =>
-    set((state) => ({
-      formData: {
-        ...state.formData,
-        ...data,
-      },
-    })),
-
+  setFormData: (data) => set({ formData: { ...data } }),
   updateField: (field, value) =>
     set((state) => ({
-      formData: {
-        ...state.formData,
-        [field]: value,
-      },
-    })),
-
-  resetFormData: () =>
-    set(() => ({
-      formData: {
-        businessId: '',
-        licensee: '',
-        worcationName: '',
-        openDate: '',
-        category: '',
-        address: '',
-        tel: '',
-        email: '',
-        description: '',
-        amenities: [],
-        features: [],
-        photos: [],
-        website: '',
-      },
+      formData: { ...state.formData, [field]: value },
     })),
 }));
-
 export default useBusinessStore;
