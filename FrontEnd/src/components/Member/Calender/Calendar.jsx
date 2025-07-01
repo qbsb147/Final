@@ -28,7 +28,8 @@ const memberCalendar = ({ events, onEventDrop }) => {
       startAccessor="start"
       endAccessor="end"
       draggableAccessor={() => true}
-      style={{ height: '100%', width: '100%', borderRadius: '10px' }}
+      style={{ height: '300px', width: '90%', borderRadius: '10px' }}
+      toolbar={false}
     />
   );
 };
