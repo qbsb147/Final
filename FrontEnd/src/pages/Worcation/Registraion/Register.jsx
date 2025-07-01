@@ -11,28 +11,14 @@ import PolicyForm from '../../../components/worcation/Register/Form/PolicyForm.j
 import FeatureForm from '../../../components/worcation/Register/Form/FeatureForm.jsx';
 import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
-import SwalStyles from '../../styles/SwalStyles';
-import useWorcationStore from '../../store/worcationStore';
-import useBusinessStore from '../../store/useBusinessStore';
-import axios from 'axios';
+import SwalStyles from '../../../styles/SwalStyles.js';
+import useWorcationStore from '../../../store/useWorcationStore';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const isValidate = useWorcationStore((state) => state.isValidate);
   const isNonNull = useWorcationStore((state) => state.isNonNull);
 
-  const handleSubmit = async () => {
-    try {
-      const formData = useBusinessStore.getState().formData;
-
-      const response = await axios.post('/api/worcations', formData);
-      console.log('성공:', response.data);
-      alert('임시 저장이 완료되었습니다!');
-    } catch (error) {
-      console.error('에러 발생:', error);
-      alert('저장 중 오류가 발생했습니다.');
-    }
-  };
   const handleSave = () =>
     Swal.fire({
       title: '저장하시겠습니까?',
@@ -42,7 +28,7 @@ const Register = () => {
       buttonsStyling: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        handleSubmit();
+        console.log('저장');
       }
     });
   const renderForm = () => {
@@ -67,7 +53,6 @@ const Register = () => {
         return <ApplicationForm />;
     }
   };
-  const isBusinessValidated = !!useBusinessStore((state) => state.formData.businessId);
 
   return (
     <RegisterContainer>
@@ -83,7 +68,7 @@ const Register = () => {
         <FormFooter>
           {isValidate ? (
             <>
-              <ActionButton type="button" disabled={!isBusinessValidated} onClick={handleSave}>
+              <ActionButton type="button" onClick={handleSave}>
                 임시 저장
               </ActionButton>
             </>

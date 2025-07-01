@@ -5,6 +5,7 @@ import { worcationService } from '../api/worcations';
 import { toast } from 'react-toastify';
 import worcationStore from '../store/worcationStore';
 import useAuthStore from '../store/authStore';
+
 //회원가입 폼의 유효성 검사 스키마
 const ValidateSchema = yup.object().shape({
   licensee: yup.string().required('사업자 명을 입력... '),
@@ -29,7 +30,6 @@ export const useValidateForm = () => {
     handleSubmit,
     formState: { errors, isSubmitting }, //유효성 에러및 제출중 상태
     watch,
-    getValues,
   } = useForm({
     resolver: yupResolver(ValidateSchema), // yup스키마와 연결
     mode: 'onChange',
@@ -62,6 +62,5 @@ export const useValidateForm = () => {
     errors,
     isSubmitting,
     watch,
-    getValues,
   };
 };

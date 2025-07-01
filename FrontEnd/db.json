@@ -780,8 +780,7 @@
       "role": "master",
       "create_at": "2025-06-02T09:00:00",
       "update_at": "2025-06-02T09:00:00",
-      "status": "Y",
-      "id": "a865"
+      "status": "Y"
     },
     {
       "user_no": 2,
@@ -1568,6 +1567,14 @@
       "user_no": 1
     },
     {
+      "id": "d2e4",
+      "MBTI": "intp",
+      "PREFERRED_COLOR": "3",
+      "PREFERRED_LOCATION": "5",
+      "SPACE_MOOD": "4",
+      "IMPORTANT_FACTOR": "3",
+      "LEISURE_ACTIVITY": "2",
+      "ACCOMMODATION_TYPE": "2",
       "id": "5126",
       "MBTI": "infp",
       "PREFERRED_COLOR": "3",
@@ -1957,14 +1964,6 @@
       "create_at": "2025-06-10T18:00:00",
       "update_at": "2025-06-11T13:30:00",
       "id": "b546"
-    },
-    {
-      "id": "3c56",
-      "application_no": 1,
-      "writer_id": "user01@example.com",
-      "review_content": "ㄹㅇㅁㄴ",
-      "create_at": "2025-06-30T06:03:08.521Z",
-      "update_at": "2025-06-30T06:03:08.521Z"
     }
   ],
   "mental_stress": [
