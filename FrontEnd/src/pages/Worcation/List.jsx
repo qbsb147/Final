@@ -1,50 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import seoul1 from '../../assets/seoul1.jpg';
-import siheung1 from '../../assets/siheung1.jpg';
-import siheung2 from '../../assets/siheung2.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import useWorcationStore from '../../store/useWorcationStore';
 import useUserStore from '../../store/userStore';
+import { worcationService } from '../../api/worcations';
 
-const data = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
 
 const WorcationList = () => {
   const [viewMode, setViewMode] = useState('all');
   const navigate = useNavigate();
   const { user } = useUserStore();
+  const [worcations, setWorcations] = useState([]);
+  
 
-  const { worcations, partners, reviews, initWorcationData } = useWorcationStore();
+  const { partners, reviews } = useWorcationStore();
 
   useEffect(() => {
-    initWorcationData();
+    const fetchData = async () => {
+      const data = await worcationService.listAll();
+      setWorcations(data);
+    };
+    fetchData();
   }, []);
+
+  
 
   const handleToggleView = (mode) => {
     if (viewMode === mode) {
@@ -68,6 +48,13 @@ const WorcationList = () => {
       <SectionTitle>
         {{ all: '전체 리스트 보기', partner: '제휴 업체 보기', ai: 'AI 추천 제휴 업체' }[viewMode]}
       </SectionTitle>
+
+      <WorcationCardList
+  data={getFilteredWorcations()}
+  reviews={reviews}
+  navigate={navigate}
+/>
+
 
       {viewMode === 'all' && (
         <CardList>
