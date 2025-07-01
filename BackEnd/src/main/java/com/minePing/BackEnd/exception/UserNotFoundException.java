@@ -9,11 +9,7 @@ public class UserNotFoundException extends BaseException {
         super(ErrorCode.USER_NOT_FOUND, message);
     }
 
-    public UserNotFoundException(ErrorCode errorCode, String message) {
-        super(ErrorCode.USER_NOT_FOUND, message);
-    }
-
-    public UserNotFoundException(ErrorCode errorCode, String message, Throwable cause) {
+    public UserNotFoundException(String message, Throwable cause) {
         super(ErrorCode.USER_NOT_FOUND, message, cause);
     }
 }
