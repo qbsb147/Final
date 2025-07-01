@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+@Table(name = "worcation")
 public class Worcation {
 
     @Id

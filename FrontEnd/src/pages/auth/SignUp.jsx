@@ -8,8 +8,10 @@ import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '..
 import DefaultStep from '../../components/auth/Default';
 import EmployeeStep from '../../components/auth/Employee';
 import MasterStep from '../../components/auth/Master';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'M',
@@ -28,7 +30,6 @@ const SignUp = () => {
 
   const handlePrev = () => {
     setFormStep((prev) => (prev > 1 ? prev - 1 : prev));
-    setFormData2({});
   };
 
   const handleSubmit = async (e) => {
@@ -52,10 +53,10 @@ const SignUp = () => {
     try {
       await memberService.register(formData1, formData2);
       alert('회원가입이 완료되었습니다.');
-      window.location.href = '/login';
+      navigate('/login');
     } catch (error) {
-      console.error('회원가입 중 오류 발생:', error);
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      console.log('error', error);
+      alert(`회원가입 실패 : ${error}`);
     }
   };
 
@@ -75,18 +76,29 @@ const SignUp = () => {
               formData1={formData1}
               setFormData1={setFormData1}
               setSelectedRole={setSelectedRole}
+              formData2={formData2}
               setFormData2={setFormData2}
             />
           )}
 
           {/* STEP 2 - 직원 */}
           {formStep === 2 && formData1.role === 'EMPLOYEE' && (
-            <EmployeeStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
+            <EmployeeStep 
+              formData1={formData1}
+              setFormData1={setFormData1} 
+              formData2={formData2} 
+              setFormData2={setFormData2} 
+            />
           )}
 
           {/* STEP 2 - 회사 */}
           {formStep === 2 && formData1.role === 'MASTER' && (
-            <MasterStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
+            <MasterStep 
+              formData1={formData1}
+              setFormData1={setFormData1} 
+              formData2={formData2} 
+              setFormData2={setFormData2} 
+            />
           )}
 
           {/* 버튼 영역 */}
