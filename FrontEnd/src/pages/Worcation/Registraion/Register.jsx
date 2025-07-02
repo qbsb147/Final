@@ -13,24 +13,76 @@ import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
 import useWorcationStore from '../../../store/useWorcationStore';
+import axios from 'axios';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const isValidate = useWorcationStore((state) => state.isValidate);
   const isNonNull = useWorcationStore((state) => state.isNonNull);
+  const worcationData = useWorcationStore((state) => state);
 
-  const handleSave = () =>
-    Swal.fire({
-      title: '저장하시겠습니까?',
+  const toRequestDto = () => {
+    return {
+      application: worcationData.application,
+      info: worcationData.info,
+      description: worcationData.description,
+      photos: worcationData.photos,
+      amenities: worcationData.amenities,
+      location: worcationData.location,
+      policy: worcationData.policy,
+      feature: worcationData.feature,
+    };
+  };
+
+  // const handleSave = () =>
+  //   Swal.fire({
+  //     title: '저장하시겠습니까?',
+  //     showCancelButton: true,
+  //     confirmButtonText: '저장',
+  //     cancelButtonText: '취소',
+  //     buttonsStyling: true,
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       console.log('저장');
+  //     }
+  //   });
+  const handleSave = async () => {
+    const result = await Swal.fire({
+      title: '임시 저장하시겠습니까?',
       showCancelButton: true,
       confirmButtonText: '저장',
       cancelButtonText: '취소',
-      buttonsStyling: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log('저장');
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post('/api/worcations', toRequestDto());
+        Swal.fire('저장되었습니다.', '', 'success');
+      } catch (error) {
+        console.error('임시 저장 실패:', error);
+        Swal.fire('저장 실패', '다시 시도해주세요.', 'error');
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    const result = await Swal.fire({
+      title: '등록하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '등록',
+      cancelButtonText: '취소',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.post('/api/worcations', toRequestDto());
+        Swal.fire('등록 완료!', '', 'success');
+      } catch (error) {
+        console.error('등록 실패:', error);
+        Swal.fire('등록 실패', '다시 시도해주세요.', 'error');
+      }
+    }
+  };
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -61,7 +113,7 @@ const Register = () => {
         <FormContent>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
           <FormActions>
-            <ActionButton>미리 보기</ActionButton>
+            <ActionButton type="button">미리 보기</ActionButton>
             {renderForm()}
           </FormActions>
         </FormContent>
@@ -85,7 +137,7 @@ const Register = () => {
             </>
           ) : (
             <>
-              <ActionButton type="button" style={{ opacity: 0.3 }}>
+              <ActionButton type="button" onClick={handleSubmit} style={{ opacity: 0.3 }}>
                 등록
               </ActionButton>
             </>
