@@ -11,5 +11,9 @@ export const worcationService = {
     const response = await api.get(API_ENDPOINTS.WORCATION.DETAIL(worcation_no));
     return response.data;
   },
+  addReview : async(review) => {
+    const response = await api.post(API_ENDPOINTS.REVIEW.ADD, review);
+    return response.data;
+  }
 
 };

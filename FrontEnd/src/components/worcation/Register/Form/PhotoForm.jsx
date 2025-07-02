@@ -2,41 +2,81 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import AddButton from '../../../common/AddButton';
 import ImageUploader from '../../../common/ImageUploader';
+import useWorcationStore from '../../../../store/useWorcationStore';
 
 const Form = () => {
-  const [officeImages, setOfficeImages] = useState([]);
-  const [stayImages, setStayImages] = useState([]);
-  const [officeVisited, setOfficeVisited] = useState(true);
-  const [stayVisited, setStayVisited] = useState(true);
+  // const [officeImages, setOfficeImages] = useState([]);
+  // const [stayImages, setStayImages] = useState([]);
+  // const [officeVisited, setOfficeVisited] = useState(true);
+  // const [stayVisited, setStayVisited] = useState(true);
 
-  const handleOfficeAddClick = () => {
-    if (officeImages.length < 2) {
-      setOfficeImages((prev) => [...prev, { id: Date.now() }]);
-      setOfficeVisited(true);
-    } else {
-      setOfficeImages((prev) => [...prev, { id: Date.now() }]);
-      setOfficeVisited(false);
-    }
+  // const handleOfficeAddClick = () => {
+  //   if (officeImages.length < 2) {
+  //     setOfficeImages((prev) => [...prev, { id: Date.now() }]);
+  //     setOfficeVisited(true);
+  //   } else {
+  //     setOfficeImages((prev) => [...prev, { id: Date.now() }]);
+  //     setOfficeVisited(false);
+  //   }
+  // };
+
+  // const handleStayAddClick = () => {
+  //   if (stayImages.length < 2) {
+  //     setStayImages((prev) => [...prev, { id: Date.now() }]);
+  //     setStayVisited(true);
+  //   } else {
+  //     setStayImages((prev) => [...prev, { id: Date.now() }]);
+  //     setStayVisited(false);
+  //   }
+  // };
+
+  // const handleOfficeDelete = (id) => {
+  //   setOfficeImages((prev) => prev.filter((image) => image.id !== id));
+  //   setOfficeVisited(true);
+  // };
+
+  // const handleStayDelete = (id) => {
+  //   setStayImages((prev) => prev.filter((image) => image.id !== id));
+  //   setStayVisited(true);
+  // };
+  const photos = useWorcationStore((state) => state.photos);
+  const setPhotos = useWorcationStore((state) => state.setPhotos);
+
+  const officePhotos = photos.officePhotos || [];
+  const stayPhotos = photos.stayPhotos || [];
+
+  const handleAddOfficePhoto = () => {
+    if (officePhotos.length >= 4) return;
+    setPhotos({ officePhotos: [...officePhotos, null] });
   };
 
-  const handleStayAddClick = () => {
-    if (stayImages.length < 2) {
-      setStayImages((prev) => [...prev, { id: Date.now() }]);
-      setStayVisited(true);
-    } else {
-      setStayImages((prev) => [...prev, { id: Date.now() }]);
-      setStayVisited(false);
-    }
+  const handleAddStayPhoto = () => {
+    if (stayPhotos.length >= 4) return;
+    setPhotos({ stayPhotos: [...stayPhotos, null] });
   };
 
-  const handleOfficeDelete = (id) => {
-    setOfficeImages((prev) => prev.filter((image) => image.id !== id));
-    setOfficeVisited(true);
+  const handleOfficeChange = (file, index) => {
+    const newList = [...officePhotos];
+    newList[index] = file;
+    setPhotos({ officePhotos: newList });
   };
 
-  const handleStayDelete = (id) => {
-    setStayImages((prev) => prev.filter((image) => image.id !== id));
-    setStayVisited(true);
+  const handleStayChange = (file, index) => {
+    const newList = [...stayPhotos];
+    newList[index] = file;
+    setPhotos({ stayPhotos: newList });
+  };
+
+  const handleOfficeDelete = (index) => {
+    const newList = [...officePhotos];
+    newList.splice(index, 1);
+    setPhotos({ officePhotos: newList });
+  };
+
+  const handleStayDelete = (index) => {
+    const newList = [...stayPhotos];
+    newList.splice(index, 1);
+    setPhotos({ stayPhotos: newList });
   };
 
   return (
@@ -47,12 +87,22 @@ const Form = () => {
           <TR>
             <TH>오피스 사진</TH>
             <TD>
-              <ImageUploader label="메인 사진" />
+              {officePhotos.map((_, i) => (
+                <ImageUploader
+                  key={i}
+                  label={i === 0 ? '메인 사진' : '추가 사진'}
+                  onChange={(file) => handleOfficeChange(file, i)}
+                  onDelete={() => handleOfficeDelete(i)}
+                />
+              ))}
+              {officePhotos.length < 4 && (
+                <AddContainer onClick={handleAddOfficePhoto}>
+                  {/* <ImageUploader label="메인 사진" />
               {officeImages.map((image) => (
                 <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleOfficeDelete(image.id)} />
               ))}
               {officeVisited && (
-                <AddContainer onClick={handleOfficeAddClick}>
+                <AddContainer onClick={handleOfficeAddClick}> */}
                   <AddButton />
                   <p>사진 추가</p>
                 </AddContainer>
@@ -62,12 +112,24 @@ const Form = () => {
           <TR>
             <TH>숙소 사진</TH>
             <TD>
+              {stayPhotos.map((_, i) => (
+                <ImageUploader
+                  key={i}
+                  label={i === 0 ? '메인 사진' : '추가 사진'}
+                  onChange={(file) => handleStayChange(file, i)}
+                  onDelete={() => handleStayDelete(i)}
+                />
+              ))}
+              {/* <TH>숙소 사진</TH>
+            <TD>
               <ImageUploader label="메인 사진" />
               {stayImages.map((image) => (
                 <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleStayDelete(image.id)} />
-              ))}
-              {stayVisited && (
-                <AddContainer onClick={handleStayAddClick}>
+              ))} */}
+              {/* {stayVisited && (
+                <AddContainer onClick={handleStayAddClick}> */}
+              {stayPhotos.length < 4 && (
+                <AddContainer onClick={handleAddStayPhoto}>
                   <AddButton />
                   <p>사진 추가</p>
                 </AddContainer>

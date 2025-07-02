@@ -3,9 +3,41 @@ import styled from 'styled-components';
 import { InputLightGray } from '../../../../styles/Input.styles';
 import { ButtonBorder } from '../../../../styles/Button.styles.js';
 import CustomTextArea from '../../../common/TextArea';
+import useWorcationStore from '../../../../store/useWorcationStore';
 
 const Form = () => {
-  const [address, setAddress] = useState('');
+  // const [address, setAddress] = useState('');
+  // const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  // useEffect(() => {
+  //   const script = document.createElement('script');
+  //   script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+  //   script.async = true;
+  //   script.onload = () => setIsPostcodeReady(true);
+  //   script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+  //   document.body.appendChild(script);
+  //   return () => {
+  //     if (script.parentNode) {
+  //       script.parentNode.removeChild(script);
+  //     }
+  //   };
+  // }, []);
+
+  // const handleSearch = () => {
+  //   if (!isPostcodeReady) {
+  //     alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+  //     return;
+  //   }
+  //   new window.daum.Postcode({
+  //     oncomplete: function (data) {
+  //       const addr = data.address;
+  //       setAddress(addr);
+  //     },
+  //   }).open();
+  // };
+  const location = useWorcationStore((state) => state.location);
+  const setLocation = useWorcationStore((state) => state.setLocation);
+
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
   useEffect(() => {
@@ -21,7 +53,6 @@ const Form = () => {
       }
     };
   }, []);
-
   const handleSearch = () => {
     if (!isPostcodeReady) {
       alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
@@ -30,11 +61,14 @@ const Form = () => {
     new window.daum.Postcode({
       oncomplete: function (data) {
         const addr = data.address;
-        setAddress(addr);
+        setLocation({ ...location, address: addr });
       },
     }).open();
   };
 
+  const handleGuideChange = (e) => {
+    setLocation({ ...location, locationDescription: e.target.value });
+  };
   return (
     <Body>
       <Title>위치 / 주소를 입력해주세요.</Title>
@@ -43,7 +77,13 @@ const Form = () => {
           <TR>
             <TH>주소</TH>
             <TD>
-              <InputLightGray type="text" value={address} readOnly placeholder="주소" />
+              <InputLightGray
+                type="text"
+                // value={address}
+                value={location.address || ''}
+                readOnly
+                placeholder="주소"
+              />
               <ButtonBorder type="button" onClick={handleSearch} disabled={!isPostcodeReady}>
                 주소 검색
               </ButtonBorder>
@@ -52,7 +92,12 @@ const Form = () => {
           <TR>
             <TH>길 안내</TH>
             <TD>
-              <CustomTextArea rows={13}></CustomTextArea>
+              <CustomTextArea
+                rows={13}
+                value={location.locationDescription || ''}
+                onChange={handleGuideChange}
+                placeholder="위치에 대한 상세한 길 안내를 입력해주세요."
+              ></CustomTextArea>
             </TD>
           </TR>
         </TBody>

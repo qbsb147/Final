@@ -6,13 +6,15 @@ import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.entity.WorcationPartner;
 import com.minePing.BackEnd.entity.Review;
+import com.minePing.BackEnd.entity.Amenity;
+import com.minePing.BackEnd.entity.Photo;
 import org.mapstruct.*;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface WorcationMapper {
-    // Entity(여러 개) → Response
+    // Worcation → Response
     @Mapping(source = "worcation.worcationNo", target = "worcation_no")
     @Mapping(source = "worcation.worcationName", target = "worcation_name")
     @Mapping(source = "worcation.worcationCategory", target = "worcation_category")
@@ -44,8 +46,17 @@ public interface WorcationMapper {
     @Mapping(source = "features.accommodationType", target = "accommodation_type")
     @Mapping(source = "partners", target = "partners")
     @Mapping(source = "reviews", target = "reviews")
-    WorcationDto.Response toResponse(Worcation worcation, WorcationDetail detail, WorcationFeatures features, java.util.List<WorcationPartner> partners, java.util.List<Review> reviews);
-
+    @Mapping(source = "amenities", target = "amenities")
+    @Mapping(source = "photos", target = "photos")
+    WorcationDto.Response toResponse(
+            Worcation worcation,
+            WorcationDetail detail, WorcationFeatures features,
+            List<WorcationPartner> partners,
+            List<Review> reviews,
+            List<WorcationDto.AmenityResponse> amenities,
+            List<WorcationDto.PhotoResponse> photos);
+    
+    //WorcationPartner
     @Mapping(source = "partnerNo", target = "partner_no")
     @Mapping(source = "worcation.worcationNo", target = "worcation_no")
     @Mapping(source = "member.userNo", target = "member_no")
@@ -56,10 +67,26 @@ public interface WorcationMapper {
     @Mapping(source = "approve", target = "approve")
     @Mapping(source = "createAt", target = "create_at")
     @Mapping(source = "updateAt", target = "update_at")
-    WorcationDto.PartnerResponse toPartnerResponse(WorcationPartner partner);
+    WorcationDto.PartnerResponse toPartnerResponse(
+            WorcationPartner partner);
 
     List<WorcationDto.PartnerResponse> toPartnerResponseList(List<WorcationPartner> partners);
 
+    
+    // Amenity → AmenityResponse
+    @Mapping(source = "amenityNo", target = "amenity_no")
+    @Mapping(source = "amenityName", target = "amenity_name")
+    WorcationDto.AmenityResponse toAmenityResponse(Amenity amenity);
+    List<WorcationDto.AmenityResponse> toAmenityResponseList(List<Amenity> amenities);
+
+    // Photo → PhotoResponse
+    @Mapping(source = "photoNo", target = "photo_no")
+    @Mapping(source = "changeName", target = "change_name")
+    WorcationDto.PhotoResponse toPhotoResponse(Photo photo);
+    List<WorcationDto.PhotoResponse> toPhotoResponseList(List<Photo> photos);
+
+
+    // Review → ReviewResponse
     @Mapping(source = "reviewNo", target = "review_no")
     @Mapping(source = "worcationApplication.applicationNo", target = "application_no")
     @Mapping(source = "writerId", target = "writer_id")
@@ -68,5 +95,7 @@ public interface WorcationMapper {
     @Mapping(source = "updateAt", target = "update_at")
     WorcationDto.ReviewResponse toReviewResponse(Review review);
 
-    List<WorcationDto.ReviewResponse> toReviewResponseList(java.util.List<Review> reviews);
+    List<WorcationDto.ReviewResponse> toReviewResponseList(List<Review> reviews);
+    // Review → ReviewRequest
+    Review toReviewEntity(WorcationDto.ReviewRequest dto);
 }

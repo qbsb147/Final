@@ -28,4 +28,7 @@ public interface WorcationService {
      * 특정 워케이션을 삭제한다.
      */
     void delete(Long worcationNo);
+
+    // 오늘까지
+
 }
