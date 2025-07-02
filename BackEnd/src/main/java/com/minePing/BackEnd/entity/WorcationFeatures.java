@@ -12,7 +12,7 @@ import lombok.*;
 @Table(
         name = "worcation_features",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_worcation_features_worcation_no", columnNames = "worcation_no"),
+                @UniqueConstraint(name = "uk_worcation_no", columnNames = "worcation_no"),
         }
 )
 public class WorcationFeatures {

@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Table(
         name = "health",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_health_user_no", columnNames = "user_no")
+                @UniqueConstraint(name = "uk_user_no", columnNames = "user_no")
         }
 )
 public class Health {

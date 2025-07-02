@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 @Table(
         name = "worcation_detail",
         uniqueConstraints = {
-            @UniqueConstraint(name = "uk_worcation_detail_worcation_no", columnNames = "worcation_no"),
-            @UniqueConstraint(name = "uk_worcation_detail_business_id", columnNames = "business_id"),
-            @UniqueConstraint(name = "uk_worcation_detail_worcation_tel", columnNames = "worcation_tel")
+            @UniqueConstraint(name = "uk_worcation_no", columnNames = "worcation_no"),
+            @UniqueConstraint(name = "uk_business_id", columnNames = "business_id"),
+            @UniqueConstraint(name = "uk_worcation_tel", columnNames = "worcation_tel")
         }
 )
 public class WorcationDetail {
