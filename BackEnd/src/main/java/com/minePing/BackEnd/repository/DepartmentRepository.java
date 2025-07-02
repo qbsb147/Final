@@ -16,4 +16,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     Optional<List<Department>> findAllByCompanyNo(@Param("company_no") Long company_no);
 */
     Optional<List<Department>> findAllByCompany_CompanyNo(Long companyNo);
+
 }

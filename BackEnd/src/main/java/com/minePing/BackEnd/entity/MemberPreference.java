@@ -67,9 +67,15 @@ public class MemberPreference {
     @Column(name ="result_content", nullable = false, length = 512)
     private String resultContent;
 
+    public void changeMember(Member member){
+        this.member = member;
+        member.assignMemberPreference(this);
+    }
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
         this.updateDate = LocalDate.now();
     }
+
 }

@@ -71,6 +71,11 @@ public class Health {
     @Column(name = "update_date", nullable = false)
     private LocalDate updateDate;
 
+    public void changeMember(Member member) {
+        this.member = member;
+        member.assignHealth(this);
+    }
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {

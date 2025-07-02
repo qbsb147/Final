@@ -16,7 +16,7 @@ const memberService = {
 
       return response.data;
     } catch (error) {
-      throw error?.response?.data?.message;
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 
@@ -61,7 +61,7 @@ const memberService = {
         business_id: sendData2.business_id,
         business_email: sendData2.business_email,
         licensee: sendData2.licensee,
-        department_name: sendData2.department_name,
+        departments: sendData2.departments,
         company_tel: sendData2.company_tel,
         open_date: sendData2.open_date,
       };
@@ -77,19 +77,31 @@ const memberService = {
     }
     console.log('payload', payload);
 
-    const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
-    return result;
+    try {
+      const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
+      return result;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
   },
 
   // 회사명 검색
   searchCompany: async (company_name) => {
-    const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY.SEARCH(company_name));
-    return data;
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY.SEARCH(company_name));
+      return data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
   },
 
   searchDepartment: async (company_no) => {
-    const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY.DEPARTMENT_SEARCH(company_no));
-    return data;
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY.DEPARTMENT_SEARCH(company_no));
+      return data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
   },
 
   // 내 정보 조회 (JWT 토큰 사용)
@@ -98,7 +110,16 @@ const memberService = {
       const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.MY_INFO);
       return response.data;
     } catch (error) {
-      throw error?.response?.data?.message;
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+
+  getMyPage: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.MY_PAGE);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 };

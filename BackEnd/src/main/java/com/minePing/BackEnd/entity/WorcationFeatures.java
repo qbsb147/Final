@@ -9,7 +9,6 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-
 @Table(
         name = "worcation_features",
         uniqueConstraints = {

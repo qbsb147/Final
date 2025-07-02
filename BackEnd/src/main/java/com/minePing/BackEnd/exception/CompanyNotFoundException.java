@@ -5,8 +5,8 @@ public class CompanyNotFoundException extends BaseException {
         super(ErrorCode.COMPANY_NOT_FOUND);
     }
 
-    public CompanyNotFoundException(ErrorCode errorCode) {
-        super(ErrorCode.COMPANY_NOT_FOUND);
+    public CompanyNotFoundException(String message) {
+        super(ErrorCode.COMPANY_NOT_FOUND, message);
     }
 
     public CompanyNotFoundException(ErrorCode errorCode, String message) {

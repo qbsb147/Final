@@ -18,4 +18,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, Company
     Optional<List<Company>> findByCompanyName(@Param("companyName") String company_name, @Param("status") CommonEnums.Status status);
 
 */
+    @Query("select c.companyNo from Company c where c.member.userNo = :userNo")
+    Optional<Long> getCompanyNoByUserNo(@Param("userNo") Long user_no);
 }

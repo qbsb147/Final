@@ -23,7 +23,11 @@ export const useDefaultForm = yup.object().shape({
     .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
     .required('이름을 입력해주세요.'),
   address: yup.string().required('주소를 입력해주세요.'),
-  birthday: yup.string().required('생년월일을 입력해주세요.'),
+  birthday: yup
+    .date()
+    .typeError('유효한 날짜 형식이 아닙니다.')
+    .max(new Date(), '생년월일은 이전 날이어야 합니다.')
+    .required('생년월일을 입력해주세요.'),
   email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
   phone: yup
     .string()
@@ -51,8 +55,16 @@ export const useMasterForm = yup.object().shape({
     .matches(/^\d{10}$/, '사업자번호 형식은 10자리 번호입니다.')
     .required('사업자번호를 입력해주세요.'),
   licensee: yup.string().required('사업자명을 입력해주세요.'),
-  open_date: yup.string().required('개업일을 선택해주세요.'),
-  department: yup.array().of(yup.string()).required('부서명을 입력해주세요.'),
+  open_date: yup
+    .date()
+    .typeError('유효한 날짜 형식이 아닙니다.')
+    .max(new Date(), '개업일은 과거 날이어야합니다.')
+    .required('개업일을 선택해주세요.'),
+  departments: yup
+    .array()
+    .of(yup.string().required('부서 항목은 비어 있을 수 없습니다.'))
+    .min(1, '부서는 최소 1개 이상 선택해야 합니다.')
+    .required('부서 목록은 필수입니다.'),
   company_address: yup.string().required('기업주소를 입력해주세요.'),
   business_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
   company_tel: yup

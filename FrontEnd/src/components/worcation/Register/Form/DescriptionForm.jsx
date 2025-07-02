@@ -79,8 +79,8 @@ const TD = styled.td`
   }
 `;
 
-const ButtonYellow = styled(ButtonBorder)`
-  height: 30px;
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  margin-left: 50px;
-`;
+// const ButtonYellow = styled(ButtonBorder)`
+//   height: 30px;
+//   font-size: ${({ theme }) => theme.fontSizes.base};
+//   margin-left: 50px;
+// `;

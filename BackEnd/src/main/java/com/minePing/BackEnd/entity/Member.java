@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.SocialType;
@@ -19,9 +20,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-
 @Table(
         name = "member",
+        indexes = {@Index(name = "idx_user_id", columnList = "user_id")},
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_user_id", columnNames = "user_id"),
                 @UniqueConstraint(name = "uk_email", columnNames = "email"),
@@ -116,6 +117,14 @@ public class Member {
     public void assignCompanyProfile(CompanyProfile companyProfile) {
         this.companyProfile = companyProfile;
     }
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Company company;
+
+    public void assignCompany(Company company) {
+        this.company = company;
+    }
+
 
     @PrePersist
     protected void onCreate() {
