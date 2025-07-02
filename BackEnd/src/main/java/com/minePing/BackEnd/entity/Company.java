@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name ="company",
         uniqueConstraints = {
@@ -22,6 +23,7 @@ import java.util.List;
                 @UniqueConstraint(name = "uk_company_tel", columnNames = "company_tel")
         }
 )
+
 public class Company {
 
     @Id

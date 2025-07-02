@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex,
                                                                        HttpServletRequest request) {
-        log.error("핸들러를 찾을 수 없음 : {}", ex.getMessage());
+        log.error("핸드러를 찾을 수 없음 : {}", ex.getMessage());
 
         ErrorResponse error = ErrorResponse.of(ErrorCode.RESOURCE_NOT_FOUND, request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -69,6 +69,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex,
                                                                       HttpServletRequest request) {
         log.error("데이터 무결성 위반: {}", ex.getMessage(), ex);
+
         String constraintName = ex.getConstraintName();
         if(constraintName != null && constraintHandlers.containsKey(constraintName)) {
             ErrorResponse error = ErrorResponse.of(
@@ -77,6 +78,7 @@ public class GlobalExceptionHandler {
                     request.getRequestURI()
             );
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
         }
 
         ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, request.getRequestURI());
@@ -84,4 +86,3 @@ public class GlobalExceptionHandler {
     }
 
 }
-

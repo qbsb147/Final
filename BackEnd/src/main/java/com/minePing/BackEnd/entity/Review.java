@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name = "review",
         uniqueConstraints = {
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
                 )
         }
 )
+
 public class Review {
 
     @Id

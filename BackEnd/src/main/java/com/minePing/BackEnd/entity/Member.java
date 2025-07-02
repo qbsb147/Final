@@ -19,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name = "member",
         uniqueConstraints = {
@@ -27,6 +28,7 @@ import java.util.List;
                 @UniqueConstraint(name = "uk_phone", columnNames = "phone")
         }
 )
+
 public class Member {
     @Id // PK
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)

@@ -19,6 +19,7 @@ import java.time.LocalDate;
                 @UniqueConstraint(name = "uk_user_no", columnNames = "user_no")
         }
 )
+
 public class Health {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
