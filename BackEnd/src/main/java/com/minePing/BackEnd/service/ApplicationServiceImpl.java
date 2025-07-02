@@ -1,14 +1,22 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
+import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
+import com.minePing.BackEnd.entity.WorcationDetail;
+import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.mapper.WorcationMapper;
 import com.minePing.BackEnd.repository.ApplicationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
+import com.minePing.BackEnd.repository.WorcationDetailRepository;
+import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +26,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationServiceImpl implements ApplicationService {
 
+    private final WorcationMapper mapper;
     private final ApplicationRepository applicationRepository;
     private final MemberRepository memberRepository;
     private final WorcationRepository worcationRepository;
+    private final WorcationDetailRepository detailRepository;
+    private final WorcationFeaturesRepository featuresRepository;
+
+
 
     @Override
     public List<ApplicationDto.ApplicationResponseDto> getAllApplications() {
@@ -65,5 +78,29 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new IllegalArgumentException("존재하지 않는 신청입니다. id=" + id);
         }
         applicationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ApplicationDto.ApplicationResponseDto> getReserved() {
+        LocalDate today = LocalDate.now();
+        return applicationRepository.findAll().stream()
+                .filter(app -> app.getStartDate().isAfter(today))
+                .map(ApplicationDto.ApplicationResponseDto::fromEntity) // 전체 예약 정보를 포함한 DTO
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ApplicationDto.ApplicationResponseDto> getUsed() {
+        LocalDate today = LocalDate.now();
+        return applicationRepository.findAll().stream()
+                .filter(app -> app.getEndDate().isBefore(today))
+                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    private WorcationDto.Response toDto(Worcation worcation) {
+        WorcationDetail d = detailRepository.findById(worcation.getWorcationNo()).orElse(null);
+        WorcationFeatures f = featuresRepository.findById(worcation.getWorcationNo()).orElse(null);
+        return mapper.toResponse(worcation, d, f);
     }
 }

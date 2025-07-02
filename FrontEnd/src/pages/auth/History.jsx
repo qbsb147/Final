@@ -1,62 +1,37 @@
 import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import seoul1 from '../assets/seoul1.jpg';
-import siheung1 from '../assets/siheung1.jpg';
-import siheung2 from '../assets/siheung2.jpg';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const Adata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+const History = () => {
+  const navigate = useNavigate();
+  const [reservedList, setReservedList] = useState([]);
+  const [usedList, setUsedList] = useState([]);
 
-const Bdata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+  const fetchReservationData = async () => {
+    try {
+      const res = await axios.get('/api/reservations'); // 백엔드에서 데이터 받아오기
+      const all = res.data;
+
+      const reserved = all.filter((item) => item.status === 'RESERVED'); // 예약 중
+      const used = all.filter((item) => item.status === 'USED');         // 이용 완료
+
+      setReservedList(reserved);
+      setUsedList(used);
+    } catch (err) {
+      console.error('예약 데이터 불러오기 실패:', err);
+    }
+  };
+
+  const handleDetail = (id) => {
+    navigate(`/worcation/detail/${id}`);
+  };
+
+  useEffect(() => {
+    fetchReservationData();
+  }, []);
+
 
 const WorcationHistory = () => {
   return (
@@ -64,20 +39,20 @@ const WorcationHistory = () => {
       <NameBox>
         <SectionTitle>예약</SectionTitle>
       </NameBox>
-      <CardList>
-        {Adata.map((item) => (
+ <CardList>
+        {reservedList.map((item) => (
           <PlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
+            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
+                <PlaceLocation>{item.address}</PlaceLocation>
                 <PlaceName>{item.name}</PlaceName>
               </InfoBlock>
-              <ThemeBlock tabIndex="0">
+              <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.theme}</ThemeText>
                 <BtnBox>
-                  <Btn>상세보기</Btn>
+                  <Btn onClick={() => handleDetail(item.id)}>상세보기</Btn>
                   <Btn>예약취소</Btn>
                 </BtnBox>
               </ThemeBlock>
@@ -86,25 +61,26 @@ const WorcationHistory = () => {
         ))}
       </CardList>
 
+
       <NameBox>
         <SectionTitle>예약 내역</SectionTitle>
         <SmallTitle>(이용후)</SmallTitle>
       </NameBox>
 
-      <CardList>
-        {Bdata.map((item) => (
+  <CardList>
+        {usedList.map((item) => (
           <BeforePlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
+            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
+                <PlaceLocation>{item.address}</PlaceLocation>
                 <PlaceName>{item.name}</PlaceName>
               </InfoBlock>
-              <ThemeBlock tabIndex="0">
+              <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.theme}</ThemeText>
                 <BtnBox>
-                  <BeforeBtn>업체상세 보기</BeforeBtn>
+                  <BeforeBtn onClick={() => handleDetail(item.id)}>업체상세 보기</BeforeBtn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>

@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
+import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,26 @@ public class ApplicationController {
     public ResponseEntity<Void> deleteApplication(@PathVariable Long id) {
         applicationService.deleteApplication(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     *
+     * 예약 확인
+     */
+
+    @GetMapping("/reserved")
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved() {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReserved();
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     *
+     * 지난 예약 정보 확인(날짜 기반)
+     */
+    @GetMapping("/used")
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed() {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsed();
+        return ResponseEntity.ok(list);
     }
 }

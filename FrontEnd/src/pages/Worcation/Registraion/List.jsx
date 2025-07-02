@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
 import axios from 'axios';
-
-import seoul1 from '../../../assets/seoul1.jpg';
-import siheung1 from '../../../assets/siheung1.jpg';
-import siheung2 from '../../../assets/siheung2.jpg';
+import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+// import seoul1 from '../../../assets/seoul1.jpg';
+// import siheung1 from '../../../assets/siheung1.jpg';
+// import siheung2 from '../../../assets/siheung2.jpg';
 
 // const Adata = [
 //   {
@@ -74,6 +75,25 @@ const WorcationHistory = () => {
   const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
 
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/worcations/${id}`).then((res) => {
+        const data = res.data;
+
+        // 필요한 형태로 데이터 파싱
+        worcationStore.setApplication(data.application);
+        worcationStore.setInfo(data.info);
+        worcationStore.setDescription(data.description);
+        worcationStore.setPhotos(data.photos);
+        worcationStore.setAmenities(data.amenities);
+        worcationStore.setLocation(data.location);
+        worcationStore.setPolicy(data.policy);
+        worcationStore.setFeature(data.feature);
+      });
+    }
+  }, [id]);
   const fetchWorcations = async () => {
     try {
       const res = await axios.get('/api/worcations');
@@ -88,7 +108,9 @@ const WorcationHistory = () => {
       console.error('목록 불러오기 실패:', error);
     }
   };
-
+  const handleDetail = (id) => {
+    navigate(`/worcation/detail/${id}`);
+  };
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/api/worcations/${id}`);

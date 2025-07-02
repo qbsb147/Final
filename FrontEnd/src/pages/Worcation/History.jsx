@@ -1,84 +1,70 @@
 import styled from 'styled-components';
-import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import seoul1 from '../../assets/seoul1.jpg';
-import siheung1 from '../../assets/siheung1.jpg';
-import siheung2 from '../../assets/siheung2.jpg';
-
-const Adata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
-
-const Bdata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+import { ButtonDetail } from '../../styles/Button.styles';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const WorcationHistory = () => {
+  const navigate = useNavigate();
+  const [reservedList, setReservedList] = useState([]);
+  const [usedList, setUsedList] = useState([]);
+
+  const getReservedWorcation = async () => {
+    try {
+      const reserved = await axios.get('/applications/reserved');
+      const used = await axios.get('/applications/used');
+      reservedList(reserved.data);
+      usedList(used.data);
+    } catch (err) {
+      console.log('예약 데이터 조회 실패 : ', err);
+    }
+  };
+
+  const handleDelete = async (applicationNo) => {
+    try {
+      const confirm = await Swal.fire({
+        title: '삭제하시겠습니까?',
+        showCancelButton: true,
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+      });
+      if (confirm.isConfirmed) {
+        await axios.delete(`/applications/${applicationNo}`);
+        Swal.fire('삭제 완료', '예약이 삭제되었습니다.', 'success');
+        // 삭제 후 목록 다시 불러오기
+        getReservedWorcation(); // 예약 목록 재조회 함수
+      }
+    } catch (error) {
+      Swal.fire('삭제 실패', '예약 삭제 중 문제가 발생했습니다.', 'error');
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getReservedWorcation();
+  }, []);
+
   return (
     <Container>
       <NameBox>
         <SectionTitle>예약</SectionTitle>
       </NameBox>
       <CardList>
-        {Adata.map((item) => (
-          <PlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
+        {reservedList.map((item) => (
+          <PlaceCard key={item.worcation_no}>
+            <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
+                <PlaceLocation>{item.worcation_address}</PlaceLocation>
+                <PlaceName>{item.worcation_name}</PlaceName>
               </InfoBlock>
               <ThemeBlock tabIndex="0">
                 <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
+                <ThemeText>{item.space_mood}</ThemeText>
                 <BtnBox>
-                  <Btn>상세보기</Btn>
-                  <Btn>예약취소</Btn>
+                  <Btn onClick={() => navigate(`/worcation/detail/${item.worcation_no}`)}>상세보기</Btn>
+                  <Btn onClick={() => handleDelete(item.applicationNo)}>예약취소</Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
@@ -92,19 +78,19 @@ const WorcationHistory = () => {
       </NameBox>
 
       <CardList>
-        {Bdata.map((item) => (
-          <BeforePlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
+        {usedList.map((item) => (
+          <BeforePlaceCard key={item.worcation_no}>
+            <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
+                <PlaceLocation>{item.worcation_address}</PlaceLocation>
+                <PlaceName>{item.worcation_name}</PlaceName>
               </InfoBlock>
               <ThemeBlock tabIndex="0">
                 <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
+                <ThemeText>{item.space_mood}</ThemeText>
                 <BtnBox>
-                  <BeforeBtn>업체상세 보기</BeforeBtn>
+                  <Btn onClick={() => navigate(`/worcation/detail/${item.worcation_no}`)}>상세보기</Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
