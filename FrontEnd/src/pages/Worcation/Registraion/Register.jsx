@@ -14,12 +14,34 @@ import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
 import useWorcationStore from '../../../store/useWorcationStore';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const isValidate = useWorcationStore((state) => state.isValidate);
   const isNonNull = useWorcationStore((state) => state.isNonNull);
   const worcationData = useWorcationStore((state) => state);
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/worcations/${id}`).then((res) => {
+        const data = res.data;
+
+        // 필요한 형태로 데이터 파싱
+        useWorcationStore.setApplication(data.application);
+        useWorcationStore.setInfo(data.info);
+        useWorcationStore.setDescription(data.description);
+        useWorcationStore.setPhotos(data.photos);
+        useWorcationStore.setAmenities(data.amenities);
+        useWorcationStore.setLocation(data.location);
+        useWorcationStore.setPolicy(data.policy);
+        useWorcationStore.setFeature(data.feature);
+      });
+    }
+  }, [id]);
 
   const toRequestDto = () => {
     return {
@@ -56,8 +78,13 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await axios.post('/api/worcations', toRequestDto());
+        if (id) {
+          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        } else {
+          await axios.post('/api/worcations', toRequestDto());
+        }
         Swal.fire('저장되었습니다.', '', 'success');
+        navigate('/worcation/list');
       } catch (error) {
         console.error('임시 저장 실패:', error);
         Swal.fire('저장 실패', '다시 시도해주세요.', 'error');
@@ -75,8 +102,13 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await axios.post('/api/worcations', toRequestDto());
+        if (id) {
+          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        } else {
+          await axios.post('/api/worcations', toRequestDto());
+        }
         Swal.fire('등록 완료!', '', 'success');
+        navigate('/worcation/list');
       } catch (error) {
         console.error('등록 실패:', error);
         Swal.fire('등록 실패', '다시 시도해주세요.', 'error');
@@ -133,11 +165,11 @@ const Register = () => {
           )}
           {isNonNull ? (
             <>
-              <ActionButton>등록</ActionButton>
+              <ActionButton onClick={handleSubmit}>등록</ActionButton>
             </>
           ) : (
             <>
-              <ActionButton type="button" onClick={handleSubmit} style={{ opacity: 0.3 }}>
+              <ActionButton type="button" style={{ opacity: 0.3 }}>
                 등록
               </ActionButton>
             </>
