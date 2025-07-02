@@ -29,6 +29,12 @@ export const API_ENDPOINTS = {
     DEPARTMENT_SEARCH: (company_no) => `/company/search/department/${company_no}`,
   },
   COMPANY_PROFILE: '/companyProfiles',
+  COMPANY_EMPLOYEE: {
+    CHANGE_ROLE: (userNo) => `/member/${userNo}`,
+    EMPLOYEE_LIST: (companyNo) => `/employee/list/${companyNo}`,
+    NEEDS_CONSULT: (companyNo) => `/employee/needs-consult/${companyNo}`,
+    APPROVEEMPLOYEE: (companyNo) => `/employee/applies/${companyNo}`,
+  },
   WORCATION: {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,

@@ -152,6 +152,12 @@ public class MemberDto {
     @NoArgsConstructor
     @Builder
     @ToString
+
+    public static class UpdateRole {
+        private CommonEnums.Role role;
+    }
+
+
     public static class InfoResponse {
         private Long user_no;
         private String user_id;
@@ -183,4 +189,5 @@ public class MemberDto {
     public static class KakaoLogin{
         private String code;
     }
+
 }

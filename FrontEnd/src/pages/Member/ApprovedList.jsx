@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
 import MemberSearchBar from '../../components/Member/MemberSearchBar';
-import MemberTable from '../../components/Member/table/MemberTable ';
+import EmployeeApproveTable from '../../components/Member/table/EmployeeApproveTable';
 
 const MemberApplies = () => {
   return (
@@ -14,7 +14,7 @@ const MemberApplies = () => {
         <Title>직원 승인 목록</Title>
         <Container>
           <MemberSearchBar />
-          <MemberTable />
+          <EmployeeApproveTable />
         </Container>
       </MainContent>
     </MemberListWrap>
