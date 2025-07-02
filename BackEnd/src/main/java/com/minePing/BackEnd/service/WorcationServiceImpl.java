@@ -1,5 +1,8 @@
 package com.minePing.BackEnd.service;
 
+import com.minePing.BackEnd.entity.WorcationApplication;
+import com.minePing.BackEnd.repository.ApplicationRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +20,7 @@ import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +36,7 @@ public class WorcationServiceImpl implements WorcationService {
     private final WorcationDetailRepository detailRepository;
     private final WorcationFeaturesRepository featuresRepository;
     private final MemberRepository memberRepository;
-
+    private final ApplicationRepository applicationRepository;
     @Override
     @Transactional
     public WorcationDto.Response create(WorcationDto.Request request) {
@@ -167,4 +171,6 @@ public class WorcationServiceImpl implements WorcationService {
     public void delete(Long worcationNo) {
         worcationRepository.deleteById(worcationNo);
     }
+
+
 }
