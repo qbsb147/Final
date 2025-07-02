@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import CustomTextArea from '../../../../components/common/TextArea';
-import { ButtonBorder } from '../../../../styles/Button.styles';
+import CustomTextArea from '../../../common/TextArea';
+import useWorcationStore from '../../../../store/useWorcationStore';
 
 const Form = () => {
-  const [policy, setPolicy] = useState('');
+  const description = useWorcationStore((state) => state.description);
+  const setDescription = useWorcationStore((state) => state.setDescription);
 
+  const handleChange = (e) => {
+    setDescription({ detailIntro: e.target.value });
+  };
   return (
     <Body>
       <Title>상세페이지에 공개되는 내용입니다.</Title>
@@ -14,7 +18,12 @@ const Form = () => {
           <TR>
             <TH>설명</TH>
             <TD>
-              <CustomTextArea value={policy} onChange={(e) => setPolicy(e.target.value)} rows={13} />
+              <CustomTextArea
+                value={description.detailIntro}
+                // onChange={(e) => setPolicy(e.target.value)}
+                onChange={handleChange}
+                rows={13}
+              />
             </TD>
           </TR>
         </TBody>

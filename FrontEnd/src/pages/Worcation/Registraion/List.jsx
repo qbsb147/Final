@@ -1,70 +1,114 @@
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
+import axios from 'axios';
+
 import seoul1 from '../../../assets/seoul1.jpg';
 import siheung1 from '../../../assets/siheung1.jpg';
 import siheung2 from '../../../assets/siheung2.jpg';
 
-const Adata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+// const Adata = [
+//   {
+//     id: 1,
+//     location: '서울특별시 영등포구',
+//     name: '포포인츠 알파이 워케이션',
+//     reviewCount: 15,
+//     theme: '모던스타일 / 도심',
+//     image: seoul1,
+//   },
+//   {
+//     id: 2,
+//     location: '경기도 시흥시',
+//     name: '이노테이션 워케이션',
+//     reviewCount: 16,
+//     theme: '모던 / 자연 퓨전',
+//     image: siheung1,
+//   },
+//   {
+//     id: 3,
+//     location: '경기도 시흥시',
+//     name: '이노테이션 워케이션',
+//     reviewCount: 16,
+//     theme: '모던 / 자연 퓨전',
+//     image: siheung2,
+//   },
+// ];
 
-const Bdata = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+// const Bdata = [
+//   {
+//     id: 1,
+//     location: '서울특별시 영등포구',
+//     name: '포포인츠 알파이 워케이션',
+//     reviewCount: 15,
+//     theme: '모던스타일 / 도심',
+//     image: seoul1,
+//   },
+//   {
+//     id: 2,
+//     location: '경기도 시흥시',
+//     name: '이노테이션 워케이션',
+//     reviewCount: 16,
+//     theme: '모던 / 자연 퓨전',
+//     image: siheung1,
+//   },
+//   {
+//     id: 3,
+//     location: '경기도 시흥시',
+//     name: '이노테이션 워케이션',
+//     reviewCount: 16,
+//     theme: '모던 / 자연 퓨전',
+//     image: siheung2,
+//   },
+// ];
+
+// const WorcationHistory = () => {
+//   const navigate = useNavigate();
+
+//   const handleAddClick = () => {
+//     navigate('/worcation/register');
+//   };
 
 const WorcationHistory = () => {
+  const [registeredList, setRegisteredList] = useState([]);
+  const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
+
+  const fetchWorcations = async () => {
+    try {
+      const res = await axios.get('/api/worcations');
+      const all = res.data;
+
+      const registered = all.filter((item) => item.status === 'REGISTERED');
+      const unregistered = all.filter((item) => item.status === 'TEMP');
+
+      setRegisteredList(registered);
+      setUnregisteredList(unregistered);
+    } catch (error) {
+      console.error('목록 불러오기 실패:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/worcations/${id}`);
+      fetchWorcations(); // 삭제 후 목록 갱신
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/worcation/register/${id}`);
+  };
 
   const handleAddClick = () => {
     navigate('/worcation/register');
   };
+
+  useEffect(() => {
+    fetchWorcations();
+  }, []);
 
   return (
     <Container>
@@ -73,6 +117,27 @@ const WorcationHistory = () => {
         <button onClick={handleAddClick}>+추가</button>
       </NameBox>
       <CardList>
+        {registeredList.map((item) => (
+          <PlaceCard key={item.worcation_no}>
+            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
+            <CardContent>
+              <InfoBlock>
+                <PlaceLocation>{item.address}</PlaceLocation>
+                <PlaceName>{item.name}</PlaceName>
+              </InfoBlock>
+              <ThemeBlock>
+                <ThemeLabel>테마</ThemeLabel>
+                <ThemeText>{item.theme}</ThemeText>
+                <BtnBox>
+                  <Btn onClick={() => handleEdit(item.worcation_no)}>수정하기</Btn>
+                  <Btn onClick={() => handleDelete(item.worcation_no)}>삭제하기</Btn>
+                </BtnBox>
+              </ThemeBlock>
+            </CardContent>
+          </PlaceCard>
+        ))}
+      </CardList>
+      {/* <CardList>
         {Adata.map((item) => (
           <PlaceCard key={item.id}>
             <PlaceImage src={item.image} alt={item.name} />
@@ -92,13 +157,33 @@ const WorcationHistory = () => {
             </CardContent>
           </PlaceCard>
         ))}
-      </CardList>
+      </CardList> */}
 
       <NameBox>
         <SectionTitle>미등록 목록</SectionTitle>
       </NameBox>
-
       <CardList>
+        {unregisteredList.map((item) => (
+          <BeforePlaceCard key={item.worcation_no}>
+            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
+            <CardContent>
+              <InfoBlock>
+                <PlaceLocation>{item.address}</PlaceLocation>
+                <PlaceName>{item.name}</PlaceName>
+              </InfoBlock>
+              <ThemeBlock>
+                <ThemeLabel>테마</ThemeLabel>
+                <ThemeText>{item.theme}</ThemeText>
+                <BtnBox>
+                  <Btn onClick={() => handleEdit(item.worcation_no)}>수정하기</Btn>
+                  <Btn onClick={() => handleDelete(item.worcation_no)}>삭제하기</Btn>
+                </BtnBox>
+              </ThemeBlock>
+            </CardContent>
+          </BeforePlaceCard>
+        ))}
+      </CardList>
+      {/* <CardList>
         {Bdata.map((item) => (
           <BeforePlaceCard key={item.id}>
             <PlaceImage src={item.image} alt={item.name} />
@@ -118,7 +203,7 @@ const WorcationHistory = () => {
             </CardContent>
           </BeforePlaceCard>
         ))}
-      </CardList>
+      </CardList> */}
     </Container>
   );
 };

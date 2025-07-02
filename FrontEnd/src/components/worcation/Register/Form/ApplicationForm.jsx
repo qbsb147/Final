@@ -7,10 +7,14 @@ import { ButtonBorder } from '../../../../styles/Button.styles';
 import { useValidateForm } from '../../../../hooks/useValidateForm';
 import { Controller } from 'react-hook-form';
 import axios from 'axios';
-import useHostStore from '../../../../store/useBusinessStore'
+import useHostStore from '../../../../store/useBusinessStore';
+import useWorcationStore from '../../../../store/useWorcationStore';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
+  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
+
+  const setApplication = useWorcationStore((state) => state.setApplication); // zustand 저장 함수 가져오기
 
   const radioOptions = [
     { value: 'Office', label: '오피스' },
@@ -18,10 +22,8 @@ const Form = () => {
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
 
-  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
-
   const checkBusiness = async () => {
-    const formData = getValues(); // 현재 입력값 전부 가져오기
+    const formData = getValues(); // 현재 입력된 모든 form 값 가져오기
 
     try {
       const response = await axios.post('/api/business/validate', {
@@ -30,8 +32,15 @@ const Form = () => {
 
       const result = response?.data?.data?.[0];
       if (result && result.b_stt_cd === '01') {
-        //  정상 사업자일 경우
-        useHostStore.getState().setHostForm({ ...formData, type: selected });
+        // 정상 사업자일 경우 worcationStore에 저장
+        setApplication({
+          businessName: formData.worcation_name,
+          ownerName: formData.licensee,
+          businessNo: formData.business_id,
+          type: selected,
+          tel: '', // 이후 따로 입력받을 예정이라면 빈 값 유지
+        });
+
         alert('사업자 등록번호 확인되었습니다.');
       } else {
         alert('유효하지 않은 사업자 등록번호입니다.');

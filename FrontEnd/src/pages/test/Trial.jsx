@@ -10,7 +10,7 @@ const Trial = () => {
       <Content>
         <TestBox>
           <NameBox>
-            <TestName>스트레스 검사 test</TestName>
+            <TestName>스트레스 검사</TestName>
             <ExplanationBox>
               <Img src="src/assets/stress.png" alt="Rectangle" />
               <Explanation>마음이 무겁게 느껴질 때, 스트레스 검사를 통해 내 상태를 한 번 체크해보세요.</Explanation>
