@@ -16,7 +16,16 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(name = "company_profile",indexes = { @Index(name = "idx_company", columnList = "company_no") })
+@Table(
+        name = "company_profile",
+        indexes = { @Index(name = "idx_company", columnList = "company_no") },
+        uniqueConstraints = {
+            @UniqueConstraint(name = "uk_user_no", columnNames = "user_no"),
+            @UniqueConstraint(name = "uk_company_phone", columnNames = "company_phone"),
+            @UniqueConstraint(name = "uk_company_email", columnNames = "company_email")
+        }
+)
+
 public class CompanyProfile {
 
     @Id

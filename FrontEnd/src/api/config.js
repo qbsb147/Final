@@ -22,6 +22,7 @@ export const API_BUSINESS = {
 export const API_ENDPOINTS = {
   MEMBER: {
     SIGNUP: (role) => `/member/signUp/${role}`,
+    MY_INFO: '/member/userInfo',
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,

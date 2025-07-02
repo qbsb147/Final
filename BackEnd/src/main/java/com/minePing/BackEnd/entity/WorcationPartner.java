@@ -64,5 +64,4 @@ public class WorcationPartner {
             this.approve = Approve.W;
         }
     }
-
 }
