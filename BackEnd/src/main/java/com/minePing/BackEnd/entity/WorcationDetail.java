@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+
 @Table(
         name = "worcation_detail",
         uniqueConstraints = {
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
             @UniqueConstraint(name = "uk_worcation_tel", columnNames = "worcation_tel")
         }
 )
+
 public class WorcationDetail {
 
     @Id
@@ -27,7 +29,7 @@ public class WorcationDetail {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY,optional = false)
-    @JoinColumn(name = "worcation_no", nullable = false, unique = true)
+    @JoinColumn(name = "worcation_no", nullable = false)
     private Worcation worcation;
 
     @Column(name="licensee", length=100, nullable = false)

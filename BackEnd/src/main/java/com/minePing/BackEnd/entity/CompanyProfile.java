@@ -25,6 +25,7 @@ import org.hibernate.annotations.ColumnDefault;
             @UniqueConstraint(name = "uk_company_email", columnNames = "company_email")
         }
 )
+
 public class CompanyProfile {
 
     @Id
