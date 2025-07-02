@@ -8,16 +8,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Worcation;
+import com.minePing.BackEnd.entity.WorcationAmenity;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
+import com.minePing.BackEnd.entity.Amenity;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.Photo;
 import com.minePing.BackEnd.entity.WorcationPartner;
+import com.minePing.BackEnd.entity.Review;
 import com.minePing.BackEnd.mapper.WorcationMapper;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
 import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.WorcationPartnerRepository;
+import com.minePing.BackEnd.exception.UserNotFoundException;
+import com.minePing.BackEnd.exception.WorcationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,13 +41,14 @@ public class WorcationServiceImpl implements WorcationService {
     private final WorcationFeaturesRepository featuresRepository;
     private final MemberRepository memberRepository;
     private final WorcationPartnerRepository partnerRepository;
+    
 
     @Override
     @Transactional
     public WorcationDto.Response create(WorcationDto.Request request) {
         // member_id로 Member 엔티티 조회
         Member member = memberRepository.findById(request.getMember_id())
-            .orElseThrow(() -> new RuntimeException("해당 멤버가 없습니다: " + request.getMember_id()));
+            .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
 
         Worcation w = Worcation.builder()
             .member(member)
@@ -81,46 +88,69 @@ public class WorcationServiceImpl implements WorcationService {
             .build();
         f = featuresRepository.save(f);
 
-        return mapper.toResponse(w, d, f,List.of(),List.of());
+        return mapper.toResponse(w, d, f,List.of(),List.of(),List.of(),List.of());
     }
 
     @Override
     @Transactional(readOnly = true)
     public WorcationDto.Response getById(Long worcationNo) {
         Worcation w = worcationRepository.findById(worcationNo)
-                .orElseThrow(() -> new RuntimeException("Worcation not found: " + worcationNo));
+                .orElseThrow(() -> new WorcationNotFoundException("워케이션을 찾을 수 없습니다: " + worcationNo));
         WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
-        WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
+        WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(
+            null);
         List<WorcationPartner> partners = partnerRepository.findByWorcation(w);
-        List<com.minePing.BackEnd.entity.Review> reviews = w.getWorcationApplications().stream()
+        //login 후 필터링 할 부분
+        // List<WorcationPartner> partners = partnerRepository.findByWorcation(w).stream()
+        //         .filter(partner -> "Y".equals(partner.getApprove()))
+        //         .collect(Collectors.toList());
+        List<Review> reviews = w.getWorcationApplications().stream()
                 .map(app -> app.getReview())
                 .filter(java.util.Objects::nonNull)
                 .collect(java.util.stream.Collectors.toList());
-        return mapper.toResponse(w, d, f, partners, reviews);
+
+        List<Amenity> amenities = w.getWorcationAmenities().stream()
+                .map(WorcationAmenity::getAmenity)
+                .collect(Collectors.toList());
+            
+        List<Photo> photos = w.getPhotos();
+        List<WorcationDto.AmenityResponse> amenity = mapper.toAmenityResponseList(amenities);
+        List<WorcationDto.PhotoResponse> photo = mapper.toPhotoResponseList(photos);
+        return mapper.toResponse(w, d, f, partners, reviews, amenity, photo);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<WorcationDto.Response> getAll() {
         return worcationRepository.findAll().stream()
-                .map(w -> {
-                    WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
-                    WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
-                    List<WorcationPartner> partners = partnerRepository.findByWorcation(w);
-                    List<com.minePing.BackEnd.entity.Review> reviews = w.getWorcationApplications().stream()
-                            .map(app -> app.getReview())
-                            .filter(java.util.Objects::nonNull)
-                            .collect(java.util.stream.Collectors.toList());
-                    return mapper.toResponse(w, d, f, partners, reviews);
-                })
-                .collect(Collectors.toList());
+            .map(w -> {
+                WorcationDetail d = detailRepository.findById(w.getWorcationNo()).orElse(null);
+                WorcationFeatures f = featuresRepository.findById(w.getWorcationNo()).orElse(null);
+                List<WorcationPartner> partners = partnerRepository.findByWorcation(w);
+                //login 후 필터링 할 부분
+                    // List<WorcationPartner> partners = partnerRepository.findByWorcation(w).stream()
+                    //         .filter(partner -> "Y".equals(partner.getApprove()))
+                    //         .collect(Collectors.toList());
+                List<Review> reviews = w.getWorcationApplications().stream()
+                    .map(app -> app.getReview())
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.toList());
+                List<Amenity> amenities = w.getWorcationAmenities().stream()
+                    .map(WorcationAmenity::getAmenity)
+                    .collect(Collectors.toList());
+                List<Photo> photos = w.getPhotos();
+                List<WorcationDto.AmenityResponse> amenity = mapper.toAmenityResponseList(amenities);
+                List<WorcationDto.PhotoResponse> photo = mapper.toPhotoResponseList(photos);
+                return mapper.toResponse(w, d, f, partners, reviews, amenity, photo);
+            })
+            .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public WorcationDto.Response update(Long worcationNo, WorcationDto.Request request) {
         Worcation existing = worcationRepository.findById(worcationNo)
-                .orElseThrow(() -> new RuntimeException("Worcation not found: " + worcationNo));
+                .orElseThrow(() -> new WorcationNotFoundException("워케이션을 찾을 수 없습니다: " + worcationNo));
         // PATCH 요청 전/후 값 확인용 로그
         log.info("Before update: worcation_name={}, max_people={}", existing.getWorcationName(), existing.getMaxPeople());
 
@@ -131,14 +161,14 @@ public class WorcationServiceImpl implements WorcationService {
         log.info("After update: worcation_name={}, max_people={}", existing.getWorcationName(), existing.getMaxPeople());
 
         WorcationDetail existingDetail = detailRepository.findById(worcationNo)
-                .orElseThrow(() -> new RuntimeException("WorcationDetail not found: " + worcationNo));
+                .orElseThrow(() -> new WorcationNotFoundException("워케이션 상세 정보를 찾을 수 없습니다: " + worcationNo));
         patchWorcationDetail(request, existingDetail);
 
         WorcationFeatures existingFeatures = featuresRepository.findById(worcationNo)
-                .orElseThrow(() -> new RuntimeException("WorcationFeatures not found: " + worcationNo));
+                .orElseThrow(() -> new WorcationNotFoundException("워케이션 특징 정보를 찾을 수 없습니다: " + worcationNo));
         patchWorcationFeatures(request, existingFeatures);
 
-        return mapper.toResponse(existing, existingDetail, existingFeatures,List.of(),List.of());
+        return mapper.toResponse(existing, existingDetail, existingFeatures,List.of(),List.of(),List.of(),List.of());
     }
 
     // 커스텀 매퍼: DTO의 null이 아닌 값만 엔티티에 반영
