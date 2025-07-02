@@ -33,6 +33,9 @@ export const API_ENDPOINTS = {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
   },
+  REVIEW : {
+    ADD : '/reviews',
+  },
   LOGIN: '/member/login',
   MENTALS: {
     STRESS: '/mental_stress',

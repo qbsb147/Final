@@ -15,7 +15,7 @@ public class WorcationDto {
     @AllArgsConstructor
     @Builder
     public static class Request {
-        //Worcation
+        // Worcation
         private String worcation_name;
         private WorcationEnums.Category worcation_category;
         private String main_change_photo;
@@ -49,7 +49,31 @@ public class WorcationDto {
         private List<String> amenities;
         private List<String> photo_urls;
     }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReviewRequest {
+        private Long review_no;
+        private Long application_no;
+        private String writer_id;
+        private String review_content;
+        private LocalDateTime create_at;
+        private LocalDateTime update_at;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReviewResponse {
+        private Long review_no;
+        private Long application_no;
+        private String writer_id;
+        private String review_content;
+        private LocalDateTime create_at;
+        private LocalDateTime update_at;
+    }
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -66,18 +90,22 @@ public class WorcationDto {
         private LocalDateTime create_at;
         private LocalDateTime update_at;
     }
+        @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class AmenityResponse {
+        private Long amenity_no;
+        private String amenity_name;
+    }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class ReviewResponse {
-        private Long review_no;
-        private Long application_no;
-        private String writer_id;
-        private String review_content;
-        private java.time.LocalDateTime create_at;
-        private java.time.LocalDateTime update_at;
+    public static class PhotoResponse {
+        private Long photo_no;
+        private String change_name;
     }
 
     @Getter
@@ -85,7 +113,7 @@ public class WorcationDto {
     @AllArgsConstructor
     @Builder
     public static class Response {
-        //Worcation
+        // Worcation
         private Long worcation_no;
         private String worcation_name;
         private WorcationEnums.Category worcation_category;
@@ -121,10 +149,9 @@ public class WorcationDto {
         private String activities;
         private WorcationEnums.AccommodationType accommodation_type;
 
-        private List<String> amenities;
-        private List<String> photo_urls;
-
         private List<PartnerResponse> partners;
         private List<ReviewResponse> reviews;
+        private List<AmenityResponse> amenities;
+        private List<PhotoResponse> photos;
     }
 }
