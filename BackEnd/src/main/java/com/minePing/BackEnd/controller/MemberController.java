@@ -52,4 +52,18 @@ public class MemberController {
         loginInfo.put("token", jwtToken);
         return new ResponseEntity<>(loginInfo, HttpStatus.OK);
     }
+
+    @PatchMapping("/{userNo}")
+    public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
+        try {
+            memberService.updateRole(userNo,updateRoleDto);
+            return ResponseEntity.ok("등급 변경 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("등급 변경 중 오류가 발생했습니다.");
+        }
+    }
+
 }

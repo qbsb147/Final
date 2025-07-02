@@ -4,10 +4,12 @@ import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.EmployeeJoin;
 import com.minePing.BackEnd.dto.MemberDto.Login;
 import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
+import com.minePing.BackEnd.dto.MemberDto.UpdateRole;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.exception.CompanyNotFoundException;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.CompanyProfileRepository;
@@ -74,7 +76,8 @@ public class MemberServiceImpl implements MemberService {
                 .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
                 .email(masterJoinDto.getMemberJoinDto().getEmail())
                 .phone(masterJoinDto.getMemberJoinDto().getPhone())
-                .build();;
+                .build();
+        ;
 
         memberRepository.save(member);
 
@@ -104,10 +107,18 @@ public class MemberServiceImpl implements MemberService {
     public MemberDto.LoginResponse login(Login loginDto) {
         Member member = memberRepository.findByUserId(loginDto.getUser_id())
                 .orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
-        if(!passwordEncoder.matches(loginDto.getUser_pwd(), member.getUserPwd())) {
+        if (!passwordEncoder.matches(loginDto.getUser_pwd(), member.getUserPwd())) {
             throw new UserNotFoundException("비밀번호가 일치하지 않습니다.");
         }
 
         return MemberDto.LoginResponse.toDto(member);
     }
+
+    @Override
+    @Transactional
+    public void updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
+        Member member = memberRepository.findById(userNo).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        member.updateRole(updateRoleDto.getRole());
+    }
 }
+

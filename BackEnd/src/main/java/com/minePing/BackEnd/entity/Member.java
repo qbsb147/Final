@@ -115,4 +115,8 @@ public class Member {
         }
     }
 
+    public void updateRole(CommonEnums.Role role) {
+        this.role = role;
+    }
+
 }

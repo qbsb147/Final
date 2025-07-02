@@ -144,4 +144,15 @@ public class MemberDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class UpdateRole {
+        private CommonEnums.Role role;
+    }
+
 }
