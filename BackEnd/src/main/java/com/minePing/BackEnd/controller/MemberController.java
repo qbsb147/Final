@@ -45,13 +45,13 @@ public class MemberController {
     }
 
     @PostMapping("/signUp/WORCATION")
-    public ResponseEntity<Void> singUp(@RequestBody MemberDto.WorcationJoin worcationJoinDto) {
+    public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.WorcationJoin worcationJoinDto) {
         memberService.createWorcationMember(worcationJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody MemberDto.Login loginDto) {
+    public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) {
         MemberDto.LoginResponse member = memberService.login(loginDto);
 
         String jwtToken = jwtTokenProvider.createToken(member.getUser_id(), member.getRole());
