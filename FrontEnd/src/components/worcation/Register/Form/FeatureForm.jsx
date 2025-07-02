@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import CustomSelect from '../../../common/Select';
 import Checkbox from '../../../common/Checkbox';
+import useWorcationStore from '../../../../store/useWorcationStore';
 
 const Form = () => {
-  const [locationType, setLocationType] = useState('');
-  const [dominantColor, setDominantColor] = useState('');
-  const [spaceMood, setSpaceMood] = useState('');
-  const [bestFor, setBestFor] = useState('');
-  const [activities, setActivities] = useState([]);
-  const [accommodationType, setAccommodationType] = useState('');
+  // const [locationType, setLocationType] = useState('');
+  // const [dominantColor, setDominantColor] = useState('');
+  // const [spaceMood, setSpaceMood] = useState('');
+  // const [bestFor, setBestFor] = useState('');
+  // const [activities, setActivities] = useState([]);
+  // const [accommodationType, setAccommodationType] = useState('');
+
+  const feature = useWorcationStore((state) => state.feature);
+  const setFeature = useWorcationStore((state) => state.setFeature);
 
   const locationTypeOptions = [
     { value: 'mountain', label: '산' },
@@ -59,10 +63,16 @@ const Form = () => {
     { value: 'shared_space', label: '공유 공간 포함 숙소' },
   ];
 
-  const handleActivitiesChange = (value) => {
-    setActivities((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
-  };
+  // const handleActivitiesChange = (value) => {
+  //   setActivities((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
+  // };
 
+  const handleActivitiesChange = (value) => {
+    const updated = feature.activities.includes(value)
+      ? feature.activities.filter((item) => item !== value)
+      : [...feature.activities, value];
+    setFeature({ activities: updated });
+  };
   return (
     <Body>
       <Title>워케이션 특징을 선택하세요.</Title>
@@ -71,43 +81,63 @@ const Form = () => {
           <TR>
             <TH>위치 유형</TH>
             <TD>
-              <CustomSelect
+              {/* <CustomSelect
                 options={locationTypeOptions}
                 value={locationType}
                 onChange={(e) => setLocationType(e.target.value)}
+              /> */}
+              <CustomSelect
+                options={locationTypeOptions}
+                value={feature.locationType}
+                onChange={(e) => setFeature({ locationType: e.target.value })}
               />
             </TD>
           </TR>
           <TR>
             <TH>전반적 색감</TH>
             <TD>
-              <CustomSelect
+              {/* <CustomSelect
                 options={dominantColorOptions}
                 value={dominantColor}
                 onChange={(e) => setDominantColor(e.target.value)}
+              /> */}
+              <CustomSelect
+                options={dominantColorOptions}
+                value={feature.dominantColor}
+                onChange={(e) => setFeature({ dominantColor: e.target.value })}
               />
             </TD>
           </TR>
           <TR>
             <TH>공간 분위기</TH>
             <TD>
-              <CustomSelect
+              {/* <CustomSelect
                 options={spaceMoodOptions}
                 value={spaceMood}
                 onChange={(e) => setSpaceMood(e.target.value)}
+              /> */}
+              <CustomSelect
+                options={spaceMoodOptions}
+                value={feature.spaceMood}
+                onChange={(e) => setFeature({ spaceMood: e.target.value })}
               />
             </TD>
           </TR>
           <TR>
             <TH>추천 목적</TH>
             <TD>
-              <CustomSelect options={bestForOptions} value={bestFor} onChange={(e) => setBestFor(e.target.value)} />
+              {/* <CustomSelect options={bestForOptions} value={bestFor} onChange={(e) => setBestFor(e.target.value)} /> */}
+              <CustomSelect
+                options={bestForOptions}
+                value={feature.bestFor}
+                onChange={(e) => setFeature({ bestFor: e.target.value })}
+              />
             </TD>
           </TR>
           <TR>
             <TH>여가 활동</TH>
             <TD>
-              <AmenitiesContainer>
+              {/* <AmenitiesContainer>
                 {activitiesOptions.map((activity) => (
                   <Checkbox
                     key={activity.value}
@@ -117,16 +147,32 @@ const Form = () => {
                     onChange={() => handleActivitiesChange(activity.value)}
                   />
                 ))}
+              </AmenitiesContainer> */}
+              <AmenitiesContainer>
+                {activitiesOptions.map((activity) => (
+                  <Checkbox
+                    key={activity.value}
+                    id={activity.value}
+                    label={activity.label}
+                    checked={feature.activities.includes(activity.value)}
+                    onChange={() => handleActivitiesChange(activity.value)}
+                  />
+                ))}
               </AmenitiesContainer>
             </TD>
           </TR>
           <TR>
             <TH>숙소 형태</TH>
             <TD>
-              <CustomSelect
+              {/* <CustomSelect
                 options={accommodationTypeOptions}
                 value={accommodationType}
                 onChange={(e) => setAccommodationType(e.target.value)}
+              /> */}
+              <CustomSelect
+                options={accommodationTypeOptions}
+                value={feature.accommodationType}
+                onChange={(e) => setFeature({ accommodationType: e.target.value })}
               />
             </TD>
           </TR>

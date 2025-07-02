@@ -13,24 +13,108 @@ import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
 import useWorcationStore from '../../../store/useWorcationStore';
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const isValidate = useWorcationStore((state) => state.isValidate);
   const isNonNull = useWorcationStore((state) => state.isNonNull);
+  const worcationData = useWorcationStore((state) => state);
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const handleSave = () =>
-    Swal.fire({
-      title: '저장하시겠습니까?',
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/worcations/${id}`).then((res) => {
+        const data = res.data;
+
+        // 필요한 형태로 데이터 파싱
+        useWorcationStore.setApplication(data.application);
+        useWorcationStore.setInfo(data.info);
+        useWorcationStore.setDescription(data.description);
+        useWorcationStore.setPhotos(data.photos);
+        useWorcationStore.setAmenities(data.amenities);
+        useWorcationStore.setLocation(data.location);
+        useWorcationStore.setPolicy(data.policy);
+        useWorcationStore.setFeature(data.feature);
+      });
+    }
+  }, [id]);
+
+  const toRequestDto = () => {
+    return {
+      application: worcationData.application,
+      info: worcationData.info,
+      description: worcationData.description,
+      photos: worcationData.photos,
+      amenities: worcationData.amenities,
+      location: worcationData.location,
+      policy: worcationData.policy,
+      feature: worcationData.feature,
+    };
+  };
+
+  // const handleSave = () =>
+  //   Swal.fire({
+  //     title: '저장하시겠습니까?',
+  //     showCancelButton: true,
+  //     confirmButtonText: '저장',
+  //     cancelButtonText: '취소',
+  //     buttonsStyling: true,
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       console.log('저장');
+  //     }
+  //   });
+  const handleSave = async () => {
+    const result = await Swal.fire({
+      title: '임시 저장하시겠습니까?',
       showCancelButton: true,
       confirmButtonText: '저장',
       cancelButtonText: '취소',
-      buttonsStyling: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log('저장');
-      }
     });
+
+    if (result.isConfirmed) {
+      try {
+        if (id) {
+          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        } else {
+          await axios.post('/api/worcations', toRequestDto());
+        }
+        Swal.fire('저장되었습니다.', '', 'success');
+        navigate('/worcation/list');
+      } catch (error) {
+        console.error('임시 저장 실패:', error);
+        Swal.fire('저장 실패', '다시 시도해주세요.', 'error');
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    const result = await Swal.fire({
+      title: '등록하시겠습니까?',
+      showCancelButton: true,
+      confirmButtonText: '등록',
+      cancelButtonText: '취소',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        if (id) {
+          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        } else {
+          await axios.post('/api/worcations', toRequestDto());
+        }
+        Swal.fire('등록 완료!', '', 'success');
+        navigate('/worcation/list');
+      } catch (error) {
+        console.error('등록 실패:', error);
+        Swal.fire('등록 실패', '다시 시도해주세요.', 'error');
+      }
+    }
+  };
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -61,7 +145,7 @@ const Register = () => {
         <FormContent>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
           <FormActions>
-            <ActionButton>미리 보기</ActionButton>
+            <ActionButton type="button">미리 보기</ActionButton>
             {renderForm()}
           </FormActions>
         </FormContent>
@@ -81,7 +165,7 @@ const Register = () => {
           )}
           {isNonNull ? (
             <>
-              <ActionButton>등록</ActionButton>
+              <ActionButton onClick={handleSubmit}>등록</ActionButton>
             </>
           ) : (
             <>
