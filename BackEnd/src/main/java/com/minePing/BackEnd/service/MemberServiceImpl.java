@@ -122,10 +122,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-
     public void updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
         Member member = memberRepository.findById(userNo).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         member.updateRole(updateRoleDto.getRole());
+    }
 
     public InfoResponse getUserInfoByUserId(String userId) {
         Member member = memberRepository.findByUserId(userId)

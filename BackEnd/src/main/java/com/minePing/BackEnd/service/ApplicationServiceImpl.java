@@ -101,6 +101,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private WorcationDto.Response toDto(Worcation worcation) {
         WorcationDetail d = detailRepository.findById(worcation.getWorcationNo()).orElse(null);
         WorcationFeatures f = featuresRepository.findById(worcation.getWorcationNo()).orElse(null);
-        return mapper.toResponse(worcation, d, f);
+        return mapper.toResponse(worcation, d, f, List.of(), List.of(), List.of(), List.of());
     }
 }

@@ -8,7 +8,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import { worcationService } from '../../api/worcations.js';
 
-
 const WorcationDetail = () => {
   // const navigate = useNavigate();
   // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
@@ -23,7 +22,16 @@ const WorcationDetail = () => {
   const [photos, setPhotos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
-
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+  };
+  const images = [worcation.main_change_photo, ...(photos ? photos.map((p) => p.change_name) : [])].filter(Boolean);
   useEffect(() => {
     // worcationNo로 데이터 가져오기
     const fetchData = async () => {
@@ -40,8 +48,10 @@ const WorcationDetail = () => {
           if (data.partners) {
             setAmenities(data.partners);
           }
-          // photos 정보 설정 (현재는 빈 배열로 설정)
-          setPhotos([]);
+          // photos 정보 설정
+          if (data.photos) {
+            setPhotos(data.photos);
+          }
           // 리뷰 정보도 포함되어 있음
           if (data.reviews) {
             setReviews(data.reviews);
@@ -52,22 +62,12 @@ const WorcationDetail = () => {
         }
       }
     };
-    
     fetchData();
   }, [worcationNo]);
+
   console.log(worcation);
   if (!worcation) return null;
   const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-  };
 
   //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
@@ -102,10 +102,10 @@ const WorcationDetail = () => {
             <Block>
               <BlockTitle>오피스</BlockTitle>
               <BlockText>
-                              - 운용시간 : {officeTime || '미입력'}
-              <br />- 연락처 : {worcation?.worcation_tel || '-'}
-              <br />- 수용인원 : {worcation?.max_people || '-'}
-              <br />- 홈페이지 : {worcation?.content || '-'}
+                - 운용시간 : {officeTime || '미입력'}
+                <br />- 연락처 : {worcation?.worcation_tel || '-'}
+                <br />- 수용인원 : {worcation?.max_people || '-'}
+                <br />- 홈페이지 : {worcation?.content || '-'}
               </BlockText>
             </Block>
             <Block>
@@ -136,17 +136,17 @@ const WorcationDetail = () => {
       create_at: new Date().toISOString(),
       update_at: new Date().toISOString(),
     };
-try{
-  const data = await worcationService.addReview(review);
-  alert("댓글이 등록되었습니다.");
-  setNewComment("");
-  setReviews(prev => [...prev, data]);
-  return data;
-}catch{
-  alert ("댓글 등록에 실패했습니다.");
-}
-    
+    try {
+      const data = await worcationService.addReview(review);
+      alert('댓글이 등록되었습니다.');
+      setNewComment('');
+      setReviews((prev) => [...prev, data]);
+      return data;
+    } catch {
+      alert('댓글 등록에 실패했습니다.');
+    }
   };
+
   const handleEditClick = (review) => {
     setEditingId(review.review_no);
     setEditedContent(review.review_content);
@@ -154,7 +154,7 @@ try{
 
   const handleSaveEdit = (reviewNo) => {
     axios
-      .patch(`http://localhost:3001/review/${reviewNo}`, {
+      .patch(`http://localhost:8080/reviews/${reviewNo}`, {
         review_content: editedContent,
         update_at: new Date().toISOString(),
       })
@@ -171,7 +171,7 @@ try{
   };
   const handleDelete = (reviewNo) => {
     axios
-      .delete(`http://localhost:3001/review/${reviewNo}`)
+      .delete(`http://localhost:8080/reviews/${reviewNo}`)
       .then(() => {
         //UI에서 삭제
         setReviews((prev) => prev.filter((r) => r.review_no !== reviewNo));
@@ -179,7 +179,6 @@ try{
       .catch(console.error);
   };
 
-  //UI
   return (
     <PageContainer>
       <Wrapper>
@@ -194,8 +193,8 @@ try{
         <PhotoGallery>
           <PhotoSliderWrapper>
             <Slider {...settings}>
-              {[worcation.main_change_photo, ...photos.map((p) => p.change_name)].map((src, idx) => (
-                <SliderImage key={idx} src={src} alt={`slide-${idx}`} />
+              {images.map((src, idx) => (
+                <img key={idx} src={src} alt={`slide-${idx}`} />
               ))}
             </Slider>
           </PhotoSliderWrapper>
@@ -248,7 +247,7 @@ try{
         </ContentSection>
       </Wrapper>
 
-      <CommentTitle>댓글 ({reviews?reviews.length:0})</CommentTitle>
+      <CommentTitle>댓글 ({reviews ? reviews.length : 0})</CommentTitle>
       <Wrapper2>
         <ContentSection>
           <CommentInputWrap>
@@ -295,7 +294,7 @@ try{
       </Wrapper2>
     </PageContainer>
   );
-}
+};
 
 export default WorcationDetail;
 
@@ -464,4 +463,5 @@ const ActionBtn = styled.button`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   cursor: pointer;
   font-family: 'Godo B';
+  color: ${({ theme }) => theme.colors.black};
 `;
