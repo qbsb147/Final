@@ -43,7 +43,7 @@ export const API_ENDPOINTS = {
     SAVE: '/worcations',
     //업체 정보 수정
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
-    DELETE: (worcation_no) => `worcations/${worcation_no}`,
+    DELETE: (worcation_no) => `/worcations/${worcation_no}`,
   },
 
   APPLICATION: {
