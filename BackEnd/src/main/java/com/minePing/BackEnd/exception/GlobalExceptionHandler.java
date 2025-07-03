@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-// import static com.minePing.BackEnd.exception.ConstraintExtractor.extractConstraintName;
 import static com.minePing.BackEnd.exception.ErrorCode.DUPLICATE_RESOURCE;
 
 @Slf4j
@@ -85,4 +84,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse("입력값이 올바르지 않습니다.");
+
+        ErrorResponse error = ErrorResponse.of(ErrorCode.INVALID_USER_INPUT, errorMessage, request.getRequestURI());
+        return ResponseEntity.badRequest().body(error);
+    }
 }

@@ -54,8 +54,7 @@ const SignUp = () => {
       alert('회원가입이 완료되었습니다.');
       window.location.href = '/login';
     } catch (error) {
-      console.error('회원가입 중 오류 발생:', error);
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+      alert(`회원가입 실패 : ${error}`);
     }
   };
 

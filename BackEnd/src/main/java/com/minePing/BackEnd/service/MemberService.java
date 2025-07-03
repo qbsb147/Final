@@ -3,6 +3,7 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.SocialType;
 
 public interface MemberService {
@@ -14,6 +15,7 @@ public interface MemberService {
     void updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto) throws Exception;
 
     MemberDto.InfoResponse getUserInfoByUserId(String userId);
+    MemberDto.MyPageResponse getMyPageByUserId(String userId, CommonEnums.Role role);
     MemberDto.LoginResponse getMemberBySocialId(String socialId);
     Member createOauth(String socialId, String email, String name, SocialType socialType);
 

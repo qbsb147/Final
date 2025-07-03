@@ -47,4 +47,12 @@ public class JwtTokenProvider {
         //JwtTokenFilter에서 토큰 검증 후에 호출
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+
+    public CommonEnums.Role getRoleFromToken() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(auth -> auth.getAuthority().replace("ROLE_", ""))
+                .map(CommonEnums.Role::valueOf)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("권한 정보가 없습니다."));
+    }
 }

@@ -3,6 +3,7 @@ package com.minePing.BackEnd.dto;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import java.time.Period;
 
 import jakarta.validation.constraints.*;
@@ -27,9 +28,10 @@ public class MemberDto {
         private String user_id;
 
         @NotBlank(message = "비밀번호는 필수입니다.")
+        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
         @Pattern(
                 regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-                message = "비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다."
+                message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
         )
         private String user_pwd;
 
@@ -67,7 +69,9 @@ public class MemberDto {
     @ToString
     public static class EmployeeJoin {
 
+        @Valid
         private MemberJoinDto memberJoinDto;
+        @Valid
         private CompanyProfileDto.CompanyProfileJoinDto companyProfileJoinDto;
 
         public CompanyProfile toCompanyProfileEntity() {
@@ -85,9 +89,12 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ToString
     public static class MasterJoin {
 
+        @Valid
         private MemberJoinDto memberJoinDto;
+        @Valid
         private CompanyDto.CompanyJoinDto companyJoinDto;
 
         public Company toCompanyEntity() {
@@ -111,6 +118,7 @@ public class MemberDto {
     @ToString
     public static class WorcationJoin {
 
+        @Valid
         private MemberJoinDto memberJoinDto;
 
     }
@@ -193,4 +201,29 @@ public class MemberDto {
         private String code;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MemberInfoResponse {
+        private String user_id;
+        private String email;
+        private String user_name;
+        private String address;
+        private Integer age;
+        private CommonEnums.Gender gender;
+        private CommonEnums.Role role;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MyPageResponse {
+        MemberDto.MemberInfoResponse memberResponse;
+        CompanyDto.CompanyInfoResponse companyResponse;
+        CompanyProfileDto.CompanyInfoResponse companyProfileResponse;
+    }
 }

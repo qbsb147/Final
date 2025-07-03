@@ -5,27 +5,20 @@ import { InputRadio } from '../../styles/Input.styles';
 import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import btn from '../../styles/Button';
+import memberService from '../../api/members';
 
 const Mypage = () => {
-  const { user } = useAuthStore();
-  const [userInfo, setUserInfo] = useState(null);
+  const { loginUser } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(1);
 
   useEffect(() => {
-    if (!user?.userId) return;
-  
+    if (!loginUser?.user_id) return;
+
     const fetchUserInfo = async () => {
       //백엔드 연결 시 데이터 하나로 합쳐서 가져오는 작업 필요
       try {
-        const [memberRes, companyRes, companyProfileRes] = await Promise.all([
-          api.get(`/members?userId=${user.userId}`),
-          api.get(`/companies?userId=${user.userId}`),
-          api.get(`/companyProfiles?userId=${user.userId}`),
-        ]);
-  
-        const memberData = memberRes.data[0];
-        const companyData = companyRes.data[0];
-        const companyProfileData = companyProfileRes.data[0];
-  
+        const memberData = await memberService.getMyPage();
+
         const mappedData = {
           // members에서 가져오는 필드
           user_no: memberData.user_no,
@@ -37,40 +30,38 @@ const Mypage = () => {
           age: memberData.age,
           gender: memberData.gender,
           registration_role: memberData.role,
-  
+
           // companies에서 가져오는 필드
-          company_no: companyData?.company_no,
-          company_name: companyData?.company_name || '',
-          company_address: companyData?.company_address || '',
-          company_email: companyData?.company_email || '',
-          company_phone: companyData?.company_tel || '',
+          company_no: memberData?.company_no,
+          company_name: memberData?.company_name || '',
+          company_address: memberData?.company_address || '',
+          company_email: memberData?.company_email || '',
+          company_phone: memberData?.company_tel || '',
 
           //companyProfiles에서 가져오는 필드
-          company_profile_no: companyProfileData?.company_profile_no,
-          position: companyProfileData?.position || '',
-          department: companyProfileData?.department || '',
-
+          company_profile_no: memberData?.company_profile_no,
+          position: memberData?.position || '',
+          department: memberData?.department || '',
         };
-  
+
         setUserInfo(mappedData);
       } catch (err) {
         console.error('회원정보 불러오기 실패:', err);
       }
     };
-  
-    fetchUserInfo();
-  }, [user?.user_id]);
 
-  if (!userInfo) return <div style={{ textAlign: "center" }}>로딩중...</div>;
+    fetchUserInfo();
+  }, [loginUser?.user_id]);
+
+  if (!userInfo) return <div style={{ textAlign: 'center' }}>로딩중...</div>;
 
   // 공통 입력 onChange 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserInfo(prev => ({ ...prev, [name]: value }));
+    setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
-
     // 2. 데이터 분리
     const memberData = {
       user_no: userInfo.user_no,
@@ -119,44 +110,115 @@ const Mypage = () => {
             </InputGroup>
             <InputGroup>
               <InputName>비밀번호</InputName>
-              <InputText style={Input.InputGray} type="password" name="password" value={userInfo.password || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="password"
+                name="password"
+                value={userInfo.password || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>비밀번호 확인</InputName>
-              <InputText style={Input.InputGray} type="password" name="passwordConfirm" value={userInfo.passwordConfirm || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="password"
+                name="passwordConfirm"
+                value={userInfo.passwordConfirm || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>이메일</InputName>
-              <InputText style={Input.InputGray} type="email" name="email" value={userInfo.email || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="email"
+                name="email"
+                value={userInfo.email || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>이름</InputName>
-              <InputText style={Input.InputGray} type="text" name="name" value={userInfo.name || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="name"
+                value={userInfo.name || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
           </Box>
           {/* 두 번째 박스: 추가 정보 */}
           <Box>
             <InputGroup>
               <InputName>주소</InputName>
-              <InputText style={Input.InputGray} type="text" name="address" value={userInfo.address || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="address"
+                value={userInfo.address || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>나이</InputName>
-              <InputText style={Input.InputGray} type="number" name="age" value={userInfo.age || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="number"
+                name="age"
+                value={userInfo.age || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>성별</InputName>
               <RadioGroup>
-                <InputRadio type="radio" name="gender" value="M" checked={userInfo.gender === 'M'} onChange={handleInputChange} /> 남성
-                <InputRadio type="radio" name="gender" value="W" checked={userInfo.gender === 'W'} onChange={handleInputChange} /> 여성
+                <InputRadio
+                  type="radio"
+                  name="gender"
+                  value="M"
+                  checked={userInfo.gender === 'M'}
+                  onChange={handleInputChange}
+                />{' '}
+                남성
+                <InputRadio
+                  type="radio"
+                  name="gender"
+                  value="W"
+                  checked={userInfo.gender === 'W'}
+                  onChange={handleInputChange}
+                />{' '}
+                여성
               </RadioGroup>
             </InputGroup>
             <InputGroup>
               <InputName>등록 유형</InputName>
               <RadioGroup>
-                <InputRadio type="radio" name="registrationType" value="employee" checked={userInfo.registrationType === 'employee'} onChange={handleInputChange} /> 직원
-                <InputRadio type="radio" name="registrationType" value="master" checked={userInfo.registrationType === 'master'} onChange={handleInputChange} /> 기업
-                <InputRadio type="radio" name="registrationType" value="worcation" checked={userInfo.registrationType === 'worcation'} onChange={handleInputChange} /> 워케이션 업체
+                <InputRadio
+                  type="radio"
+                  name="registrationType"
+                  value="employee"
+                  checked={userInfo.registrationType === 'employee'}
+                  onChange={handleInputChange}
+                />{' '}
+                직원
+                <InputRadio
+                  type="radio"
+                  name="registrationType"
+                  value="master"
+                  checked={userInfo.registrationType === 'master'}
+                  onChange={handleInputChange}
+                />{' '}
+                기업
+                <InputRadio
+                  type="radio"
+                  name="registrationType"
+                  value="worcation"
+                  checked={userInfo.registrationType === 'worcation'}
+                  onChange={handleInputChange}
+                />{' '}
+                워케이션 업체
               </RadioGroup>
             </InputGroup>
           </Box>
@@ -164,34 +226,72 @@ const Mypage = () => {
           <Box>
             <InputGroup>
               <InputName>회사명</InputName>
-              <InputText style={Input.InputGray} type="text" name="company_name" value={userInfo.company_name || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="company_name"
+                value={userInfo.company_name || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>부서명</InputName>
-              <InputText style={Input.InputGray} type="text" name="department" value={userInfo.department || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="department"
+                value={userInfo.department || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>직급</InputName>
-              <InputText style={Input.InputGray} type="text" name="position" value={userInfo.position || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="position"
+                value={userInfo.position || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>회사주소</InputName>
-              <InputText style={Input.InputGray} type="text" name="company_address" value={userInfo.company_address || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="company_address"
+                value={userInfo.company_address || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>회사 이메일</InputName>
-              <InputText style={Input.InputGray} type="email" name="company_email" value={userInfo.company_email || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="email"
+                name="company_email"
+                value={userInfo.company_email || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
             <InputGroup>
               <InputName>사내 전화번호</InputName>
-              <InputText style={Input.InputGray} type="text" name="company_phone" value={userInfo.company_phone || ''} onChange={handleInputChange} />
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="company_phone"
+                value={userInfo.company_phone || ''}
+                onChange={handleInputChange}
+              />
             </InputGroup>
           </Box>
         </Form>
         <ButnContent>
           <ButnBox>
             <button style={btn.buttonYbShadow}>취소</button>
-            <button style={btn.buttonWbShadow} onClick={handleSubmit}>완료</button>
+            <button style={btn.buttonWbShadow} onClick={handleSubmit}>
+              완료
+            </button>
           </ButnBox>
         </ButnContent>
       </Content>

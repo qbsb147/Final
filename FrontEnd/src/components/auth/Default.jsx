@@ -127,6 +127,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
               readOnly
               placeholder="주소"
               variant="yellow"
+              onClick={handleAddressSearch}
             />
             <AddressSearchButton type="button" onClick={handleAddressSearch} disabled={!isPostcodeReady}>
               검색

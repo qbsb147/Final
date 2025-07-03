@@ -22,4 +22,7 @@ public class Department {
     @JoinColumn(name = "company_no", nullable = false)
     private Company company;
 
+    public void changeCompany(Company company) {
+        this.company = company;
+    }
 }

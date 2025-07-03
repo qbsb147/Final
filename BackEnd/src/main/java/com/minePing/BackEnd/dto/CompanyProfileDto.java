@@ -187,4 +187,15 @@ public class CompanyProfileDto {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class CompanyInfoResponse {
+        private String department_name;
+        private String position;
+        private String company_email;
+        private String company_phone;
+    }
 }
