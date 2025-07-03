@@ -79,7 +79,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo) {
         return applicationRepository.getReservedByUser(userNo, LocalDate.now())
                 .stream()
@@ -88,6 +88,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo) {
         return applicationRepository.getUsedByUser(userNo, LocalDate.now())
                 .stream()
