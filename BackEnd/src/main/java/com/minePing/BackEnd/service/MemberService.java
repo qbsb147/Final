@@ -11,8 +11,12 @@ public interface MemberService {
     void createMasterMember(MemberDto.MasterJoin masterJoinDto);
     void createWorcationMember(MemberDto.WorcationJoin worcationJoinDto);
     MemberDto.LoginResponse login(MemberDto.Login loginDto);
+
+    void updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto) throws Exception;
+
     MemberDto.InfoResponse getUserInfoByUserId(String userId);
     MemberDto.MyPageResponse getMyPageByUserId(String userId, CommonEnums.Role role);
     MemberDto.LoginResponse getMemberBySocialId(String socialId);
     Member createOauth(String socialId, String email, String name, SocialType socialType);
+
 }

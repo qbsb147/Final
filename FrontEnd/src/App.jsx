@@ -33,6 +33,8 @@ import Register from './pages/Worcation/Registraion/Register'; // 업체 등록 
 import WorcationDetail from './pages/Worcation/Detail'; // 워케이션 상세 페이지
 import WorcationApply from './pages/Worcation/Apply'; // 워케이션 신청
 import WorcationHistory from './pages/Worcation/History'; // 내 워케이션 히스토리
+import WorcationPartnersPage from './pages/Worcation/Partners'; //워케이션 제휴 리스트
+import WorcationAIPage from './pages/Worcation/ai'; //워케이션 AI 리스트
 
 // 직원 / 멤버 관리
 import MemberList from './pages/Member/List'; // 직원 리스트
@@ -80,6 +82,8 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
             <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
+            <Route path="/worcation/partners"element={<WorcationPartnersPage/>} />{/* 워케이션 제휴 리스트 */}
+            <Route path="/worcation/ai" element={<WorcationAIPage />} />{/* 워케이션 AI 리스트 */}
           </Route>
 
           {/* 🔵 Layout2: SearchBar 없음 */}

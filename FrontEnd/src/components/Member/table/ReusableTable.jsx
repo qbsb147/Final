@@ -10,7 +10,7 @@ import styled from 'styled-components';
  * @param {Function} onLevelChange - 등급 변경 시 호출될 콜백 함수 (rowIndex, newValue)
  */
 
-const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange }) => {
+const ReusableTable = ({ columns, data, onApprove, onReject, messageWhenEmpty }) => {
   return (
     <TableWrap>
       <thead>
@@ -21,30 +21,32 @@ const ReusableTable = ({ columns, data, onApprove, onReject, onLevelChange }) =>
         </tr>
       </thead>
       <tbody>
-        {data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {columns.map((col) => (
-              <Td key={col.accessor}>
-                {col.Cell ? (
-                  col.Cell({ rowIndex, row })
-                ) : col.accessor === 'actions' ? (
-                  <ButtonWrap>
-                    <ApproveBtn onClick={() => onApprove?.(row)}>승인</ApproveBtn>
-                    <RejectBtn onClick={() => onReject?.(row)}>거부</RejectBtn>
-                  </ButtonWrap>
-                ) : col.accessor === 'level' ? (
-                  <Select value={row.level} onChange={(e) => onLevelChange?.(rowIndex, e.target.value)}>
-                    <option value="총관리자">총관리자</option>
-                    <option value="관리자">관리자</option>
-                    <option value="직원">직원</option>
-                  </Select>
-                ) : (
-                  row[col.accessor]
-                )}
-              </Td>
-            ))}
+        {data.length === 0 ? (
+          <tr>
+            <Td colSpan={columns.length} style={{ textAlign: 'center', padding: '12px', fontWeight: 'bold' }}>
+              {messageWhenEmpty || '직원이 없습니다.'}
+            </Td>
           </tr>
-        ))}
+        ) : (
+          data.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {columns.map((col) => (
+                <Td key={col.accessor}>
+                  {col.Cell ? (
+                    col.Cell({ rowIndex, row })
+                  ) : col.accessor === 'actions' ? (
+                    <ButtonWrap>
+                      <ApproveBtn onClick={() => onApprove?.(row)}>승인</ApproveBtn>
+                      <RejectBtn onClick={() => onReject?.(row)}>거부</RejectBtn>
+                    </ButtonWrap>
+                  ) : (
+                    row[col.accessor]
+                  )}
+                </Td>
+              ))}
+            </tr>
+          ))
+        )}
       </tbody>
     </TableWrap>
   );
@@ -96,13 +98,4 @@ const RejectBtn = styled.button`
   border-radius: 8px;
   border: none;
   font-weight: bold;
-`;
-
-const Select = styled.select`
-  background-color: ${({ theme }) => theme.colors.white};
-  color: ${({ theme }) => theme.colors.black};
-  border: none;
-  font-weight: bold;
-  text-align: center;
-  text-align-last: center;
 `;

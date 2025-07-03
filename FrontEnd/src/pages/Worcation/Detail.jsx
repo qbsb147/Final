@@ -6,11 +6,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
-
+import { worcationService } from '../../api/worcations.js';
 
 const WorcationDetail = () => {
   // const navigate = useNavigate();
-  const loginUserId = 'user01@example.com'; //추후 불러오는걸로 수정 필요
   // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
   const navigate = useNavigate();
   const { worcationNo } = useParams();
@@ -23,51 +22,6 @@ const WorcationDetail = () => {
   const [photos, setPhotos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
-
-  useEffect(() => {
-    axios
-      .get(`http://localhost:3001/worcation?worcation_no=${worcationNo}`)
-      .then((res) => setWorcation(res.data[0]))
-      .catch(console.error);
-    axios
-      .get(`http://localhost:3001/worcation_detail?worcation_no=${worcationNo}`)
-      .then((res) => setDetail(res.data[0]))
-      .catch(console.error);
-
-    axios
-      .get(`http://localhost:3001/review?application_no=${worcationNo}`)
-      .then((res) => setReviews(res.data))
-      .catch(console.error);
-
-    axios
-      .get(`http://localhost:3001/worcation_features?worcation_no=${worcationNo}`)
-      .then((res) => setFeatures(res.data))
-      .catch(console.error);
-
-    axios
-      .get(`http://localhost:3001/photo?worcation_no=${worcationNo}`)
-      .then((res) => setPhotos(res.data))
-      .catch(console.error);
-
-    const fetchAmenities = async () => {
-      try {
-        const amRes = await axios.get(`http://localhost:3001/worcation_amenity?worcation_no=${worcationNo}`);
-        const amenityNos = amRes.data.map((a) => a.amenity_no);
-
-        const allAmenities = await axios.get('http://localhost:3001/amenity');
-        const matched = allAmenities.data.filter((am) => amenityNos.includes(am.amenity_no));
-
-        setAmenities(matched);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchAmenities();
-  }, [worcationNo]);
-
-  if (!detail) return null;
-  const [officeTime, accomTime] = detail?.available_time?.split('/') || ['', ''];
-
   const settings = {
     dots: true,
     infinite: true,
@@ -77,6 +31,43 @@ const WorcationDetail = () => {
     autoplay: true,
     autoplaySpeed: 5000,
   };
+  const images = [worcation.main_change_photo, ...(photos ? photos.map((p) => p.change_name) : [])].filter(Boolean);
+  useEffect(() => {
+    // worcationNo로 데이터 가져오기
+    const fetchData = async () => {
+      if (worcationNo) {
+        try {
+          // 워케이션 상세 정보 (모든 정보 포함)
+          const data = await worcationService.getDetail(worcationNo);
+          setWorcation(data);
+          // detail 정보는 worcation 객체에 포함되어 있음
+          setDetail(data);
+          // features 정보도 포함되어 있음
+          setFeatures([data]);
+          // amenities 정보도 포함되어 있음 (partners에서 추출)
+          if (data.partners) {
+            setAmenities(data.partners);
+          }
+          // photos 정보 설정
+          if (data.photos) {
+            setPhotos(data.photos);
+          }
+          // 리뷰 정보도 포함되어 있음
+          if (data.reviews) {
+            setReviews(data.reviews);
+          }
+          setAmenities(data.amenities);
+        } catch (error) {
+          console.error('워케이션 정보 가져오기 실패:', error);
+        }
+      }
+    };
+    fetchData();
+  }, [worcationNo]);
+
+  console.log(worcation);
+  if (!worcation) return null;
+  const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
 
   //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
@@ -87,9 +78,9 @@ const WorcationDetail = () => {
             <BlockTitle>오피스</BlockTitle>
             <BlockText>
               - 운용시간 : {officeTime || '미입력'}
-              <br />- 연락처 : {detail?.worcation_tel || '-'}
+              <br />- 연락처 : {worcation?.worcation_tel || '-'}
               <br />- 수용인원 : {worcation?.max_people || '-'}
-              <br />- 홈페이지 : {detail?.content || '-'}
+              <br />- 홈페이지 : {worcation?.content || '-'}
             </BlockText>
           </Block>
         );
@@ -99,9 +90,9 @@ const WorcationDetail = () => {
             <BlockTitle>숙소</BlockTitle>
             <BlockText>
               - 입실/퇴실 : {accomTime || '미입력'}
-              <br />- 연락처 : {detail?.worcation_tel || '-'}
+              <br />- 연락처 : {worcation?.worcation_tel || '-'}
               <br />- 최대인원 : {worcation?.max_people || '-'}
-              <br />- 홈페이지 : {detail?.content || '-'}
+              <br />- 홈페이지 : {worcation?.content || '-'}
             </BlockText>
           </Block>
         );
@@ -112,9 +103,9 @@ const WorcationDetail = () => {
               <BlockTitle>오피스</BlockTitle>
               <BlockText>
                 - 운용시간 : {officeTime || '미입력'}
-                <br />- 연락처 : {detail?.worcation_tel || '-'}
+                <br />- 연락처 : {worcation?.worcation_tel || '-'}
                 <br />- 수용인원 : {worcation?.max_people || '-'}
-                <br />- 홈페이지 : {detail?.content || '-'}
+                <br />- 홈페이지 : {worcation?.content || '-'}
               </BlockText>
             </Block>
             <Block>
@@ -134,24 +125,28 @@ const WorcationDetail = () => {
   };
 
   //댓글
+  //테스트 시 신청 먼저 해야함
+  const loginUserId = 'user001';
 
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     const review = {
-      application_no: Number(worcationNo),
+      application_no: 11,
       writer_id: loginUserId,
       review_content: newComment,
       create_at: new Date().toISOString(),
       update_at: new Date().toISOString(),
     };
-
-    axios
-      .post('http://localhost:3001/review', review)
-      .then(() => {
-        setReviews((prev) => [...prev, review]);
-        setNewComment('');
-      })
-      .catch(console.error);
+    try {
+      const data = await worcationService.addReview(review);
+      alert('댓글이 등록되었습니다.');
+      setNewComment('');
+      setReviews((prev) => [...prev, data]);
+      return data;
+    } catch {
+      alert('댓글 등록에 실패했습니다.');
+    }
   };
+
   const handleEditClick = (review) => {
     setEditingId(review.review_no);
     setEditedContent(review.review_content);
@@ -159,7 +154,7 @@ const WorcationDetail = () => {
 
   const handleSaveEdit = (reviewNo) => {
     axios
-      .patch(`http://localhost:3001/review/${reviewNo}`, {
+      .patch(`http://localhost:8080/reviews/${reviewNo}`, {
         review_content: editedContent,
         update_at: new Date().toISOString(),
       })
@@ -176,7 +171,7 @@ const WorcationDetail = () => {
   };
   const handleDelete = (reviewNo) => {
     axios
-      .delete(`http://localhost:3001/review/${reviewNo}`)
+      .delete(`http://localhost:8080/reviews/${reviewNo}`)
       .then(() => {
         //UI에서 삭제
         setReviews((prev) => prev.filter((r) => r.review_no !== reviewNo));
@@ -184,7 +179,6 @@ const WorcationDetail = () => {
       .catch(console.error);
   };
 
-  //UI
   return (
     <PageContainer>
       <Wrapper>
@@ -199,8 +193,8 @@ const WorcationDetail = () => {
         <PhotoGallery>
           <PhotoSliderWrapper>
             <Slider {...settings}>
-              {[worcation.main_change_photo, ...photos.map((p) => p.change_name)].map((src, idx) => (
-                <SliderImage key={idx} src={src} alt={`slide-${idx}`} />
+              {images.map((src, idx) => (
+                <img key={idx} src={src} alt={`slide-${idx}`} />
               ))}
             </Slider>
           </PhotoSliderWrapper>
@@ -214,7 +208,7 @@ const WorcationDetail = () => {
           <Block>
             <BlockTitle>위치 및 상세 설명</BlockTitle>
             <BlockText>
-              <br />- 주소 : {worcation?.address}
+              <br />- 주소 : {worcation?.worcation_address}
               <br />- 오시는 길 : {detail?.navigate}
             </BlockText>
           </Block>
@@ -253,7 +247,7 @@ const WorcationDetail = () => {
         </ContentSection>
       </Wrapper>
 
-      <CommentTitle>댓글 ({reviews.length})</CommentTitle>
+      <CommentTitle>댓글 ({reviews ? reviews.length : 0})</CommentTitle>
       <Wrapper2>
         <ContentSection>
           <CommentInputWrap>
@@ -469,4 +463,5 @@ const ActionBtn = styled.button`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   cursor: pointer;
   font-family: 'Godo B';
+  color: ${({ theme }) => theme.colors.black};
 `;

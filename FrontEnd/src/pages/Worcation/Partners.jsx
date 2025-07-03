@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import { Link, useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
 import WorcationCardList from '../../components/Worcation/WorcationCardList';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
 
-const WorcationList = () => {
-  const [viewMode, setViewMode] = useState('all');
-  const navigate = useNavigate();
+const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
+  const [viewMode, setViewMode] = useState('partner');
 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,29 +19,25 @@ const WorcationList = () => {
     fetchData();
   }, []);
 
-  const handleToggleView = (mode) => {
-    if (mode === 'partner') {
-      navigate('/worcation/partners');
-      return;
+  const getFilteredWorcations = () => {
+    if (viewMode === 'partner') {
+        console.log(viewMode, worcations);
+      return worcations.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }
+    if (viewMode === 'ai') {
+        console.log(viewMode, worcations);
+      return worcations;
+    }
+    console.log(viewMode, worcations);
+    return worcations;
+  };
+
+  const handleToggleView = (mode) => {
     if (viewMode === mode) {
       setViewMode('all');
     } else {
       setViewMode(mode);
     }
-  };
-
-  const getFilteredWorcations = () => {
-    if (viewMode === 'partner') {
-      console.log(viewMode, worcations);
-      return worcations.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
-    }
-    if (viewMode === 'ai') {
-      console.log(viewMode, worcations);
-      return worcations
-    }
-    console.log(viewMode, worcations);
-    return worcations;
   };
 
   return (
@@ -63,7 +59,7 @@ const WorcationList = () => {
   );
 };
 
-export default WorcationList;
+export default WorcationPartnersPage;
 
 const Container = styled.div`
   border-top: 2px solid ${({ theme }) => theme.colors.brown};

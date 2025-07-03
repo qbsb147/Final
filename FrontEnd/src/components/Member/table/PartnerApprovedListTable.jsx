@@ -11,7 +11,7 @@ const PartnerApprovedListTable = () => {
     { header: '이메일', accessor: 'email' },
     { header: '사업자번호', accessor: 'TIN' },
     { header: '기간', accessor: 'period' },
-    { header: '승인 여부', accessor: 'status' },
+    { header: '승인 여부', accessor: 'actions' },
   ];
 
   const data = [

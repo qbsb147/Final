@@ -44,19 +44,21 @@ public class CompanyProfileDto {
     @Builder
     public static class Response {
 
+        private Long user_no;
         private String department_name; // 부서명
         private String position; // 직급
         private String name; // 이름
         private String gender; // 성별 (Enum -> String)
         private int age; // 생년월일 -> 나이 계산
         private String role; // 역할 (Enum -> String)
-        private String company_email; // 회사 이메일 아님
-        private String work_status; // 근무 상태 (외부 전달 값)
+        private String company_email;
+        private String work_status;
 
         public static Response toDto(Member member, String workStatus, int age) {
             CompanyProfile profile = member.getCompanyProfile();
 
             return Response.builder()
+                    .user_no(member.getUserNo())
                     .department_name(profile.getDepartmentName())
                     .position(profile.getPosition())
                     .name(member.getName())
@@ -82,6 +84,7 @@ public class CompanyProfileDto {
         private int age;
         private String role;
         private String company_email;
+        private String phone;
         private String approve;
 
         public static Approval toDto(Member member, int age) {
@@ -95,6 +98,7 @@ public class CompanyProfileDto {
                     .age(age)
                     .role(member.getRole().name())
                     .company_email(profile.getCompanyEmail())
+                    .phone(member.getPhone())
                     .approve(profile.getApprove().name())
                     .build();
         }
@@ -113,7 +117,7 @@ public class CompanyProfileDto {
         private int age;
         private String company_email;
         private String work_status;
-        private String PSYCHOLOGICAL_STATE;
+        private String psychological_state;
 
         public static Consult toDto(Member member,String workStatus,int age, String psychologicalState) {
             CompanyProfile profile = member.getCompanyProfile();
@@ -126,7 +130,7 @@ public class CompanyProfileDto {
                     .age(age)
                     .company_email(profile.getCompanyEmail())
                     .work_status(workStatus)
-                    .PSYCHOLOGICAL_STATE(psychologicalState)
+                    .psychological_state(psychologicalState)
                     .build();
 
         }

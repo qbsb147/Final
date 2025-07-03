@@ -160,6 +160,15 @@ public class MemberDto {
     @NoArgsConstructor
     @Builder
     @ToString
+    public static class UpdateRole {
+        private CommonEnums.Role role;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class InfoResponse {
         private Long user_no;
         private String user_id;
