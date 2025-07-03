@@ -94,5 +94,21 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .map(ApplicationDto.ApplicationResponseDto::fromEntity)
                 .toList();
 
+    @Transactional
+    public List<ApplicationDto.ApplicationResponseDto> getReserved() {
+        return applicationRepository.findReservedApplications(LocalDate.now())
+            .stream()
+            .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+            .toList();
+    }
+
+    @Override
+    @Transactional
+    public List<ApplicationDto.ApplicationResponseDto> getUsed() {
+        return applicationRepository.findUsedApplications(LocalDate.now())
+            .stream()
+            .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+            .toList();
+
     }
 }
