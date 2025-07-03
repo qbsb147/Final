@@ -1,140 +1,91 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
-import seoul1 from '../assets/seoul1.jpg';
-import siheung1 from '../assets/siheung1.jpg';
-import siheung2 from '../assets/siheung2.jpg';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { worcationService } from '../api/worcations';
+import WorcationCardList from '../components/worcation/WorcationCardList';
 
-const data = [
-  {
-    id: 1,
-    location: '서울특별시 영등포구',
-    name: '포포인츠 알파이 워케이션',
-    reviewCount: 15,
-    theme: '모던스타일 / 도심',
-    image: seoul1,
-  },
-  {
-    id: 2,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung1,
-  },
-  {
-    id: 3,
-    location: '경기도 시흥시',
-    name: '이노테이션 워케이션',
-    reviewCount: 16,
-    theme: '모던 / 자연 퓨전',
-    image: siheung2,
-  },
-];
+
 
 const MainPage = () => {
-  const [partners, setPartners] = useState([]);
   const [worcations, setWorcations] = useState([]);
   const [showAISection, setShowAISection] = useState(false);
-  const [reviews, setReviews] = useState([]);
+  const [showBanner, setShowBanner] = useState(true);
+  const [applications, setApplications] = useState([]);
   const navigate = useNavigate();
 
   const handleShowAI = () => {
+    setShowBanner(false)
     setShowAISection(true);
+    //Ai 출력 로직
   };
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/worcation_partner')
-      .then((res) => setPartners(res.data.filter((p) => p.approve === 'Y')))
-      .catch(console.error);
-
-    axios
-      .get('http://localhost:3001/worcation')
-      .then((res) => setWorcations(res.data))
-      .catch((err) => console.error(err));
-
-    axios
-      .get('http://localhost:3001/review')
-      .then((res) => setReviews(res.data))
-      .catch((err) => console.error(err));
+    const fetchData = async () => {
+      const data = await worcationService.list();
+      const appData = await worcationService.applicationList();
+      setWorcations(data);
+      setApplications(appData);
+    };
+    fetchData();
   }, []);
+  
+  const sortedWorcations = worcations
+    .map(w => {
+      // approve가 'Y'인 신청만 카운트
+      const approvedCount = applications.filter(
+        app => app.worcation_no === w.worcation_no && app.approve === 'Y'
+      ).length;
+      return {
+        ...w,
+        approvedApplicationCount: approvedCount
+      };
+    })
+    // 신청이 1개 이상인 워케이션만
+    .filter(w => w.approvedApplicationCount > 0)
+    // 내림차순 정렬
+    .sort((a, b) => b.approvedApplicationCount - a.approvedApplicationCount);
 
   return (
     <Container>
       <SectionTitle>제휴업체</SectionTitle>
       <PartnerGrid>
-        {partners.map((partner) => {
-          const matchedWorcation = worcations.find((w) => w.worcation_no === partner.worcation_no);
-          if (!matchedWorcation) return null;
-
-          return (
-            <PartnerCard key={partner.partner_no}>
+        {worcations
+          .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
+          .map((matchedWorcation) => (
+            <PartnerCard key={matchedWorcation.worcation_no}>
               <PartnerImage
                 src={matchedWorcation.main_change_photo}
                 alt={matchedWorcation.worcation_name}
-                onClick={() => navigate(`/worcation/${partner.worcation_no}`)}
+                onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
               />
               <ImageLabel>
-                <ImageLabelT>{matchedWorcation.address.split(' ')[0]}</ImageLabelT>
+                <ImageLabelT>
+                  {matchedWorcation.worcation_address
+                    ? matchedWorcation.worcation_address.split(' ')[0]
+                    : '주소없음'}
+                </ImageLabelT>
                 {matchedWorcation.worcation_name}
-                <br />
-                {matchedWorcation.grade || '등급 미지정'}
               </ImageLabel>
             </PartnerCard>
-          );
-        })}
+          ))}
       </PartnerGrid>
 
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
       </SectionTitle>
-      <CardList>
-        {worcations.map((item) => (
-          <PlaceCard key={item.worcation_no}>
-            <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
-            <CardContent>
-              <InfoBlock>
-                <PlaceLocation>{item.address}</PlaceLocation>
-                <PlaceName>{item.worcation_thema}</PlaceName>
-                <PlaceReview>리뷰 ({reviews.filter((r) => r.application_no === item.worcation_no).length})</PlaceReview>
-              </InfoBlock>
-              <ThemeBlock>
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.worcation_thema}</ThemeText>
-                <ButtonDetail onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</ButtonDetail>
-              </ThemeBlock>
-            </CardContent>
-          </PlaceCard>
-        ))}
-      </CardList>
+      <WorcationCardList data={sortedWorcations.slice(0, 10)} navigate={navigate} />
 
-      <BottomBanner>
-        <ButtonYb onClick={handleShowAI}>AI로 여행지 추천 받기</ButtonYb>
-      </BottomBanner>
-
+      {showBanner && (
+        <BottomBanner>
+          <ButtonYb onClick={handleShowAI}>AI로 여행지 추천 받기</ButtonYb>
+        </BottomBanner>
+      )}
       {showAISection && (
         <>
           <SectionTitle>AI 추천</SectionTitle>
           <CardList>
-            {data.map((item) => (
-              <PlaceCard key={item.id}>
-                <PlaceImage src={item.image} alt={item.name} />
-                <CardContent>
-                  <InfoBlock>
-                    <PlaceLocation>{item.location}</PlaceLocation>
-                    <PlaceName>{item.name}</PlaceName>
-                    <PlaceReview>리뷰 ({item.reviewCount})</PlaceReview>
-                  </InfoBlock>
-                  <ThemeBlock>
-                    <ThemeLabel>테마</ThemeLabel>
-                    <ThemeText>{item.theme}</ThemeText>
-                    <ButtonDetail>상세보기</ButtonDetail>
-                  </ThemeBlock>
-                </CardContent>
-              </PlaceCard>
-            ))}
+          <WorcationCardList data={worcations} navigate={navigate} />
+          {/* AI 필터 추가 해야함 */}
           </CardList>
         </>
       )}

@@ -42,9 +42,25 @@ export const API_ENDPOINTS = {
   WORCATION: {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
+    //임시저장
+    SAVE: '/worcations',
+    //업체 정보 수정
+    UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
+    DELETE: (worcation_no) => `/worcations/${worcation_no}`,
+  },
+
+  APPLICATION: {
+    //예약 확인
+    RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
+    //지난 예약 정보
+    USED: (user_no) => `/applications/used?userNo=${user_no}`,
+    //삭제
+    DELETE: (application_no) => `/applications/${application_no}`,
   },
   REVIEW: {
     ADD: '/reviews',
+    UPDATE: (review_no) => `/reviews/${review_no}`,
+    DELETE: (review_no) => `/reviews/${review_no}`,
   },
   LOGIN: '/member/login',
   MENTALS: {
