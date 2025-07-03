@@ -131,7 +131,7 @@ const WorcationDetail = () => {
 
   const handleAddComment = async () => {
     const review = {
-      application_no: 11,
+      application_no: 1,
       writer_id: loginUserId,
       review_content: newComment,
       create_at: new Date().toISOString(),

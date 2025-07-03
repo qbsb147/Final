@@ -61,4 +61,14 @@ public class WorcationDetail {
     @Column(name="open_date", nullable = false)
     private LocalDate openDate;
 
+    public void changeLicensee(String licensee) { this.licensee = licensee; }
+    public void changeBusinessId(String businessId) { this.businessId = businessId; }
+    public void changeWorcationTel(String tel) { this.worcationTel = tel; }
+    public void changeChargeAmount(Integer amount) { this.chargeAmount = amount; }
+    public void changeContent(String content) { this.content = content; }
+    public void changeNavigate(String navigate) { this.navigate = navigate; }
+    public void changeAvailableTime(String time) { this.availableTime = time; }
+    public void changeRefundPolicy(String policy) { this.refundPolicy = policy; }
+    public void changeOpenDate(java.time.LocalDate date) { this.openDate = date; }
+    public void assignWorcation(Worcation worcation) { this.worcation = worcation; }
 }

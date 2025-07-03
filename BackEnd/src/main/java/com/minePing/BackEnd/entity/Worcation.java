@@ -83,16 +83,8 @@ public class Worcation {
     @OneToOne(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorcationDetail worcationDetail;
 
-    public void assignWorcationDetail(WorcationDetail worcationDetail) {
-        this.worcationDetail = worcationDetail;
-    }
-
     @OneToOne(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorcationFeatures worcationFeatures;
-
-    public void assignWorcationFeatures(WorcationFeatures worcationFeatures) {
-        this.worcationFeatures = worcationFeatures;
-    }
 
     @PrePersist
     protected void onCreate() {
@@ -106,5 +98,26 @@ public class Worcation {
     @PreUpdate
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
+    }
+
+    public void changeName(String name) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("이름은 필수입니다.");
+        this.worcationName = name;
+    }
+    public void changeCategory(WorcationEnums.Category category) {
+        if (category == null) throw new IllegalArgumentException("카테고리는 필수입니다.");
+        this.worcationCategory = category;
+    }
+    public void changeMainPhoto(String photo) { this.mainChangePhoto = photo; }
+    public void changeThema(String thema) { this.worcationThema = thema; }
+    public void changeMaxPeople(Integer maxPeople) { this.maxPeople = maxPeople; }
+    public void changePartnerPrice(String price) { this.partnerPrice = price; }
+    public void changeNonPartnerPrice(Integer price) { this.nonPartnerPrice = price; }
+    public void changeAddress(String address) { this.worcationAddress = address; }
+    public void assignDetail(WorcationDetail detail) {
+        this.worcationDetail = detail;
+    }
+    public void assignFeatures(WorcationFeatures features) {
+        this.worcationFeatures = features;
     }
 }
