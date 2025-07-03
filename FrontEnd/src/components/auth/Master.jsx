@@ -2,16 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Popup from './Popup';
 import CustomDatePicker from '../common/DatePicker';
-import memberService from '../../api/members';
 
 const HIDDEN_FIELDS = ['address', 'email', 'company_tel'];
 
 const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [showInput, setShowInput] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [companySearchResults, setCompanySearchResults] = useState([]);
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-  const companyNameTimeout = useRef();
+
+  useEffect(() => {
+    setFormData2((prev) => ({ ...prev, departments }));
+  }, [departments]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -33,33 +34,6 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
     else if (step === 2) setFormData2((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCompanyNameKeyUp = (e) => {
-    const value = e.target.value;
-    if (companyNameTimeout.current) clearTimeout(companyNameTimeout.current);
-    companyNameTimeout.current = setTimeout(async () => {
-      if (!value) {
-        setCompanySearchResults([]);
-        return;
-      }
-      try {
-        const data = await memberService.searchCompany(value);
-        setCompanySearchResults(Array.isArray(data) ? data : []);
-      } catch (err) {
-        setCompanySearchResults([]);
-        console.error('회사명 검색 에러:', err);
-      }
-    }, 500);
-  };
-
-  const handleCompanySelect = (company) => {
-    setFormData2((prev) => ({
-      ...prev,
-      worcation_no: company.company_no,
-      company_address: company.company_address,
-    }));
-    setCompanySearchResults([]);
-  };
-
   const handleAddressSearch = () => {
     if (!isPostcodeReady) {
       alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
@@ -67,15 +41,15 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
     }
     new window.daum.Postcode({
       oncomplete: function (data) {
-        const addr = data.address;
-        setFormData2((prev) => ({ ...prev, address: addr }));
+        const company_address = data.address;
+        setFormData2((prev) => ({ ...prev, company_address: company_address }));
       },
     }).open();
   };
 
   const handleDeptBtnClick = () => {
     if (showInput) {
-      setFormData2((prev) => ({ ...prev, department: departments }));
+      setFormData2((prev) => ({ ...prev, departments: departments }));
     }
     setShowInput(!showInput);
   };
@@ -94,7 +68,6 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
             onChange={(e) => handleChange(e, 2)}
             autoComplete="off"
             variant="yellow"
-            onKeyUp={handleCompanyNameKeyUp}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -158,9 +131,10 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
                   name="company_address"
                   type="text"
                   placeholder="기업주소"
-                  value={formData2.address || ''}
+                  value={formData2.company_address || ''}
                   readOnly
                   variant="yellow"
+                  onClick={handleAddressSearch}
                 />
                 <AddressSearchButton type="button" onClick={handleAddressSearch} disabled={!isPostcodeReady}>
                   검색

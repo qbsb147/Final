@@ -158,8 +158,16 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MyPageResponse getMyPageByUserId(String userId, Role role) {
+        switch (role){
+            case MASTER->{
+            }
+            case MANAGER, EMPLOYEE->{
 
+            }
+            case WORCATION -> {
 
+            }
+        }
         return null;
     }
 
