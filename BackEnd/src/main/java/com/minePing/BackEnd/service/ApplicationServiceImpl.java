@@ -77,18 +77,18 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<ApplicationDto.ApplicationResponseDto> getReserved() {
-        return applicationRepository.findReservedApplications(LocalDate.now())
-            .stream()
-            .map(ApplicationDto.ApplicationResponseDto::fromEntity)
-            .toList();
+    public List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo) {
+        return applicationRepository.getReservedByUser(userNo, LocalDate.now())
+                .stream()
+                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+                .toList();
     }
 
     @Override
-    public List<ApplicationDto.ApplicationResponseDto> getUsed() {
-        return applicationRepository.findUsedApplications(LocalDate.now())
-            .stream()
-            .map(ApplicationDto.ApplicationResponseDto::fromEntity)
-            .toList();
+    public List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo) {
+        return applicationRepository.getUsedByUser(userNo, LocalDate.now())
+                .stream()
+                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+                .toList();
     }
 }

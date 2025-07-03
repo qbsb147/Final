@@ -15,6 +15,6 @@ public interface ApplicationService {
 
     void deleteApplication(Long id);
 
-    List<ApplicationDto.ApplicationResponseDto> getReserved();
-    List<ApplicationDto.ApplicationResponseDto> getUsed();
+    List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo);
+    List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);
 }
