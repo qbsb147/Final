@@ -37,5 +37,9 @@ export const worcationService = {
   deleteReview : async (review_no) => {
     const response = await api.delete(API_ENDPOINTS.REVIEW.DELETE(review_no));
     return response.data;
+  },
+  applicationList : async () => {
+    const response = await api.get(API_ENDPOINTS.APPLICATION.LIST);
+    return response.data;
   }
 };

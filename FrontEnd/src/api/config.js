@@ -40,6 +40,10 @@ export const API_ENDPOINTS = {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
   },
+  APPLICATION : {
+    LIST : '/applications',
+  },
+
   REVIEW : {
     ADD : '/reviews',
     UPDATE : (review_no) => `/reviews/${review_no}`,
