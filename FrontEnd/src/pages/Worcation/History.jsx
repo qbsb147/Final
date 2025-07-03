@@ -2,26 +2,46 @@ import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
+import useAuthStore from '../../store/authStore';
+import memberService from '../../api/members';
+import { applicationService } from '../../api/application';
 
 const WorcationHistory = () => {
   const navigate = useNavigate();
   const [reservedList, setReservedList] = useState([]);
   const [usedList, setUsedList] = useState([]);
+  const { loginUser } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    const fetchUserInfo = async () => {
+      const res = await memberService.getMyPage(); // user_no 포함 정보
+      setUserInfo(res);
+    };
+
+    fetchUserInfo();
+  }, [loginUser?.user_id]);
+
+  useEffect(() => {
+    if (userInfo?.user_no) {
+      getReservedWorcation(); // userInfo가 준비된 이후에만 호출
+    }
+  }, [userInfo]);
 
   const getReservedWorcation = async () => {
     try {
-      const reserved = await axios.get('/applications/reserved');
-      const used = await axios.get('/applications/used');
-      reservedList(reserved.data);
-      usedList(used.data);
+      const reserved = await applicationService.reserved(userInfo.user_no);
+      const used = await applicationService.used(userInfo.user_no);
+      setReservedList(reserved);
+      setUsedList(used);
     } catch (err) {
-      console.log('예약 데이터 조회 실패 : ', err);
+      console.log('예약 데이터 조회 실패:', err);
     }
   };
 
-  const handleDelete = async (applicationNo) => {
+  const handleDelete = async (application_no) => {
     try {
       const confirm = await Swal.fire({
         title: '삭제하시겠습니까?',
@@ -30,7 +50,7 @@ const WorcationHistory = () => {
         cancelButtonText: '취소',
       });
       if (confirm.isConfirmed) {
-        await axios.delete(`/applications/${applicationNo}`);
+        await applicationService.delete(application_no);
         Swal.fire('삭제 완료', '예약이 삭제되었습니다.', 'success');
         // 삭제 후 목록 다시 불러오기
         getReservedWorcation(); // 예약 목록 재조회 함수

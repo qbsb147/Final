@@ -50,18 +50,18 @@ public class ApplicationController {
      */
 
     @GetMapping("/reserved")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved() {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReserved();
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReservedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 
     /**
      *
      * 지난 예약 정보 확인(날짜 기반)
-     */
+     */ 
     @GetMapping("/used")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed() {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsed();
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 }

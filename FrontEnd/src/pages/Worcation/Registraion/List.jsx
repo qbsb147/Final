@@ -74,13 +74,28 @@ import memberService from '../../../api/members';
 //     navigate('/worcation/register');
 //   };
 
-const WorcationHistory = () => {
+const WorcationList = () => {
   const { loginUser } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(null);
   const [registeredList, setRegisteredList] = useState([]);
   const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
   const { worcation_no } = useParams();
 
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    const fetchUserInfo = async () => {
+      try {
+        const res = await memberService.getMyPage();
+        setUserInfo(res); // userInfo.user_no 사용 가능
+      } catch (err) {
+        console.error('회원 정보 조회 실패:', err);
+      }
+    };
+
+    fetchUserInfo();
+  }, [loginUser?.user_id]);
   useEffect(() => {
     const fetchWorcationDetail = async () => {
       try {
@@ -108,7 +123,7 @@ const WorcationHistory = () => {
       const res = await worcationService.list();
       const all = Array.isArray(res.data) ? res.data : [];
 
-      const userWorcations = all.filter((item) => item.ref_writer === loginUser.user_no);
+      const userWorcations = all.filter((item) => item.ref_writer === userInfo?.user_no);
       const registered = userWorcations.filter((item) => item.status === 'REGISTERED');
       const unregistered = userWorcations.filter((item) => item.status === 'TEMP');
 
@@ -237,7 +252,7 @@ const WorcationHistory = () => {
     </Container>
   );
 };
-export default WorcationHistory;
+export default WorcationList;
 
 const Btn = styled(ButtonDetail)`
   font-size: ${({ theme }) => theme.fontSizes.base};

@@ -71,4 +71,25 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
         @Param("startDate") LocalDate startDate, 
         @Param("endDate") LocalDate endDate
     );
+
+    // 로그인한 사용자의 예약된 신청 (시작일이 오늘 이후)
+    @Query("SELECT wa FROM WorcationApplication wa " +
+            "LEFT JOIN FETCH wa.member " +
+            "LEFT JOIN FETCH wa.worcation w " +
+            "LEFT JOIN FETCH w.worcationDetail " +
+            "LEFT JOIN FETCH w.worcationFeatures " +
+            "WHERE wa.member.userNo = :userNo AND wa.startDate > :today " +
+            "ORDER BY wa.startDate ASC")
+    List<WorcationApplication> getReservedByUser(@Param("userNo") Long userNo, @Param("today") LocalDate today);
+
+    // 로그인한 사용자의 사용 완료된 신청 (종료일이 오늘 이전)
+    @Query("SELECT wa FROM WorcationApplication wa " +
+            "LEFT JOIN FETCH wa.member " +
+            "LEFT JOIN FETCH wa.worcation w " +
+            "LEFT JOIN FETCH w.worcationDetail " +
+            "LEFT JOIN FETCH w.worcationFeatures " +
+            "WHERE wa.member.userNo = :userNo AND wa.endDate < :today " +
+            "ORDER BY wa.endDate DESC")
+    List<WorcationApplication> getUsedByUser(@Param("userNo") Long userNo, @Param("today") LocalDate today);
+
 }
