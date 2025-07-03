@@ -5,6 +5,9 @@ import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import useWorcationStore from '../../../store/useWorcationStore';
+import { worcationService } from '../../../api/worcations';
+import useAuthStore from '../../../store/authStore';
+import memberService from '../../../api/members';
 
 // import seoul1 from '../../../assets/seoul1.jpg';
 // import siheung1 from '../../../assets/siheung1.jpg';
@@ -72,18 +75,17 @@ import useWorcationStore from '../../../store/useWorcationStore';
 //   };
 
 const WorcationHistory = () => {
+  const { loginUser } = useAuthStore();
   const [registeredList, setRegisteredList] = useState([]);
   const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
-
-  const { id } = useParams();
+  const { worcation_no } = useParams();
 
   useEffect(() => {
-    if (id) {
-      axios.get(`/api/worcations/${id}`).then((res) => {
-        const data = res.data;
+    const fetchWorcationDetail = async () => {
+      try {
+        const data = await worcationService.getDetail(worcation_no);
 
-        // 필요한 형태로 데이터 파싱
         useWorcationStore.setApplication(data.application);
         useWorcationStore.setInfo(data.info);
         useWorcationStore.setDescription(data.description);
@@ -92,16 +94,23 @@ const WorcationHistory = () => {
         useWorcationStore.setLocation(data.location);
         useWorcationStore.setPolicy(data.policy);
         useWorcationStore.setFeature(data.feature);
-      });
+      } catch (error) {
+        console.error('워케이션 상세 조회 실패:', error);
+      }
+    };
+
+    if (worcation_no) {
+      fetchWorcationDetail();
     }
-  }, [id]);
+  }, [worcation_no]);
   const fetchWorcations = async () => {
     try {
-      const res = await axios.get('/api/worcations');
-      const all = res.data;
+      const res = await worcationService.list();
+      const all = Array.isArray(res.data) ? res.data : [];
 
-      const registered = all.filter((item) => item.status === 'REGISTERED');
-      const unregistered = all.filter((item) => item.status === 'TEMP');
+      const userWorcations = all.filter((item) => item.ref_writer === loginUser.user_no);
+      const registered = userWorcations.filter((item) => item.status === 'REGISTERED');
+      const unregistered = userWorcations.filter((item) => item.status === 'TEMP');
 
       setRegisteredList(registered);
       setUnregisteredList(unregistered);
@@ -109,20 +118,18 @@ const WorcationHistory = () => {
       console.error('목록 불러오기 실패:', error);
     }
   };
-  const handleDetail = (id) => {
-    navigate(`/worcation/detail/${id}`);
-  };
-  const handleDelete = async (id) => {
+
+  const handleDelete = async (worcation_no) => {
     try {
-      await axios.delete(`/api/worcations/${id}`);
+      const data = await worcationService.delete(worcation_no);
       fetchWorcations(); // 삭제 후 목록 갱신
     } catch (error) {
       console.error('삭제 실패:', error);
     }
   };
 
-  const handleEdit = (id) => {
-    navigate(`/worcation/register/${id}`);
+  const handleEdit = (worcation_no) => {
+    navigate(`/worcation/register/${worcation_no}`);
   };
 
   const handleAddClick = () => {
