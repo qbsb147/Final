@@ -1,5 +1,5 @@
 import api from './axios';
-import { API_BUSINESS, API_ENDPOINTS } from './config';
+import { API_CONFIG, API_ENDPOINTS } from './config';
 
 export const worcationService = {
   list : async() =>{
@@ -14,6 +14,15 @@ export const worcationService = {
   addReview : async(review) => {
     const response = await api.post(API_ENDPOINTS.REVIEW.ADD, review);
     return response.data;
+  },
+  updateReview : async(review_no, reviewData) => {
+    const response = await api.patch(API_ENDPOINTS.REVIEW.UPDATE(review_no), reviewData, {
+      headers: { ...API_CONFIG.HEADERS }
+    });
+    return response.data;
+  },
+  deleteReview : async (review_no) => {
+    const response = await api.delete(API_ENDPOINTS.REVIEW.DELETE(review_no));
+    return response.data;
   }
-
 };
