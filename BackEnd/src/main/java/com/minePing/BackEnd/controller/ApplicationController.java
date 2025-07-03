@@ -1,7 +1,6 @@
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
-import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("api/v1/applications")
 @RequiredArgsConstructor
 public class ApplicationController {
 

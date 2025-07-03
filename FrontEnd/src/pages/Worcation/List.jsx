@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
-import WorcationCardList from '../../components/Worcation/WorcationCardList';
+import WorcationCardList from '../../components/worcation/WorcationCardList';
 
 const WorcationList = () => {
   const [viewMode, setViewMode] = useState('all');

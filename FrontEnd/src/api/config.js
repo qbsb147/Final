@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
     DELETE: (worcation_no) => `worcations/${worcation_no}`,
   },
+
   APPLICATION: {
     //예약 확인
     RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
