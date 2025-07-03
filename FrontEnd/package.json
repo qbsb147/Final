@@ -18,15 +18,14 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "i": "^0.3.7",
-
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
-
     "lucide-react": "^0.518.0",
     "moment": "^2.30.1",
     "rc-time-picker": "^3.7.3",
     "react": "^19.1.0",
     "react-big-calendar": "^1.19.3",
+    "react-date-range": "^2.0.1",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.57.0",

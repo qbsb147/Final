@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { worcationService } from '../../api/worcations';
-import WorcationCardList from '../../components/Worcation/WorcationCardList';
+import WorcationCardList from '../../components/worcation/WorcationCardList';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
+import useWorcationStore from '../../store/worcationStore';
 
 const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
   const [viewMode, setViewMode] = useState('partner');
+  const keyword = useWorcationStore((state) => state.keyword);
 
   const navigate = useNavigate();
 
@@ -20,16 +22,19 @@ const WorcationPartnersPage = () => {
   }, []);
 
   const getFilteredWorcations = () => {
+    let filtered = worcations;
     if (viewMode === 'partner') {
-        console.log(viewMode, worcations);
-      return worcations.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
+      filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }
     if (viewMode === 'ai') {
-        console.log(viewMode, worcations);
-      return worcations;
+      // AI 추천 필터링 로직이 있다면 여기에 적용
     }
-    console.log(viewMode, worcations);
-    return worcations;
+    if (keyword.trim() !== '') {
+      filtered = filtered.filter(
+        (w) => (w.worcation_name && w.worcation_name.includes(keyword)) || (w.address && w.address.includes(keyword))
+      );
+    }
+    return filtered;
   };
 
   const handleToggleView = (mode) => {
@@ -39,6 +44,11 @@ const WorcationPartnersPage = () => {
       setViewMode(mode);
     }
   };
+
+  const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
+  useEffect(() => {
+    setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
+  }, [worcations, setPopularKeywords]);
 
   return (
     <Container>
