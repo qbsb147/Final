@@ -2,7 +2,6 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
 
-import com.minePing.BackEnd.dto.WorcationDto;
 import java.util.List;
 
 public interface ApplicationService {

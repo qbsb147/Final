@@ -34,6 +34,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 
     @Override
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getAllApplications() {
         return applicationRepository.findAll().stream()
                 .map(ApplicationDto.ApplicationResponseDto::fromEntity)
@@ -41,6 +42,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationDto.ApplicationResponseDto getApplication(Long id) {
         WorcationApplication entity = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 신청이 존재하지 않습니다. id=" + id));
@@ -77,6 +79,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getReserved() {
         return applicationRepository.findReservedApplications(LocalDate.now())
             .stream()
@@ -85,6 +88,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getUsed() {
         return applicationRepository.findUsedApplications(LocalDate.now())
             .stream()
