@@ -1,21 +1,17 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
+import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
-import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import java.time.Period;
-
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+@Slf4j
 public class MemberDto {
     @Getter
     @Setter
@@ -209,21 +205,61 @@ public class MemberDto {
     public static class MemberInfoResponse {
         private String user_id;
         private String email;
-        private String user_name;
+        private String name;
         private String address;
-        private Integer age;
+        private LocalDate birthday;
         private CommonEnums.Gender gender;
-        private CommonEnums.Role role;
+        private CompanyInfoResponse company_info;
+        private CompanyProfileInfoResponse company_profile_info;
+
+        public static MemberInfoResponse toMasterDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .company_info(CompanyInfoResponse.builder()
+                            .company_name(member.getCompany().getCompanyName())
+                            .company_address(member.getCompany().getCompanyAddress())
+                            .business_email(member.getCompany().getBusinessEmail())
+                            .company_tel(member.getCompany().getCompanyTel())
+                            .build())
+                    .build();
+        }
+
+        public static MemberInfoResponse toWorcationDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .build();
+        }
+
+        public static MemberInfoResponse toEmployeeDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .company_info(CompanyInfoResponse.builder()
+                            .company_name(member.getCompany().getCompanyName())
+                            .company_address(member.getCompany().getCompanyAddress())
+                            .build())
+                    .company_profile_info(CompanyProfileInfoResponse.builder()
+                            .department_name(member.getCompanyProfile().getDepartmentName())
+                            .position(member.getCompanyProfile().getPosition())
+                            .company_email(member.getCompanyProfile().getCompanyEmail())
+                            .company_phone(member.getCompanyProfile().getCompanyPhone())
+                            .build())
+                    .build();
+        }
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    public static class MyPageResponse {
-        MemberDto.MemberInfoResponse memberResponse;
-        CompanyDto.CompanyInfoResponse companyResponse;
-        CompanyProfileDto.CompanyInfoResponse companyProfileResponse;
-    }
 }

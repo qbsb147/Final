@@ -9,7 +9,6 @@ import memberService from '../../api/members';
 
 import useAuthStore from '../../store/authStore';
 
-
 const Login = () => {
   const [userId, setUserId] = useState('');
   const [userPwd, setUserPwd] = useState('');
@@ -53,14 +52,14 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             {/* variant: 'yellow' | 'gray' | 'orange' */}
             <InputBox
-              variant="yellow"
+              $variant="yellow"
               type="text"
               placeholder="아이디 입력"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
             />
             <InputBox
-              variant="yellow"
+              $variant="yellow"
               type="password"
               placeholder="비밀번호 입력"
               value={userPwd}
@@ -123,8 +122,8 @@ const LogoImg = styled.img`
 `;
 
 const InputBox = styled.input`
-  ${({ variant }) => {
-    switch (variant) {
+  ${({ $variant }) => {
+    switch ($variant) {
       case 'yellow':
         return Input.InputYellow;
       case 'gray':
