@@ -11,4 +11,5 @@ public interface EmployeeRepositoryV1 {
     List<CompanyProfile> findAllConsultByCompanyNo(Long companyNo);
     List<CompanyProfile> findallWorcationAppliesByCompanyNo(Long companyNo);
     int countWorcationInProgressByCompanyNo(Long companyNo, java.time.LocalDate today);
+
 }

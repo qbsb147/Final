@@ -3,10 +3,13 @@ package com.minePing.BackEnd.controller;
 import com.minePing.BackEnd.dto.CompanyProfileDto;
 import com.minePing.BackEnd.service.EmployeeService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +22,6 @@ public class EmployeeController {
 
     @GetMapping("/list/{companyNo}")
     public ResponseEntity<List<CompanyProfileDto.Response>> getAllMembers(@PathVariable Long companyNo) {
-
         return ResponseEntity.ok(employeeService.findAllMember(companyNo));
     }
 
@@ -42,5 +44,12 @@ public class EmployeeController {
     @GetMapping("/employees-summary/{companyNo}")
     public ResponseEntity<CompanyProfileDto.Employees> getEmployeesNumber(@PathVariable Long companyNo){
         return ResponseEntity.ok(employeeService.findEmployeesNumber(companyNo));
+    }
+
+    @PatchMapping("/applies/{userNo}")
+    public ResponseEntity<String> updateStatus(@PathVariable Long userNo, @RequestBody Map<String, String> request ){
+        String status = request.get("status"); // 'Y' 또는 'N'
+        employeeService.updateApproveStatus(userNo, status);
+        return ResponseEntity.ok().build();
     }
 }

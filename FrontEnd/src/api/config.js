@@ -35,13 +35,16 @@ export const API_ENDPOINTS = {
     EMPLOYEE_LIST: (companyNo) => `/employee/list/${companyNo}`,
     NEEDS_CONSULT: (companyNo) => `/employee/needs-consult/${companyNo}`,
     APPROVEEMPLOYEE: (companyNo) => `/employee/applies/${companyNo}`,
+    APPROVECHECK: (userNo) => `/employee/applies/${userNo}`,
+    EMPLOYEECOUNT: (companyNo) => `/employee/employees-summary/${companyNo}`,
+    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-appliesy/${companyNo}`,
   },
   WORCATION: {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
   },
-  REVIEW : {
-    ADD : '/reviews',
+  REVIEW: {
+    ADD: '/reviews',
   },
   LOGIN: '/member/login',
   MENTALS: {
