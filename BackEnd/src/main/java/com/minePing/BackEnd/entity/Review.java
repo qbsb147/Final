@@ -3,7 +3,6 @@ package com.minePing.BackEnd.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -55,5 +54,14 @@ public class Review {
     @PreUpdate
     protected void onUpdate() {
         this.updateAt = LocalDateTime.now();
+    }
+
+    /**
+     * 리뷰 내용 변경 (비즈니스 의미 메서드)
+     */
+    public void changeContent(String newContent) {
+        if (newContent == null || newContent.isBlank()) throw new IllegalArgumentException("리뷰 내용은 비어 있을 수 없습니다.");
+        this.reviewContent = newContent;
+        // updateAt은 @PreUpdate로 자동 갱신
     }
 }

@@ -1,5 +1,12 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.entity.Amenity;
+import com.minePing.BackEnd.entity.Photo;
+import com.minePing.BackEnd.entity.Review;
+import com.minePing.BackEnd.entity.Worcation;
+import com.minePing.BackEnd.entity.WorcationDetail;
+import com.minePing.BackEnd.entity.WorcationFeatures;
+import com.minePing.BackEnd.entity.WorcationPartner;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.WorcationEnums;
 import lombok.*;
@@ -49,6 +56,7 @@ public class WorcationDto {
         private List<String> amenities;
         private List<String> photo_urls;
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -73,7 +81,23 @@ public class WorcationDto {
         private String review_content;
         private LocalDateTime create_at;
         private LocalDateTime update_at;
+
+        public static ReviewResponse fromEntity(com.minePing.BackEnd.entity.Review review) {
+            if (review == null)
+                return null;
+            return ReviewResponse.builder()
+                    .review_no(review.getReviewNo())
+                    .application_no(review.getWorcationApplication() != null
+                            ? review.getWorcationApplication().getApplicationNo()
+                            : null)
+                    .writer_id(review.getWriterId())
+                    .review_content(review.getReviewContent())
+                    .create_at(review.getCreateAt())
+                    .update_at(review.getUpdateAt())
+                    .build();
+        }
     }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -89,14 +113,41 @@ public class WorcationDto {
         private com.minePing.BackEnd.enums.CommonEnums.Approve approve;
         private LocalDateTime create_at;
         private LocalDateTime update_at;
+
+        public static PartnerResponse fromEntity(com.minePing.BackEnd.entity.WorcationPartner partner) {
+            if (partner == null)
+                return null;
+            return PartnerResponse.builder()
+                    .partner_no(partner.getPartnerNo())
+                    .worcation_no(partner.getWorcation() != null ? partner.getWorcation().getWorcationNo() : null)
+                    .member_no(partner.getMember() != null ? partner.getMember().getUserNo() : null)
+                    .company_no(partner.getCompany() != null ? partner.getCompany().getCompanyNo() : null)
+                    .company_people(partner.getCompanyPeople())
+                    .start_time(partner.getStartTime())
+                    .end_time(partner.getEndTime())
+                    .approve(partner.getApprove())
+                    .create_at(partner.getCreateAt())
+                    .update_at(partner.getUpdateAt())
+                    .build();
+        }
     }
-        @Getter
+
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class AmenityResponse {
         private Long amenity_no;
         private String amenity_name;
+
+        public static AmenityResponse fromEntity(com.minePing.BackEnd.entity.Amenity amenity) {
+            if (amenity == null)
+                return null;
+            return AmenityResponse.builder()
+                    .amenity_no(amenity.getAmenityNo())
+                    .amenity_name(amenity.getAmenityName())
+                    .build();
+        }
     }
 
     @Getter
@@ -106,6 +157,15 @@ public class WorcationDto {
     public static class PhotoResponse {
         private Long photo_no;
         private String change_name;
+
+        public static PhotoResponse fromEntity(com.minePing.BackEnd.entity.Photo photo) {
+            if (photo == null)
+                return null;
+            return PhotoResponse.builder()
+                    .photo_no(photo.getPhotoNo())
+                    .change_name(photo.getChangeName())
+                    .build();
+        }
     }
 
     @Getter
@@ -153,5 +213,52 @@ public class WorcationDto {
         private List<ReviewResponse> reviews;
         private List<AmenityResponse> amenities;
         private List<PhotoResponse> photos;
+
+        public static Response fromEntity(
+                Worcation w,
+                WorcationDetail d,
+                WorcationFeatures f,
+                List<WorcationPartner> partners,
+                List<Review> reviews,
+                List<Amenity> amenities,
+                List<Photo> photos) {
+            return Response.builder()
+                    .worcation_no(w.getWorcationNo())
+                    .worcation_name(w.getWorcationName())
+                    .worcation_category(w.getWorcationCategory())
+                    .main_change_photo(w.getMainChangePhoto())
+                    .worcation_thema(w.getWorcationThema())
+                    .max_people(w.getMaxPeople())
+                    .partner_price(w.getPartnerPrice())
+                    .non_partner_price(w.getNonPartnerPrice())
+                    .worcation_address(w.getWorcationAddress())
+                    .update_at(w.getUpdateAt())
+                    .create_at(w.getCreateAt())
+                    .status(w.getStatus())
+                    .member_id(w.getMember() != null ? w.getMember().getUserNo() : null)
+                    .area_id(w.getSiggAreas() != null ? w.getSiggAreas().getId().longValue() : null)
+                    .licensee(d != null ? d.getLicensee() : null)
+                    .business_id(d != null ? d.getBusinessId() : null)
+                    .worcation_tel(d != null ? d.getWorcationTel() : null)
+                    .charge_amount(d != null ? d.getChargeAmount() : null)
+                    .content(d != null ? d.getContent() : null)
+                    .navigate(d != null ? d.getNavigate() : null)
+                    .available_time(d != null ? d.getAvailableTime() : null)
+                    .refund_policy(d != null ? d.getRefundPolicy() : null)
+                    .open_date(d != null ? d.getOpenDate() : null)
+                    .location_type(f != null ? f.getLocationType() : null)
+                    .dominant_color(f != null ? f.getDominantColor() : null)
+                    .space_mood(f != null ? f.getSpaceMood() : null)
+                    .best_for(f != null ? f.getBestFor() : null)
+                    .activities(f != null ? f.getActivities() : null)
+                    .accommodation_type(f != null ? f.getAccommodationType() : null)
+                    .partners(
+                            partners != null ? partners.stream().map(PartnerResponse::fromEntity).toList() : List.of())
+                    .reviews(reviews != null ? reviews.stream().map(ReviewResponse::fromEntity).toList() : List.of())
+                    .amenities(amenities != null ? amenities.stream().map(AmenityResponse::fromEntity).toList()
+                            : List.of())
+                    .photos(photos != null ? photos.stream().map(PhotoResponse::fromEntity).toList() : List.of())
+                    .build();
+        }
     }
 }

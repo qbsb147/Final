@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonYbShadow } from '../../styles/Button.styles.js';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -30,8 +29,9 @@ const WorcationDetail = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
+    centerMode: true,
+    centerPadding: '100px',
   };
-  const images = [worcation.main_change_photo, ...(photos ? photos.map((p) => p.change_name) : [])].filter(Boolean);
   useEffect(() => {
     // worcationNo로 데이터 가져오기
     const fetchData = async () => {
@@ -68,6 +68,7 @@ const WorcationDetail = () => {
   console.log(worcation);
   if (!worcation) return null;
   const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
+  const images = [worcation.main_change_photo, ...(photos ? photos.map((p) => p.change_name) : [])].filter(Boolean);
 
   //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
@@ -130,7 +131,7 @@ const WorcationDetail = () => {
 
   const handleAddComment = async () => {
     const review = {
-      application_no: 11,
+      application_no: 1,
       writer_id: loginUserId,
       review_content: newComment,
       create_at: new Date().toISOString(),
@@ -152,32 +153,42 @@ const WorcationDetail = () => {
     setEditedContent(review.review_content);
   };
 
-  const handleSaveEdit = (reviewNo) => {
-    axios
-      .patch(`http://localhost:8080/reviews/${reviewNo}`, {
-        review_content: editedContent,
-        update_at: new Date().toISOString(),
-      })
-      .then(() => {
-        setReviews((prev) =>
-          prev.map((r) =>
-            r.review_no === reviewNo ? { ...r, review_content: editedContent, update_at: new Date().toISOString() } : r
-          )
-        );
-        setEditingId(null);
-        setEditedContent('');
-      })
-      .catch(console.error);
+  const handleSaveEdit = async (review_no) => {
+    try {
+      await worcationService.updateReview(
+        review_no,
+        {
+          review_content: editedContent,
+          update_at: new Date().toISOString(),
+        }
+      );
+      alert("댓글을 수정하였습니다.");
+
+      setEditingId(null);
+      setEditedContent('');
+
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.review_no === review_no
+            ? { ...r, review_content: editedContent, update_at: new Date().toISOString() }
+            : r
+        )
+      );
+    } catch {
+      alert("댓글 수정에 실패하였습니다.");
+    }
   };
-  const handleDelete = (reviewNo) => {
-    axios
-      .delete(`http://localhost:8080/reviews/${reviewNo}`)
-      .then(() => {
-        //UI에서 삭제
-        setReviews((prev) => prev.filter((r) => r.review_no !== reviewNo));
-      })
-      .catch(console.error);
+
+  const handleDelete = async (review_no) => {
+    try {
+      await worcationService.deleteReview(review_no);
+      setReviews((prev) => prev.filter((r) => r.review_no !== review_no));
+      alert("댓글이 삭제되었습니다.");
+    } catch {
+      alert("댓글 삭제에 실패하였습니다.");
+    }
   };
+
 
   return (
     <PageContainer>
@@ -194,7 +205,7 @@ const WorcationDetail = () => {
           <PhotoSliderWrapper>
             <Slider {...settings}>
               {images.map((src, idx) => (
-                <img key={idx} src={src} alt={`slide-${idx}`} />
+                <SliderImage key={idx} src={src} alt={`slide-${idx}`} />
               ))}
             </Slider>
           </PhotoSliderWrapper>
@@ -323,11 +334,12 @@ const MainImageWrapper = styled.div`
 `;
 
 const PhotoSliderWrapper = styled.div`
-  width: 80%;
+  width: 100%;
   margin: 30px auto;
 `;
 
 const SliderImage = styled.img`
+  width: 100%;
   height: 400px;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -465,3 +477,4 @@ const ActionBtn = styled.button`
   font-family: 'Godo B';
   color: ${({ theme }) => theme.colors.black};
 `;
+

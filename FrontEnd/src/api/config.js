@@ -42,6 +42,8 @@ export const API_ENDPOINTS = {
   },
   REVIEW : {
     ADD : '/reviews',
+    UPDATE : (review_no) => `/reviews/${review_no}`,
+    DELETE : (review_no) => `/reviews/${review_no}`,
   },
   LOGIN: '/member/login',
   MENTALS: {
