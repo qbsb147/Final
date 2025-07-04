@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
     SIGNUP: (role) => `/member/signUp/${role}`,
     MY_INFO: '/member/userInfo',
     MY_PAGE: '/member/myPage',
+    MY_UPDATE: (user_no) => `/member/myPage/${user_no}`,
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
@@ -35,6 +36,9 @@ export const API_ENDPOINTS = {
     EMPLOYEE_LIST: (companyNo) => `/employee/list/${companyNo}`,
     NEEDS_CONSULT: (companyNo) => `/employee/needs-consult/${companyNo}`,
     APPROVEEMPLOYEE: (companyNo) => `/employee/applies/${companyNo}`,
+    APPROVECHECK: (userNo) => `/employee/applies/${userNo}`,
+    EMPLOYEECOUNT: (companyNo) => `/employee/employees-summary/${companyNo}`,
+    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-appliesy/${companyNo}`,
   },
   WORCATION: {
     LIST: '/worcations',
@@ -58,7 +62,10 @@ export const API_ENDPOINTS = {
     //삭제
     DELETE: (application_no) => `/applications/${application_no}`,
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
+    LIST : '/applications',
   },
+  REVIEW: {
+    ADD: '/reviews',
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,

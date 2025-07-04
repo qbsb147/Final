@@ -1,0 +1,27 @@
+/* 당단 숨기기 */
+.rdrDateDisplayWrapper {
+  display: none;
+}
+
+/* 년 월 랜더링 순서 바꾸기 */
+.rdrMonthAndYearPickers {
+  flex-direction: row-reverse !important;
+}
+
+/* ReservationCalendar - 확인 버튼 스타일 */
+.reservation-calendar-confirm-btn {
+  padding: 10px 32px;
+  border-radius: 8px;
+  background: #ffdd38;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.reservation-calendar-confirm-btn-wrap {
+  display: flex;
+  justify-content: center;
+  background: #fff;
+  width: 100%;
+}

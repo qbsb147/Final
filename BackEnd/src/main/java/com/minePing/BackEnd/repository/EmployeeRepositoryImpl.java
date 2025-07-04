@@ -27,13 +27,17 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryV1 {
         LEFT JOIN FETCH m.worcationApplications wa
         WHERE cp.company.companyNo = :companyNo
           AND cp.approve = :cpApprove
-          AND (wa.approve = :waApprove OR wa IS NULL)
+          AND (wa.approve IN :waApproves OR wa IS NULL)
     """;
 
         return em.createQuery(query, CompanyProfile.class)
                 .setParameter("companyNo", companyNo)
-                .setParameter("cpApprove", CommonEnums.Approve.Y)   // 직원 승인 필터 추가
-                .setParameter("waApprove", CommonEnums.Approve.Y)   // 워케이션 승인
+                .setParameter("cpApprove", CommonEnums.Approve.Y)
+                .setParameter("waApproves", List.of(
+                        CommonEnums.Approve.Y,  // 승인
+                        CommonEnums.Approve.W,   // 대기
+                        CommonEnums.Approve.N
+                ))
                 .getResultList();
     }
 
@@ -42,7 +46,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryV1 {
         String query = "SELECT cp FROM CompanyProfile cp JOIN FETCH cp.member m WHERE cp.company.companyNo = :companyNo AND cp.approve = :approve";
         return em.createQuery(query, CompanyProfile.class)
                 .setParameter("companyNo", companyNo)
-                .setParameter("approve", CommonEnums.Approve.N)
+                .setParameter("approve", CommonEnums.Approve.W)
                 .getResultList();
     }
 

@@ -28,7 +28,6 @@ const SignUp = () => {
 
   const handlePrev = () => {
     setFormStep((prev) => (prev > 1 ? prev - 1 : prev));
-    setFormData2({});
   };
 
   const handleSubmit = async (e) => {

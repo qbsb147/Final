@@ -15,4 +15,6 @@ public interface EmployeeService {
     List<CompanyProfileDto.Applies> findWorcationAppliesList(Long companyNo);
 
     CompanyProfileDto.Employees findEmployeesNumber(Long companyNo);
+
+    void updateApproveStatus(Long userNo, String status);
 }

@@ -6,15 +6,15 @@ import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Login;
 import com.minePing.BackEnd.dto.MemberDto.LoginResponse;
 import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
-import com.minePing.BackEnd.dto.MemberDto.MyPageResponse;
-import com.minePing.BackEnd.dto.MemberDto.UpdateRole;
+import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
+import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Department;
 import com.minePing.BackEnd.entity.Member;
-import com.minePing.BackEnd.enums.CommonEnums;
 
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.SocialType;
 
@@ -25,16 +25,11 @@ import com.minePing.BackEnd.repository.CompanyProfileRepository;
 import com.minePing.BackEnd.repository.CompanyRepository;
 import com.minePing.BackEnd.repository.DepartmentRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.net.UnknownServiceException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -167,18 +162,28 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MyPageResponse getMyPageByUserId(String userId, Role role) {
+    public MemberInfoResponse getMyPageByUserId(String userId, Role role) {
+        Member member;
         switch (role){
             case MASTER->{
+                member = memberRepository.findMasterInfoByUserId(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+                return MemberInfoResponse.toMasterDto(member);
             }
             case MANAGER, EMPLOYEE->{
-
+                member = memberRepository.findEmployeeInfoByUserId(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+                System.out.println("member = " + member);
+                return MemberInfoResponse.toEmployeeDto(member);
             }
-            case WORCATION -> {
-
+            case WORCATION, ADMIN -> {
+                member = memberRepository.findWorcationInfoByUserId(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+                return MemberInfoResponse.toWorcationDto(member);
             }
+            default -> throw new UserNotFoundException();
+
         }
-        return null;
     }
 
     @Override
@@ -198,5 +203,10 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         memberRepository.save(member);
         return member;
+    }
+
+    @Override
+    public void updateMember(Update updateDto) {
+
     }
 }

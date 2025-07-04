@@ -5,6 +5,32 @@ import ReusableTable from './ReusableTable';
 const EmployeeApproveTable = ({ searchKeyword }) => {
   const [members, setMembers] = useState([]);
 
+  const handleApprove = async (row) => {
+    if (!window.confirm(`${row.name}님을 승인하시겠습니까?`)) return;
+
+    try {
+      await companyEmployee.UpdateApproveCheck(row.user_no, 'Y');
+      alert('승인 완료');
+
+      setMembers((prev) => prev.filter((member) => member.user_no !== row.user_no));
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleReject = async (row) => {
+    if (!window.confirm(`${row.name}님을 거부하시겠습니까?`)) return;
+
+    try {
+      await companyEmployee.UpdateApproveCheck(row.user_no, 'N');
+      alert('거부 완료');
+
+      setMembers((prev) => prev.filter((member) => member.user_no !== row.user_no));
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const roleMap = {
     MASTER: '대표',
     MANAGER: '매니저',
@@ -35,8 +61,8 @@ const EmployeeApproveTable = ({ searchKeyword }) => {
     const fetchData = async () => {
       try {
         //현재 2번만 불러오게함 로그인되면 바꿀예정
-        const data = await companyEmployee.getEmployeeApprove(2);
-
+        const data = await companyEmployee.getEmployeeApprove(1);
+        console.log('승인 대기 멤버 데이터:', data);
         const formatted = data.map((member) => ({
           user_no: member.user_no,
           department: member.department_name,
@@ -59,7 +85,7 @@ const EmployeeApproveTable = ({ searchKeyword }) => {
     fetchData();
   }, []);
 
-  return <ReusableTable columns={columns} data={filteredMembers} />;
+  return <ReusableTable columns={columns} data={filteredMembers} onApprove={handleApprove} onReject={handleReject} />;
 };
 
 export default EmployeeApproveTable;

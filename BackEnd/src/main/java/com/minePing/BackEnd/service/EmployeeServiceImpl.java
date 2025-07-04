@@ -3,7 +3,9 @@ package com.minePing.BackEnd.service;
 import com.minePing.BackEnd.dto.CompanyProfileDto;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Applies;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Employees;
+import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     Member member = profile.getMember();
 
                     String workStatus = member.getWorcationApplications().stream()
+                            .filter(app -> app.getApprove() == CommonEnums.Approve.Y)
                             .anyMatch(app -> !today.isBefore(app.getStartDate()) && !today.isAfter(app.getEndDate()))
                             ? "워케이션 중" : "근무 중";
                     int age = Period.between(member.getBirthday(), today).getYears();
@@ -66,8 +69,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                     int age = Period.between(member.getBirthday(), today).getYears();
 
                     String psychologicalState = member.getMentals().stream()
-                            .filter(m -> m.getPsychologicalState() == MentalEnums.PsychologicalState.Severe
-                                    || m.getPsychologicalState() == MentalEnums.PsychologicalState.Critical)
                             .map(m -> m.getPsychologicalState().name())
                             .findFirst()
                             .orElse("Unknown");
@@ -111,5 +112,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         int current = total - worcation;
 
         return Employees.toDto(total, worcation, current);
+    }
+
+    @Override
+    @Transactional
+    public void updateApproveStatus(Long userNo, String status) {
+        CompanyProfile companyProfile = employeeRepository.findByMember_UserNo(userNo).orElseThrow();
+
+        companyProfile.updatestatus(CommonEnums.Approve.valueOf(status));
     }
 }
