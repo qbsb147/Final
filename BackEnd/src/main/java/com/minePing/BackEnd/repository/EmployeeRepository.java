@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EmployeeRepository extends JpaRepository<CompanyProfile, Long>, EmployeeRepositoryV1 {
     Optional<CompanyProfile> findByMember_UserNo(Long userNo);
+
 }

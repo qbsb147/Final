@@ -2,9 +2,11 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Applies;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Calendar;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Employees;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.repository.EmployeeRepository;
@@ -121,4 +123,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         companyProfile.updatestatus(CommonEnums.Approve.valueOf(status));
     }
+
+    @Override
+    @Transactional
+    public void updateWorcationStatus(Long userNo, String status) {
+        WorcationApplication application = employeeRepository.findWorcationApplicationByUserNo(userNo)
+                .orElseThrow(() -> new RuntimeException("WorcationApplication not found for userNo: " + userNo));
+        application.updatestatus(CommonEnums.Approve.valueOf(status));
+    }
+
+    @Override
+    public List<Calendar> getWorcationCalendar(Long companyNo) {
+        return employeeRepository.findApprovedWorcationApplications(companyNo).stream()
+
+                .map(app -> CompanyProfileDto.Calendar.toDto(
+                        app,
+                        app.getMember(),
+                        app.getWorcation().getWorcationName()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
 }

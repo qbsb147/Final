@@ -52,4 +52,16 @@ public class EmployeeController {
         employeeService.updateApproveStatus(userNo, status);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/worcation-applies/{userNo}")
+    public ResponseEntity<String> updateWorcationStatus(@PathVariable Long userNo, @RequestBody Map<String, String> request ){
+        String status = request.get("status");
+        employeeService.updateWorcationStatus(userNo,status);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/worcation-calendar/{companyNo}")
+    public ResponseEntity<List<CompanyProfileDto.Calendar>> getWorcationCalendar(@PathVariable Long companyNo){
+        return  ResponseEntity.ok(employeeService.getWorcationCalendar(companyNo));
+    }
 }

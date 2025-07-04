@@ -74,4 +74,26 @@ export const companyEmployee = {
       throw new Error(message);
     }
   },
+
+  UpdateWorcationCheck: async (userNo, status) => {
+    try {
+      const { data } = await axiosInstance.patch(API_ENDPOINTS.COMPANY_EMPLOYEE.WORCATIONAPLLIECHECK(userNo), {
+        status,
+      });
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || '워케이션 승인 및 거부에 실패하였습니다.';
+      throw new Error(message);
+    }
+  },
+
+  CalendarEmployee: async (companyNo) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.CALENDAREMPLOYEE(companyNo));
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || '캘린더를 불러오는데 실패했습니다.';
+      throw new Error(message);
+    }
+  },
 };

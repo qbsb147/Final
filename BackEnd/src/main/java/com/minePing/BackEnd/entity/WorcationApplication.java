@@ -65,4 +65,8 @@ public class WorcationApplication {
         this.review = review;
     }
 
+    public void updatestatus(CommonEnums.Approve approve) {
+        this.approve = approve;
+    }
+
 }

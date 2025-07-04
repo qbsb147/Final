@@ -1,4 +1,3 @@
-
 USE mineping;
 DESCRIBE health;
 -- amenity 테이블의 엔티티명 (amenity_no, amenity_name, worcation_amenities)
@@ -11,30 +10,55 @@ INSERT INTO amenity (amenity_no, amenity_name) VALUES (6,"프린터");
 INSERT INTO amenity (amenity_no, amenity_name) VALUES (7,"샤워실");
 INSERT INTO amenity (amenity_no, amenity_name) VALUES (8,"휴게 공간");
 
+-- member 테이블 INSERT 문 (모든 필드 포함)
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (1, '85u$%#312', '$2a$10$encrypted_password_hash1', '김철수', 'kim.cs@hellocompany.co.kr', 'M', '1985-03-15', '서울특별시 강남구 역삼동 123-45', '010-1234-5678', 'MASTER', '2020-03-15 09:30:00', '2024-12-15 14:20:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (2, '85gf#312', '$2a$10$encrypted_password_hash2', '이영희', 'lee.yh@restfruit.co.kr', 'W', '1990-07-22', '서울특별시 서초구 잠원동 456-78', '010-2345-6789', 'MANAGER', '2019-07-20 10:15:00', '2024-12-14 16:30:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (3, '85u$%&^%312', '$2a$10$encrypted_password_hash3', '박민수', 'park.ms@worcation.co.kr', 'M', '1988-01-10', '부산광역시 해운대구 우동 789-12', '010-3456-7890', 'EMPLOYEE', '2021-01-10 11:45:00', '2024-12-13 09:15:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (4, '85u$%^$12', '$2a$10$encrypted_password_hash4', '정대호', 'jung.dh@bizhouse.co.kr', 'M', '1982-11-05', '대구광역시 수성구 범어동 321-54', '010-4567-8901', 'MASTER', '2018-11-05 13:20:00', '2024-12-12 11:40:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (5, '851asdas312', '$2a$10$encrypted_password_hash5', '최은정', 'choi.ej@connectplace.co.kr', 'W', '1992-05-25', '인천광역시 연수구 송도동 654-87', '010-5678-9012', 'MANAGER', '2022-05-25 15:10:00', '2024-12-11 12:25:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (6, 'avbr1!%@#123', '$2a$10$encrypted_password_hash6', '강태우', 'kang.tw@natureshelter.co.kr', 'M', '1987-09-12', '강원도 춘천시 효자동 987-21', '010-6789-0123', 'EMPLOYEE', '2020-09-12 10:30:00', '2024-12-10 14:55:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (7, 'gdfg@#51', '$2a$10$encrypted_password_hash7', '윤서연', 'yoon.sy@healingoffice.co.kr', 'W', '1995-02-18', '제주특별자치도 제주시 연동 147-63', '010-7890-1234', 'WORCATION', '2023-02-18 08:45:00', '2024-12-09 16:05:00', 'Y');
+
+INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
+VALUES (8, 'feqwf@#!dasf', '$2a$10$encrypted_password_hash8', '홍길동', 'hong.gd@modernwork.co.kr', 'M', '1991-08-30', '광주광역시 서구 치평동 258-96', '010-8901-2345', 'EMPLOYEE', '2021-08-30 16:00:00', '2024-12-08 13:10:00', 'Y');
+
 -- company 테이블 INSERT 문 (모든 필드 포함)
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (1, '헬로우컴퍼니', '1112233333', '김철수', '2020-03-15', '서울특별시 강남구 테헤란로 123', 'hello@hellocompany.co.kr', '02-1234-5678', 'Y', '2020-03-15 09:00:00', '2024-12-01 10:30:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (1, 1, '헬로우컴퍼니', '1112233333', '김철수', '2020-03-15', '서울특별시 강남구 테헤란로 123', 'hello@hellocompany.co.kr', '02-1234-5678', 'Y', '2020-03-15 09:00:00', '2024-12-01 10:30:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (2, '휴식과일', '2223344444', '이영희', '2019-07-20', '서울특별시 서초구 서초대로 456', 'rest@restfruit.co.kr', '02-2345-6789', 'Y', '2019-07-20 14:15:00', '2024-11-25 16:45:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (2, 4, '휴식과일', '2223344444', '이영희', '2019-07-20', '서울특별시 서초구 서초대로 456', 'rest@restfruit.co.kr', '02-2345-6789', 'Y', '2019-07-20 14:15:00', '2024-11-25 16:45:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (3, '워케이션컴퍼니', '3334455555', '박민수', '2021-01-10', '부산광역시 해운대구 해운대로 789', 'work@worcation.co.kr', '051-3456-7890', 'Y', '2021-01-10 11:20:00', '2024-12-05 08:15:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (3, 2, '워케이션컴퍼니', '3334455555', '박민수', '2021-01-10', '부산광역시 해운대구 해운대로 789', 'work@worcation.co.kr', '051-3456-7890', 'Y', '2021-01-10 11:20:00', '2024-12-05 08:15:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (4, '비즈니스하우스', '4445566666', '정대호', '2018-11-05', '대구광역시 수성구 동대구로 321', 'biz@bizhouse.co.kr', '053-4567-8901', 'Y', '2018-11-05 13:40:00', '2024-11-30 12:20:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (4, 3, '비즈니스하우스', '4445566666', '정대호', '2018-11-05', '대구광역시 수성구 동대구로 321', 'biz@bizhouse.co.kr', '053-4567-8901', 'Y', '2018-11-05 13:40:00', '2024-11-30 12:20:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (5, '커넥트플레이스', '5556677777', '최은정', '2022-05-25', '인천광역시 연수구 컨벤시아대로 654', 'connect@connectplace.co.kr', '032-5678-9012', 'Y', '2022-05-25 15:30:00', '2024-12-03 09:45:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (5, 5, '커넥트플레이스', '5556677777', '최은정', '2022-05-25', '인천광역시 연수구 컨벤시아대로 654', 'connect@connectplace.co.kr', '032-5678-9012', 'Y', '2022-05-25 15:30:00', '2024-12-03 09:45:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (6, '자연속쉼터', '6667788888', '강태우', '2020-09-12', '강원도 춘천시 중앙로 987', 'nature@natureshelter.co.kr', '033-6789-0123', 'Y', '2020-09-12 10:15:00', '2024-11-28 14:30:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (6, 6, '자연속쉼터', '6667788888', '강태우', '2020-09-12', '강원도 춘천시 중앙로 987', 'nature@natureshelter.co.kr', '033-6789-0123', 'Y', '2020-09-12 10:15:00', '2024-11-28 14:30:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (7, '힐링오피스', '7778899999', '윤서연', '2023-02-18', '제주특별자치도 제주시 첨단로 147', 'healing@healingoffice.co.kr', '064-7890-1234', 'Y', '2023-02-18 08:45:00', '2024-12-07 11:10:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (7, 7, '힐링오피스', '7778899999', '윤서연', '2023-02-18', '제주특별자치도 제주시 첨단로 147', 'healing@healingoffice.co.kr', '064-7890-1234', 'Y', '2023-02-18 08:45:00', '2024-12-07 11:10:00');
 
-INSERT INTO company (company_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
-VALUES (8, '모던워크', '8889900000', '홍길동', '2021-08-30', '광주광역시 서구 상무대로 258', 'modern@modernwork.co.kr', '062-8901-2345', 'Y', '2021-08-30 16:25:00', '2024-12-02 13:55:00');
+INSERT INTO company (company_no, chief_user_no, company_name, business_id, licensee, open_date, company_address, business_email, company_tel, status, create_at, update_at) 
+VALUES (8, 8, '모던워크', '8889900000', '홍길동', '2021-08-30', '광주광역시 서구 상무대로 258', 'modern@modernwork.co.kr', '062-8901-2345', 'Y', '2021-08-30 16:25:00', '2024-12-02 13:55:00');
 
 -- department 테이블의 엔티티명 (department_no, department_name)
 INSERT INTO department (department_no, department_name, company_no) VALUES (1,"인사팀",1);
@@ -45,31 +69,6 @@ INSERT INTO department (department_no, department_name, company_no) VALUES (5,"�
 INSERT INTO department (department_no, department_name, company_no) VALUES (6,"기획팀",3);
 INSERT INTO department (department_no, department_name, company_no) VALUES (7,"재무팀",3);
 INSERT INTO department (department_no, department_name, company_no) VALUES (8,"고객지원팀",1);
-
--- member 테이블 INSERT 문 (모든 필드 포함)
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (1, 'qwe123', '$2a$10$encrypted_password_hash1', '김철수', 'kim.cs@hellocompany.co.kr', 'M', '1985-03-15', '서울특별시 강남구 역삼동 123-45', '010-1234-5678', 'MASTER', '2020-03-15 09:30:00', '2024-12-15 14:20:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (2, 'qw12', '$2a$10$encrypted_password_hash2', '이영희', 'lee.yh@restfruit.co.kr', 'W', '1990-07-22', '서울특별시 서초구 잠원동 456-78', '010-2345-6789', 'MANAGER', '2019-07-20 10:15:00', '2024-12-14 16:30:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (3, 'qweqwe', '$2a$10$encrypted_password_hash3', '박민수', 'park.ms@worcation.co.kr', 'M', '1988-01-10', '부산광역시 해운대구 우동 789-12', '010-3456-7890', 'EMPLOYEE', '2021-01-10 11:45:00', '2024-12-13 09:15:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (4, 'qwe1234', '$2a$10$encrypted_password_hash4', '정대호', 'jung.dh@bizhouse.co.kr', 'M', '1982-11-05', '대구광역시 수성구 범어동 321-54', '010-4567-8901', 'MASTER', '2018-11-05 13:20:00', '2024-12-12 11:40:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (5, 'qwer1234', '$2a$10$encrypted_password_hash5', '최은정', 'choi.ej@connectplace.co.kr', 'W', '1992-05-25', '인천광역시 연수구 송도동 654-87', '010-5678-9012', 'MANAGER', '2022-05-25 15:10:00', '2024-12-11 12:25:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (6, 'eee333', '$2a$10$encrypted_password_hash6', '강태우', 'kang.tw@natureshelter.co.kr', 'M', '1987-09-12', '강원도 춘천시 효자동 987-21', '010-6789-0123', 'EMPLOYEE', '2020-09-12 10:30:00', '2024-12-10 14:55:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (7, 'qqq111', '$2a$10$encrypted_password_hash7', '윤서연', 'yoon.sy@healingoffice.co.kr', 'W', '1995-02-18', '제주특별자치도 제주시 연동 147-63', '010-7890-1234', 'WORCATION', '2023-02-18 08:45:00', '2024-12-09 16:05:00', 'Y');
-
-INSERT INTO member (user_no, user_id, user_pwd, name, email, gender, birthday, address, phone, role, create_at, update_at, status)
-VALUES (8, 'www222', '$2a$10$encrypted_password_hash8', '홍길동', 'hong.gd@modernwork.co.kr', 'M', '1991-08-30', '광주광역시 서구 치평동 258-96', '010-8901-2345', 'EMPLOYEE', '2021-08-30 16:00:00', '2024-12-08 13:10:00', 'Y');
 
 -- health 테이블 INSERT 문 (모든 필드 포함)
 INSERT INTO health (health_no, user_no, weight, height, bmi, alcohol_consumption, blood_pressure, blood_sugar, health_condition, cholesterol_level, smoking_status, physical_activity, sleep_hours, diet_type, update_date)
@@ -611,4 +610,4 @@ UPDATE member
 SET user_pwd = '{bcrypt}$2a$10$iZqHgXoFNRQ033syrI9ZS.NBW2R721A7iNgEA4h00gXw4GZUXx4Ta';
 SET SQL_SAFE_UPDATES = 1; 
 
-select*from member;
+select*from department;

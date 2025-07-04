@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Calender from './Calender/Calendar';
+import WorcationCalendar from './Calender/WorcationCalendar';
 
 import userIcon from '../../assets/User.png';
 import chillIcon from '../../assets/Chill.png';
@@ -28,9 +28,9 @@ const CalenderContainoer = () => {
   const month = today.getMonth() + 1;
 
   const InfoListData = [
-    { icon: tasksIcon, title: '총 인원', count: data?.totalEmployees ?? 0 },
-    { icon: userIcon, title: '근무자', count: data?.currentEmployees ?? 0 },
-    { icon: chillIcon, title: '워케이션 근무자', count: data?.worcationEmployees ?? 0 },
+    { icon: tasksIcon, title: '총 인원', count: data?.total_employees ?? 0 },
+    { icon: userIcon, title: '근무자', count: data?.current_employees ?? 0 },
+    { icon: chillIcon, title: '워케이션 근무자', count: data?.worcation_employees ?? 0 },
   ];
   return (
     <Container>
@@ -40,7 +40,7 @@ const CalenderContainoer = () => {
         </DateHeaderTitle>
       </DateHeader>
       <Contents>
-        <Calender />
+        <WorcationCalendar />
         <InfoList>
           <InfoListUl>
             {InfoListData.map((item, index) => (

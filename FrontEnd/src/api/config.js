@@ -37,7 +37,9 @@ export const API_ENDPOINTS = {
     APPROVEEMPLOYEE: (companyNo) => `/employee/applies/${companyNo}`,
     APPROVECHECK: (userNo) => `/employee/applies/${userNo}`,
     EMPLOYEECOUNT: (companyNo) => `/employee/employees-summary/${companyNo}`,
-    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-appliesy/${companyNo}`,
+    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-applies/${companyNo}`,
+    WORCATIONAPLLIECHECK: (userNo) => `/employee/worcation-applies/${userNo}`,
+    CALENDAREMPLOYEE: (companyNo) => `/employee/worcation-calendar/${companyNo}`,
   },
   WORCATION: {
     LIST: '/worcations',
