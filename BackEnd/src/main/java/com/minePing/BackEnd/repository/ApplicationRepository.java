@@ -1,8 +1,12 @@
 package com.minePing.BackEnd.repository;
 
+import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
+import jakarta.persistence.LockModeType;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -30,7 +34,9 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
            "LEFT JOIN FETCH w.worcationFeatures " +
            "WHERE wa.worcation.worcationNo = :worcationNo")
     List<WorcationApplication> findByWorcationNo(@Param("worcationNo") Long worcationNo);
-    
+
+
+
     // 승인 상태별 신청 조회
     @Query("SELECT wa FROM WorcationApplication wa " +
            "LEFT JOIN FETCH wa.member " +
@@ -91,5 +97,7 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
             "WHERE wa.member.userNo = :userNo AND wa.endDate < :today " +
             "ORDER BY wa.endDate DESC")
     List<WorcationApplication> getUsedByUser(@Param("userNo") Long userNo, @Param("today") LocalDate today);
+
+
 
 }

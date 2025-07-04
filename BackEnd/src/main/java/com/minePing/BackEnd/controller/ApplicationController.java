@@ -44,6 +44,14 @@ public class ApplicationController {
         return ResponseEntity.noContent().build();
     }
 
+    //워케이션 업체 별 신청 현황
+    @GetMapping("/reserved-by-worcation")
+    public ResponseEntity<List<ApplicationDto.ReservedResponseDto>> getReservedByWorcation(
+            @RequestParam Long worcationNo) {
+        List<ApplicationDto.ReservedResponseDto> list = applicationService.getReservedByWorcation(worcationNo);
+        return ResponseEntity.ok(list);
+    }
+
     /**
      *
      * 예약 확인

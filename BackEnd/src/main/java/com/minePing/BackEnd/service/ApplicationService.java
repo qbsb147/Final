@@ -16,4 +16,6 @@ public interface ApplicationService {
 
     List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo);
     List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);
+    List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo);
+
 }
