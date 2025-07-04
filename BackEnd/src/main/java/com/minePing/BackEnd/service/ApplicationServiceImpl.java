@@ -54,11 +54,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         Member member = memberRepository.findById(requestDto.getUserNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 🔒 워케이션 엔티티를 락 걸어서 조회
+        //  워케이션 엔티티를 락 걸어서 조회
         Worcation worcation = worcationRepository.findByIdForUpdate(requestDto.getWorcationNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
 
-        // 🔥 인원 체크 및 차감 처리
+        //  인원 체크 및 차감 처리
         if (worcation.getMaxPeople() == null || worcation.getMaxPeople() <= 0) {
             throw new IllegalStateException("더 이상 신청할 수 없는 워케이션입니다.");
         }
