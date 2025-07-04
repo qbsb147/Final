@@ -31,6 +31,8 @@ public class MemberController {
 
     @PostMapping("/signUp/EMPLOYEE")
     public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.EmployeeJoin employeeJoinDto) {
+        System.out.println("employeeJoinDto = " + employeeJoinDto);
+        System.out.println("확인 = " + employeeJoinDto);
         memberService.createEmployeeMember(employeeJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

@@ -62,10 +62,9 @@ export const API_ENDPOINTS = {
     //삭제
     DELETE: (application_no) => `/applications/${application_no}`,
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
-    LIST : '/applications',
+    LIST: '/applications',
   },
-  REVIEW: {
-    ADD: '/reviews',
+
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,
