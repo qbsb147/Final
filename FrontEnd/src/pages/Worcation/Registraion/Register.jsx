@@ -12,25 +12,28 @@ import FeatureForm from '../../../components/worcation/Register/Form/FeatureForm
 import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
+import useBusinessStore from '../../../store/useBusinessStore.js';
 import useWorcationStore from '../../../store/useWorcationStore';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { worcationService } from '../../../api/worcations.js';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const isValidate = useWorcationStore((state) => state.isValidate);
   const isNonNull = useWorcationStore((state) => state.isNonNull);
   const worcationData = useWorcationStore((state) => state);
-  const { id } = useParams();
+  const { worcation_no } = useParams();
   const navigate = useNavigate();
+  const businessStore = useBusinessStore((state) => state);
 
-  useEffect(() => {
-    if (id) {
-      axios.get(`/api/worcations/${id}`).then((res) => {
+  const handleSample = async () => {
+    if (worcation_no) {
+      try {
+        const res = await worcationService.getDetail(worcation_no); //바로 await
         const data = res.data;
 
-        // 필요한 형태로 데이터 파싱
         useWorcationStore.setApplication(data.application);
         useWorcationStore.setInfo(data.info);
         useWorcationStore.setDescription(data.description);
@@ -39,9 +42,16 @@ const Register = () => {
         useWorcationStore.setLocation(data.location);
         useWorcationStore.setPolicy(data.policy);
         useWorcationStore.setFeature(data.feature);
-      });
+      } catch (err) {
+        console.error('데이터 불러오기 실패:', err);
+        Swal.fire('불러오기 실패', '다시 시도해주세요.', 'error');
+      }
     }
-  }, [id]);
+  };
+
+  useEffect(() => {
+    handleSample(); // 처음 들어올 때 id가 있으면 자동 로딩
+  }, [worcation_no]);
 
   const toRequestDto = () => {
     return {
@@ -78,19 +88,20 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
-        if (id) {
-          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        if (worcation_no) {
+          const data = await worcationService.update();
         } else {
-          await axios.post('/api/worcations', toRequestDto());
+          const data = await worcationService.save();
         }
-        Swal.fire('저장되었습니다.', '', 'success');
+        Swal.fire('임시 저장되었습니다.', '', 'success');
         navigate('/worcation/list');
       } catch (error) {
         console.error('임시 저장 실패:', error);
-        Swal.fire('저장 실패', '다시 시도해주세요.', 'error');
+        Swal.fire('임시 저장 실패', '다시 시도해주세요.', 'error');
       }
     }
   };
+  const isBusinessValidated = !!useBusinessStore((state) => state.formData.businessId);
 
   const handleSubmit = async () => {
     const result = await Swal.fire({
@@ -102,10 +113,10 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
-        if (id) {
-          await axios.put(`/api/worcations/${id}`, toRequestDto());
+        if (worcation_no) {
+          const data = await worcationService.update();
         } else {
-          await axios.post('/api/worcations', toRequestDto());
+          const data = await worcationService.save();
         }
         Swal.fire('등록 완료!', '', 'success');
         navigate('/worcation/list');
@@ -145,7 +156,9 @@ const Register = () => {
         <FormContent>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
           <FormActions>
-            <ActionButton type="button">미리 보기</ActionButton>
+            <ActionButton type="button" onClick={handleSample}>
+              미리 보기
+            </ActionButton>
             {renderForm()}
           </FormActions>
         </FormContent>
@@ -165,11 +178,11 @@ const Register = () => {
           )}
           {isNonNull ? (
             <>
-              <ActionButton onClick={handleSubmit}>등록</ActionButton>
+              <ActionButton disabled={!isBusinessValidated}>등록</ActionButton>
             </>
           ) : (
             <>
-              <ActionButton type="button" style={{ opacity: 0.3 }}>
+              <ActionButton type="button" onClick={handleSubmit} style={{ opacity: 0.3 }}>
                 등록
               </ActionButton>
             </>
@@ -181,10 +194,6 @@ const Register = () => {
 };
 
 export default Register;
-const FormContent = styled.div`
-  display: flex;
-  gap: 20px;
-`;
 
 const ActionButton = styled(BtnWhiteYellowBorder)`
   height: 30px;
@@ -219,4 +228,12 @@ const FormActions = styled.div`
 const FormFooter = styled.div`
   display: flex;
   gap: 20px;
+`;
+
+const FormContent = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 40px;
+  padding: 10px 0;
+  box-sizing: border-box;
 `;

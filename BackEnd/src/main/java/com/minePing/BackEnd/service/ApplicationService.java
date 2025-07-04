@@ -2,7 +2,6 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
 
-import com.minePing.BackEnd.dto.WorcationDto;
 import java.util.List;
 
 public interface ApplicationService {
@@ -15,6 +14,8 @@ public interface ApplicationService {
 
     void deleteApplication(Long id);
 
-    List<ApplicationDto.ApplicationResponseDto> getReserved();
-    List<ApplicationDto.ApplicationResponseDto> getUsed();
+    List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo);
+    List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);
+    List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo);
+
 }

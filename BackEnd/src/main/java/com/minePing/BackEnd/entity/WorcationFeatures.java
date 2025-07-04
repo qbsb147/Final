@@ -50,4 +50,12 @@ public class WorcationFeatures {
     @Column(name = "accommodation_type")
     @Enumerated(EnumType.STRING)
     private WorcationEnums.AccommodationType accommodationType;
+
+    public void changeLocationType(WorcationEnums.LocationType type) { this.locationType = type; }
+    public void changeDominantColor(WorcationEnums.DominantColor color) { this.dominantColor = color; }
+    public void changeSpaceMood(WorcationEnums.SpaceMood mood) { this.spaceMood = mood; }
+    public void changeBestFor(WorcationEnums.BestFor bestFor) { this.bestFor = bestFor; }
+    public void changeActivities(String activities) { this.activities = activities; }
+    public void changeAccommodationType(WorcationEnums.AccommodationType type) { this.accommodationType = type; }
+    public void assignWorcation(Worcation worcation) { this.worcation = worcation; }
 }

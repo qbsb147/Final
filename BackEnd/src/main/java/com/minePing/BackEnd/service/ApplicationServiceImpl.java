@@ -8,7 +8,6 @@ import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.enums.CommonEnums;
-import com.minePing.BackEnd.mapper.WorcationMapper;
 import com.minePing.BackEnd.repository.ApplicationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
@@ -26,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationServiceImpl implements ApplicationService {
 
-    private final WorcationMapper mapper;
     private final ApplicationRepository applicationRepository;
     private final MemberRepository memberRepository;
     private final WorcationRepository worcationRepository;
@@ -36,6 +34,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 
     @Override
+    @Transactional
     public List<ApplicationDto.ApplicationResponseDto> getAllApplications() {
         return applicationRepository.findAll().stream()
                 .map(ApplicationDto.ApplicationResponseDto::fromEntity)
@@ -43,32 +42,41 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public ApplicationDto.ApplicationResponseDto getApplication(Long id) {
         WorcationApplication entity = applicationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 신청이 존재하지 않습니다. id=" + id));
         return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
     }
-
     @Override
     @Transactional
     public ApplicationDto.ApplicationResponseDto createApplication(ApplicationDto.ApplicationRequestDto requestDto) {
-        // 유저와 워케이션 엔티티 조회
         Member member = memberRepository.findById(requestDto.getUserNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Worcation worcation = worcationRepository.findById(requestDto.getWorcationNo())
+
+        // 동시성 처리
+        // 1. 워케이션 엔티티를 락 걸어서 조회
+        Worcation worcation = worcationRepository.findByIdForUpdate(requestDto.getWorcationNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
 
-        // 엔티티 생성
+        // 2. 인원 체크 및 차감 처리
+        if (worcation.getMaxPeople() == null || worcation.getMaxPeople() <= 0) {
+            throw new IllegalStateException("더 이상 신청할 수 없는 워케이션입니다.");
+        }
+        worcation.changeMaxPeople(worcation.getMaxPeople() - 1);
+
+        // 신청 생성 (기본 상태 W: 대기)
         WorcationApplication entity = WorcationApplication.builder()
                 .member(member)
                 .worcation(worcation)
                 .startDate(requestDto.getStartDate())
                 .endDate(requestDto.getEndDate())
-                .approve(CommonEnums.Approve.N)
+                .approve(CommonEnums.Approve.W)
                 .build();
 
-        WorcationApplication saved = applicationRepository.save(entity);
-        return ApplicationDto.ApplicationResponseDto.fromEntity(saved);
+        applicationRepository.save(entity);
+
+        return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
     }
 
     @Override
@@ -81,26 +89,28 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<ApplicationDto.ApplicationResponseDto> getReserved() {
-        LocalDate today = LocalDate.now();
-        return applicationRepository.findAll().stream()
-                .filter(app -> app.getStartDate().isAfter(today))
-                .map(ApplicationDto.ApplicationResponseDto::fromEntity) // 전체 예약 정보를 포함한 DTO
-                .collect(Collectors.toList());
+    @Transactional
+    public List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo) {
+        return applicationRepository.getReservedByUser(userNo, LocalDate.now())
+                .stream()
+                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
+                .toList();
     }
 
     @Override
-    public List<ApplicationDto.ApplicationResponseDto> getUsed() {
-        LocalDate today = LocalDate.now();
-        return applicationRepository.findAll().stream()
-                .filter(app -> app.getEndDate().isBefore(today))
+    @Transactional
+    public List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo) {
+        return applicationRepository.getUsedByUser(userNo, LocalDate.now())
+                .stream()
                 .map(ApplicationDto.ApplicationResponseDto::fromEntity)
-                .collect(Collectors.toList());
-    }
+                .toList();
+       }
 
-    private WorcationDto.Response toDto(Worcation worcation) {
-        WorcationDetail d = detailRepository.findById(worcation.getWorcationNo()).orElse(null);
-        WorcationFeatures f = featuresRepository.findById(worcation.getWorcationNo()).orElse(null);
-        return mapper.toResponse(worcation, d, f, List.of(), List.of(), List.of(), List.of());
+       //워케이션 업체별 신청 현황
+    @Override
+    public List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo) {
+        return applicationRepository.findByWorcationNo(worcationNo).stream()
+                .map(ApplicationDto.ReservedResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

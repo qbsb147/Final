@@ -80,6 +80,7 @@ public class CompanyProfileDto {
     @NoArgsConstructor
     @Builder
     public static class Approval {
+        private Long user_no;
         private String department_name;
         private String position;
         private String name;
@@ -94,6 +95,7 @@ public class CompanyProfileDto {
             CompanyProfile profile = member.getCompanyProfile();
 
             return Approval.builder()
+                    .user_no(member.getUserNo())
                     .department_name(profile.getDepartmentName())
                     .position(profile.getPosition())
                     .name(member.getName())

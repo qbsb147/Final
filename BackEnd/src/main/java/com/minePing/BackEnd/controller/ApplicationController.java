@@ -1,7 +1,6 @@
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
-import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("api/v1/applications")
 @RequiredArgsConstructor
 public class ApplicationController {
 
@@ -45,24 +44,32 @@ public class ApplicationController {
         return ResponseEntity.noContent().build();
     }
 
+    //워케이션 업체 별 신청 현황
+    @GetMapping("/reserved-by-worcation")
+    public ResponseEntity<List<ApplicationDto.ReservedResponseDto>> getReservedByWorcation(
+            @RequestParam Long worcationNo) {
+        List<ApplicationDto.ReservedResponseDto> list = applicationService.getReservedByWorcation(worcationNo);
+        return ResponseEntity.ok(list);
+    }
+
     /**
      *
      * 예약 확인
      */
 
     @GetMapping("/reserved")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved() {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReserved();
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReservedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 
     /**
      *
      * 지난 예약 정보 확인(날짜 기반)
-     */
+     */ 
     @GetMapping("/used")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed() {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsed();
+    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 }

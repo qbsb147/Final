@@ -220,7 +220,7 @@ const DropdownWrap = styled.div`
   left: 0;
   width: 100%;
   background: ${({ theme }) => theme.colors.white};
-  z-index: ${({ theme }) => theme.zIndices.docked};
+  z-index: ${({ theme }) => theme.zIndices.dropdown};
   display: flex;
   justify-content: center;
   padding: ${({ theme }) => theme.spacing.s6} ${({ theme }) => theme.spacing.s0};
