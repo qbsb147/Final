@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
     SIGNUP: (role) => `/member/signUp/${role}`,
     MY_INFO: '/member/userInfo',
     MY_PAGE: '/member/myPage',
+    MY_UPDATE: (user_no) => `/member/myPage/${user_no}`,
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
@@ -40,8 +41,8 @@ export const API_ENDPOINTS = {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
   },
-  REVIEW : {
-    ADD : '/reviews',
+  REVIEW: {
+    ADD: '/reviews',
   },
   LOGIN: '/member/login',
   MENTALS: {

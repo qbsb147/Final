@@ -91,10 +91,12 @@ public class CompanyDto {
     @NoArgsConstructor
     @Builder
     public static class CompanyInfoResponse{
+        private Long company_no;
         private String company_name;
         private String company_address;
         private String business_email;
         private String company_tel;
     }
+
 
 }

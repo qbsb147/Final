@@ -12,10 +12,7 @@ import { usePosition } from '../../hooks/usePosition';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
-
-  if (!loginUser) {
-    return <div style={{ textAlign: 'center' }}>로딩중...</div>;
-  }
+  const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
 
   const [userInfo, setUserInfo] = useState({});
   const [doUpdate, setDoUpdate] = useState(false);
@@ -92,12 +89,12 @@ const Mypage = () => {
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_name: memberData?.company_profile_info?.company_name || '',
+            company_name: memberData?.company_profile_info?.company_info?.company_name || '',
             company_address: memberData?.company_profile_info?.company_address || '',
             business_email: memberData?.company_profile_info?.business_email || '',
-            company_phone: memberData?.company_profile_info?.company_phone || '',
+            company_tel: memberData?.company_profile_info?.company_tel || '',
           };
-        } else if (loginUser.role === 'EMPLOYEE') {
+        } else if (loginUser.role === 'EMPLOYEE' || loginUser.role === 'MANAGER') {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
@@ -107,14 +104,12 @@ const Mypage = () => {
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_name: memberData.company_info?.company_name || '',
-            company_address: memberData.company_info?.company_address || '',
-            business_email: memberData.company_info?.business_email || '',
-            company_phone: memberData.company_info?.company_phone || '',
-            department: memberData.company_profile_info?.department_name || '',
+            company_no: memberData.company_profile_info?.company_info?.company_no || '',
+            company_name: memberData.company_profile_info?.company_info?.company_name || '',
+            department_name: memberData.company_profile_info?.department_name || '',
             position: memberData.company_profile_info?.position || '',
             company_email: memberData.company_profile_info?.company_email || '',
-            company_tel: memberData.company_profile_info?.company_tel || '',
+            company_phone: memberData.company_profile_info?.company_phone || '',
           };
         }
 
@@ -136,6 +131,18 @@ const Mypage = () => {
 
     fetchUserInfo();
   }, [loginUser]);
+
+  if (!loginUser) {
+    return <div style={{ textAlign: 'center' }}>로딩중...</div>;
+  }
+  const handleDepartmentClick = async (e) => {
+    try {
+      const data = await memberService.searchDepartment(userInfo.company_no);
+      setDepartmentSearchResults(data);
+    } catch (err) {
+      setDepartmentSearchResults([]);
+    }
+  };
 
   // 공통 입력 onChange 핸들러
   const handleInputChange = (e) => {
@@ -169,6 +176,13 @@ const Mypage = () => {
       },
     }).open();
   };
+  const handleDepartmentSelect = (department) => {
+    setUserInfo((prev) => ({
+      ...prev,
+      department_name: department.department_name,
+    }));
+    setDepartmentSearchResults([]);
+  };
 
   return (
     <>
@@ -190,8 +204,8 @@ const Mypage = () => {
                   <InputText
                     style={Input.InputGray}
                     type="password"
-                    name="password"
-                    value={userInfo.password || ''}
+                    name="user_pwd"
+                    value={userInfo.user_pwd || ''}
                     onChange={handleInputChange}
                     readOnly={!doUpdate}
                   />
@@ -201,8 +215,8 @@ const Mypage = () => {
                   <InputText
                     style={Input.InputGray}
                     type="password"
-                    name="passwordConfirm"
-                    value={userInfo.passwordConfirm || ''}
+                    name="user_pwd_check"
+                    value={userInfo.user_pwd_check || ''}
                     onChange={handleInputChange}
                     readOnly={!doUpdate}
                   />
@@ -216,6 +230,17 @@ const Mypage = () => {
                 type="email"
                 name="email"
                 value={userInfo.email || ''}
+                onChange={handleInputChange}
+                readOnly={!doUpdate}
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputName>핸드폰 번호</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="phone"
+                value={userInfo.phone || ''}
                 onChange={handleInputChange}
                 readOnly={!doUpdate}
               />
@@ -311,7 +336,7 @@ const Mypage = () => {
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
-            {loginUser?.role === 'MASTER' && (
+            {(loginUser?.role === 'MASTER' || loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
               <InputGroup>
                 <InputName>회사명</InputName>
                 <InputText
@@ -325,45 +350,63 @@ const Mypage = () => {
               </InputGroup>
             )}
             {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
-              <InputGroup>
+              <InputGroup style={{ position: 'relative' }}>
                 <InputName>부서명</InputName>
                 <InputText
                   style={Input.InputGray}
                   type="text"
-                  name="department"
-                  value={userInfo.department || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
+                  name="department_name"
+                  value={userInfo.department_name || ''}
+                  onClick={handleDepartmentClick}
+                  readOnly
                 />
+                {doUpdate && (
+                  <>
+                    {departmentSearchResults.length > 0 && (
+                      <CompanyDropdown>
+                        {departmentSearchResults.map((department) => (
+                          <DropdownItem
+                            key={department.department_no}
+                            onClick={() => handleDepartmentSelect(department)}
+                          >
+                            {department.department_name}
+                          </DropdownItem>
+                        ))}
+                      </CompanyDropdown>
+                    )}
+                  </>
+                )}
               </InputGroup>
             )}
-            <InputGroup style={{ position: 'relative' }}>
-              <InputName>직급</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="text"
-                name="position"
-                value={selectedPosition}
-                onClick={doUpdate ? handlePositionClick : undefined}
-                readOnly
-              />
-              {positionList.length > 0 && (
-                <CompanyDropdown>
-                  {positionList.map((position) => (
-                    <DropdownItem
-                      key={position.position_no}
-                      onClick={() => {
-                        handlePositionSelect(position);
-                        setSelectedPosition(position.position_name);
-                        setUserInfo((prev) => ({ ...prev, position: position.position_name }));
-                      }}
-                    >
-                      {position.position_name}
-                    </DropdownItem>
-                  ))}
-                </CompanyDropdown>
-              )}
-            </InputGroup>
+            {loginUser?.role === 'MASTER' && (
+              <InputGroup style={{ position: 'relative' }}>
+                <InputName>직급</InputName>
+                <InputText
+                  style={Input.InputGray}
+                  type="text"
+                  name="position"
+                  value={selectedPosition}
+                  onClick={doUpdate ? handlePositionClick : undefined}
+                  readOnly
+                />
+                {positionList.length > 0 && (
+                  <CompanyDropdown>
+                    {positionList.map((position) => (
+                      <DropdownItem
+                        key={position.position_no}
+                        onClick={() => {
+                          handlePositionSelect(position);
+                          setSelectedPosition(position.position_name);
+                          setUserInfo((prev) => ({ ...prev, position: position.position_name }));
+                        }}
+                      >
+                        {position.position_name}
+                      </DropdownItem>
+                    ))}
+                  </CompanyDropdown>
+                )}
+              </InputGroup>
+            )}
             {loginUser?.role === 'MASTER' && (
               <InputGroup>
                 <InputName>회사주소</InputName>

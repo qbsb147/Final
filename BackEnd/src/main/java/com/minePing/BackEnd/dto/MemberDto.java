@@ -207,6 +207,7 @@ public class MemberDto {
         private String email;
         private String name;
         private String address;
+        private String phone;
         private LocalDate birthday;
         private CommonEnums.Gender gender;
         private CompanyInfoResponse company_info;
@@ -235,6 +236,7 @@ public class MemberDto {
                     .email(member.getEmail())
                     .name(member.getName())
                     .address(member.getAddress())
+                    .phone(member.getPhone())
                     .birthday(member.getBirthday())
                     .gender(member.getGender())
                     .build();
@@ -254,15 +256,28 @@ public class MemberDto {
                             .company_email(member.getCompanyProfile().getCompanyEmail())
                             .company_phone(member.getCompanyProfile().getCompanyPhone())
                             .company_info(CompanyInfoResponse.builder()
+                                    .company_no(member.getCompanyProfile().getCompany().getCompanyNo())
                                     .company_name(member.getCompanyProfile().getCompany().getCompanyName())
-                                    .company_address(member.getCompanyProfile().getCompany().getCompanyAddress())
-                                    .business_email(member.getCompanyProfile().getCompany().getBusinessEmail())
-                                    .company_tel(member.getCompanyProfile().getCompany().getCompanyTel())
                                     .build()
                             )
                             .build())
                     .build();
         }
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Update {
+        private String user_id;
+        private String email;
+        private String phone;
+        private String name;
+        private String address;
+        public static Update toEntity(MemberDto.Update memberDto) {
 
+            return null;
+        }
+    }
 }

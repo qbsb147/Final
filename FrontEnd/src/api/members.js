@@ -126,7 +126,7 @@ const memberService = {
   // 회원 정보 수정
   updateMember: async (userNo, updateData) => {
     try {
-      const response = await axiosInstance.patch(`/member/${userNo}`, updateData);
+      const response = await axiosInstance.put(API_ENDPOINTS.MEMBER.MY_UPDATE(userNo), updateData);
       return response.data;
     } catch (error) {
       throw error?.response?.data?.message || '회원 정보 수정에 실패했습니다.';

@@ -199,6 +199,7 @@ public class CompanyProfileDto {
         private String company_name;
         private String department_name;
         private String position;
+        private String phone;
         private String company_address;
         private String company_email;
         private String company_phone;
