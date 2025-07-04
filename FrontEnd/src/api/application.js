@@ -28,4 +28,8 @@ export const applicationService = {
     const response = await api.delete(API_ENDPOINTS.APPLICATION.DELETE(application_no));
     return response.data;
   },
+  date_count: async (worcation_no) => {
+    const response = await api.get(API_ENDPOINTS.APPLICATION.DATE_COUNT(worcation_no));
+    return response.data;
+  },
 };
