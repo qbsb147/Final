@@ -24,7 +24,7 @@ public class CompanyDto {
     @ToString
     public static class CompanyJoinDto {
 
-        @NotBlank(message = "회사명은 필수입니다.")
+        @NotNull(message = "회사명은 필수입니다.")
         private String company_name;
 
         @NotBlank(message = "회사 주소는 필수입니다.")

@@ -6,18 +6,17 @@ export const applicationService = {
     const response = await api.post(API_ENDPOINTS.APPLICATION.CREATE);
     return response.data;
   },
-reserved_worcation: async (worcation_no) => {
-  const response = await api.get(API_ENDPOINTS.APPLICATION.RESERVED_WORCATION(worcation_no));
-  return response.data;
-};
-  //예약 목록 조회
+  reserved_worcation: async (worcation_no) => {
+    const response = await api.get(API_ENDPOINTS.APPLICATION.RESERVED_WORCATION(worcation_no));
+    return response.data;
+  },
+  // 예약 목록 조회
   reserved: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.APPLICATION.RESERVED, {
       params: { user_no },
     });
     return response.data;
   },
-
   // 이용완료 목록 조회
   used: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.APPLICATION.USED, {
@@ -27,6 +26,10 @@ reserved_worcation: async (worcation_no) => {
   },
   delete: async (application_no) => {
     const response = await api.delete(API_ENDPOINTS.APPLICATION.DELETE(application_no));
+    return response.data;
+  },
+  date_count: async (worcation_no) => {
+    const response = await api.get(API_ENDPOINTS.APPLICATION.DATE_COUNT(worcation_no));
     return response.data;
   },
 };

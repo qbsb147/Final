@@ -2,7 +2,9 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface ApplicationService {
 
@@ -13,6 +15,8 @@ public interface ApplicationService {
     ApplicationDto.ApplicationResponseDto createApplication(ApplicationDto.ApplicationRequestDto requestDto);
 
     void deleteApplication(Long id);
+
+    Map<LocalDate, Boolean> getFullyReservedDates(Long worcationNo, LocalDate start, LocalDate end);
 
     List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo);
     List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);

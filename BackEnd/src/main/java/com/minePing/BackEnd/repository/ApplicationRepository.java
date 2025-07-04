@@ -99,5 +99,15 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
     List<WorcationApplication> getUsedByUser(@Param("userNo") Long userNo, @Param("today") LocalDate today);
 
 
-
+    //워케이션 업체에서 startDate ~ endDate 사이에 승인 상태가 W, Y인 신청 건들을 조회하는 쿼리
+    @Query("SELECT wa FROM WorcationApplication wa " +
+            "WHERE wa.worcation.worcationNo = :worcationNo " +
+            "AND wa.startDate <= :endDate AND wa.endDate >= :startDate " +
+            "AND wa.approve IN :statuses")
+    List<WorcationApplication> findInRangeWithStatus(
+            @Param("worcationNo") Long worcationNo,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("statuses") List<CommonEnums.Approve> statuses
+    );
 }
