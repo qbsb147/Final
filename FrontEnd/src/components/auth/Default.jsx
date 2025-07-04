@@ -29,7 +29,6 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
     const { value } = e.target;
     setSelectedRole(value);
     setFormData1((prev) => ({ ...prev, role: value }));
-    setFormData2({});
   };
 
   const handleAddressSearch = () => {
@@ -155,11 +154,11 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="phone">연락처</Label>
+          <Label htmlFor="phone">휴대폰 번호</Label>
           <InputBox
             name="phone"
             type="text"
-            placeholder="연락처"
+            placeholder="(-)를 포함해서 입력"
             value={formData1.phone || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"

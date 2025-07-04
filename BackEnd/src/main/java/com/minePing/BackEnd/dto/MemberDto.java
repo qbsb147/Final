@@ -207,6 +207,7 @@ public class MemberDto {
         private String email;
         private String name;
         private String address;
+        private String phone;
         private LocalDate birthday;
         private CommonEnums.Gender gender;
         private CompanyInfoResponse company_info;
@@ -235,6 +236,7 @@ public class MemberDto {
                     .email(member.getEmail())
                     .name(member.getName())
                     .address(member.getAddress())
+                    .phone(member.getPhone())
                     .birthday(member.getBirthday())
                     .gender(member.getGender())
                     .build();
@@ -248,18 +250,34 @@ public class MemberDto {
                     .address(member.getAddress())
                     .birthday(member.getBirthday())
                     .gender(member.getGender())
-                    .company_info(CompanyInfoResponse.builder()
-                            .company_name(member.getCompany().getCompanyName())
-                            .company_address(member.getCompany().getCompanyAddress())
-                            .build())
                     .company_profile_info(CompanyProfileInfoResponse.builder()
                             .department_name(member.getCompanyProfile().getDepartmentName())
                             .position(member.getCompanyProfile().getPosition())
                             .company_email(member.getCompanyProfile().getCompanyEmail())
                             .company_phone(member.getCompanyProfile().getCompanyPhone())
+                            .company_info(CompanyInfoResponse.builder()
+                                    .company_no(member.getCompanyProfile().getCompany().getCompanyNo())
+                                    .company_name(member.getCompanyProfile().getCompany().getCompanyName())
+                                    .build()
+                            )
                             .build())
                     .build();
         }
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Update {
+        private String user_id;
+        private String email;
+        private String phone;
+        private String name;
+        private String address;
+        public static Update toEntity(MemberDto.Update memberDto) {
 
+            return null;
+        }
+    }
 }

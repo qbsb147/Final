@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
     SIGNUP: (role) => `/member/signUp/${role}`,
     MY_INFO: '/member/userInfo',
     MY_PAGE: '/member/myPage',
+    MY_UPDATE: (user_no) => `/member/myPage/${user_no}`,
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
@@ -62,6 +63,8 @@ export const API_ENDPOINTS = {
     DELETE: (application_no) => `/applications/${application_no}`,
     LIST : '/applications',
   },
+  REVIEW: {
+    ADD: '/reviews',
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,

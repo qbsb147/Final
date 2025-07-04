@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.AccessTokenDto;
 import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
+import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.service.KakaoService;
 import com.minePing.BackEnd.service.MemberService;
@@ -61,6 +62,12 @@ public class MemberController {
         String userId = jwtTokenProvider.getUserIdFromToken();
         InfoResponse userInfo = memberService.getUserInfoByUserId(userId);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @PutMapping("/myPage/{user_no}")
+    public ResponseEntity<?> updateMyInfo(@PathVariable("user_no") Long user_no, @RequestBody MemberDto.Update updateDto){
+        memberService.updateMember(updateDto);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/kakao/login")

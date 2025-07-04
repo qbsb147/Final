@@ -42,6 +42,7 @@ public class CompanyDto {
         private String licensee;
 
         @NotBlank(message = "회사 전화 번호는 필수입니다.")
+        @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
         private String company_tel;
 
         @NotNull(message = "개업일 입력은 필수입니다.")
@@ -90,10 +91,12 @@ public class CompanyDto {
     @NoArgsConstructor
     @Builder
     public static class CompanyInfoResponse{
+        private Long company_no;
         private String company_name;
         private String company_address;
         private String business_email;
         private String company_tel;
     }
+
 
 }

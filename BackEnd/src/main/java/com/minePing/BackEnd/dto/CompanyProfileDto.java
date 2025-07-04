@@ -1,10 +1,13 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
+import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -18,7 +21,7 @@ public class CompanyProfileDto {
     @ToString
     public static class CompanyProfileJoinDto {
 
-        @NotBlank(message = "회사 선택은 필수입니다.")
+        @NotNull(message = "회사 선택은 필수입니다.")
         private Long company_no;
 
         @NotBlank(message = "부서 설정은 필수입니다.")
@@ -198,8 +201,10 @@ public class CompanyProfileDto {
         private String company_name;
         private String department_name;
         private String position;
+        private String phone;
         private String company_address;
         private String company_email;
         private String company_phone;
+        private CompanyInfoResponse company_info;
     }
 }
