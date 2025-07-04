@@ -7,6 +7,7 @@ import com.minePing.BackEnd.dto.MemberDto.Login;
 import com.minePing.BackEnd.dto.MemberDto.LoginResponse;
 import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
+import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
@@ -202,5 +203,10 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         memberRepository.save(member);
         return member;
+    }
+
+    @Override
+    public void updateMember(Update updateDto) {
+
     }
 }
