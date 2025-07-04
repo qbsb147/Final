@@ -48,24 +48,33 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 신청이 존재하지 않습니다. id=" + id));
         return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
     }
-
     @Override
     @Transactional
     public ApplicationDto.ApplicationResponseDto createApplication(ApplicationDto.ApplicationRequestDto requestDto) {
         Member member = memberRepository.findById(requestDto.getUserNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Worcation worcation = worcationRepository.findById(requestDto.getWorcationNo())
+
+        // 🔒 워케이션 엔티티를 락 걸어서 조회
+        Worcation worcation = worcationRepository.findByIdForUpdate(requestDto.getWorcationNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
 
+        // 🔥 인원 체크 및 차감 처리
+        if (worcation.getMaxPeople() == null || worcation.getMaxPeople() <= 0) {
+            throw new IllegalStateException("더 이상 신청할 수 없는 워케이션입니다.");
+        }
+        worcation.changeMaxPeople(worcation.getMaxPeople() - 1);
+
+        // 신청 생성 (기본 상태 W: 대기)
         WorcationApplication entity = WorcationApplication.builder()
                 .member(member)
                 .worcation(worcation)
                 .startDate(requestDto.getStartDate())
                 .endDate(requestDto.getEndDate())
-                .approve(CommonEnums.Approve.N)
+                .approve(CommonEnums.Approve.W)
                 .build();
 
         applicationRepository.save(entity);
+
         return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
     }
 
@@ -95,4 +104,12 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .map(ApplicationDto.ApplicationResponseDto::fromEntity)
                 .toList();
        }
+
+       //워케이션 업체별 신청 현황
+    @Override
+    public List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo) {
+        return applicationRepository.findByWorcationNo(worcationNo).stream()
+                .map(ApplicationDto.ReservedResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

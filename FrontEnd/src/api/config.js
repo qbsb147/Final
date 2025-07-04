@@ -47,6 +47,10 @@ export const API_ENDPOINTS = {
   },
 
   APPLICATION: {
+    //예약 신청
+    CREATE: '/applications',
+    //워케이션별 예약 확인
+    RESERVED_WORCATION: (worcation_no) => `/reserved-by-worcation?worcationNo=${worcation_no}`,
     //예약 확인
     RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
     //지난 예약 정보

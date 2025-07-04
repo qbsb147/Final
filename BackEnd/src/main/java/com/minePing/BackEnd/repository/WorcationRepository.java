@@ -1,7 +1,9 @@
 package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Worcation;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -50,4 +52,9 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long> {
            "LEFT JOIN FETCH wa.review " +
            "WHERE w.worcationNo = :worcationNo")
     Optional<Worcation> findByIdWithApplications(@Param("worcationNo") Long worcationNo);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT w FROM Worcation w WHERE w.worcationNo = :worcationNo")
+    Optional<Worcation> findByIdForUpdate(@Param("worcationNo") Long worcationNo);
+
 }

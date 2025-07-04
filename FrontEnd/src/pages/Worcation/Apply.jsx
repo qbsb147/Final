@@ -6,6 +6,8 @@ import Input from '../../styles/Input';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import memberService from '../../api/members';
+import { applicationService } from '../../api/application';
 
 const WorcationApply = () => {
   const location = useLocation();
@@ -15,7 +17,19 @@ const WorcationApply = () => {
   const [endDate, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
   const [events, setEvents] = useState([]);
-  const { user } = useAuthStore();
+  const { loginUser } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    const fetchUserInfo = async () => {
+      const res = await memberService.getMyPage(); // user_no 포함 정보
+      setUserInfo(res);
+    };
+
+    fetchUserInfo();
+  }, [loginUser?.user_id]);
 
   useEffect(() => {
     if (passedWorcation) {
@@ -32,13 +46,11 @@ const WorcationApply = () => {
       if (!passedWorcation) return;
 
       try {
-        const response = await axios.get(
-          `http://localhost:3001/worcation_application?ref_worcation_no=${passedWorcation.worcation_no}`
-        );
-        const reservations = response.data.map((app) => ({
+        const data = await applicationService.reserved_worcation(passedWorcation.worcation_no);
+        const reservations = data.map((app) => ({
           title: '예약됨',
-          start: new Date(app.start_date),
-          end: new Date(app.end_date),
+          start: new Date(app.startDate),
+          end: new Date(app.endDate),
         }));
         setEvents(reservations);
       } catch (error) {
@@ -61,18 +73,14 @@ const WorcationApply = () => {
     }
 
     const newApplication = {
-      application_no: Date.now(), // 임시 ID
-      ref_member_no: 1, // 예시로 고정값
-      ref_worcation_no: worcationInfo.no,
-      start_date: startDate,
-      end_date: endDate,
-      approve: 'N',
-      create_at: new Date().toISOString(),
-      update_at: new Date().toISOString(),
+      user_no: userInfo.user_no, // getMyPage()에서 가져온 user_no 사용
+      worcation_no: worcationInfo.worcation_no, // 미리 저장해둔 워케이션 번호
+      startDate: startDate,
+      endDate: endDate,
     };
 
     try {
-      await axios.post('http://localhost:3001/worcation_application', newApplication);
+      await applicationService.create(newApplication);
       alert('워케이션 신청 완료!');
     } catch (error) {
       console.error('신청 실패:', error);
@@ -93,7 +101,7 @@ const WorcationApply = () => {
 
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value={user?.name ?? ''} readOnly />
+            <ReadOnlyInput value={loginUser?.name ?? ''} readOnly />
 
             <Label>금액</Label>
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
