@@ -3,13 +3,13 @@ import Header from '../common/Header';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
 import Footer from '../common/Footer';
-import SearchBar from '../common/SearchBar';
+import Search from '../common/Search';
 
 const Layout = () => {
   return (
     <PageWrapper>
       <Header />
-      <SearchBar/>
+      <Search/>
       <Content>
         <Outlet />
       </Content>

@@ -4,18 +4,19 @@ import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../api/worcations';
 import WorcationCardList from '../components/worcation/WorcationCardList';
-
-
+import useWorcationStore from '../store/worcationStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
   const [showAISection, setShowAISection] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const [applications, setApplications] = useState([]);
+  const keyword = useWorcationStore((state) => state.keyword);
   const navigate = useNavigate();
+  const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
 
   const handleShowAI = () => {
-    setShowBanner(false)
+    setShowBanner(false);
     setShowAISection(true);
     //Ai 출력 로직
   };
@@ -28,20 +29,28 @@ const MainPage = () => {
     };
     fetchData();
   }, []);
-  
-  const sortedWorcations = worcations
-    .map(w => {
+
+  useEffect(() => {
+    setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
+  }, [worcations, setPopularKeywords]);
+
+  // 필터링된 워케이션
+  const filteredWorcations = worcations.filter(
+    (w) => (w.worcation_name && w.worcation_name.includes(keyword)) || (w.address && w.address.includes(keyword))
+  );
+  const sortedWorcations = filteredWorcations
+    .map((w) => {
       // approve가 'Y'인 신청만 카운트
       const approvedCount = applications.filter(
-        app => app.worcation_no === w.worcation_no && app.approve === 'Y'
+        (app) => app.worcation_no === w.worcation_no && app.approve === 'Y'
       ).length;
       return {
         ...w,
-        approvedApplicationCount: approvedCount
+        approvedApplicationCount: approvedCount,
       };
     })
     // 신청이 1개 이상인 워케이션만
-    .filter(w => w.approvedApplicationCount > 0)
+    .filter((w) => w.approvedApplicationCount > 0)
     // 내림차순 정렬
     .sort((a, b) => b.approvedApplicationCount - a.approvedApplicationCount);
 
@@ -49,7 +58,7 @@ const MainPage = () => {
     <Container>
       <SectionTitle>제휴업체</SectionTitle>
       <PartnerGrid>
-        {worcations
+        {filteredWorcations
           .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
           .map((matchedWorcation) => (
             <PartnerCard key={matchedWorcation.worcation_no}>
@@ -60,9 +69,7 @@ const MainPage = () => {
               />
               <ImageLabel>
                 <ImageLabelT>
-                  {matchedWorcation.worcation_address
-                    ? matchedWorcation.worcation_address.split(' ')[0]
-                    : '주소없음'}
+                  {matchedWorcation.worcation_address ? matchedWorcation.worcation_address.split(' ')[0] : '주소없음'}
                 </ImageLabelT>
                 {matchedWorcation.worcation_name}
               </ImageLabel>
@@ -84,8 +91,8 @@ const MainPage = () => {
         <>
           <SectionTitle>AI 추천</SectionTitle>
           <CardList>
-          <WorcationCardList data={worcations} navigate={navigate} />
-          {/* AI 필터 추가 해야함 */}
+            <WorcationCardList data={filteredWorcations} navigate={navigate} />
+            {/* AI 필터 추가 해야함 */}
           </CardList>
         </>
       )}

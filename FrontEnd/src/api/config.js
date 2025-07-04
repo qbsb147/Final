@@ -56,6 +56,7 @@ export const API_ENDPOINTS = {
     USED: (user_no) => `/applications/used?userNo=${user_no}`,
     //삭제
     DELETE: (application_no) => `/applications/${application_no}`,
+    LIST : '/applications',
   },
   REVIEW: {
     ADD: '/reviews',
