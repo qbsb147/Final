@@ -122,5 +122,15 @@ const memberService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
+
+  // 회원 정보 수정
+  updateMember: async (userNo, updateData) => {
+    try {
+      const response = await axiosInstance.patch(`/member/${userNo}`, updateData);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '회원 정보 수정에 실패했습니다.';
+    }
+  },
 };
 export default memberService;

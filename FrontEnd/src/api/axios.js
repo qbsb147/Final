@@ -26,10 +26,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
-    }
+    // if (err.response?.status === 401) {
+    //   localStorage.removeItem('token');
+    //   window.location.href = '/login';
+    // }
     return Promise.reject(err);
   }
 );
@@ -43,7 +43,8 @@ api.interceptors.response.use(
       switch (status) {
         case 401:
           //인증에러
-          window.location.href = '/login';
+          //window.location.href = '/login';
+          console.error(data?.message || '인증에러가 발생했습니다.');
           break;
         case 403:
           console.error(data?.message || '접근권한이 없습니다.');

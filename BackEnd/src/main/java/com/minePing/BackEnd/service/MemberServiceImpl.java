@@ -13,6 +13,7 @@ import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Department;
 import com.minePing.BackEnd.entity.Member;
 
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.SocialType;
 
@@ -164,17 +165,18 @@ public class MemberServiceImpl implements MemberService {
         Member member;
         switch (role){
             case MASTER->{
-                member = memberRepository.findMasterInfoByUserId(userId)
+                member = memberRepository.findMasterInfoByUserId(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 return MemberInfoResponse.toMasterDto(member);
             }
             case MANAGER, EMPLOYEE->{
-                member = memberRepository.findEmployeeInfoByUserId(userId)
+                member = memberRepository.findEmployeeInfoByUserId(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
+                System.out.println("member = " + member);
                 return MemberInfoResponse.toEmployeeDto(member);
             }
             case WORCATION, ADMIN -> {
-                member = memberRepository.findWorcationInfoByUserId(userId)
+                member = memberRepository.findWorcationInfoByUserId(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 return MemberInfoResponse.toWorcationDto(member);
             }

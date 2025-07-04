@@ -6,47 +6,121 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
+import { useDefaultForm, useMasterForm, useEmployeeForm, validateForm } from '../../hooks/useAuth';
+import * as yup from 'yup';
+import { usePosition } from '../../hooks/usePosition';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
-  const [userInfo, setUserInfo] = useState(1);
+
+  if (!loginUser) {
+    return <div style={{ textAlign: 'center' }}>로딩중...</div>;
+  }
+
+  const [userInfo, setUserInfo] = useState({});
   const [doUpdate, setDoUpdate] = useState(false);
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+  const positions = [
+    { position_name: '사원' },
+    { position_name: '주임' },
+    { position_name: '대리' },
+    { position_name: '과장' },
+    { position_name: '차장' },
+    { position_name: '부장' },
+    { position_name: '이사' },
+    { position_name: '상무' },
+    { position_name: '전무' },
+    { position_name: '부사장' },
+  ];
+
+  // role에 따라 yup 스키마 선택
+  let schema = useDefaultForm;
+  if (loginUser?.role === 'MASTER') {
+    schema = useDefaultForm.concat(useMasterForm);
+  } else if (loginUser?.role === 'EMPLOYEE') {
+    schema = useDefaultForm.concat(useEmployeeForm);
+  }
+
+  const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
+    usePosition(userInfo.position || '');
+
+  useEffect(() => {
+    setSelectedPosition(userInfo.position || '');
+  }, [userInfo.position, setSelectedPosition]);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!loginUser?.user_id) return;
 
     const fetchUserInfo = async () => {
-      //백엔드 연결 시 데이터 하나로 합쳐서 가져오는 작업 필요
       try {
         const memberData = await memberService.getMyPage();
         console.log(memberData);
 
-        const mappedData = {
-          // members에서 가져오는 필드
-          user_no: memberData.user_no,
-          user_id: memberData.user_id,
-          email: memberData.email,
-          name: memberData.name,
-          address: memberData.address,
-          birthday: memberData.birthday,
-          gender: memberData.gender,
-          registration_role: memberData.role,
-
-          // companies에서 가져오는 필드
-          company_name: memberData?.company_info.company_name || '',
-          company_address: memberData?.company_info.company_address || '',
-          business_email: memberData?.company_info.business_email || '',
-          company_phone: memberData?.company_info.company_tel || '',
-
-          //companyProfiles에서 가져오는 필드
-          company_profile_no: memberData?.company_profile_no,
-          position: memberData?.position || '',
-          department: memberData?.department || '',
-        };
+        let mappedData = {};
+        if (loginUser.role === 'WORCATION') {
+          mappedData = {
+            user_no: memberData.user_no,
+            user_id: memberData.user_id,
+            email: memberData.email,
+            name: memberData.name,
+            address: memberData.address,
+            birthday: memberData.birthday,
+            gender: memberData.gender,
+            registration_role: memberData.role,
+          };
+        } else if (loginUser.role === 'MASTER') {
+          mappedData = {
+            user_no: memberData.user_no,
+            user_id: memberData.user_id,
+            email: memberData.email,
+            name: memberData.name,
+            address: memberData.address,
+            birthday: memberData.birthday,
+            gender: memberData.gender,
+            registration_role: memberData.role,
+            company_name: memberData?.company_profile_info?.company_name || '',
+            company_address: memberData?.company_profile_info?.company_address || '',
+            business_email: memberData?.company_profile_info?.business_email || '',
+            company_phone: memberData?.company_profile_info?.company_phone || '',
+          };
+        } else if (loginUser.role === 'EMPLOYEE') {
+          mappedData = {
+            user_no: memberData.user_no,
+            user_id: memberData.user_id,
+            email: memberData.email,
+            name: memberData.name,
+            address: memberData.address,
+            birthday: memberData.birthday,
+            gender: memberData.gender,
+            registration_role: memberData.role,
+            company_name: memberData.company_info?.company_name || '',
+            company_address: memberData.company_info?.company_address || '',
+            business_email: memberData.company_info?.business_email || '',
+            company_phone: memberData.company_info?.company_phone || '',
+            department: memberData.company_profile_info?.department_name || '',
+            position: memberData.company_profile_info?.position || '',
+            company_email: memberData.company_profile_info?.company_email || '',
+            company_tel: memberData.company_profile_info?.company_tel || '',
+          };
+        }
 
         // birthday로 age 계산 (한국식 나이)
-        if (memberData.birthday) {
-          const birth = new Date(memberData.birthday);
+        if (mappedData.birthday) {
+          const birth = new Date(mappedData.birthday);
           const today = new Date();
           const koreanAge = today.getFullYear() - birth.getFullYear() + 1;
           mappedData.age = koreanAge;
@@ -61,9 +135,7 @@ const Mypage = () => {
     };
 
     fetchUserInfo();
-  }, [loginUser?.user_id]);
-
-  if (!userInfo) return <div style={{ textAlign: 'center' }}>로딩중...</div>;
+  }, [loginUser]);
 
   // 공통 입력 onChange 핸들러
   const handleInputChange = (e) => {
@@ -71,39 +143,31 @@ const Mypage = () => {
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    // 2. 데이터 분리
-    const memberData = {
-      user_no: userInfo.user_no,
-      user_id: userInfo.user_id,
-      email: userInfo.email,
-      name: userInfo.name,
-      address: userInfo.address,
-      age: userInfo.age,
-      gender: userInfo.gender,
-    };
-
-    const companyData = {
-      company_name: userInfo.company_name,
-      company_address: userInfo.company_address,
-      company_email: userInfo.company_email,
-      company_phone: userInfo.company_phone,
-    };
-    const companyProfileData = {
-      position: userInfo.position,
-      department: userInfo.department,
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const isValid = await validateForm(schema, userInfo);
+    if (!isValid) return;
 
     try {
-      // json-server에서는 id(PK)로 접근해야 하므로 userInfo.id, userInfo.companyId, userInfo.companyProfileId 사용
-      await api.put(`/members/${userInfo.user_no}`, memberData);
-      await api.put(`/companies/${userInfo.company_id}`, companyData);
-      await api.put(`/companyProfiles/${userInfo.company_profile_id}`, companyProfileData);
+      await memberService.updateMember(loginUser.user_no, userInfo);
       alert('수정 완료!');
+      setDoUpdate(false);
     } catch (err) {
-      console.error(err);
       alert('수정 실패!');
     }
+  };
+
+  const handleAddressSearch = (addressType) => {
+    if (!isPostcodeReady) {
+      alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const addr = data.address;
+        setUserInfo((prev) => ({ ...prev, [addressType]: addr }));
+      },
+    }).open();
   };
 
   return (
@@ -177,8 +241,8 @@ const Mypage = () => {
                 type="text"
                 name="address"
                 value={userInfo.address || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
+                onClick={doUpdate && (() => handleAddressSearch('address'))}
+                readOnly
               />
             </InputGroup>
             <InputGroup>
@@ -226,7 +290,13 @@ const Mypage = () => {
                   disabled={!doUpdate}
                 />
                 직원
-                <InputRadio type="radio" name="registrationType" value="master" checked={loginUser.role === 'MASTER'} disabled={!doUpdate} />
+                <InputRadio
+                  type="radio"
+                  name="registrationType"
+                  value="master"
+                  checked={loginUser.role === 'MASTER'}
+                  disabled={!doUpdate}
+                />
                 기업
                 <InputRadio
                   type="radio"
@@ -267,19 +337,33 @@ const Mypage = () => {
                 />
               </InputGroup>
             )}
-            {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER' || loginUser?.role === 'MASTER') && (
-              <InputGroup>
-                <InputName>직급</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="position"
-                  value={userInfo.position || '대표'}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
+            <InputGroup style={{ position: 'relative' }}>
+              <InputName>직급</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="position"
+                value={selectedPosition}
+                onClick={doUpdate ? handlePositionClick : undefined}
+                readOnly
+              />
+              {positionList.length > 0 && (
+                <CompanyDropdown>
+                  {positionList.map((position) => (
+                    <DropdownItem
+                      key={position.position_no}
+                      onClick={() => {
+                        handlePositionSelect(position);
+                        setSelectedPosition(position.position_name);
+                        setUserInfo((prev) => ({ ...prev, position: position.position_name }));
+                      }}
+                    >
+                      {position.position_name}
+                    </DropdownItem>
+                  ))}
+                </CompanyDropdown>
+              )}
+            </InputGroup>
             {loginUser?.role === 'MASTER' && (
               <InputGroup>
                 <InputName>회사주소</InputName>
@@ -288,8 +372,8 @@ const Mypage = () => {
                   type="text"
                   name="company_address"
                   value={userInfo.company_address || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
+                  onClick={doUpdate && (() => handleAddressSearch('company_address'))}
+                  readOnly
                 />
               </InputGroup>
             )}
@@ -306,7 +390,20 @@ const Mypage = () => {
                 />
               </InputGroup>
             )}
-            {loginUser?.role === 'MASTER' && (
+            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+              <InputGroup>
+                <InputName>사내 이메일</InputName>
+                <InputText
+                  style={Input.InputGray}
+                  type="email"
+                  name="company_email"
+                  value={userInfo.company_email || ''}
+                  onChange={handleInputChange}
+                  readOnly={!doUpdate}
+                />
+              </InputGroup>
+            )}
+            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
               <InputGroup>
                 <InputName>사내 전화번호</InputName>
                 <InputText
@@ -314,6 +411,19 @@ const Mypage = () => {
                   type="text"
                   name="company_phone"
                   value={userInfo.company_phone || ''}
+                  onChange={handleInputChange}
+                  readOnly={!doUpdate}
+                />
+              </InputGroup>
+            )}
+            {loginUser?.role === 'MASTER' && (
+              <InputGroup>
+                <InputName>회사 전화번호</InputName>
+                <InputText
+                  style={Input.InputGray}
+                  type="text"
+                  name="company_tel"
+                  value={userInfo.company_tel || ''}
                   onChange={handleInputChange}
                   readOnly={!doUpdate}
                 />
@@ -331,7 +441,9 @@ const Mypage = () => {
               <button style={btn.buttonYbShadow}>이전</button>
             )}
             {doUpdate ? (
-              <button style={btn.buttonWbShadow}>완료</button>
+              <button style={btn.buttonWbShadow} onClick={handleSubmit}>
+                완료
+              </button>
             ) : (
               <button style={btn.buttonWbShadow} onClick={() => setDoUpdate(true)}>
                 수정
@@ -401,6 +513,30 @@ const InputName = styled.p`
   font-family: ${({ theme }) => theme.fontFamily.secondary};
   display: flex;
   justify-content: left;
+`;
+const CompanyDropdown = styled.ul`
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: #fffbe6;
+  border: 1px solid #ffeb8c;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
+
+const DropdownItem = styled.li`
+  padding: 10px 16px;
+  height: 44px;
+  cursor: pointer;
+  &:hover {
+    background: #fff3b0;
+  }
 `;
 
 export default Mypage;
