@@ -194,9 +194,11 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class CompanyInfoResponse {
+    public static class CompanyProfileInfoResponse {
+        private String company_name;
         private String department_name;
         private String position;
+        private String company_address;
         private String company_email;
         private String company_phone;
     }

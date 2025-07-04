@@ -5,7 +5,6 @@ import com.minePing.BackEnd.dto.AccessTokenDto;
 import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
-import com.minePing.BackEnd.dto.MemberDto.MyPageResponse;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.service.KakaoService;
 import com.minePing.BackEnd.service.MemberService;
@@ -77,7 +76,7 @@ public class MemberController {
     public ResponseEntity<?> myPage() {
         String userId = jwtTokenProvider.getUserIdFromToken();
         CommonEnums.Role role = jwtTokenProvider.getRoleFromToken();
-        MyPageResponse myPage = memberService.getMyPageByUserId(userId, role);
+        MemberDto.MemberInfoResponse myPage = memberService.getMyPageByUserId(userId, role);
 
         return ResponseEntity.ok(myPage);
     }
