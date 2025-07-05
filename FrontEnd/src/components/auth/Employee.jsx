@@ -6,13 +6,8 @@ import { usePosition } from '../../hooks/usePosition';
 const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-  const {
-    positionList,
-    selectedPosition,
-    setSelectedPosition,
-    handlePositionClick,
-    handlePositionSelect,
-  } = usePosition(formData2.position_name || '');
+  const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
+    usePosition(formData2.position_name || '');
   const companyNameTimeout = useRef();
 
   const handleChange = (e, step) => {

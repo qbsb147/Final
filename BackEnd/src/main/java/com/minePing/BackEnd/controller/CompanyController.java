@@ -26,7 +26,7 @@ public class CompanyController {
     }
 
     @GetMapping("/search/department/{company_no}")
-    public ResponseEntity<List<DepartmentDto.Search>> departmentSearch(@PathVariable Long company_no) {
+    public ResponseEntity<List<DepartmentDto.Response>> departmentSearch(@PathVariable Long company_no) {
         return ResponseEntity.ok(companyService.getDepartmentList(company_no));
     }
 }

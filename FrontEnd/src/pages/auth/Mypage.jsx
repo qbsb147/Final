@@ -6,9 +6,11 @@ import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
-import { useDefaultForm, useMasterForm, useEmployeeForm, validateForm } from '../../hooks/useAuth';
+import { validateMypageForm } from '../../hooks/useAuth';
 import * as yup from 'yup';
 import { usePosition } from '../../hooks/usePosition';
+import Popup from '../../components/auth/Popup';
+import Swal from 'sweetalert2';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
@@ -29,14 +31,19 @@ const Mypage = () => {
     { position_name: '전무' },
     { position_name: '부사장' },
   ];
-
-  // role에 따라 yup 스키마 선택
-  let schema = useDefaultForm;
-  if (loginUser?.role === 'MASTER') {
-    schema = useDefaultForm.concat(useMasterForm);
-  } else if (loginUser?.role === 'EMPLOYEE') {
-    schema = useDefaultForm.concat(useEmployeeForm);
-  }
+  const [showInput, setShowInput] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const handleDeptBtnClick = () => {
+    if (showInput) {
+      // departments 객체를 서버 형식에 맞게 변환
+      const departmentsArray = Object.entries(departments).map(([key, deptName]) => ({
+        department_no: parseInt(key) > 0 ? parseInt(key) : null, // 음수 키는 새로 추가된 부서
+        department_name: deptName,
+      }));
+      setUserInfo((prev) => ({ ...prev, departments: departmentsArray }));
+    }
+    setShowInput(!showInput);
+  };
 
   const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
     usePosition(userInfo.position || '');
@@ -64,7 +71,7 @@ const Mypage = () => {
 
     const fetchUserInfo = async () => {
       try {
-        const memberData = await memberService.getMyPage();
+        const memberData = await memberService.getDetail();
         console.log(memberData);
 
         let mappedData = {};
@@ -74,31 +81,44 @@ const Mypage = () => {
             user_id: memberData.user_id,
             email: memberData.email,
             name: memberData.name,
+            phone: memberData.phone,
             address: memberData.address,
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
           };
         } else if (loginUser.role === 'MASTER') {
+          const departmentsArray = memberData?.company_info?.departments || [];
+          // department_name을 값으로, department_no를 인덱스로 하는 객체 생성
+          const mappedDepartments = {};
+          departmentsArray.forEach((dept) => {
+            mappedDepartments[dept.department_no] = dept.department_name;
+          });
+
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
             email: memberData.email,
             name: memberData.name,
+            phone: memberData.phone,
             address: memberData.address,
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_name: memberData?.company_profile_info?.company_info?.company_name || '',
-            company_address: memberData?.company_profile_info?.company_address || '',
-            business_email: memberData?.company_profile_info?.business_email || '',
-            company_tel: memberData?.company_profile_info?.company_tel || '',
+            company_name: memberData?.company_info?.company_name || '',
+            company_address: memberData?.company_info?.company_address || '',
+            business_email: memberData?.company_info?.business_email || '',
+            company_tel: memberData?.company_info?.company_tel || '',
+            departments: memberData?.company_info?.departments || '',
           };
+
+          setDepartments(mappedDepartments);
         } else if (loginUser.role === 'EMPLOYEE' || loginUser.role === 'MANAGER') {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
             email: memberData.email,
+            phone: memberData.phone,
             name: memberData.name,
             address: memberData.address,
             birthday: memberData.birthday,
@@ -150,17 +170,81 @@ const Mypage = () => {
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 현재 비밀번호 검증 함수
+  const validateCurrentPassword = async () => {
+    const { value: currentPassword } = await Swal.fire({
+      title: '현재 비밀번호 확인',
+      text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',
+      input: 'password',
+      inputPlaceholder: '현재 비밀번호를 입력하세요',
+      showCancelButton: true,
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      inputValidator: (value) => {
+        if (!value) {
+          return '현재 비밀번호를 입력해주세요!';
+        }
+      },
+    });
+
+    if (currentPassword) {
+      try {
+        // 현재 비밀번호 검증 API 호출 (백엔드에서 구현 필요)
+        await memberService.validateCurrentPassword(currentPassword);
+        return true;
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: '비밀번호 오류',
+          text: '현재 비밀번호가 일치하지 않습니다.',
+          confirmButtonColor: '#3085d6',
+        });
+        return false;
+      }
+    }
+    return false;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isValid = await validateForm(schema, userInfo);
+
+    // 현재 비밀번호 검증
+    const isPasswordValid = await validateCurrentPassword();
+    if (!isPasswordValid) return;
+
+    const isValid = await validateMypageForm(userInfo, loginUser.role);
     if (!isValid) return;
 
     try {
-      await memberService.updateMember(loginUser.user_no, userInfo);
-      alert('수정 완료!');
+      // departments가 객체 형태라면 서버 형식으로 변환
+      let submitData = { ...userInfo };
+      if (typeof userInfo.departments === 'object' && !Array.isArray(userInfo.departments)) {
+        const departmentsArray = Object.entries(userInfo.departments).map(([key, deptName]) => ({
+          department_no: parseInt(key) > 0 ? parseInt(key) : null,
+          department_name: deptName,
+        }));
+        submitData.departments = departmentsArray;
+      }
+
+      await memberService.updateMember(loginUser.user_no, submitData);
+
+      Swal.fire({
+        icon: 'success',
+        title: '수정 완료!',
+        text: '회원정보가 성공적으로 수정되었습니다.',
+        confirmButtonColor: '#3085d6',
+      });
+
       setDoUpdate(false);
     } catch (err) {
-      alert('수정 실패!');
+      Swal.fire({
+        icon: 'error',
+        title: '수정 실패',
+        text: '회원정보 수정에 실패했습니다.',
+        confirmButtonColor: '#3085d6',
+      });
     }
   };
 
@@ -200,7 +284,7 @@ const Mypage = () => {
             {doUpdate && (
               <>
                 <InputGroup>
-                  <InputName>비밀번호</InputName>
+                  <InputName>새로운 비밀번호</InputName>
                   <InputText
                     style={Input.InputGray}
                     type="password"
@@ -336,141 +420,166 @@ const Mypage = () => {
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
-            {(loginUser?.role === 'MASTER' || loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
-              <InputGroup>
-                <InputName>회사명</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_name"
-                  value={userInfo.company_name || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
-              <InputGroup style={{ position: 'relative' }}>
-                <InputName>부서명</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="department_name"
-                  value={userInfo.department_name || ''}
-                  onClick={handleDepartmentClick}
-                  readOnly
-                />
-                {doUpdate && (
+            {loginUser.role === 'MASTER' && (
+              <div style={{ marginBottom: '16px' }}>
+                <InputName>부서등록</InputName>
+                {showInput ? (
                   <>
-                    {departmentSearchResults.length > 0 && (
+                    <Popup
+                      handleDeptBtnClick={handleDeptBtnClick}
+                      departments={departments}
+                      setDepartments={setDepartments}
+                    />
+                  </>
+                ) : (
+                  <Btn type="button" style={{ width: '100%' }} onClick={handleDeptBtnClick}>
+                    부서 등록
+                  </Btn>
+                )}
+              </div>
+            )}
+
+            {showInput ? (
+              <></>
+            ) : (
+              <>
+                {(loginUser?.role === 'MASTER' || loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                  <InputGroup>
+                    <InputName>회사명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_name"
+                      value={userInfo.company_name || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>부서명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="department_name"
+                      value={userInfo.department_name || ''}
+                      onClick={handleDepartmentClick}
+                      readOnly
+                    />
+                    {doUpdate && (
+                      <>
+                        {departmentSearchResults.length > 0 && (
+                          <CompanyDropdown>
+                            {departmentSearchResults.map((department) => (
+                              <DropdownItem
+                                key={department.department_no}
+                                onClick={() => handleDepartmentSelect(department)}
+                              >
+                                {department.department_name}
+                              </DropdownItem>
+                            ))}
+                          </CompanyDropdown>
+                        )}
+                      </>
+                    )}
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER' || loginUser?.role === 'MASTER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>직급</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="position"
+                      value={loginUser?.role === 'MASTER' ? '대표' : selectedPosition}
+                      onClick={!loginUser?.role === 'MASTER' && doUpdate ? handlePositionClick : undefined}
+                      readOnly
+                    />
+                    {positionList.length > 0 && (
                       <CompanyDropdown>
-                        {departmentSearchResults.map((department) => (
+                        {positionList.map((position) => (
                           <DropdownItem
-                            key={department.department_no}
-                            onClick={() => handleDepartmentSelect(department)}
+                            key={position.position_no}
+                            onClick={() => {
+                              handlePositionSelect(position);
+                              setSelectedPosition(position.position_name);
+                              setUserInfo((prev) => ({ ...prev, position: position.position_name }));
+                            }}
                           >
-                            {department.department_name}
+                            {position.position_name}
                           </DropdownItem>
                         ))}
                       </CompanyDropdown>
                     )}
-                  </>
+                  </InputGroup>
                 )}
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup style={{ position: 'relative' }}>
-                <InputName>직급</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="position"
-                  value={selectedPosition}
-                  onClick={doUpdate ? handlePositionClick : undefined}
-                  readOnly
-                />
-                {positionList.length > 0 && (
-                  <CompanyDropdown>
-                    {positionList.map((position) => (
-                      <DropdownItem
-                        key={position.position_no}
-                        onClick={() => {
-                          handlePositionSelect(position);
-                          setSelectedPosition(position.position_name);
-                          setUserInfo((prev) => ({ ...prev, position: position.position_name }));
-                        }}
-                      >
-                        {position.position_name}
-                      </DropdownItem>
-                    ))}
-                  </CompanyDropdown>
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사주소</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_address"
+                      value={userInfo.company_address || ''}
+                      onClick={doUpdate && (() => handleAddressSearch('company_address'))}
+                      readOnly
+                    />
+                  </InputGroup>
                 )}
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사주소</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_address"
-                  value={userInfo.company_address || ''}
-                  onClick={doUpdate && (() => handleAddressSearch('company_address'))}
-                  readOnly
-                />
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사 이메일</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="email"
-                  name="business_email"
-                  value={userInfo.business_email || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
-              <InputGroup>
-                <InputName>사내 이메일</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="email"
-                  name="company_email"
-                  value={userInfo.company_email || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
-              <InputGroup>
-                <InputName>사내 전화번호</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_phone"
-                  value={userInfo.company_phone || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사 전화번호</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_tel"
-                  value={userInfo.company_tel || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사 이메일</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="email"
+                      name="business_email"
+                      value={userInfo.business_email || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+                  <InputGroup>
+                    <InputName>사내 이메일</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="email"
+                      name="company_email"
+                      value={userInfo.company_email || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+                  <InputGroup>
+                    <InputName>사내 전화번호</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_phone"
+                      value={userInfo.company_phone || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사 전화번호</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_tel"
+                      value={userInfo.company_tel || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+              </>
             )}
           </Box>
         </Form>
@@ -580,6 +689,13 @@ const DropdownItem = styled.li`
   &:hover {
     background: #fff3b0;
   }
+`;
+const Btn = styled.button`
+  width: 100px;
+  height: 52.41px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.black};
+  border: none;
 `;
 
 export default Mypage;
