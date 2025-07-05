@@ -51,8 +51,8 @@ const memberService = {
       };
 
       payload = {
-        memberJoinDto: memberJoinDto,
-        companyProfileJoinDto: companyProfileJoinDto,
+        member_join_dto: memberJoinDto,
+        company_profile_join_dto: companyProfileJoinDto,
       };
     } else if (role === 'MASTER') {
       const companyJoinDto = {
@@ -67,12 +67,12 @@ const memberService = {
       };
 
       payload = {
-        memberJoinDto: memberJoinDto,
-        companyJoinDto: companyJoinDto,
+        member_join_dto: memberJoinDto,
+        company_join_dto: companyJoinDto,
       };
     } else if (role === 'WORCATION') {
       payload = {
-        memberJoinDto: memberJoinDto,
+        member_join_dto: memberJoinDto,
       };
     }
     console.log('payload', payload);

@@ -40,8 +40,6 @@ public class SecurityConfig {
                                 "/api/v1/member/login",
                                 "/api/v1/member/signUp/WORCATION",
                                 "/api/v1/member/signUp/MASTER",
-
-
                                 "/api/v1/member/signUp/EMPLOYEE",
                                 "/api/v1/company/search",
                                 "/api/v1/company/search/department/**",
