@@ -9,7 +9,9 @@ const Popup = ({ handleDeptBtnClick, departments, setDepartments }) => {
 
   const handleAddDepartment = () => {
     if (inputValue.trim() !== '') {
-      setDepartments((prev) => [...prev, inputValue.trim()]);
+      // 새로운 부서는 임시 키를 사용 (음수 값으로 구분)
+      const tempKey = Date.now() * -1;
+      setDepartments((prev) => ({ ...prev, [tempKey]: inputValue.trim() }));
       setInputValue('');
     }
   };
@@ -20,8 +22,12 @@ const Popup = ({ handleDeptBtnClick, departments, setDepartments }) => {
     }
   };
 
-  const handleRemoveDepartment = (idx) => {
-    setDepartments((prev) => prev.filter((_, i) => i !== idx));
+  const handleRemoveDepartment = (key) => {
+    setDepartments((prev) => {
+      const newDepartments = { ...prev };
+      delete newDepartments[key];
+      return newDepartments;
+    });
   };
 
   return (
@@ -47,10 +53,10 @@ const Popup = ({ handleDeptBtnClick, departments, setDepartments }) => {
       </Top>
       <Content>
         <InBody>
-          {departments.map((dept, idx) => (
-            <Department key={idx}>
-              {dept}
-              <MinusButton type="button" onClick={() => handleRemoveDepartment(idx)}>
+          {Object.entries(departments).map(([key, deptName]) => (
+            <Department key={key}>
+              {deptName}
+              <MinusButton type="button" onClick={() => handleRemoveDepartment(key)}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="9" width="14" height="2" rx="1" fill="#EF4444" />
                 </svg>

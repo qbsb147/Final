@@ -18,8 +18,7 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
-    public static class CompanyProfileJoinDto {
+    public static class Join {
 
         @NotNull(message = "회사 선택은 필수입니다.")
         private Long company_no;
@@ -207,4 +206,31 @@ public class CompanyProfileDto {
         private String company_phone;
         private CompanyInfoResponse company_info;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class Update {
+
+        @NotNull(message = "회사 선택은 필수입니다.")
+        private Long company_no;
+
+        @NotBlank(message = "부서 설정은 필수입니다.")
+        private String department_name;
+
+        @NotBlank(message = "직급 설정은 필수입니다.")
+        private String position;
+
+        @NotBlank(message = "회사 전용 이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String company_email;
+
+        @NotBlank(message = "회사 전용 번호는 필수입니다.")
+        @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "올바른 전화번호 형식이 아닙니다.(010-xxxx-xxxx)")
+        private String company_phone;
+    }
+
 }

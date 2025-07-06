@@ -10,5 +10,5 @@ public interface CompanyService {
 
     List<CompanyDto.Search> getCompanyList(String companyName);
 
-    List<DepartmentDto.Search> getDepartmentList(Long company_no);
+    List<DepartmentDto.Response> getDepartmentList(Long company_no);
 }

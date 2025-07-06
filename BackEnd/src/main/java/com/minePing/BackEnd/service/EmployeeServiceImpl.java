@@ -119,6 +119,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void updateApproveStatus(Long userNo, String status) {
         CompanyProfile companyProfile = employeeRepository.findByMember_UserNo(userNo).orElseThrow();
 
-        companyProfile.updatestatus(CommonEnums.Approve.valueOf(status));
+        companyProfile.updateStatus(CommonEnums.Approve.valueOf(status));
     }
 }

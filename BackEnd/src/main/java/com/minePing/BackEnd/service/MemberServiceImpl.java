@@ -1,5 +1,7 @@
 package com.minePing.BackEnd.service;
 
+import com.minePing.BackEnd.auth.JwtTokenProvider;
+import com.minePing.BackEnd.dto.DepartmentDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.EmployeeJoin;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
@@ -9,10 +11,7 @@ import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
-import com.minePing.BackEnd.entity.Company;
-import com.minePing.BackEnd.entity.CompanyProfile;
-import com.minePing.BackEnd.entity.Department;
-import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.*;
 
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
@@ -25,7 +24,10 @@ import com.minePing.BackEnd.repository.CompanyProfileRepository;
 import com.minePing.BackEnd.repository.CompanyRepository;
 import com.minePing.BackEnd.repository.DepartmentRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
-import java.util.List;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +43,8 @@ public class MemberServiceImpl implements MemberService {
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+
 
 
     @Override
@@ -124,14 +128,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDto.LoginResponse login(Login loginDto) {
-        Member member = memberRepository.findByUserId(loginDto.getUser_id())
+    public String login(Login loginDto) {
+        Member member = memberRepository.findByUserIdAndStatus(loginDto.getUser_id(), CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserAuthenticationException("존재하지 않는 사용자입니다."));
         if(!passwordEncoder.matches(loginDto.getUser_pwd(), member.getUserPwd())) {
-            throw new UserNotFoundException("비밀번호가 일치하지 않습니다.");
+            throw new UserAuthenticationException("비밀번호가 일치하지 않습니다.");
         }
-
-        return MemberDto.LoginResponse.toDto(member);
+        LoginResponse memberDto = LoginResponse.toDto(member);
+        String jwtToken = jwtTokenProvider.createToken(memberDto.getUser_id(), memberDto.getRole());
+        return jwtToken;
     }
 
     @Override
@@ -142,10 +147,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public InfoResponse getUserInfoByUserId(String userId) {
-        Member member = memberRepository.findByUserId(userId)
+    public InfoResponse getUserInfoByUserId() {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(()->new UserAuthenticationException("유저 정보를 찾을 수 없습니다."));
-        MemberDto.InfoResponse infoDto = MemberDto.InfoResponse.toMemberDto(member);
+        InfoResponse infoDto = InfoResponse.toMemberDto(member);
         if(
                 member.getRole().equals(Role.MANAGER) ||
                 member.getRole().equals(Role.EMPLOYEE)
@@ -154,7 +160,7 @@ public class MemberServiceImpl implements MemberService {
                             .orElseThrow(() -> new CompanyNotFoundException("회사 정보를 찾을 수 없습니다."));
             infoDto.setCompany_no(company_no);
         } else if (member.getRole().equals(Role.MASTER)) {
-            Long company_no = companyRepository.getCompanyNoByUserNo(member.getUserNo())
+            Long company_no = companyRepository.getCompanyNoByUserNo(member.getUserNo(), CommonEnums.Status.Y)
                     .orElseThrow(()-> new CompanyNotFoundException("회사 정보를 찾을 수 없습니다."));
             infoDto.setCompany_no(company_no);
         }
@@ -162,7 +168,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberInfoResponse getMyPageByUserId(String userId, Role role) {
+    public MemberInfoResponse getUserByUserId() {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Role role = jwtTokenProvider.getRoleFromToken();
         Member member;
         switch (role){
             case MASTER->{
@@ -173,7 +181,6 @@ public class MemberServiceImpl implements MemberService {
             case MANAGER, EMPLOYEE->{
                 member = memberRepository.findEmployeeInfoByUserId(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
-                System.out.println("member = " + member);
                 return MemberInfoResponse.toEmployeeDto(member);
             }
             case WORCATION, ADMIN -> {
@@ -187,8 +194,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void checkPassword(String password) {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        String currentPassword = memberRepository.findUserPwdByUserId(userId, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserAuthenticationException("존재하지 않는 사용자입니다."));
+        if(!passwordEncoder.matches(password, currentPassword)) {
+            throw new UserAuthenticationException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    @Override
     public LoginResponse getMemberBySocialId(String socialId) {
-        Member member = memberRepository.findByUserId(socialId)
+        Member member = memberRepository.findByUserIdAndStatus(socialId, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserAuthenticationException("카카오 로그인 회원 정보가 없습니다."));
         return LoginResponse.toDto(member);
     }
@@ -206,7 +223,101 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void updateMember(Update updateDto) {
+    @Transactional
+    public void updateUser(Update updateDto) {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Role role = jwtTokenProvider.getRoleFromToken();
 
+        if(updateDto.getUser_pwd()!=null){
+            String updatedPwd = passwordEncoder.encode(updateDto.getUser_pwd());
+            int updatedRow = memberRepository.updatePwdByUserId(userId, updatedPwd);
+            if(updatedRow == 0){
+                throw new IllegalStateException("비밀번호가 변경되지 않았습니다.");
+            }
+        }
+        switch (role){
+            case WORCATION -> {
+                Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+                member.updateWorcation(updateDto);
+            }
+            case EMPLOYEE, MANAGER -> {
+                if(updateDto.getCompany_profile_update() == null){
+                    throw new NoSuchElementException("회원 정보가 부족합니다.");
+                }
+
+                Member member = memberRepository.findByUserIdWithCompanyProfile(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+                Company changeCompany  = companyRepository.findByCompanyNoAndStatus(
+                        updateDto.getCompany_profile_update().getCompany_no(),
+                        CommonEnums.Status.Y
+                );
+
+                if(!member.getCompany().getCompanyNo().equals(changeCompany.getCompanyNo())){
+                    member.getCompanyProfile().updateStatus(CommonEnums.Approve.W);
+                    member.updateRole(Role.EMPLOYEE);
+                }
+                member.updateEmployee(updateDto, changeCompany);
+            }
+            case MASTER ->{
+                if(updateDto.getCompany_update() == null){
+                    throw new NoSuchElementException("회원 정보가 부족합니다.");
+                }
+
+                Member member = memberRepository.findByUserIdWithCompany(userId, CommonEnums.Status.Y)
+                        .orElseThrow(UserNotFoundException::new);
+
+                Set<Long> departmentNos = updateDto.getCompany_update().getDepartments()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(DepartmentDto.Request::getDepartment_no)
+                        .collect(Collectors.toSet());
+
+                List<Department> deletionDepartments = member.getCompany().getDepartments()
+                        .stream()
+                        .filter(department -> !departmentNos.contains(department.getDepartmentNo()))
+                        .map(department -> department.changeCompany(null))
+                        .toList();
+
+                member.getCompany().getDepartments().removeAll(deletionDepartments);
+
+                departmentRepository.deleteAll(deletionDepartments);
+
+                List<Department> departments = updateDto.getCompany_update().getDepartments()
+                        .stream()
+                        .filter(departmentDto -> departmentDto.getDepartment_no() == null)
+                        .map(departmentDto -> Department.builder()
+                                .departmentName(departmentDto.getDepartment_name())
+                                .company(member.getCompany())
+                            .build()
+                        )
+                        .toList();
+
+                departmentRepository.saveAll(departments);
+
+                member.updateMaster(updateDto);
+
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + role);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete() {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                .orElseThrow(UserNotFoundException::new);
+        for (Worcation worcation : member.getWorcations()) {
+            worcation.changeMember(null);
+        }
+        member.getWorcations().clear();
+
+        for (WorcationPartner worcationPartner : member.getWorcationPartners()) {
+            worcationPartner.changeMember(null);
+        }
+        member.getWorcationPartners().clear();
+        memberRepository.delete(member);
     }
 }

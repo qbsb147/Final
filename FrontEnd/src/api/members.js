@@ -51,8 +51,8 @@ const memberService = {
       };
 
       payload = {
-        memberJoinDto: memberJoinDto,
-        companyProfileJoinDto: companyProfileJoinDto,
+        member_join_dto: memberJoinDto,
+        company_profile_join_dto: companyProfileJoinDto,
       };
     } else if (role === 'MASTER') {
       const companyJoinDto = {
@@ -67,12 +67,12 @@ const memberService = {
       };
 
       payload = {
-        memberJoinDto: memberJoinDto,
-        companyJoinDto: companyJoinDto,
+        member_join_dto: memberJoinDto,
+        company_join_dto: companyJoinDto,
       };
     } else if (role === 'WORCATION') {
       payload = {
-        memberJoinDto: memberJoinDto,
+        member_join_dto: memberJoinDto,
       };
     }
     console.log('payload', payload);
@@ -114,9 +114,9 @@ const memberService = {
     }
   },
 
-  getMyPage: async () => {
+  getDetail: async () => {
     try {
-      const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.MY_PAGE);
+      const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.BASE);
       return response.data;
     } catch (error) {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
@@ -124,12 +124,31 @@ const memberService = {
   },
 
   // 회원 정보 수정
-  updateMember: async (userNo, updateData) => {
+  updateMember: async (updateData) => {
     try {
-      const response = await axiosInstance.put(API_ENDPOINTS.MEMBER.MY_UPDATE(userNo), updateData);
+      const response = await axiosInstance.put(API_ENDPOINTS.MEMBER.BASE, updateData);
       return response.data;
     } catch (error) {
-      throw error?.response?.data?.message || '회원 정보 수정에 실패했습니다.';
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+
+  // 현재 비밀번호 검증
+  validateCurrentPassword: async (currentPassword) => {
+    try {
+      const response = await axiosInstance.post(API_ENDPOINTS.MEMBER.VALIDATE_PASSWORD, {
+        password: currentPassword,
+      });
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+  delete: async () => {
+    try {
+      await axiosInstance.delete(API_ENDPOINTS.MEMBER.BASE);
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 };

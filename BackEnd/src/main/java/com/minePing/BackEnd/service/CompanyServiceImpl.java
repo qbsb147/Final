@@ -41,10 +41,10 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<DepartmentDto.Search> getDepartmentList(Long company_no) {
+    public List<DepartmentDto.Response> getDepartmentList(Long company_no) {
         return departmentRepository.findAllByCompany_CompanyNo(company_no)
                 .map(department -> department.stream()
-                        .map(DepartmentDto.Search::toDto)
+                        .map(DepartmentDto.Response::toDto)
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
     }

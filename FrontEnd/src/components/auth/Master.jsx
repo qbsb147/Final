@@ -7,11 +7,13 @@ const HIDDEN_FIELDS = ['address', 'email', 'company_tel'];
 
 const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [showInput, setShowInput] = useState(false);
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState({});
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
   useEffect(() => {
-    setFormData2((prev) => ({ ...prev, departments }));
+    // departments 객체를 department_name 배열로 변환하여 서버에 전송
+    const departmentNames = Object.values(departments);
+    setFormData2((prev) => ({ ...prev, departments: departmentNames }));
   }, [departments]);
 
   useEffect(() => {
@@ -49,7 +51,9 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
 
   const handleDeptBtnClick = () => {
     if (showInput) {
-      setFormData2((prev) => ({ ...prev, departments: departments }));
+      // departments 객체를 department_name 배열로 변환하여 서버에 전송
+      const departmentNames = Object.values(departments);
+      setFormData2((prev) => ({ ...prev, departments: departmentNames }));
     }
     setShowInput(!showInput);
   };
