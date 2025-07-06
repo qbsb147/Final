@@ -95,22 +95,28 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
         <div style={{ marginBottom: '16px' }}>
           <Label>성별</Label>
           <RadioGroup>
-            <input
-              type="radio"
-              name="gender"
-              value="M"
-              checked={formData1.gender === 'M'}
-              onChange={(e) => handleChange(e, 1)}
-            />{' '}
-            남성
-            <input
-              type="radio"
-              name="gender"
-              value="W"
-              checked={formData1.gender === 'W'}
-              onChange={(e) => handleChange(e, 1)}
-            />{' '}
-            여성
+            <RadioItem>
+              <input
+                type="radio"
+                id="gender-male"
+                name="gender"
+                value="M"
+                checked={formData1.gender === 'M'}
+                onChange={(e) => handleChange(e, 1)}
+              />
+              <label htmlFor="gender-male">남성</label>
+            </RadioItem>
+            <RadioItem>
+              <input
+                type="radio"
+                id="gender-female"
+                name="gender"
+                value="W"
+                checked={formData1.gender === 'W'}
+                onChange={(e) => handleChange(e, 1)}
+              />
+              <label htmlFor="gender-female">여성</label>
+            </RadioItem>
           </RadioGroup>
         </div>
       </Left>
@@ -167,30 +173,39 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
         <div style={{ marginBottom: '16px' }}>
           <Label>회원 유형</Label>
           <RadioGroup>
-            <input
-              type="radio"
-              name="role"
-              value="EMPLOYEE"
-              checked={formData1.role === 'EMPLOYEE'}
-              onChange={handleRadioChange}
-            />
-            직원
-            <input
-              type="radio"
-              name="role"
-              value="MASTER"
-              checked={formData1.role === 'MASTER'}
-              onChange={handleRadioChange}
-            />
-            기업
-            <input
-              type="radio"
-              name="role"
-              value="WORCATION"
-              checked={formData1.role === 'WORCATION'}
-              onChange={handleRadioChange}
-            />
-            워케이션 업체
+            <RadioItem>
+              <input
+                type="radio"
+                id="role-employee"
+                name="role"
+                value="EMPLOYEE"
+                checked={formData1.role === 'EMPLOYEE'}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="role-employee">직원</label>
+            </RadioItem>
+            <RadioItem>
+              <input
+                type="radio"
+                id="role-master"
+                name="role"
+                value="MASTER"
+                checked={formData1.role === 'MASTER'}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="role-master">기업</label>
+            </RadioItem>
+            <RadioItem>
+              <input
+                type="radio"
+                id="role-worcation"
+                name="role"
+                value="WORCATION"
+                checked={formData1.role === 'WORCATION'}
+                onChange={handleRadioChange}
+              />
+              <label htmlFor="role-worcation">워케이션 업체</label>
+            </RadioItem>
           </RadioGroup>
         </div>
       </Right>
@@ -258,6 +273,22 @@ const RadioGroup = styled.div`
   justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing.s10};
   margin: ${({ theme }) => theme.spacing.s9} ${({ theme }) => theme.spacing.s0};
+`;
+
+const RadioItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  
+  input[type="radio"] {
+    cursor: pointer;
+  }
+  
+  label {
+    cursor: pointer;
+    margin: 0;
+  }
 `;
 
 const Label = styled.label`
