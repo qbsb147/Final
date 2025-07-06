@@ -53,7 +53,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex,
                                                                        HttpServletRequest request) {
         log.error("핸드러를 찾을 수 없음 : {}", ex.getMessage());
-
         ErrorResponse error = ErrorResponse.of(ErrorCode.RESOURCE_NOT_FOUND, request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -95,5 +94,18 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = ErrorResponse.of(ErrorCode.INVALID_USER_INPUT, errorMessage, request.getRequestURI());
         return ResponseEntity.badRequest().body(error);
+    }
+
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("데이터 무결성 예외: {}", ex.getMessage(), ex);
+        ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+        log.error("잘못된 상태 예외: {}", ex.getMessage(), ex);
+        ErrorResponse error = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

@@ -120,4 +120,8 @@ public class Worcation {
     public void assignFeatures(WorcationFeatures features) {
         this.worcationFeatures = features;
     }
+    public Worcation changeMember(Member member) {
+        this.member = member;
+        return this;
+    }
 }

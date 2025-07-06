@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.entity;
 
 import com.minePing.BackEnd.dto.KakaoProfileDto;
+import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.SocialType;
@@ -143,4 +144,27 @@ public class Member {
         this.role = role;
     }
 
+    public void updateWorcation(MemberDto.Update updateDto){
+        this.name = updateDto.getName();
+        this.address = updateDto.getAddress();
+        this.email = updateDto.getEmail();
+        this.phone = updateDto.getPhone();
+    }
+
+    public void updateEmployee(MemberDto.Update updateDto, Company changeCompany){
+        this.name = updateDto.getName();
+        this.address = updateDto.getAddress();
+        this.email = updateDto.getEmail();
+        this.phone = updateDto.getPhone();
+        this.companyProfile.changeCompany(changeCompany);
+        this.companyProfile.updateThis(updateDto);
+    }
+
+    public void updateMaster(MemberDto.Update updateDto){
+        this.name = updateDto.getName();
+        this.address = updateDto.getAddress();
+        this.email = updateDto.getEmail();
+        this.phone = updateDto.getPhone();
+        this.company.updateThis(updateDto);
+    }
 }

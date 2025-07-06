@@ -63,4 +63,9 @@ public class WorcationPartner {
             this.approve = Approve.W;
         }
     }
+
+    public WorcationPartner changeMember(Member member) {
+        this.member = member;
+        return this;
+    }
 }

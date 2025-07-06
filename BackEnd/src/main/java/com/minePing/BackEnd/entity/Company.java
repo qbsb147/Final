@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import jakarta.persistence.*;
 import lombok.*;
@@ -96,5 +97,12 @@ public class Company {
     @PreUpdate
     protected void onUpdate() {
         updateAt = LocalDateTime.now();
+    }
+
+    public void updateThis(MemberDto.Update updateDto){
+        this.companyName = updateDto.getCompany_update().getCompany_name();
+        this.companyAddress = updateDto.getCompany_update().getCompany_address();
+        this.businessEmail = updateDto.getCompany_update().getBusiness_email();
+        this.companyTel = updateDto.getCompany_update().getCompany_tel();
     }
 }

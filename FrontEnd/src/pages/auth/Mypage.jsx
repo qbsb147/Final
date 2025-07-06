@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Input from '../../styles/Input';
 import { InputRadio } from '../../styles/Input.styles';
 import useAuthStore from '../../store/authStore';
-import api from '../../api/axios';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
-import { useDefaultForm, useMasterForm, useEmployeeForm, validateForm } from '../../hooks/useAuth';
-import * as yup from 'yup';
+import { validateMypageForm } from '../../hooks/useAuth';
 import { usePosition } from '../../hooks/usePosition';
+import Popup from '../../components/auth/Popup';
+import Swal from 'sweetalert2';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-
+  const [companySearchResults, setCompanySearchResults] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [doUpdate, setDoUpdate] = useState(false);
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-  const positions = [
-    { position_name: '사원' },
-    { position_name: '주임' },
-    { position_name: '대리' },
-    { position_name: '과장' },
-    { position_name: '차장' },
-    { position_name: '부장' },
-    { position_name: '이사' },
-    { position_name: '상무' },
-    { position_name: '전무' },
-    { position_name: '부사장' },
-  ];
+  const companyNameTimeout = useRef();
 
-  // role에 따라 yup 스키마 선택
-  let schema = useDefaultForm;
-  if (loginUser?.role === 'MASTER') {
-    schema = useDefaultForm.concat(useMasterForm);
-  } else if (loginUser?.role === 'EMPLOYEE') {
-    schema = useDefaultForm.concat(useEmployeeForm);
-  }
+  const [showInput, setShowInput] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const handleDeptBtnClick = () => {
+    if (showInput) {
+      const departmentsArray = Object.entries(departments).map(([key, deptName]) => ({
+        department_no: parseInt(key) > 0 ? parseInt(key) : null,
+        department_name: deptName,
+      }));
+      setUserInfo((prev) => ({ ...prev, departments: departmentsArray }));
+    }
+    setShowInput(!showInput);
+  };
 
   const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
     usePosition(userInfo.position || '');
@@ -64,8 +58,7 @@ const Mypage = () => {
 
     const fetchUserInfo = async () => {
       try {
-        const memberData = await memberService.getMyPage();
-        console.log(memberData);
+        const memberData = await memberService.getDetail();
 
         let mappedData = {};
         if (loginUser.role === 'WORCATION') {
@@ -74,31 +67,44 @@ const Mypage = () => {
             user_id: memberData.user_id,
             email: memberData.email,
             name: memberData.name,
+            phone: memberData.phone,
             address: memberData.address,
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
           };
         } else if (loginUser.role === 'MASTER') {
+          const departmentsArray = memberData?.company_info?.departments || [];
+          // department_name을 값으로, department_no를 인덱스로 하는 객체 생성
+          const mappedDepartments = {};
+          departmentsArray.forEach((dept) => {
+            mappedDepartments[dept.department_no] = dept.department_name;
+          });
+
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
             email: memberData.email,
             name: memberData.name,
+            phone: memberData.phone,
             address: memberData.address,
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_name: memberData?.company_profile_info?.company_info?.company_name || '',
-            company_address: memberData?.company_profile_info?.company_address || '',
-            business_email: memberData?.company_profile_info?.business_email || '',
-            company_tel: memberData?.company_profile_info?.company_tel || '',
+            company_name: memberData?.company_info?.company_name || '',
+            company_address: memberData?.company_info?.company_address || '',
+            business_email: memberData?.company_info?.business_email || '',
+            company_tel: memberData?.company_info?.company_tel || '',
+            departments: mappedDepartments,
           };
+
+          setDepartments(mappedDepartments);
         } else if (loginUser.role === 'EMPLOYEE' || loginUser.role === 'MANAGER') {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
             email: memberData.email,
+            phone: memberData.phone,
             name: memberData.name,
             address: memberData.address,
             birthday: memberData.birthday,
@@ -135,6 +141,44 @@ const Mypage = () => {
   if (!loginUser) {
     return <div style={{ textAlign: 'center' }}>로딩중...</div>;
   }
+
+  const handleCompanySelect = (company) => {
+    // 현재 회사와 다른 회사를 선택했을 때만 확인 다이얼로그 표시
+    if (userInfo.company_no && userInfo.company_no !== company.company_no) {
+      Swal.fire({
+        title: '정말 회사를 바꾸시겠습니까?',
+        text: '회사를 바꾸면 회사의 승인을 새로 받아야하며 해당 회사의 일반 직원이 되게됩니다.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 승인하면 회사 변경
+          setUserInfo((prev) => ({
+            ...prev,
+            company_no: company.company_no,
+            company_name: company.company_name,
+          }));
+          setCompanySearchResults([]);
+        } else {
+          // 취소하면 이전 값으로 되돌리기 위해 검색 결과만 초기화
+          setCompanySearchResults([]);
+        }
+      });
+    } else {
+      // 같은 회사이거나 처음 선택하는 경우 바로 변경
+      setUserInfo((prev) => ({
+        ...prev,
+        company_no: company.company_no,
+        company_name: company.company_name,
+      }));
+      setCompanySearchResults([]);
+    }
+  };
+
   const handleDepartmentClick = async (e) => {
     try {
       const data = await memberService.searchDepartment(userInfo.company_no);
@@ -150,17 +194,94 @@ const Mypage = () => {
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 현재 비밀번호 검증 함수
+  const validateCurrentPassword = async () => {
+    const { value: currentPassword } = await Swal.fire({
+      title: '현재 비밀번호 확인',
+      text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',
+      input: 'password',
+      inputPlaceholder: '현재 비밀번호를 입력하세요',
+      showCancelButton: true,
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      inputValidator: (value) => {
+        if (!value) {
+          return '현재 비밀번호를 입력해주세요!';
+        }
+      },
+    });
+
+    if (currentPassword) {
+      try {
+        // 현재 비밀번호 검증 API 호출 (백엔드에서 구현 필요)
+        await memberService.validateCurrentPassword(currentPassword);
+        return true;
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: '비밀번호 오류',
+          text: err,
+          confirmButtonColor: '#3085d6',
+        });
+        return false;
+      }
+    }
+    return false;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isValid = await validateForm(schema, userInfo);
+
+    // 현재 비밀번호 검증
+    const isPasswordValid = await validateCurrentPassword();
+    if (!isPasswordValid) return;
+
+    const isValid = await validateMypageForm(userInfo, loginUser.role);
     if (!isValid) return;
 
     try {
-      await memberService.updateMember(loginUser.user_no, userInfo);
-      alert('수정 완료!');
+      let submitData = {
+        user_pwd: userInfo.user_pwd,
+        name: userInfo.name,
+        address: userInfo.address,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        company_profile_update: {
+          company_no: userInfo.company_no,
+          department_name: userInfo.department_name,
+          position: userInfo.position,
+          company_email: userInfo.company_email,
+          company_phone: userInfo.company_phone,
+        },
+        company_update: {
+          company_name: userInfo.company_name,
+          company_address: userInfo.company_address,
+          business_email: userInfo.business_email,
+          company_tel: userInfo.company_tel,
+          departments: userInfo.departments,
+        },
+      };
+
+      console.log(submitData);
+      await memberService.updateMember(submitData);
+
+      Swal.fire({
+        icon: 'success',
+        title: '수정 완료!',
+        text: '회원정보가 성공적으로 수정되었습니다.',
+        confirmButtonColor: '#3085d6',
+      });
+
       setDoUpdate(false);
     } catch (err) {
-      alert('수정 실패!');
+      Swal.fire({
+        icon: 'error',
+        title: '수정 실패',
+        text: err,
+        confirmButtonColor: '#3085d6',
+      });
     }
   };
 
@@ -183,12 +304,90 @@ const Mypage = () => {
     }));
     setDepartmentSearchResults([]);
   };
+  const handleCompanyNameKeyUp = (e) => {
+    const value = e.target.value;
+    if (companyNameTimeout.current) clearTimeout(companyNameTimeout.current);
+    companyNameTimeout.current = setTimeout(async () => {
+      if (!value) {
+        setCompanySearchResults([]);
+        return;
+      }
+      try {
+        const data = await memberService.searchCompany(value);
+        setCompanySearchResults(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setCompanySearchResults([]);
+        console.error('회사명 검색 에러:', err);
+      }
+    }, 330);
+  };
 
   return (
     <>
       <Content>
         <TitleBox>
           <Title>마이페이지</Title>
+          <WithdrawButton
+            onClick={async () => {
+              const { value: currentPassword } = await Swal.fire({
+                title: '비밀번호 확인',
+                text: '탈퇴를 위해 현재 비밀번호를 입력해주세요.',
+                input: 'password',
+                inputPlaceholder: '현재 비밀번호를 입력하세요',
+                showCancelButton: true,
+                confirmButtonText: '확인',
+                cancelButtonText: '취소',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                inputValidator: (value) => {
+                  if (!value) {
+                    return '현재 비밀번호를 입력해주세요!';
+                  }
+                },
+              });
+
+              if (currentPassword) {
+                try {
+                  await memberService.validateCurrentPassword(currentPassword);
+
+                  const result = await Swal.fire({
+                    title: '정말 탈퇴하시겠습니까?',
+                    text: '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: '탈퇴',
+                    cancelButtonText: '취소',
+                  });
+
+                                      if (result.isConfirmed) {
+                      await memberService.delete();
+                      
+                      Swal.fire({
+                        icon: 'success',
+                        title: '탈퇴 완료',
+                        text: '회원 탈퇴가 성공적으로 처리되었습니다.',
+                        confirmButtonColor: '#3085d6',
+                      }).then(() => {
+                        localStorage.removeItem('token');
+                        
+                        window.location.href = '/';
+                      });
+                    }
+                } catch (err) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '비밀번호 오류',
+                    text: err,
+                    confirmButtonColor: '#3085d6',
+                  });
+                }
+              }
+            }}
+          >
+            탈퇴
+          </WithdrawButton>
         </TitleBox>
         <Form>
           {/* 첫 번째 박스: 기본 정보 */}
@@ -200,7 +399,7 @@ const Mypage = () => {
             {doUpdate && (
               <>
                 <InputGroup>
-                  <InputName>비밀번호</InputName>
+                  <InputName>새로운 비밀번호</InputName>
                   <InputText
                     style={Input.InputGray}
                     type="password"
@@ -336,148 +535,203 @@ const Mypage = () => {
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
-            {(loginUser?.role === 'MASTER' || loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
-              <InputGroup>
-                <InputName>회사명</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_name"
-                  value={userInfo.company_name || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
-              <InputGroup style={{ position: 'relative' }}>
-                <InputName>부서명</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="department_name"
-                  value={userInfo.department_name || ''}
-                  onClick={handleDepartmentClick}
-                  readOnly
-                />
-                {doUpdate && (
+            {loginUser.role === 'MASTER' && doUpdate && (
+              <div style={{ marginBottom: '16px' }}>
+                <InputName>부서등록</InputName>
+                {showInput ? (
                   <>
-                    {departmentSearchResults.length > 0 && (
+                    <Popup
+                      handleDeptBtnClick={handleDeptBtnClick}
+                      departments={departments}
+                      setDepartments={setDepartments}
+                    />
+                  </>
+                ) : (
+                  <Btn type="button" style={{ width: '100%' }} onClick={handleDeptBtnClick}>
+                    부서 등록
+                  </Btn>
+                )}
+              </div>
+            )}
+
+            {showInput ? (
+              <></>
+            ) : (
+              <>
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_name"
+                      value={userInfo.company_name || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                      autoComplete="off"
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>회사명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_name"
+                      value={userInfo.company_name || ''}
+                      onChange={handleInputChange}
+                      onKeyUp={handleCompanyNameKeyUp}
+                      readOnly={!doUpdate}
+                      autoComplete="off"
+                    />
+                    {companySearchResults.length > 0 && (
                       <CompanyDropdown>
-                        {departmentSearchResults.map((department) => (
-                          <DropdownItem
-                            key={department.department_no}
-                            onClick={() => handleDepartmentSelect(department)}
-                          >
-                            {department.department_name}
+                        {companySearchResults.map((company) => (
+                          <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                            {company.company_name}
                           </DropdownItem>
                         ))}
                       </CompanyDropdown>
                     )}
-                  </>
+                  </InputGroup>
                 )}
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup style={{ position: 'relative' }}>
-                <InputName>직급</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="position"
-                  value={selectedPosition}
-                  onClick={doUpdate ? handlePositionClick : undefined}
-                  readOnly
-                />
-                {positionList.length > 0 && (
-                  <CompanyDropdown>
-                    {positionList.map((position) => (
-                      <DropdownItem
-                        key={position.position_no}
-                        onClick={() => {
-                          handlePositionSelect(position);
-                          setSelectedPosition(position.position_name);
-                          setUserInfo((prev) => ({ ...prev, position: position.position_name }));
-                        }}
-                      >
-                        {position.position_name}
-                      </DropdownItem>
-                    ))}
-                  </CompanyDropdown>
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>부서명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="department_name"
+                      value={userInfo.department_name || ''}
+                      onClick={handleDepartmentClick}
+                      readOnly
+                    />
+                    {doUpdate && (
+                      <>
+                        {departmentSearchResults.length > 0 && (
+                          <CompanyDropdown>
+                            {departmentSearchResults.map((department) => (
+                              <DropdownItem
+                                key={department.department_no}
+                                onClick={() => handleDepartmentSelect(department)}
+                              >
+                                {department.department_name}
+                              </DropdownItem>
+                            ))}
+                          </CompanyDropdown>
+                        )}
+                      </>
+                    )}
+                  </InputGroup>
                 )}
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사주소</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_address"
-                  value={userInfo.company_address || ''}
-                  onClick={doUpdate && (() => handleAddressSearch('company_address'))}
-                  readOnly
-                />
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사 이메일</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="email"
-                  name="business_email"
-                  value={userInfo.business_email || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
-              <InputGroup>
-                <InputName>사내 이메일</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="email"
-                  name="company_email"
-                  value={userInfo.company_email || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
-              <InputGroup>
-                <InputName>사내 전화번호</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_phone"
-                  value={userInfo.company_phone || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
-            )}
-            {loginUser?.role === 'MASTER' && (
-              <InputGroup>
-                <InputName>회사 전화번호</InputName>
-                <InputText
-                  style={Input.InputGray}
-                  type="text"
-                  name="company_tel"
-                  value={userInfo.company_tel || ''}
-                  onChange={handleInputChange}
-                  readOnly={!doUpdate}
-                />
-              </InputGroup>
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER' || loginUser?.role === 'MASTER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>직급</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="position"
+                      value={loginUser?.role === 'MASTER' ? '대표' : selectedPosition}
+                      onClick={loginUser?.role !== 'MASTER' && doUpdate ? handlePositionClick : undefined}
+                      readOnly
+                    />
+                    {positionList.length > 0 && (
+                      <CompanyDropdown>
+                        {positionList.map((position, index) => (
+                          <DropdownItem
+                            key={index}
+                            onClick={() => {
+                              handlePositionSelect(position);
+                              setSelectedPosition(position.position_name);
+                              setUserInfo((prev) => ({ ...prev, position: position.position_name }));
+                            }}
+                          >
+                            {position.position_name}
+                          </DropdownItem>
+                        ))}
+                      </CompanyDropdown>
+                    )}
+                  </InputGroup>
+                )}
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사주소</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_address"
+                      value={userInfo.company_address || ''}
+                      onClick={doUpdate && (() => handleAddressSearch('company_address'))}
+                      readOnly
+                    />
+                  </InputGroup>
+                )}
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사 이메일</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="email"
+                      name="business_email"
+                      value={userInfo.business_email || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+                  <InputGroup>
+                    <InputName>사내 이메일</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="email"
+                      name="company_email"
+                      value={userInfo.company_email || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+                  <InputGroup>
+                    <InputName>사내 전화번호</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_phone"
+                      value={userInfo.company_phone || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup>
+                    <InputName>회사 전화번호</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_tel"
+                      value={userInfo.company_tel || ''}
+                      onChange={handleInputChange}
+                      readOnly={!doUpdate}
+                    />
+                  </InputGroup>
+                )}
+              </>
             )}
           </Box>
         </Form>
         <ButnContent>
           <ButnBox>
             {doUpdate ? (
-              <button style={btn.buttonYbShadow} onClick={() => setDoUpdate(false)}>
+              <button
+                style={btn.buttonYbShadow}
+                onClick={() => {
+                  window.location.reload();
+                }}
+              >
                 취소
               </button>
             ) : (
@@ -543,12 +797,27 @@ const Content = styled.div`
 
 const TitleBox = styled.div`
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
 `;
 
 const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes[`4xl`]};
+`;
+
+const WithdrawButton = styled.button`
+  background-color: #d33;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #b91c1c;
+  }
 `;
 
 const InputName = styled.p`
@@ -580,6 +849,13 @@ const DropdownItem = styled.li`
   &:hover {
     background: #fff3b0;
   }
+`;
+const Btn = styled.button`
+  width: 100px;
+  height: 52.41px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.black};
+  border: none;
 `;
 
 export default Mypage;

@@ -26,53 +26,59 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
     private final KakaoService kakaoService;
 
-    @PostMapping("/signUp/EMPLOYEE")
+    @PostMapping("signUp/EMPLOYEE")
     public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.EmployeeJoin employeeJoinDto) {
-        System.out.println("employeeJoinDto = " + employeeJoinDto);
-        System.out.println("확인 = " + employeeJoinDto);
         memberService.createEmployeeMember(employeeJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/signUp/MASTER")
+    @PostMapping("signUp/MASTER")
     public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.MasterJoin masterJoinDto) {
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/signUp/WORCATION")
+    @PostMapping("signUp/WORCATION")
     public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.WorcationJoin worcationJoinDto) {
         memberService.createWorcationMember(worcationJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) {
-        MemberDto.LoginResponse member = memberService.login(loginDto);
-
-        String jwtToken = jwtTokenProvider.createToken(member.getUser_id(), member.getRole());
         Map<String, Object> loginInfo = new HashMap<>();
+        String jwtToken = memberService.login(loginDto);
         loginInfo.put("token", jwtToken);
         return ResponseEntity.ok(loginInfo);
     }
 
-    @GetMapping("/userInfo")
+    @GetMapping("userInfo")
     public ResponseEntity<InfoResponse> getMyInfo() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        InfoResponse userInfo = memberService.getUserInfoByUserId(userId);
+        InfoResponse userInfo = memberService.getUserInfoByUserId();
         return ResponseEntity.ok(userInfo);
     }
 
-    @PutMapping("/myPage/{user_no}")
-    public ResponseEntity<?> updateMyInfo(@PathVariable("user_no") Long user_no, @RequestBody MemberDto.Update updateDto){
-        memberService.updateMember(updateDto);
+    @GetMapping("")
+    public ResponseEntity<?> getUser() {
+        MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<?> update(@RequestBody MemberDto.Update updateDto){
+        memberService.updateUser(updateDto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/kakao/login")
+    @DeleteMapping("")
+    public ResponseEntity<Void> delete(){
+        memberService.delete();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("kakao/login")
     public ResponseEntity<?> kakaoLogin(@RequestBody MemberDto.KakaoLogin kakaoLoginDto) {
         AccessTokenDto accessTokenDto = kakaoService.getAccessToken(kakaoLoginDto.getCode());
         KakaoProfileDto kakaoProfileDto = kakaoService.getKakaoProfile(accessTokenDto.getAccess_token());
@@ -81,16 +87,15 @@ public class MemberController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("/myPage")
-    public ResponseEntity<?> myPage() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        CommonEnums.Role role = jwtTokenProvider.getRoleFromToken();
-        MemberDto.MemberInfoResponse myPage = memberService.getMyPageByUserId(userId, role);
 
-        return ResponseEntity.ok(myPage);
+    @PostMapping("validate-password")
+    public ResponseEntity<Void> checkPassword(@RequestBody Map<String, String> body){
+        String password = body.get("password");
+        memberService.checkPassword(password);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{userNo}")
+    @PatchMapping("{userNo}")
     public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
         try {
             memberService.updateRole(userNo,updateRoleDto);
@@ -102,5 +107,4 @@ public class MemberController {
                     .body("등급 변경 중 오류가 발생했습니다.");
         }
     }
-
 }
