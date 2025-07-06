@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.auth.JwtTokenProvider;
+import com.minePing.BackEnd.dto.DepartmentDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.EmployeeJoin;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
@@ -10,10 +11,7 @@ import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
-import com.minePing.BackEnd.entity.Company;
-import com.minePing.BackEnd.entity.CompanyProfile;
-import com.minePing.BackEnd.entity.Department;
-import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.*;
 
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
@@ -254,22 +252,42 @@ public class MemberServiceImpl implements MemberService {
                         updateDto.getCompany_profile_update().getCompany_no(),
                         CommonEnums.Status.Y
                 );
-                member.updateEmployee(updateDto, changeCompany);
 
+                if(!member.getCompany().getCompanyNo().equals(changeCompany.getCompanyNo())){
+                    member.getCompanyProfile().updateStatus(CommonEnums.Approve.W);
+                    member.updateRole(Role.EMPLOYEE);
+                }
+                member.updateEmployee(updateDto, changeCompany);
             }
             case MASTER ->{
                 if(updateDto.getCompany_update() == null){
                     throw new NoSuchElementException("회원 정보가 부족합니다.");
                 }
+
                 Member member = memberRepository.findByUserIdWithCompany(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
 
+                Set<Long> departmentNos = updateDto.getCompany_update().getDepartments()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(DepartmentDto.Request::getDepartment_no)
+                        .collect(Collectors.toSet());
+
+                List<Department> deletionDepartments = member.getCompany().getDepartments()
+                        .stream()
+                        .filter(department -> !departmentNos.contains(department.getDepartmentNo()))
+                        .map(department -> department.changeCompany(null))
+                        .toList();
+
+                member.getCompany().getDepartments().removeAll(deletionDepartments);
+
+                departmentRepository.deleteAll(deletionDepartments);
+
                 List<Department> departments = updateDto.getCompany_update().getDepartments()
                         .stream()
-                        .filter(department -> department.getDepartmentNo() == null)
-                        .map(department -> Department.builder()
-                                .departmentNo(department.getDepartmentNo())
-                                .departmentName(department.getDepartmentName())
+                        .filter(departmentDto -> departmentDto.getDepartment_no() == null)
+                        .map(departmentDto -> Department.builder()
+                                .departmentName(departmentDto.getDepartment_name())
                                 .company(member.getCompany())
                             .build()
                         )
@@ -278,19 +296,28 @@ public class MemberServiceImpl implements MemberService {
                 departmentRepository.saveAll(departments);
 
                 member.updateMaster(updateDto);
-                Set<Long> departmentNos = updateDto.getCompany_update().getDepartments()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .map(Department::getDepartmentNo)
-                        .collect(Collectors.toSet());
 
-                List<Department> deletionDepartments = member.getCompany().getDepartments()
-                        .stream()
-                        .filter(department -> !departmentNos.contains(department.getDepartmentNo()))
-                        .toList();
-                departmentRepository.deleteAll(deletionDepartments);
             }
             default -> throw new IllegalStateException("Unexpected value: " + role);
         }
+    }
+
+    @Override
+    @Transactional
+    public void delete() {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                .orElseThrow(UserNotFoundException::new);
+        for (Worcation worcation : member.getWorcations()) {
+            worcation.changeMember(null);
+        }
+        member.getWorcations().clear();
+
+        for (WorcationPartner worcationPartner : member.getWorcationPartners()) {
+            worcationPartner.changeMember(null);
+        }
+        member.getWorcationPartners().clear();
+        memberRepository.delete(member);
     }
 }

@@ -60,10 +60,21 @@ public class MemberController {
         return ResponseEntity.ok(userInfo);
     }
 
+    @GetMapping("")
+    public ResponseEntity<?> getUser() {
+        MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
+        return ResponseEntity.ok(user);
+    }
+
     @PutMapping("")
     public ResponseEntity<?> update(@RequestBody MemberDto.Update updateDto){
-
         memberService.updateUser(updateDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Void> delete(){
+        memberService.delete();
         return ResponseEntity.ok().build();
     }
 
@@ -76,11 +87,6 @@ public class MemberController {
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getUser() {
-        MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
-        return ResponseEntity.ok(user);
-    }
 
     @PostMapping("validate-password")
     public ResponseEntity<Void> checkPassword(@RequestBody Map<String, String> body){

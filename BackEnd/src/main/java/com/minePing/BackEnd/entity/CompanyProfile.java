@@ -77,7 +77,7 @@ public class CompanyProfile {
         }
     }
 
-    public void updatestatus(CommonEnums.Approve approve) {
+    public void updateStatus(CommonEnums.Approve approve) {
         this.approve = approve;
     }
 

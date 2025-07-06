@@ -31,7 +31,6 @@ public class MemberDto {
                 regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
                 message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
         )
-        @JsonIgnore
         private String user_pwd;
 
         @NotBlank(message = "이름은 필수입니다.")
@@ -275,6 +274,7 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ToString
     public static class Update {
 
         private String user_pwd;

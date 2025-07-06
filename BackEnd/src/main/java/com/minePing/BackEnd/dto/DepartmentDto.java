@@ -21,4 +21,14 @@ public class DepartmentDto {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
+    public static class Request {
+        private Long department_no;
+        private String department_name;
+    }
 }

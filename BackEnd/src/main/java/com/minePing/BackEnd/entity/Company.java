@@ -101,7 +101,6 @@ public class Company {
 
     public void updateThis(MemberDto.Update updateDto){
         this.companyName = updateDto.getCompany_update().getCompany_name();
-        this.licensee = updateDto.getCompany_update().getLicensee();
         this.companyAddress = updateDto.getCompany_update().getCompany_address();
         this.businessEmail = updateDto.getCompany_update().getBusiness_email();
         this.companyTel = updateDto.getCompany_update().getCompany_tel();

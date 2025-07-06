@@ -104,6 +104,7 @@ public class CompanyDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ToString
     public static class Update {
 
         @NotNull(message = "회사명은 필수입니다.")
@@ -116,17 +117,12 @@ public class CompanyDto {
         @NotBlank(message = "회사 이메일은 필수입니다.")
         private String business_email;
 
-        @NotBlank(message = "사업자명은 필수입니다.")
-        private String licensee;
-
         @NotBlank(message = "회사 전화 번호는 필수입니다.")
         @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
         private String company_tel;
 
         @NotNull(message = "회사 부서 목록은 하나 이상 있어야 합니다.")
         @Size(min = 1, message = "부서는 최소 1개 이상 선택해야 합니다.")
-        private List<Department> departments;
+        private List<DepartmentDto.Request> departments;
     }
-
-
 }

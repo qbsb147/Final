@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Input from '../../styles/Input';
 import { InputRadio } from '../../styles/Input.styles';
 import useAuthStore from '../../store/authStore';
-import api from '../../api/axios';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
 import { validateMypageForm } from '../../hooks/useAuth';
-import * as yup from 'yup';
 import { usePosition } from '../../hooks/usePosition';
 import Popup from '../../components/auth/Popup';
 import Swal from 'sweetalert2';
@@ -15,29 +13,18 @@ import Swal from 'sweetalert2';
 const Mypage = () => {
   const { loginUser } = useAuthStore();
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-
+  const [companySearchResults, setCompanySearchResults] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [doUpdate, setDoUpdate] = useState(false);
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-  const positions = [
-    { position_name: '사원' },
-    { position_name: '주임' },
-    { position_name: '대리' },
-    { position_name: '과장' },
-    { position_name: '차장' },
-    { position_name: '부장' },
-    { position_name: '이사' },
-    { position_name: '상무' },
-    { position_name: '전무' },
-    { position_name: '부사장' },
-  ];
+  const companyNameTimeout = useRef();
+
   const [showInput, setShowInput] = useState(false);
   const [departments, setDepartments] = useState([]);
   const handleDeptBtnClick = () => {
     if (showInput) {
-      // departments 객체를 서버 형식에 맞게 변환
       const departmentsArray = Object.entries(departments).map(([key, deptName]) => ({
-        department_no: parseInt(key) > 0 ? parseInt(key) : null, // 음수 키는 새로 추가된 부서
+        department_no: parseInt(key) > 0 ? parseInt(key) : null,
         department_name: deptName,
       }));
       setUserInfo((prev) => ({ ...prev, departments: departmentsArray }));
@@ -72,7 +59,6 @@ const Mypage = () => {
     const fetchUserInfo = async () => {
       try {
         const memberData = await memberService.getDetail();
-        console.log(memberData);
 
         let mappedData = {};
         if (loginUser.role === 'WORCATION') {
@@ -109,7 +95,7 @@ const Mypage = () => {
             company_address: memberData?.company_info?.company_address || '',
             business_email: memberData?.company_info?.business_email || '',
             company_tel: memberData?.company_info?.company_tel || '',
-            departments: memberData?.company_info?.departments || '',
+            departments: mappedDepartments,
           };
 
           setDepartments(mappedDepartments);
@@ -155,6 +141,44 @@ const Mypage = () => {
   if (!loginUser) {
     return <div style={{ textAlign: 'center' }}>로딩중...</div>;
   }
+
+  const handleCompanySelect = (company) => {
+    // 현재 회사와 다른 회사를 선택했을 때만 확인 다이얼로그 표시
+    if (userInfo.company_no && userInfo.company_no !== company.company_no) {
+      Swal.fire({
+        title: '정말 회사를 바꾸시겠습니까?',
+        text: '회사를 바꾸면 회사의 승인을 새로 받아야하며 해당 회사의 일반 직원이 되게됩니다.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '확인',
+        cancelButtonText: '취소',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // 승인하면 회사 변경
+          setUserInfo((prev) => ({
+            ...prev,
+            company_no: company.company_no,
+            company_name: company.company_name,
+          }));
+          setCompanySearchResults([]);
+        } else {
+          // 취소하면 이전 값으로 되돌리기 위해 검색 결과만 초기화
+          setCompanySearchResults([]);
+        }
+      });
+    } else {
+      // 같은 회사이거나 처음 선택하는 경우 바로 변경
+      setUserInfo((prev) => ({
+        ...prev,
+        company_no: company.company_no,
+        company_name: company.company_name,
+      }));
+      setCompanySearchResults([]);
+    }
+  };
+
   const handleDepartmentClick = async (e) => {
     try {
       const data = await memberService.searchDepartment(userInfo.company_no);
@@ -198,7 +222,7 @@ const Mypage = () => {
         Swal.fire({
           icon: 'error',
           title: '비밀번호 오류',
-          text: '현재 비밀번호가 일치하지 않습니다.',
+          text: err,
           confirmButtonColor: '#3085d6',
         });
         return false;
@@ -218,17 +242,30 @@ const Mypage = () => {
     if (!isValid) return;
 
     try {
-      // departments가 객체 형태라면 서버 형식으로 변환
-      let submitData = { ...userInfo };
-      if (typeof userInfo.departments === 'object' && !Array.isArray(userInfo.departments)) {
-        const departmentsArray = Object.entries(userInfo.departments).map(([key, deptName]) => ({
-          department_no: parseInt(key) > 0 ? parseInt(key) : null,
-          department_name: deptName,
-        }));
-        submitData.departments = departmentsArray;
-      }
+      let submitData = {
+        user_pwd: userInfo.user_pwd,
+        name: userInfo.name,
+        address: userInfo.address,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        company_profile_update: {
+          company_no: userInfo.company_no,
+          department_name: userInfo.department_name,
+          position: userInfo.position,
+          company_email: userInfo.company_email,
+          company_phone: userInfo.company_phone,
+        },
+        company_update: {
+          company_name: userInfo.company_name,
+          company_address: userInfo.company_address,
+          business_email: userInfo.business_email,
+          company_tel: userInfo.company_tel,
+          departments: userInfo.departments,
+        },
+      };
 
-      await memberService.updateMember(loginUser.user_no, submitData);
+      console.log(submitData);
+      await memberService.updateMember(submitData);
 
       Swal.fire({
         icon: 'success',
@@ -242,7 +279,7 @@ const Mypage = () => {
       Swal.fire({
         icon: 'error',
         title: '수정 실패',
-        text: '회원정보 수정에 실패했습니다.',
+        text: err,
         confirmButtonColor: '#3085d6',
       });
     }
@@ -267,12 +304,90 @@ const Mypage = () => {
     }));
     setDepartmentSearchResults([]);
   };
+  const handleCompanyNameKeyUp = (e) => {
+    const value = e.target.value;
+    if (companyNameTimeout.current) clearTimeout(companyNameTimeout.current);
+    companyNameTimeout.current = setTimeout(async () => {
+      if (!value) {
+        setCompanySearchResults([]);
+        return;
+      }
+      try {
+        const data = await memberService.searchCompany(value);
+        setCompanySearchResults(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setCompanySearchResults([]);
+        console.error('회사명 검색 에러:', err);
+      }
+    }, 330);
+  };
 
   return (
     <>
       <Content>
         <TitleBox>
           <Title>마이페이지</Title>
+          <WithdrawButton
+            onClick={async () => {
+              const { value: currentPassword } = await Swal.fire({
+                title: '비밀번호 확인',
+                text: '탈퇴를 위해 현재 비밀번호를 입력해주세요.',
+                input: 'password',
+                inputPlaceholder: '현재 비밀번호를 입력하세요',
+                showCancelButton: true,
+                confirmButtonText: '확인',
+                cancelButtonText: '취소',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                inputValidator: (value) => {
+                  if (!value) {
+                    return '현재 비밀번호를 입력해주세요!';
+                  }
+                },
+              });
+
+              if (currentPassword) {
+                try {
+                  await memberService.validateCurrentPassword(currentPassword);
+
+                  const result = await Swal.fire({
+                    title: '정말 탈퇴하시겠습니까?',
+                    text: '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: '탈퇴',
+                    cancelButtonText: '취소',
+                  });
+
+                                      if (result.isConfirmed) {
+                      await memberService.delete();
+                      
+                      Swal.fire({
+                        icon: 'success',
+                        title: '탈퇴 완료',
+                        text: '회원 탈퇴가 성공적으로 처리되었습니다.',
+                        confirmButtonColor: '#3085d6',
+                      }).then(() => {
+                        localStorage.removeItem('token');
+                        
+                        window.location.href = '/';
+                      });
+                    }
+                } catch (err) {
+                  Swal.fire({
+                    icon: 'error',
+                    title: '비밀번호 오류',
+                    text: err,
+                    confirmButtonColor: '#3085d6',
+                  });
+                }
+              }
+            }}
+          >
+            탈퇴
+          </WithdrawButton>
         </TitleBox>
         <Form>
           {/* 첫 번째 박스: 기본 정보 */}
@@ -420,7 +535,7 @@ const Mypage = () => {
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
-            {loginUser.role === 'MASTER' && (
+            {loginUser.role === 'MASTER' && doUpdate && (
               <div style={{ marginBottom: '16px' }}>
                 <InputName>부서등록</InputName>
                 {showInput ? (
@@ -443,7 +558,7 @@ const Mypage = () => {
               <></>
             ) : (
               <>
-                {(loginUser?.role === 'MASTER' || loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                {loginUser?.role === 'MASTER' && (
                   <InputGroup>
                     <InputName>회사명</InputName>
                     <InputText
@@ -453,7 +568,32 @@ const Mypage = () => {
                       value={userInfo.company_name || ''}
                       onChange={handleInputChange}
                       readOnly={!doUpdate}
+                      autoComplete="off"
                     />
+                  </InputGroup>
+                )}
+                {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>회사명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="company_name"
+                      value={userInfo.company_name || ''}
+                      onChange={handleInputChange}
+                      onKeyUp={handleCompanyNameKeyUp}
+                      readOnly={!doUpdate}
+                      autoComplete="off"
+                    />
+                    {companySearchResults.length > 0 && (
+                      <CompanyDropdown>
+                        {companySearchResults.map((company) => (
+                          <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
+                            {company.company_name}
+                          </DropdownItem>
+                        ))}
+                      </CompanyDropdown>
+                    )}
                   </InputGroup>
                 )}
                 {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER') && (
@@ -493,14 +633,14 @@ const Mypage = () => {
                       type="text"
                       name="position"
                       value={loginUser?.role === 'MASTER' ? '대표' : selectedPosition}
-                      onClick={!loginUser?.role === 'MASTER' && doUpdate ? handlePositionClick : undefined}
+                      onClick={loginUser?.role !== 'MASTER' && doUpdate ? handlePositionClick : undefined}
                       readOnly
                     />
                     {positionList.length > 0 && (
                       <CompanyDropdown>
-                        {positionList.map((position) => (
+                        {positionList.map((position, index) => (
                           <DropdownItem
-                            key={position.position_no}
+                            key={index}
                             onClick={() => {
                               handlePositionSelect(position);
                               setSelectedPosition(position.position_name);
@@ -586,7 +726,12 @@ const Mypage = () => {
         <ButnContent>
           <ButnBox>
             {doUpdate ? (
-              <button style={btn.buttonYbShadow} onClick={() => setDoUpdate(false)}>
+              <button
+                style={btn.buttonYbShadow}
+                onClick={() => {
+                  window.location.reload();
+                }}
+              >
                 취소
               </button>
             ) : (
@@ -652,12 +797,27 @@ const Content = styled.div`
 
 const TitleBox = styled.div`
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
 `;
 
 const Title = styled.p`
   font-size: ${({ theme }) => theme.fontSizes[`4xl`]};
+`;
+
+const WithdrawButton = styled.button`
+  background-color: #d33;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #b91c1c;
+  }
 `;
 
 const InputName = styled.p`

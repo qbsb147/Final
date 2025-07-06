@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
+@ToString
 public class Department {
 
     @Id
@@ -22,7 +23,8 @@ public class Department {
     @JoinColumn(name = "company_no", nullable = false)
     private Company company;
 
-    public void changeCompany(Company company) {
+    public Department changeCompany(Company company) {
         this.company = company;
+        return this;
     }
 }

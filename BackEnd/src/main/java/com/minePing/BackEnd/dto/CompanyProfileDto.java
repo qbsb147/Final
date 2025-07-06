@@ -212,6 +212,7 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ToString
     public static class Update {
 
         @NotNull(message = "회사 선택은 필수입니다.")

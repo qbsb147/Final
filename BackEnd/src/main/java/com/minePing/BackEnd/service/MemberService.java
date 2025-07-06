@@ -22,4 +22,5 @@ public interface MemberService {
 
     void checkPassword(String password);
     void updateUser(MemberDto.Update updateDto);
+    void delete();
 }
