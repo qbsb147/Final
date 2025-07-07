@@ -21,6 +21,7 @@ const WorcationDetail = () => {
   const [photos, setPhotos] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
+  const [appData, setAppData] = useState(null);
   const settings = {
     dots: true,
     infinite: true,
@@ -64,6 +65,14 @@ const WorcationDetail = () => {
     };
     fetchData();
   }, [worcationNo]);
+
+  useEffect(() => {
+    const addFetchData = async () => {
+      const appData = await worcationService.applicationList();
+      setAppData(appData);
+    };
+    addFetchData();
+  }, []);
 
   console.log(worcation);
   if (!worcation) return null;
@@ -188,7 +197,10 @@ const WorcationDetail = () => {
       alert("댓글 삭제에 실패하였습니다.");
     }
   };
-
+// 댓글 막기
+  const today = new Date();
+  const endDate = appData ? new Date(appData.end_date) : null;
+  const isDisabled = !(appData && appData.approve === 'Y' && endDate > today);
 
   return (
     <PageContainer>
@@ -266,8 +278,13 @@ const WorcationDetail = () => {
               placeholder="댓글을 입력하세요."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
+              disabled={isDisabled}
             />
-            <CommentSubmit as={ButtonYbShadow} onClick={handleAddComment}>
+            <CommentSubmit
+              as={ButtonYbShadow}
+              onClick={handleAddComment}
+              disabled={isDisabled}
+            >
               등록
             </CommentSubmit>
           </CommentInputWrap>

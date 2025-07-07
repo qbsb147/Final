@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
@@ -6,6 +6,7 @@ import theme from './styles/theme';
 import GlobalStyle from './styles/GlobalStyle';
 import Cookies from 'js-cookie';
 import useAuthStore from './store/authStore';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // 레이아웃
 import Layout from './components/Layout/Layout'; // Header + SearchBar + Footer
@@ -55,8 +56,6 @@ import ApprovedList from './pages/Worcation/Partnership/ApprovedList'; // 제휴
 import Requests from './pages/Worcation/Partnership/Requests'; // 제휴 요청 목록
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
-
   useEffect(() => {
     // 토큰 처리
     const token = Cookies.get('token');
@@ -69,7 +68,6 @@ function App() {
 
     if (localStorage.getItem('token')) {
       useAuthStore.getState().fetchUserInfo();
-      setIsLogin(true);
     }
   }, []);
 
@@ -114,7 +112,14 @@ function App() {
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
             <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
-            <Route path="/partnership/apply" element={<PartnershipApplication />} /> {/* 제휴 신청 */}
+            
+            {/* 권한 설정한 페이지 */}
+            <Route path="/partnership/apply" element={
+              <ProtectedRoute allowedRoles={['MASTER', 'MANAGER']}>
+                <PartnershipApplication />
+              </ProtectedRoute>
+
+            } /> {/* 제휴 신청 */}
             <Route path="/partnership/approveList" element={<ApprovedList />} /> {/* 승인된 제휴 목록 */}
             <Route path="/partnership/requsets" element={<Requests />} /> {/* 제휴 요청 목록 */}
           </Route>
