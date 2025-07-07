@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../api/worcations';
 import WorcationCardList from '../components/worcation/WorcationCardList';
 import useWorcationStore from '../store/worcationStore';
+import useAuthStore from '../store/authStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
@@ -14,6 +15,7 @@ const MainPage = () => {
   const keyword = useWorcationStore((state) => state.keyword);
   const navigate = useNavigate();
   const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
+  const loginUser = useAuthStore((state) => state.loginUser);
 
   const handleShowAI = () => {
     setShowBanner(false);
@@ -56,26 +58,32 @@ const MainPage = () => {
 
   return (
     <Container>
-      <SectionTitle>제휴업체</SectionTitle>
-      <PartnerGrid>
-        {filteredWorcations
-          .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
-          .map((matchedWorcation) => (
-            <PartnerCard key={matchedWorcation.worcation_no}>
-              <PartnerImage
-                src={matchedWorcation.main_change_photo}
-                alt={matchedWorcation.worcation_name}
-                onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
-              />
-              <ImageLabel>
-                <ImageLabelT>
-                  {matchedWorcation.worcation_address ? matchedWorcation.worcation_address.split(' ')[0] : '주소없음'}
-                </ImageLabelT>
-                {matchedWorcation.worcation_name}
-              </ImageLabel>
-            </PartnerCard>
-          ))}
-      </PartnerGrid>
+      {loginUser?.company_no && (
+  <>
+    <SectionTitle>제휴업체</SectionTitle>
+    <PartnerGrid>
+      {filteredWorcations
+        .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
+        .map((matchedWorcation) => (
+          <PartnerCard key={matchedWorcation.worcation_no}>
+            <PartnerImage
+              src={matchedWorcation.main_change_photo}
+              alt={matchedWorcation.worcation_name}
+              onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
+            />
+            <ImageLabel>
+              <ImageLabelT>
+                {matchedWorcation.worcation_address
+                  ? matchedWorcation.worcation_address.split(' ')[0]
+                  : '주소없음'}
+              </ImageLabelT>
+              {matchedWorcation.worcation_name}
+            </ImageLabel>
+          </PartnerCard>
+        ))}
+    </PartnerGrid>
+  </>
+)}
 
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>

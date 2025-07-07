@@ -34,9 +34,9 @@ const MyinfoStatus = () => {
   )
 }
 const InfoBox = styled.div`
-    width : 100%;
+    width : 60%;
     border: 1px solid ${({ theme }) => theme.colors.primary};;
-    margin: ${({ theme }) => theme.spacing.s12};
+    margin: ${({ theme }) => theme.spacing.s0};
     padding : ${({ theme }) => theme.spacing.s2};
     background-color: ${({ theme }) => theme.colors.white};
 `;

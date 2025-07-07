@@ -7,6 +7,7 @@ import { FaRegCalendarAlt } from 'react-icons/fa';
 import useWorcationStore from '../../store/worcationStore';
 import '../../styles/ReservationCalendar.css'; //캘랜더 전용 CSS
 import { useLocation } from 'react-router-dom';
+import MyinfoStatus from '../../components/common/MyinfoStatus';
 
 // n박 계산 함수 (컴포넌트 상단에 위치)
 const getNightCount = (start, end) => {
@@ -14,7 +15,7 @@ const getNightCount = (start, end) => {
   return diff > 0 ? `${diff}박` : '1박';
 };
 
-const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [], rightComponent }) => {
+const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] }) => {
   const setDates = useWorcationStore((state) => state.setDates);
   // 날짜 상태
   const [selectedDates, setSelectedDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
@@ -65,7 +66,6 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [], r
     <BackWrap>
       <BarWrap
         onClick={(e) => {
-          // 검색 버튼 클릭은 제외
           if (!e.target.closest('button')) setShowCalendar((prev) => !prev);
         }}
       >
@@ -117,11 +117,9 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [], r
               onConfirm={handleCalendarConfirm}
             />
           </BottomCenter>
-          <BottomRight>
-            {rightComponent}
-          </BottomRight>
         </BottomRow>
       )}
+      <MyinfoStatus />
     </BackWrap>
   );
 };
@@ -134,12 +132,10 @@ const BackWrap = styled.div`
   padding: 100px 0;
   margin-top: 140px;
   margin-bottom: 40px;
-  border-top: 1px solid ${({ theme }) => theme.colors.brown};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.brown};
   position: relative;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 30px;
 `;
 
 const BarWrap = styled.div`
@@ -199,7 +195,6 @@ const RightBtn = styled.button`
 `;
 
 const BottomRow = styled.div`
-  width: 100%;
   max-width: 1280px;
   display: flex;
   flex-direction: row;
@@ -209,40 +204,33 @@ const BottomRow = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   border-radius: ${({ theme }) => theme.borderRadius['3xl']};
   padding: 10px;
+  z-index: 100;
+  position: absolute;
+  top: 226px;
+  left: 0;
+  width: 61%;
 `;
 const BottomLeft = styled.div`
-  flex: 1;
+  width: 22%;
   display: flex;
   flex-direction: column;
 `;
 const ButtomLeftUl = styled.ul`
   list-style: none;
-  padding-left: 64px;
-  margin: 0px;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
 `;
 const BottomCenter = styled.div`
-  flex: 1;
+  width: 80%;
   display: flex;
   justify-content: center;
-`;
-const BottomRight = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  min-width: 320px;
-  padding-left: 24px;
 `;
 
 const DateText = styled.div`
   font-size: 1rem;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.brown || '#6B4F27'};
   margin-left: 8px;
 `;
 
@@ -254,12 +242,11 @@ const ButtonWrap = styled.div`
 `;
 
 const KeywordItem = styled.li`
-  width: 360px;
+  width: 240px;
   background: #fff;
   border-radius: 4px;
   padding: 10px 0 10px 10px;
-  margin-top: 10px;
-  margin-bottom: 8px;
+  margin: 10px 0 8px 20px;
   cursor: pointer;
   font-weight: 500;
   font-size: 1rem;

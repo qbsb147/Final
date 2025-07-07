@@ -1,7 +1,6 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import styled from 'styled-components';
-import MyinfoStatus from './MyinfoStatus';
 import { useLocation } from 'react-router-dom';
 import useWorcationStore from '../../store/worcationStore';
 
@@ -19,12 +18,7 @@ const Search = () => {
     <SearchWrap>
       <SearchBg>
         <SearchInner>
-          <SearchBar
-            onSearch={setKeyword}
-            keyword={keyword}
-            popularKeywords={popularKeywords}
-            rightComponent={<MyinfoStatus />}
-          />
+          <SearchBar onSearch={setKeyword} keyword={keyword} popularKeywords={popularKeywords} />
         </SearchInner>
       </SearchBg>
     </SearchWrap>
