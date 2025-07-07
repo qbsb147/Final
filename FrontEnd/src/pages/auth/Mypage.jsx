@@ -9,6 +9,7 @@ import { validateMypageForm } from '../../hooks/useAuth';
 import { usePosition } from '../../hooks/usePosition';
 import Popup from '../../components/auth/Popup';
 import Swal from 'sweetalert2';
+import { useValidatePassword } from '../../hooks/useAuth';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
@@ -138,6 +139,8 @@ const Mypage = () => {
     fetchUserInfo();
   }, [loginUser]);
 
+  const { validateCurrentPassword } = useValidatePassword();
+
   if (!loginUser) {
     return <div style={{ textAlign: 'center' }}>로딩중...</div>;
   }
@@ -159,6 +162,8 @@ const Mypage = () => {
           // 승인하면 회사 변경
           setUserInfo((prev) => ({
             ...prev,
+            position: null,
+            department_name: null,
             company_no: company.company_no,
             company_name: company.company_name,
           }));
@@ -192,43 +197,6 @@ const Mypage = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // 현재 비밀번호 검증 함수
-  const validateCurrentPassword = async () => {
-    const { value: currentPassword } = await Swal.fire({
-      title: '현재 비밀번호 확인',
-      text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',
-      input: 'password',
-      inputPlaceholder: '현재 비밀번호를 입력하세요',
-      showCancelButton: true,
-      confirmButtonText: '확인',
-      cancelButtonText: '취소',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      inputValidator: (value) => {
-        if (!value) {
-          return '현재 비밀번호를 입력해주세요!';
-        }
-      },
-    });
-
-    if (currentPassword) {
-      try {
-        // 현재 비밀번호 검증 API 호출 (백엔드에서 구현 필요)
-        await memberService.validateCurrentPassword(currentPassword);
-        return true;
-      } catch (err) {
-        Swal.fire({
-          icon: 'error',
-          title: '비밀번호 오류',
-          text: err,
-          confirmButtonColor: '#3085d6',
-        });
-        return false;
-      }
-    }
-    return false;
   };
 
   const handleSubmit = async (e) => {
@@ -329,60 +297,29 @@ const Mypage = () => {
           <Title>마이페이지</Title>
           <WithdrawButton
             onClick={async () => {
-              const { value: currentPassword } = await Swal.fire({
-                title: '비밀번호 확인',
-                text: '탈퇴를 위해 현재 비밀번호를 입력해주세요.',
-                input: 'password',
-                inputPlaceholder: '현재 비밀번호를 입력하세요',
+              const isPasswordValid = await validateCurrentPassword();
+              if (!isPasswordValid) return;
+              const result = await Swal.fire({
+                title: '정말 탈퇴하시겠습니까?',
+                text: '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: '확인',
-                cancelButtonText: '취소',
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                inputValidator: (value) => {
-                  if (!value) {
-                    return '현재 비밀번호를 입력해주세요!';
-                  }
-                },
+                confirmButtonText: '탈퇴',
+                cancelButtonText: '취소',
               });
-
-              if (currentPassword) {
-                try {
-                  await memberService.validateCurrentPassword(currentPassword);
-
-                  const result = await Swal.fire({
-                    title: '정말 탈퇴하시겠습니까?',
-                    text: '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: '탈퇴',
-                    cancelButtonText: '취소',
-                  });
-
-                                      if (result.isConfirmed) {
-                      await memberService.delete();
-                      
-                      Swal.fire({
-                        icon: 'success',
-                        title: '탈퇴 완료',
-                        text: '회원 탈퇴가 성공적으로 처리되었습니다.',
-                        confirmButtonColor: '#3085d6',
-                      }).then(() => {
-                        localStorage.removeItem('token');
-                        
-                        window.location.href = '/';
-                      });
-                    }
-                } catch (err) {
-                  Swal.fire({
-                    icon: 'error',
-                    title: '비밀번호 오류',
-                    text: err,
-                    confirmButtonColor: '#3085d6',
-                  });
-                }
+              if (result.isConfirmed) {
+                await memberService.delete();
+                Swal.fire({
+                  icon: 'success',
+                  title: '탈퇴 완료',
+                  text: '회원 탈퇴가 성공적으로 처리되었습니다.',
+                  confirmButtonColor: '#3085d6',
+                }).then(() => {
+                  localStorage.removeItem('token');
+                  window.location.href = '/';
+                });
               }
             }}
           >

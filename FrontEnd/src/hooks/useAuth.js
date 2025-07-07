@@ -1,4 +1,6 @@
 import * as yup from 'yup';
+import Swal from 'sweetalert2';
+import memberService from '../api/members';
 
 // Default form validation schema
 export const useDefaultForm = yup.object().shape({
@@ -31,7 +33,7 @@ export const useDefaultForm = yup.object().shape({
   email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
   phone: yup
     .string()
-    .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 010-xxxx-xxxx입니다.')
+    .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
     .required('연락처를 입력해주세요.'),
 });
 
@@ -43,8 +45,9 @@ export const useEmployeeForm = yup.object().shape({
   company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
   company_phone: yup
     .string()
-    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-    .required('회사 전화번호를 입력해주세요.'),
+    .nullable()
+    .notRequired()
+    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, { message: '전화번호 형식이 올바르지 않습니다.', excludeEmptyString: true }),
 });
 
 // Worcation form validation schema
@@ -118,7 +121,7 @@ export const validateMypageForm = async (userInfo, role) => {
       email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
       phone: yup
         .string()
-        .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 010-xxxx-xxxx입니다.')
+        .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
         .required('연락처를 입력해주세요.'),
       name: yup
         .string()
@@ -175,8 +178,12 @@ export const validateMypageForm = async (userInfo, role) => {
         company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
         company_phone: yup
           .string()
-          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-          .required('회사 전화번호를 입력해주세요.'),
+          .nullable()
+          .notRequired()
+          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, {
+            message: '전화번호 형식이 올바르지 않습니다.',
+            excludeEmptyString: true,
+          }),
       });
 
       await employeeSchema.validate(userInfo, { abortEarly: false });
@@ -192,3 +199,43 @@ export const validateMypageForm = async (userInfo, role) => {
     return false;
   }
 };
+
+export function useValidatePassword() {
+  // 현재 비밀번호 검증 함수
+  const validateCurrentPassword = async () => {
+    const { value: currentPassword } = await Swal.fire({
+      title: '현재 비밀번호 확인',
+      text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',
+      input: 'password',
+      inputPlaceholder: '현재 비밀번호를 입력하세요',
+      showCancelButton: true,
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      inputValidator: (value) => {
+        if (!value) {
+          return '현재 비밀번호를 입력해주세요!';
+        }
+      },
+    });
+
+    if (currentPassword) {
+      try {
+        await memberService.validateCurrentPassword(currentPassword);
+        return true;
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: '비밀번호 오류',
+          text: err,
+          confirmButtonColor: '#3085d6',
+        });
+        return false;
+      }
+    }
+    return false;
+  };
+
+  return { validateCurrentPassword };
+}

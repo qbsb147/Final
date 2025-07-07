@@ -12,11 +12,11 @@ public class CompanyProfileRepositoryImpl implements CompanyProfileRepositoryV1 
     @PersistenceContext
     private EntityManager em;
 
-    public Optional<Long> getCompanyNoByUserNo(Long userNo){
-        String query = "select c.company.companyNo from CompanyProfile c where c.member.userNo = :userNo";
-        Long companyNo = em.createQuery(query, Long.class)
+    public Optional<CompanyProfile> getCompanyNoAndApproveByUserNo(Long userNo){
+        String query = "select c from CompanyProfile c where c.member.userNo = :userNo";
+        CompanyProfile companyProfile = em.createQuery(query, CompanyProfile.class)
                 .setParameter("userNo", userNo)
                 .getSingleResult();
-        return Optional.ofNullable(companyNo);
+        return Optional.ofNullable(companyProfile);
     }
 }

@@ -26,6 +26,9 @@ export const API_ENDPOINTS = {
     BASE: '/member',
     VALIDATE_PASSWORD: '/member/validate-password',
   },
+  HEALTH: {
+    BASE: '/health',
+  },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
     DEPARTMENT_SEARCH: (company_no) => `/company/search/department/${company_no}`,
@@ -64,7 +67,6 @@ export const API_ENDPOINTS = {
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
     LIST: '/applications',
   },
-
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,
