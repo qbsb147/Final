@@ -65,6 +65,16 @@ public class ApplicationController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/reserved-worcation")
+    public ResponseEntity<List<LocalDate>> getFullDates(
+            @RequestParam Long worcationNo,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        List<LocalDate> fullDates = applicationService.getFullDates(worcationNo, startDate, endDate);
+        return ResponseEntity.ok(fullDates);
+    }
+
 
     /**
      *

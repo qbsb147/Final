@@ -28,6 +28,7 @@ export const useValidateForm = () => {
     register,
     control,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting }, //유효성 에러및 제출중 상태
     watch,
   } = useForm({
@@ -59,6 +60,7 @@ export const useValidateForm = () => {
     register,
     control,
     handleValidate: handleSubmit(validate),
+    getValues,
     errors,
     isSubmitting,
     watch,

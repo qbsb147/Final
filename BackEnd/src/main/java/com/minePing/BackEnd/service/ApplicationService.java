@@ -22,4 +22,6 @@ public interface ApplicationService {
     List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);
     List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo);
 
+    List<LocalDate> getFullDates(Long worcationNo, String startDate, String endDate);
+
 }

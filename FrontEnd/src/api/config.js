@@ -50,13 +50,15 @@ export const API_ENDPOINTS = {
     //업체 정보 수정
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
+    //사업자 정보
+    VALIDATE: () => '/worcation/validate',
   },
 
   APPLICATION: {
     //예약 신청
     CREATE: '/applications',
     //워케이션별 예약 확인
-    RESERVED_WORCATION: (worcation_no) => `/reserved-by-worcation?worcationNo=${worcation_no}`,
+    RESERVED_WORCATION: (worcation_no) => `/applications/reserved_by_worcation?worcationNo=${worcation_no}`,
     //예약 확인
     RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
     //지난 예약 정보
@@ -65,6 +67,8 @@ export const API_ENDPOINTS = {
     DELETE: (application_no) => `/applications/${application_no}`,
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
     LIST: '/applications',
+    GET_FULL_DATES: ({ worcationNo, startDate, endDate }) =>
+      `/applications/reserved-worcation?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
   },
   REVIEW: {
     ADD: '/reviews',

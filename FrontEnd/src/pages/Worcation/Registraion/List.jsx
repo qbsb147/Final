@@ -85,9 +85,14 @@ const WorcationList = () => {
   useEffect(() => {
     if (!loginUser?.user_id) return;
 
+    if (loginUser.role !== 'WORCATION') {
+      navigate('/error');
+      return;
+    }
+
     const fetchUserInfo = async () => {
       try {
-        const res = await memberService.getMyPage();
+        const res = await memberService.getMyInfo();
         setUserInfo(res); // userInfo.user_no 사용 가능
       } catch (err) {
         console.error('회원 정보 조회 실패:', err);
@@ -95,7 +100,8 @@ const WorcationList = () => {
     };
 
     fetchUserInfo();
-  }, [loginUser?.user_id]);
+  }, [loginUser?.user_id, loginUser?.role, navigate]);
+
   useEffect(() => {
     const fetchWorcationDetail = async () => {
       try {
@@ -137,7 +143,7 @@ const WorcationList = () => {
   const handleDelete = async (worcation_no) => {
     try {
       const data = await worcationService.delete(worcation_no);
-      fetchWorcations(); // 삭제 후 목록 갱신
+      fetchWorcations(data); // 삭제 후 목록 갱신
     } catch (error) {
       console.error('삭제 실패:', error);
     }
