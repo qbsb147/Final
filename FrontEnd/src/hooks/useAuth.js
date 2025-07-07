@@ -31,7 +31,7 @@ export const useDefaultForm = yup.object().shape({
   email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
   phone: yup
     .string()
-    .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 010-xxxx-xxxx입니다.')
+    .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
     .required('연락처를 입력해주세요.'),
 });
 
@@ -43,8 +43,9 @@ export const useEmployeeForm = yup.object().shape({
   company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
   company_phone: yup
     .string()
-    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-    .required('회사 전화번호를 입력해주세요.'),
+    .nullable()
+    .notRequired()
+    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, { message: '전화번호 형식이 올바르지 않습니다.', excludeEmptyString: true }),
 });
 
 // Worcation form validation schema
@@ -118,23 +119,25 @@ export const validateMypageForm = async (userInfo, role) => {
       email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
       phone: yup
         .string()
-        .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 010-xxxx-xxxx입니다.')
+        .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
         .required('연락처를 입력해주세요.'),
       name: yup
         .string()
         .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
         .required('이름을 입력해주세요.'),
       address: yup.string().required('주소를 입력해주세요.'),
-      user_pwd: yup.string().test('password-validation', '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.', function(value) {
-        if (!value || value.length === 0) {
-          return true;
-        }
-        return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
-      }),
-      user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function(value) {
+      user_pwd: yup
+        .string()
+        .test('password-validation', '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.', function (value) {
+          if (!value || value.length === 0) {
+            return true;
+          }
+          return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+        }),
+      user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function (value) {
         const userPwd = this.parent.user_pwd;
         if (!userPwd || userPwd.length === 0) {
-          return true; 
+          return true;
         }
         return value === userPwd;
       }),
@@ -173,8 +176,12 @@ export const validateMypageForm = async (userInfo, role) => {
         company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
         company_phone: yup
           .string()
-          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-          .required('회사 전화번호를 입력해주세요.'),
+          .nullable()
+          .notRequired()
+          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, {
+            message: '전화번호 형식이 올바르지 않습니다.',
+            excludeEmptyString: true,
+          }),
       });
 
       await employeeSchema.validate(userInfo, { abortEarly: false });

@@ -156,9 +156,10 @@ public class MemberServiceImpl implements MemberService {
                 member.getRole().equals(Role.MANAGER) ||
                 member.getRole().equals(Role.EMPLOYEE)
         ) {
-            Long company_no= companyProfileRepository.getCompanyNoByUserNo(member.getUserNo())
+            CompanyProfile companyProfile = companyProfileRepository.getCompanyNoAndApproveByUserNo(member.getUserNo())
                             .orElseThrow(() -> new CompanyNotFoundException("회사 정보를 찾을 수 없습니다."));
-            infoDto.setCompany_no(company_no);
+            infoDto.setCompany_no(companyProfile.getCompany().getCompanyNo());
+            infoDto.setEmployee_approve(companyProfile.getApprove());
         } else if (member.getRole().equals(Role.MASTER)) {
             Long company_no = companyRepository.getCompanyNoByUserNo(member.getUserNo(), CommonEnums.Status.Y)
                     .orElseThrow(()-> new CompanyNotFoundException("회사 정보를 찾을 수 없습니다."));
@@ -253,7 +254,7 @@ public class MemberServiceImpl implements MemberService {
                         CommonEnums.Status.Y
                 );
 
-                if(!member.getCompany().getCompanyNo().equals(changeCompany.getCompanyNo())){
+                if(!updateDto.getCompany_profile_update().getCompany_no().equals(changeCompany.getCompanyNo())){
                     member.getCompanyProfile().updateStatus(CommonEnums.Approve.W);
                     member.updateRole(Role.EMPLOYEE);
                 }

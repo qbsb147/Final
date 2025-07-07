@@ -8,6 +8,8 @@ import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '..
 import DefaultStep from '../../components/auth/Default';
 import EmployeeStep from '../../components/auth/Employee';
 import MasterStep from '../../components/auth/Master';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -18,6 +20,7 @@ const SignUp = () => {
   const [formData2, setFormData2] = useState({});
   const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
   const [isFormValid, setIsFormValid] = useState(false);
+  const navigate = useNavigate();
 
   const handleNext = async () => {
     const valid = await validateForm(useDefaultForm, formData1);
@@ -33,7 +36,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData1.user_pwd !== formData1.user_pwd_check) {
-      alert('비밀번호가 일치하지 않습니다.');
+      toast.error('비밀번호가 일치하지 않습니다.');
       setIsFormValid(false);
       return;
     }
@@ -50,10 +53,10 @@ const SignUp = () => {
     }
     try {
       await memberService.register(formData1, formData2);
-      alert('회원가입이 완료되었습니다.');
-      window.location.href = '/login';
+      toast.success('회원가입에 성공했습니다!');
+      navigate('/login');
     } catch (error) {
-      alert(`회원가입 실패 : ${error}`);
+      toast.error(`회원가입 실패 : ${error}`);
     }
   };
 

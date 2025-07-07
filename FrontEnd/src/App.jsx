@@ -6,6 +6,8 @@ import theme from './styles/theme';
 import GlobalStyle from './styles/GlobalStyle';
 import Cookies from 'js-cookie';
 import useAuthStore from './store/authStore';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // 레이아웃
 import Layout from './components/Layout/Layout'; // Header + SearchBar + Footer
@@ -55,79 +57,96 @@ import ApprovedList from './pages/Worcation/Partnership/ApprovedList'; // 제휴
 import Requests from './pages/Worcation/Partnership/Requests'; // 제휴 요청 목록
 
 function App() {
-  const [isLogin, setIsLogin] = useState(false);
-
   useEffect(() => {
-    // 토큰 처리
-    const token = Cookies.get('token');
+    const cookieToken = Cookies.get('token');
 
-    if (token) {
-      localStorage.setItem('token', token);
+    if (cookieToken) {
+      localStorage.setItem('token', cookieToken);
       Cookies.remove('token');
       window.location.href = '/';
     }
+    const token = localStorage.getItem('token');
+    const expireAt = localStorage.getItem('tokenExpireAt');
+    if (token && expireAt && Date.now() > Number(expireAt)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('tokenExpireAt');
+      toast.info('로그인 세션이 만료되었습니다. 다시 로그인 해주세요.');
+      return;
+    }
 
     if (localStorage.getItem('token')) {
-      useAuthStore.getState().fetchUserInfo();
-      setIsLogin(true);
+      (async () => {
+        try {
+          await useAuthStore.getState().fetchUserInfo();
+        } catch (error) {
+          toast.error('토큰으로 정보를 가져오지 못했습니다');
+          localStorage.removeItem('token');
+          localStorage.removeItem('tokenExpireAt');
+        }
+      })();
     }
   }, []);
 
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <Routes>
-          {/* 🟣 Layout1: 기본 레이아웃 (SearchBar 포함) */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
-            <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
-            <Route path="/worcation/partners"element={<WorcationPartnersPage/>} />{/* 워케이션 제휴 리스트 */}
-            <Route path="/worcation/ai" element={<WorcationAIPage />} />{/* 워케이션 AI 리스트 */}
-          </Route>
+    <>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <Routes>
+            {/* 🟣 Layout1: 기본 레이아웃 (SearchBar 포함) */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
+              <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
+              <Route path="/worcation/partners" element={<WorcationPartnersPage />} />
+              {/* 워케이션 제휴 리스트 */}
+              <Route path="/worcation/ai" element={<WorcationAIPage />} />
+              {/* 워케이션 AI 리스트 */}
+            </Route>
 
-          {/* 🔵 Layout2: SearchBar 없음 */}
-          <Route element={<Layout2 />}>
-            {/* 마이페이지 */}
-            <Route path="/my/info" element={<Mypage />} /> {/* 내 정보 */}
-            <Route path="/my/worcation-history" element={<WorcationHistory />} />
-            {/* 워케이션 히스토리 */}
-            <Route path="/my/body" element={<BodyInfo />} /> {/* 신체 정보 */}
-            {/* 워케이션 상세 및 등록 리스트 */}
-            <Route path="/worcation/register-list" element={<WorcationRegister />} />
-            <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
-            {/* 식단 */}
-            <Route path="/eat" element={<Eat />} /> {/* 식단 정보 */}
-            {/* 심리 테스트 */}
-            <Route path="/trial" element={<Trial />} />
-            <Route path="/trial/stress" element={<StressTest />} />
-            <Route path="/trial/burnout" element={<BurnoutTest />} />
-            <Route path="/trial/tendency" element={<TendencyTest />} />
-            {/* 직원 관련 */}
-            <Route path="/employee/list" element={<MemberList />} />
-            <Route path="/employee/worcation-applies" element={<WorcationAppliesList />} />
-            <Route path="/employee/needs-consult" element={<NeedsConsult />} />
-            <Route path="/employee/applies" element={<MemberApplies />} />
-          </Route>
+            {/* 🔵 Layout2: SearchBar 없음 */}
+            <Route element={<Layout2 />}>
+              {/* 마이페이지 */}
+              <Route path="/my/info" element={<Mypage />} /> {/* 내 정보 */}
+              <Route path="/my/worcation-history" element={<WorcationHistory />} />
+              {/* 워케이션 히스토리 */}
+              <Route path="/my/body" element={<BodyInfo />} /> {/* 신체 정보 */}
+              {/* 워케이션 상세 및 등록 리스트 */}
+              <Route path="/worcation/register-list" element={<WorcationRegister />} />
+              <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
+              {/* 식단 */}
+              <Route path="/eat" element={<Eat />} /> {/* 식단 정보 */}
+              {/* 심리 테스트 */}
+              <Route path="/trial" element={<Trial />} />
+              <Route path="/trial/stress" element={<StressTest />} />
+              <Route path="/trial/burnout" element={<BurnoutTest />} />
+              <Route path="/trial/tendency" element={<TendencyTest />} />
+              {/* 직원 관련 */}
+              <Route path="/employee/list" element={<MemberList />} />
+              <Route path="/employee/worcation-applies" element={<WorcationAppliesList />} />
+              <Route path="/employee/needs-consult" element={<NeedsConsult />} />
+              <Route path="/employee/applies" element={<MemberApplies />} />
+            </Route>
 
-          {/* 🟡 Layout3: Footer 없음 */}
-          <Route element={<Layout3 />}>
-            <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
-            <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
-            <Route path="/partnership/apply" element={<PartnershipApplication />} /> {/* 제휴 신청 */}
-            <Route path="/partnership/approveList" element={<ApprovedList />} /> {/* 승인된 제휴 목록 */}
-            <Route path="/partnership/requsets" element={<Requests />} /> {/* 제휴 요청 목록 */}
-          </Route>
+            {/* 🟡 Layout3: Footer 없음 */}
+            <Route element={<Layout3 />}>
+              <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
+              <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
+              <Route path="/partnership/apply" element={<PartnershipApplication />} /> {/* 제휴 신청 */}
+              <Route path="/partnership/approveList" element={<ApprovedList />} /> {/* 승인된 제휴 목록 */}
+              <Route path="/partnership/requsets" element={<Requests />} /> {/* 제휴 요청 목록 */}
+            </Route>
 
-          {/* 로그인/회원가입 */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signUp" element={<SignUp />} />
+            {/* 로그인/회원가입 */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signUp" element={<SignUp />} />
 
-          {/* 404 */}
-          <Route path="/*" element={<NotFound />} />
-        </Routes>
-      </ThemeProvider>
-    </BrowserRouter>
+            {/* 404 */}
+            <Route path="/*" element={<NotFound />} />
+          </Routes>
+        </ThemeProvider>
+      </BrowserRouter>
+      <ToastContainer position="top-left" autoClose={3000} />
+    </>
   );
 }
 

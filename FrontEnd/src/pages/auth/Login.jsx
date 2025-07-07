@@ -6,8 +6,8 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import memberService from '../../api/members';
-
 import useAuthStore from '../../store/authStore';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
@@ -20,12 +20,13 @@ const Login = () => {
       const response = await memberService.login({ userId, userPwd });
       const { token } = response;
       localStorage.setItem('token', token);
+      const expireAt = Date.now() + 24 * 60 * 60 * 1000;
+      localStorage.setItem('tokenExpireAt', expireAt.toString());
       await useAuthStore.getState().fetchUserInfo();
-
-      alert('로그인 성공!');
+      toast.success('로그인에 성공했습니다!');
       navigate('/');
     } catch (error) {
-      alert(`로그인 실패 : ${error}`);
+      toast.error(`${error}`);
     }
   };
   useEffect(() => {
@@ -33,13 +34,13 @@ const Login = () => {
       if (localStorage.getItem('token')) {
         try {
           await useAuthStore.getState().fetchUserInfo();
-          window.location.href = '/';
+          navigate('/');
         } catch (error) {
-          alert(`로그인 실패 : ${error}`);
+          toast.error(`로그인 실패 : ${error}`);
         }
       }
     })();
-  }, []);
+  }, [navigate]);
 
   return (
     <LoginWrap>
