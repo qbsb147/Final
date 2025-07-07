@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.minePing.BackEnd.dto.HealthDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.HealthEnums;
 import com.minePing.BackEnd.enums.HealthEnums.AlcoholConsumption;
@@ -74,6 +75,22 @@ public class Health {
     public void changeMember(Member member) {
         this.member = member;
         member.assignHealth(this);
+    }
+
+    public Health changeThis(HealthDto.Request healthDto) {
+        this.weight = healthDto.getWeight();
+        this.height = healthDto.getHeight();
+        this.bmi = healthDto.getBmi();
+        this.alcoholConsumption = healthDto.getAlcohol_consumption();
+        this.bloodPressure = healthDto.getBlood_pressure();
+        this.bloodSugar = healthDto.getBlood_sugar();
+        this.healthCondition = healthDto.getHealth_condition();
+        this.cholesterolLevel = healthDto.getCholesterol_level();
+        this.smokingStatus = healthDto.getSmoking_status();
+        this.physicalActivity = healthDto.getPhysical_activity();
+        this.sleepHours = healthDto.getSleep_hours();
+        this.dietType = healthDto.getDiet_type();
+        return this;
     }
 
     @PrePersist

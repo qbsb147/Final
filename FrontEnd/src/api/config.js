@@ -26,6 +26,9 @@ export const API_ENDPOINTS = {
     BASE: '/member',
     VALIDATE_PASSWORD: '/member/validate-password',
   },
+  HEALTH: {
+    BASE: '/health',
+  },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
     DEPARTMENT_SEARCH: (company_no) => `/company/search/department/${company_no}`,
