@@ -2,6 +2,7 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.WorcationDto;
 import java.util.List;
+import java.util.Map;
 
 public interface WorcationService {
     /**
@@ -31,4 +32,5 @@ public interface WorcationService {
 
     // 오늘까지
 
+    //사업자
 }

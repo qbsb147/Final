@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
+import com.minePing.BackEnd.dto.ApplicationDto.ReservedResponseDto;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Worcation;
@@ -13,6 +14,7 @@ import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
 import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -147,13 +149,44 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .toList();
        }
 
-       //워케이션 업체별 신청 현황
     @Override
-    public List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo) {
-        return applicationRepository.findByWorcationNo(worcationNo).stream()
-                .map(ApplicationDto.ReservedResponseDto::fromEntity)
-                .collect(Collectors.toList());
+    public List<ReservedResponseDto> getReservedByWorcation(Long worcationNo) {
+        return List.of();
     }
+
+    //워케이션 업체별 신청 현황
+       @Override
+       public List<LocalDate> getFullDates(Long worcationNo, String startDateStr, String endDateStr) {
+           LocalDate startDate = LocalDate.parse(startDateStr);
+           LocalDate endDate = LocalDate.parse(endDateStr);
+
+           // 기간 내 모든 신청 가져오기
+           List<WorcationApplication> applications = applicationRepository
+                   .findByWorcationNoAndDateRange(worcationNo, startDate, endDate);
+
+           // 날짜별 count 계산
+           Map<LocalDate, Integer> dateCountMap = new HashMap<>();
+           for (WorcationApplication app : applications) {
+               LocalDate current = app.getStartDate();
+               while (!current.isAfter(app.getEndDate())) {
+                   dateCountMap.put(current, dateCountMap.getOrDefault(current, 0) + 1);
+                   current = current.plusDays(1);
+               }
+           }
+
+           // 해당 워케이션 최대 인원 수 조회
+           Integer maxPeople = applications.stream().findFirst()
+                   .map(app -> app.getWorcation().getMaxPeople())
+                   .orElse(0);
+
+           // 정원 초과 날짜만 추출
+           List<LocalDate> fullDates = dateCountMap.entrySet().stream()
+                   .filter(e -> e.getValue() >= maxPeople)
+                   .map(Map.Entry::getKey)
+                   .collect(Collectors.toList());
+
+           return fullDates;
+       }
 
 
 

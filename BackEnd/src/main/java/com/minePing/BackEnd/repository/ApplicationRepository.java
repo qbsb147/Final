@@ -110,4 +110,14 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
             @Param("endDate") LocalDate endDate,
             @Param("statuses") List<CommonEnums.Approve> statuses
     );
+
+    @Query("SELECT wa FROM WorcationApplication wa " +
+            "WHERE wa.worcation.worcationNo = :worcationNo " +
+            "AND wa.startDate <= :endDate AND wa.endDate >= :startDate")
+    List<WorcationApplication> findByWorcationNoAndDateRange(
+            @Param("worcationNo") Long worcationNo,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+
 }
