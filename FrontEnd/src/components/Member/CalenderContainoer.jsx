@@ -6,14 +6,16 @@ import userIcon from '../../assets/User.png';
 import chillIcon from '../../assets/Chill.png';
 import tasksIcon from '../../assets/Tasks.png';
 import { companyEmployee } from '../../api/company';
+import useAuthStore from '../../store/authStore';
 
 const CalenderContainoer = () => {
   const [data, setData] = useState({});
+  const { loginUser } = useAuthStore();
 
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const res = await companyEmployee.getEmployeeCount(1);
+        const res = await companyEmployee.getEmployeeCount(loginUser.company_no);
         setData(res);
       } catch (error) {
         console.error('데이터 로딩 실패:', error);

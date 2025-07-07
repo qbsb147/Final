@@ -214,7 +214,6 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-
     public static class Calendar{
         private Long user_no;
         private String user_name;
@@ -234,6 +233,7 @@ public class CompanyProfileDto {
         }
 
     }
+
     @Getter
     @Setter
     @AllArgsConstructor
