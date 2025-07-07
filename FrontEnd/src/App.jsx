@@ -7,6 +7,8 @@ import GlobalStyle from './styles/GlobalStyle';
 import Cookies from 'js-cookie';
 import useAuthStore from './store/authStore';
 import ProtectedRoute from './components/ProtectedRoute';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // 레이아웃
 import Layout from './components/Layout/Layout'; // Header + SearchBar + Footer
@@ -57,17 +59,34 @@ import Requests from './pages/Worcation/Partnership/Requests'; // 제휴 요청 
 
 function App() {
   useEffect(() => {
-    // 토큰 처리
-    const token = Cookies.get('token');
+    const cookieToken = Cookies.get('token');
 
-    if (token) {
-      localStorage.setItem('token', token);
+    if (cookieToken) {
+      localStorage.setItem('token', cookieToken);
       Cookies.remove('token');
       window.location.href = '/';
+    }
+    const token = localStorage.getItem('token');
+    const expireAt = localStorage.getItem('tokenExpireAt');
+    if (token && expireAt && Date.now() > Number(expireAt)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('tokenExpireAt');
+      toast.info('로그인 세션이 만료되었습니다. 다시 로그인 해주세요.');
+      return;
     }
 
     if (localStorage.getItem('token')) {
       useAuthStore.getState().fetchUserInfo();
+      (async () => {
+        try {
+          await useAuthStore.getState().fetchUserInfo();
+        } catch (error) {
+          toast.error('토큰으로 정보를 가져오지 못했습니다');
+          localStorage.removeItem('token');
+          localStorage.removeItem('tokenExpireAt');
+        }
+      })();
+
     }
   }, []);
 

@@ -168,7 +168,7 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="company_phone">사내 전화번호</Label>
+          <Label htmlFor="company_phone">사내 전화번호(선택)</Label>
           <InputBox
             name="company_phone"
             type="text"

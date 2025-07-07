@@ -18,7 +18,8 @@ const useAuthStore = create((set) => ({
         setLoginUser(user);
       }
     } catch (error) {
-      alert('사용자 정보 조회 실패:', error);
+      // alert('사용자 정보 조회 실패:', error);
+      throw new Error(error);
     }
   },
   // 새로고침 시 자동으로 유저 정보를 불러오는 함수 (컴포넌트에서 useEffect로 호출)

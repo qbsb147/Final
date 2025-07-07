@@ -5,6 +5,7 @@ import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const menuData = [
   {
@@ -84,6 +85,7 @@ const Header = () => {
   // 로그아웃 클릭 핸들러
   const handleLogout = () => {
     logout();
+    toast.success('로그아웃했습니다.');
     navigate('/');
   };
 
