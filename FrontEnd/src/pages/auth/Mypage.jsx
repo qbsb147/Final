@@ -159,6 +159,8 @@ const Mypage = () => {
           // 승인하면 회사 변경
           setUserInfo((prev) => ({
             ...prev,
+            position: null,
+            department_name: null,
             company_no: company.company_no,
             company_name: company.company_name,
           }));
@@ -361,20 +363,20 @@ const Mypage = () => {
                     cancelButtonText: '취소',
                   });
 
-                                      if (result.isConfirmed) {
-                      await memberService.delete();
-                      
-                      Swal.fire({
-                        icon: 'success',
-                        title: '탈퇴 완료',
-                        text: '회원 탈퇴가 성공적으로 처리되었습니다.',
-                        confirmButtonColor: '#3085d6',
-                      }).then(() => {
-                        localStorage.removeItem('token');
-                        
-                        window.location.href = '/';
-                      });
-                    }
+                  if (result.isConfirmed) {
+                    await memberService.delete();
+
+                    Swal.fire({
+                      icon: 'success',
+                      title: '탈퇴 완료',
+                      text: '회원 탈퇴가 성공적으로 처리되었습니다.',
+                      confirmButtonColor: '#3085d6',
+                    }).then(() => {
+                      localStorage.removeItem('token');
+
+                      window.location.href = '/';
+                    });
+                  }
                 } catch (err) {
                   Swal.fire({
                     icon: 'error',

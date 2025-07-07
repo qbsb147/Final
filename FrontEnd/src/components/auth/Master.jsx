@@ -98,12 +98,11 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="open_date">개업일</Label>
-          <StyledDatePickerWrapper>
-            <CustomDatePicker
-              selected={formData2.open_date || null}
-              onChange={(date) => handleChange({ target: { name: 'open_date', value: date } }, 2)}
-            />
-          </StyledDatePickerWrapper>
+          <CustomDatePicker
+            selected={formData2.open_date || null}
+            onChange={(date) => handleChange({ target: { name: 'open_date', value: date } }, 2)}
+            variant="yellow"
+          />
         </div>
       </Left>
       {/* Right column */}
@@ -244,32 +243,6 @@ const Label = styled.label`
   text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing.s2};
   margin-left: ${({ theme }) => theme.spacing.s1};
-`;
-
-const StyledDatePickerWrapper = styled.div`
-  .react-datepicker__input-container input {
-    box-sizing: border-box;
-    max-width: 100%;
-    width: 400px;
-    height: 52.41px;
-    background: #ffffff;
-    border: 3px solid #ffeb8c;
-    border-radius: 10px;
-    color: black;
-    padding: 0 12px;
-    font-size: ${({ theme }) => theme.fontSizes.base};
-    outline: none;
-    margin: 0;
-    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
-  }
-  .react-datepicker__input-container input::placeholder {
-    color: #adadad;
-    opacity: 1;
-  }
-  .react-datepicker__input-container input:focus {
-    border-color: #ffeb8c;
-    background: #fff;
-  }
 `;
 
 const CompanyDropdown = styled.ul`

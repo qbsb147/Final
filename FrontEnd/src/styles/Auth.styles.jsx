@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FaUser, FaCalendarAlt } from 'react-icons/fa';
 import { ButtonYbShadow, ButtonWhite } from './Button.styles';
-import InputStyle from './Input.styles';
+import InputStyle from './Input';
 
 const PartnershipForm = () => {
   return (

@@ -141,12 +141,11 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="birthday">생년월일</Label>
-          <StyledDatePickerWrapper>
-            <CustomDatePicker
-              selected={formData1.birthday || null}
-              onChange={(date) => handleChange({ target: { name: 'birthday', value: date } }, 1)}
-            />
-          </StyledDatePickerWrapper>
+          <CustomDatePicker
+            selected={formData1.birthday || null}
+            onChange={(date) => handleChange({ target: { name: 'birthday', value: date } }, 1)}
+            variant="yellow"
+          />
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="email">이메일</Label>
@@ -280,11 +279,11 @@ const RadioItem = styled.div`
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  
-  input[type="radio"] {
+
+  input[type='radio'] {
     cursor: pointer;
   }
-  
+
   label {
     cursor: pointer;
     margin: 0;
@@ -296,32 +295,6 @@ const Label = styled.label`
   text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing.s2};
   margin-left: ${({ theme }) => theme.spacing.s1};
-`;
-
-const StyledDatePickerWrapper = styled.div`
-  .react-datepicker__input-container input {
-    box-sizing: border-box;
-    max-width: 100%;
-    width: 400px;
-    height: 52.41px;
-    background: #ffffff;
-    border: 3px solid #ffeb8c;
-    border-radius: 10px;
-    color: black;
-    padding: 0 12px;
-    font-size: ${({ theme }) => theme.fontSizes.base};
-    outline: none;
-    margin: 0;
-    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
-  }
-  .react-datepicker__input-container input::placeholder {
-    color: #adadad;
-    opacity: 1;
-  }
-  .react-datepicker__input-container input:focus {
-    border-color: #ffeb8c;
-    background: #fff;
-  }
 `;
 
 const AddressSearchButton = styled.button`

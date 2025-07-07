@@ -48,7 +48,7 @@ public class CompanyProfile {
     @Column(name = "position", nullable = false, length = 30)
     private String position;
 
-    @Column(name = "company_phone", nullable = false, length = 13, unique = true)
+    @Column(name = "company_phone", nullable = true, length = 13, unique = true)
     private String companyPhone;
 
     @Column(name = "company_email", nullable = false, length = 100, unique = true)
