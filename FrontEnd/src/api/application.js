@@ -32,4 +32,13 @@ export const applicationService = {
     const response = await api.get(API_ENDPOINTS.APPLICATION.DATE_COUNT(worcation_no));
     return response.data;
   },
+  // 예약 불가능한 날짜 목록 조회 (예: 캘린더에서 사용)
+  getFullDates: async (worcation_no, startDate, endDate) => {
+    console.log('워케이션 넘버 확인:', worcation_no);
+    const res = await api.get(
+      API_ENDPOINTS.APPLICATION.GET_FULL_DATES({ worcationNo: worcation_no, startDate, endDate })
+    );
+    worcation_no;
+    return res.data;
+  },
 };

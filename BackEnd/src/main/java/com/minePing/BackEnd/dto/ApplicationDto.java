@@ -3,6 +3,8 @@ package com.minePing.BackEnd.dto;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 /**
@@ -82,6 +84,28 @@ public class ApplicationDto {
                     .startDate(entity.getStartDate())
                     .endDate(entity.getEndDate())
                     .build();
+        }
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResponseDto {
+        private LocalDate startDate;
+        private LocalDate endDate;
+
+        // ✅ 날짜 범위 계산 메서드
+        public List<LocalDate> getDateRange() {
+            List<LocalDate> dates = new ArrayList<>();
+            LocalDate current = startDate;
+            while (!current.isAfter(endDate)) {
+                dates.add(current);
+                current = current.plusDays(1);
+            }
+            return dates;
         }
     }
 }

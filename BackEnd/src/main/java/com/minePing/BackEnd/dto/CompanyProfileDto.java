@@ -236,6 +236,11 @@ public class CompanyProfileDto {
 
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     @ToString
     public static class Update {
 
