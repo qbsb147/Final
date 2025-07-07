@@ -1,10 +1,14 @@
 package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Response;
+import com.minePing.BackEnd.dto.PageResponse;
 import com.minePing.BackEnd.service.EmployeeService;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,24 +25,29 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping("/list/{companyNo}")
-    public ResponseEntity<List<CompanyProfileDto.Response>> getAllMembers(@PathVariable Long companyNo) {
-        return ResponseEntity.ok(employeeService.findAllMember(companyNo));
+    public ResponseEntity<PageResponse<Response>> getAllMembers(
+            @PathVariable Long companyNo,
+            @PageableDefault(size = 15, sort = "userName") Pageable pageable) {
+        return ResponseEntity.ok(new PageResponse<>(employeeService.findAllMember(companyNo, pageable)));
     }
 
     @GetMapping("/applies/{companyNo}")
     public ResponseEntity<List<CompanyProfileDto.Approval>> getApprovalList(@PathVariable Long companyNo){
-
         return ResponseEntity.ok(employeeService.findgetApprovalList(companyNo));
     }
 
     @GetMapping("/needs-consult/{companyNo}")
-    public ResponseEntity<List<CompanyProfileDto.Consult>> getNeedsConsult(@PathVariable Long companyNo){
-        return ResponseEntity.ok(employeeService.findConsultList(companyNo));
+    public ResponseEntity<PageResponse<CompanyProfileDto.Consult>> getNeedsConsult(
+            @PathVariable Long companyNo,
+            @PageableDefault(size = 15, sort = "userName") Pageable pageable){
+        return ResponseEntity.ok(new PageResponse<>(employeeService.findConsultList(companyNo,pageable)));
     }
 
     @GetMapping("/worcation-applies/{companyNo}")
-    public ResponseEntity<List<CompanyProfileDto.Applies>> getWorcationApplies(@PathVariable Long companyNo){
-        return ResponseEntity.ok(employeeService.findWorcationAppliesList(companyNo));
+    public ResponseEntity<PageResponse<CompanyProfileDto.Applies>> getWorcationApplies(
+            @PathVariable Long companyNo,
+            @PageableDefault(size = 10, sort = "userName") Pageable pageable){
+        return ResponseEntity.ok(new PageResponse<>(employeeService.findWorcationAppliesList(companyNo,pageable)));
     }
 
     @GetMapping("/employees-summary/{companyNo}")

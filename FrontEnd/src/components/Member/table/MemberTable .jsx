@@ -2,9 +2,14 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
 import styled from 'styled-components';
+import useAuthStore from '../../../store/authStore';
 
-const MemberTable = ({ searchKeyword }) => {
+const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   const [members, setMembers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
+  const { loginUser } = useAuthStore();
+
+  const pageSize = 15; // 한 페이지에 보여줄 데이터 수 (백엔드와 맞춰야 함)
 
   const roleMap = {
     MASTER: '대표',
@@ -74,17 +79,18 @@ const MemberTable = ({ searchKeyword }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        //현재 2번만 불러오게함 로그인되면 바꿀예정
-        const data = await companyEmployee.getEmployeeList(1);
-        console.log(data);
+      if (!loginUser) return;
 
-        const formatted = data.map((member) => ({
+      try {
+        const data = await companyEmployee.getEmployeeList(loginUser.company_no, currentPage, pageSize);
+        // console.log('API response data:', data);
+
+        const formatted = data.content.map((member) => ({
           user_no: member.user_no,
           department: member.department_name,
           position: member.position,
           name: member.name,
-          gender: member.gender === 'M' ? '남성' : '여성',
+          gender: ['M', 'm'].includes(member.gender) ? '남성' : '여성',
           age: member.age,
           role: member.role,
           company_email: member.company_email,
@@ -92,15 +98,66 @@ const MemberTable = ({ searchKeyword }) => {
         }));
 
         setMembers(formatted);
+        setTotalPages(data.total_page); // 여기 수정됨
       } catch (error) {
         console.error('데이터 로딩 실패:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [loginUser, currentPage, searchKeyword]);
 
-  return <ReusableTable columns={columns} data={filteredMembers} />;
+  // 페이지네이션: 5개씩 묶어서 그룹 단위 이동 구현
+  const maxPageButtons = 5;
+  const currentGroup = Math.floor(currentPage / maxPageButtons);
+  const startPage = currentGroup * maxPageButtons;
+  const endPage = Math.min(startPage + maxPageButtons - 1, totalPages - 1);
+
+  const pageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
+
+  const goToPrevGroup = () => {
+    if (currentGroup > 0) {
+      setCurrentPage((currentGroup - 1) * maxPageButtons);
+    }
+  };
+
+  const goToNextGroup = () => {
+    const nextGroupStart = (currentGroup + 1) * maxPageButtons;
+    if (nextGroupStart < totalPages) {
+      setCurrentPage(nextGroupStart);
+    }
+  };
+
+  const goToPage = (pageNum) => {
+    if (pageNum >= 0 && pageNum < totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  return (
+    <>
+      <ReusableTable columns={columns} data={filteredMembers} />
+
+      <PaginationContainer>
+        <button onClick={goToPrevGroup} disabled={currentGroup === 0}>
+          이전
+        </button>
+
+        {pageNumbers.map((pageNum) => (
+          <PageButton key={pageNum} onClick={() => goToPage(pageNum)} active={pageNum === currentPage}>
+            {pageNum + 1}
+          </PageButton>
+        ))}
+
+        <button onClick={goToNextGroup} disabled={(currentGroup + 1) * maxPageButtons >= totalPages}>
+          다음
+        </button>
+      </PaginationContainer>
+    </>
+  );
 };
 
 const Select = styled.select`
@@ -110,6 +167,31 @@ const Select = styled.select`
   font-weight: bold;
   text-align: center;
   text-align-last: center;
+`;
+
+// active prop이 DOM으로 전달되지 않도록 처리
+const PageButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'active',
+})`
+  padding: 0.3rem 0.6rem;
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  background-color: ${({ active, theme }) => (active ? theme.colors.primary : 'transparent')};
+  color: ${({ active, theme }) => (active ? theme.colors.white : theme.colors.black)};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+
+const PaginationContainer = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
 `;
 
 export default MemberTable;

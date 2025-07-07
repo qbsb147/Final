@@ -10,7 +10,7 @@ const Search = () => {
   const setKeyword = useWorcationStore((state) => state.setKeyword);
   const popularKeywords = useWorcationStore((state) => state.popularKeywords);
   const keyword = useWorcationStore((state) => state.keyword);
-  
+
   React.useEffect(() => {
     setKeyword('');
   }, [location.pathname, setKeyword]);
@@ -19,15 +19,19 @@ const Search = () => {
     <SearchWrap>
       <SearchBg>
         <SearchInner>
-          <SearchBar onSearch={setKeyword} keyword={keyword} popularKeywords={popularKeywords} rightComponent={<MyinfoStatus />} />
+          <SearchBar
+            onSearch={setKeyword}
+            keyword={keyword}
+            popularKeywords={popularKeywords}
+            rightComponent={<MyinfoStatus />}
+          />
         </SearchInner>
       </SearchBg>
     </SearchWrap>
   );
 };
 
-const SearchWrap = styled.div`
-`;
+const SearchWrap = styled.div``;
 const SearchBg = styled.div`
   background-color: ${({ theme }) => theme.colors.gray[100]};
   background-position: center;

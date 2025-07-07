@@ -6,6 +6,7 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { format, parse, startOfWeek, getDay, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import { companyEmployee } from '../../../api/company';
+import useAuthStore from '../../../store/authStore';
 
 const locales = { ko };
 const localizer = dateFnsLocalizer({
@@ -27,10 +28,11 @@ const formatDateToLocalString = (date) => {
 
 const WorcationCalendar = () => {
   const [events, setEvents] = useState([]);
+  const { loginUser } = useAuthStore();
 
   const fetchEvents = async () => {
     try {
-      const data = await companyEmployee.CalendarEmployee(1);
+      const data = await companyEmployee.CalendarEmployee(loginUser.company_no);
 
       const dateMap = {};
 
