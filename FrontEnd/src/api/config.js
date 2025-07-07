@@ -64,7 +64,6 @@ export const API_ENDPOINTS = {
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
     LIST: '/applications',
   },
-
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,
