@@ -4,11 +4,12 @@ import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
-
+import com.minePing.BackEnd.entity.WorcationApplication;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
 import lombok.*;
 
 public class CompanyProfileDto {
@@ -146,6 +147,7 @@ public class CompanyProfileDto {
     @NoArgsConstructor
     @Builder
     public static class Applies {
+        private Long user_no;
         private String department_name;
         private String position;
         private String name;
@@ -159,6 +161,7 @@ public class CompanyProfileDto {
             CompanyProfile profile = member.getCompanyProfile();
 
             return Applies.builder()
+                    .user_no(member.getUserNo())
                     .department_name(profile.getDepartmentName())
                     .position(profile.getPosition())
                     .name(member.getName())
@@ -212,6 +215,27 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+
+    public static class Calendar{
+        private Long user_no;
+        private String user_name;
+        private String worcation_place;
+        private LocalDate start_date;
+        private LocalDate end_date;
+
+        public static Calendar toDto(WorcationApplication worcationApplication,Member member, String worcationPlace) {
+
+            return Calendar.builder()
+                    .user_no(member.getUserNo())
+                    .user_name(member.getName())
+                    .worcation_place(worcationPlace)
+                    .start_date(worcationApplication.getStartDate())
+                    .end_date(worcationApplication.getEndDate())
+                    .build();
+        }
+
+    }
+
     @ToString
     public static class Update {
 

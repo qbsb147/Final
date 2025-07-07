@@ -76,7 +76,7 @@ const MemberTable = ({ searchKeyword }) => {
     const fetchData = async () => {
       try {
         //현재 2번만 불러오게함 로그인되면 바꿀예정
-        const data = await companyEmployee.getEmployeeList(2);
+        const data = await companyEmployee.getEmployeeList(1);
         console.log(data);
 
         const formatted = data.map((member) => ({

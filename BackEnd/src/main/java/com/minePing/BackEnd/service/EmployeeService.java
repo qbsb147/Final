@@ -17,4 +17,8 @@ public interface EmployeeService {
     CompanyProfileDto.Employees findEmployeesNumber(Long companyNo);
 
     void updateApproveStatus(Long userNo, String status);
+
+    void updateWorcationStatus(Long userNo, String status);
+
+    List<CompanyProfileDto.Calendar> getWorcationCalendar(Long companyNo);
 }

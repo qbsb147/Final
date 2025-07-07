@@ -2,11 +2,13 @@ package com.minePing.BackEnd.repository;
 
 
 import com.minePing.BackEnd.entity.CompanyProfile;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 
@@ -108,5 +110,34 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryV1 {
                 .getSingleResult();
 
         return count.intValue();
+    }
+
+    @Override
+    public Optional<WorcationApplication> findWorcationApplicationByUserNo(Long userNo) {
+        String jpql = "SELECT wa FROM WorcationApplication wa JOIN wa.member m WHERE m.userNo = :userNo";
+        List<WorcationApplication> results = em.createQuery(jpql, WorcationApplication.class)
+                .setParameter("userNo", userNo)
+                .getResultList();
+
+        if (results.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(results.get(0));
+    }
+
+    @Override
+    public List<WorcationApplication> findApprovedWorcationApplications(Long companyNo) {
+        String jpql = """
+        SELECT wa FROM WorcationApplication wa
+        JOIN FETCH wa.member m
+        JOIN FETCH m.companyProfile cp
+        JOIN FETCH wa.worcation w
+        WHERE cp.company.companyNo = :companyNo
+        AND wa.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y
+    """;
+
+        return em.createQuery(jpql, WorcationApplication.class)
+                .setParameter("companyNo", companyNo)
+                .getResultList();
     }
 }
