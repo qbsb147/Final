@@ -1,4 +1,6 @@
 import * as yup from 'yup';
+import Swal from 'sweetalert2';
+import memberService from '../api/members';
 
 // Default form validation schema
 export const useDefaultForm = yup.object().shape({
@@ -197,3 +199,43 @@ export const validateMypageForm = async (userInfo, role) => {
     return false;
   }
 };
+
+export function useValidatePassword() {
+  // 현재 비밀번호 검증 함수
+  const validateCurrentPassword = async () => {
+    const { value: currentPassword } = await Swal.fire({
+      title: '현재 비밀번호 확인',
+      text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',
+      input: 'password',
+      inputPlaceholder: '현재 비밀번호를 입력하세요',
+      showCancelButton: true,
+      confirmButtonText: '확인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      inputValidator: (value) => {
+        if (!value) {
+          return '현재 비밀번호를 입력해주세요!';
+        }
+      },
+    });
+
+    if (currentPassword) {
+      try {
+        await memberService.validateCurrentPassword(currentPassword);
+        return true;
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: '비밀번호 오류',
+          text: err,
+          confirmButtonColor: '#3085d6',
+        });
+        return false;
+      }
+    }
+    return false;
+  };
+
+  return { validateCurrentPassword };
+}

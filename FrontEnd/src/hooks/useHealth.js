@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 // 신체 정보 입력 폼 validation schema
-export const useBodyForm = yup.object().shape({
+export const useHealthForm = yup.object().shape({
   height: yup
     .number()
     .typeError('키는 숫자여야 합니다.')
@@ -26,7 +26,11 @@ export const useBodyForm = yup.object().shape({
     .number()
     .typeError('혈당 수치는 숫자여야 합니다.')
     .min(0, '혈당 수치는 0 이상이어야 합니다.')
-    .test('소수점1자리', '혈당 수치는 소수점 1자리까지 입력 가능합니다.', v => v === undefined || /^\d+(\.\d{1})?$/.test(String(v)))
+    .test(
+      '소수점1자리',
+      '혈당 수치는 소수점 1자리까지 입력 가능합니다.',
+      (v) => v === undefined || /^\d+(\.\d{1})?$/.test(String(v))
+    )
     .required('혈당 수치를 입력해주세요.'),
   cholesterol_level: yup
     .number()
@@ -61,31 +65,3 @@ export const useBodyForm = yup.object().shape({
     .oneOf(['Healthy', 'Diabetes', 'Hypertension', 'Obesity', 'Cardiac Issues'], '건강 상태를 선택해주세요.')
     .required('건강 상태를 선택해주세요.'),
 });
-
-export async function validateForm(schema, data) {
-  try {
-    await schema.validate(data, { abortEarly: false });
-    return true;
-  } catch (err) {
-    if (err.inner && err.inner.length > 0) {
-      alert(err.inner[0].message);
-    } else {
-      alert(err.message);
-    }
-    return false;
-  }
-}
-
-export async function validateLogin(data) {
-  try {
-    await loginSchema.validate(data, { abortEarly: false });
-    return true;
-  } catch (err) {
-    if (err.inner && err.inner.length > 0) {
-      alert(err.inner[0].message);
-    } else {
-      alert(err.message);
-    }
-    return false;
-  }
-}
