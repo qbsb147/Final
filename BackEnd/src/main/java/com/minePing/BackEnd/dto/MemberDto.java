@@ -1,28 +1,26 @@
 package com.minePing.BackEnd.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
+import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
-import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import java.time.Period;
-
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 public class MemberDto {
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class MemberJoinDto {
         @NotBlank(message = "아이디는 필수입니다.")
         private String user_id;
@@ -66,13 +64,12 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class EmployeeJoin {
 
         @Valid
         private MemberJoinDto memberJoinDto;
         @Valid
-        private CompanyProfileDto.CompanyProfileJoinDto companyProfileJoinDto;
+        private CompanyProfileDto.Join companyProfileJoinDto;
 
         public CompanyProfile toCompanyProfileEntity() {
             return CompanyProfile.builder()
@@ -89,13 +86,12 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class MasterJoin {
 
         @Valid
         private MemberJoinDto memberJoinDto;
         @Valid
-        private CompanyDto.CompanyJoinDto companyJoinDto;
+        private CompanyDto.Join companyJoinDto;
 
         public Company toCompanyEntity() {
             return Company.builder()
@@ -115,7 +111,6 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class WorcationJoin {
 
         @Valid
@@ -128,7 +123,6 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class Login {
         private String user_id;
         private String user_pwd;
@@ -140,7 +134,6 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class LoginResponse {
         private String user_id;
         private CommonEnums.Role role;
@@ -159,7 +152,6 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
     public static class UpdateRole {
         private CommonEnums.Role role;
     }
@@ -209,21 +201,102 @@ public class MemberDto {
     public static class MemberInfoResponse {
         private String user_id;
         private String email;
-        private String user_name;
+        private String name;
         private String address;
-        private Integer age;
+        private String phone;
+        private LocalDate birthday;
         private CommonEnums.Gender gender;
-        private CommonEnums.Role role;
-    }
+        private CompanyInfoResponse company_info;
+        private CompanyProfileInfoResponse company_profile_info;
 
+        public static MemberInfoResponse toMasterDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .phone(member.getPhone())
+                    .company_info(CompanyInfoResponse.builder()
+                            .company_name(member.getCompany().getCompanyName())
+                            .company_address(member.getCompany().getCompanyAddress())
+                            .business_email(member.getCompany().getBusinessEmail())
+                            .company_tel(member.getCompany().getCompanyTel())
+                            .departments(member.getCompany().getDepartments().stream()
+                                    .map(department -> DepartmentDto.Response.builder()
+                                            .department_no(department.getDepartmentNo())
+                                            .department_name(department.getDepartmentName())
+                                            .build()
+                                    ).collect(Collectors.toList())
+                            )
+                            .build())
+                    .build();
+        }
+
+        public static MemberInfoResponse toWorcationDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .phone(member.getPhone())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .build();
+        }
+
+        public static MemberInfoResponse toEmployeeDto(Member member) {
+            return MemberInfoResponse.builder()
+                    .user_id(member.getUserId())
+                    .email(member.getEmail())
+                    .name(member.getName())
+                    .address(member.getAddress())
+                    .phone(member.getPhone())
+                    .birthday(member.getBirthday())
+                    .gender(member.getGender())
+                    .company_profile_info(CompanyProfileInfoResponse.builder()
+                            .department_name(member.getCompanyProfile().getDepartmentName())
+                            .position(member.getCompanyProfile().getPosition())
+                            .company_email(member.getCompanyProfile().getCompanyEmail())
+                            .company_phone(member.getCompanyProfile().getCompanyPhone())
+                            .company_info(CompanyInfoResponse.builder()
+                                    .company_no(member.getCompanyProfile().getCompany().getCompanyNo())
+                                    .company_name(member.getCompanyProfile().getCompany().getCompanyName())
+                                    .build()
+                            )
+                            .build())
+                    .build();
+        }
+    }
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class MyPageResponse {
-        MemberDto.MemberInfoResponse memberResponse;
-        CompanyDto.CompanyInfoResponse companyResponse;
-        CompanyProfileDto.CompanyInfoResponse companyProfileResponse;
+    @ToString
+    public static class Update {
+
+        private String user_pwd;
+
+        @NotBlank(message = "이름은 필수입니다.")
+        private String name;
+
+        @NotBlank(message = "주소는 필수입니다.")
+        private String address;
+
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String email;
+
+        @NotBlank(message = "전화번호는 필수입니다.")
+        @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "올바른 전화번호 형식이 아닙니다.(010-xxxx-xxxx)")
+        private String phone;
+
+        @Valid
+        private CompanyProfileDto.Update company_profile_update;
+
+        @Valid
+        private CompanyDto.Update company_update;
     }
 }

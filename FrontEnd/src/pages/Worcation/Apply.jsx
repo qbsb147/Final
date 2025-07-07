@@ -1,21 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import WorcationCalendar from '../../components/common/Calendar';
+import WorcationCalendar from '../../components/common/WocationCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import memberService from '../../api/members';
+import { applicationService } from '../../api/application';
+import { useNavigate } from 'react-router-dom';
 
 const WorcationApply = () => {
   const location = useLocation();
   const passedWorcation = location.state?.worcation;
-
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
   const [events, setEvents] = useState([]);
-  const { user } = useAuthStore();
+  const { loginUser } = useAuthStore();
+  const [userInfo, setUserInfo] = useState(null);
+  const [fullDates, setFullDates] = useState({});
+
+  useEffect(() => {
+    const fetchFullDates = async () => {
+      if (!passedWorcation) return;
+
+      const today = new Date().toISOString().split('T')[0];
+      const end = new Date();
+      end.setMonth(end.getMonth() + 3); // 3개월 후까지 조회
+      const endStr = end.toISOString().split('T')[0];
+
+      try {
+        const result = await applicationService.getFullDates(passedWorcation.worcation_no, today, endStr);
+        setFullDates(result);
+      } catch (e) {
+        console.error('꽉 찬 날짜 조회 실패', e);
+      }
+    };
+
+    fetchFullDates();
+  }, [passedWorcation]);
+
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    const fetchUserInfo = async () => {
+      const res = await memberService.getMyPage(); // user_no 포함 정보
+      setUserInfo(res);
+    };
+
+    fetchUserInfo();
+  }, [loginUser?.user_id]);
 
   useEffect(() => {
     if (passedWorcation) {
@@ -32,13 +67,11 @@ const WorcationApply = () => {
       if (!passedWorcation) return;
 
       try {
-        const response = await axios.get(
-          `http://localhost:3001/worcation_application?ref_worcation_no=${passedWorcation.worcation_no}`
-        );
-        const reservations = response.data.map((app) => ({
+        const data = await applicationService.reserved_worcation(passedWorcation.worcation_no);
+        const reservations = data.map((app) => ({
           title: '예약됨',
-          start: new Date(app.start_date),
-          end: new Date(app.end_date),
+          start: new Date(app.startDate),
+          end: new Date(app.endDate),
         }));
         setEvents(reservations);
       } catch (error) {
@@ -60,19 +93,36 @@ const WorcationApply = () => {
       return;
     }
 
+    if (new Date(startDate) > new Date(endDate)) {
+      alert('시작일은 종료일보다 먼저여야 합니다.');
+      return;
+    }
+
+    const isFullInRange = () => {
+      const s = new Date(startDate);
+      const e = new Date(endDate);
+      while (s <= e) {
+        const dateStr = s.toISOString().slice(0, 10);
+        if (fullDates[dateStr]) return true;
+        s.setDate(s.getDate() + 1);
+      }
+      return false;
+    };
+
+    if (isFullInRange()) {
+      alert('선택한 날짜 범위 중 예약 마감된 날짜가 포함되어 있습니다.');
+      return;
+    }
+
     const newApplication = {
-      application_no: Date.now(), // 임시 ID
-      ref_member_no: 1, // 예시로 고정값
-      ref_worcation_no: worcationInfo.no,
-      start_date: startDate,
-      end_date: endDate,
-      approve: 'N',
-      create_at: new Date().toISOString(),
-      update_at: new Date().toISOString(),
+      user_no: userInfo.user_no, // getMyPage()에서 가져온 user_no 사용
+      worcation_no: worcationInfo.worcation_no, // 미리 저장해둔 워케이션 번호
+      startDate: startDate,
+      endDate: endDate,
     };
 
     try {
-      await axios.post('http://localhost:3001/worcation_application', newApplication);
+      await applicationService.create(newApplication);
       alert('워케이션 신청 완료!');
     } catch (error) {
       console.error('신청 실패:', error);
@@ -89,11 +139,14 @@ const WorcationApply = () => {
         </Header>
 
         <CalendarSection>
-          <WorcationCalendar events={events} />
-
+          <WorcationCalendar
+            events={events}
+            fullDates={fullDates} // 마감 날짜 정보
+            onSelectSlot={({ start }) => setStartDate(start.toISOString().slice(0, 10))}
+          />{' '}
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value={user?.name ?? ''} readOnly />
+            <ReadOnlyInput value={loginUser?.name ?? ''} readOnly />
 
             <Label>금액</Label>
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />

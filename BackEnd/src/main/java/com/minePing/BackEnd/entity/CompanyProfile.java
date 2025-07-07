@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Approve;
 import jakarta.persistence.*;
@@ -76,8 +77,14 @@ public class CompanyProfile {
         }
     }
 
-    public void updatestatus(CommonEnums.Approve approve) {
+    public void updateStatus(CommonEnums.Approve approve) {
         this.approve = approve;
     }
 
+    public void updateThis(MemberDto.Update updateDto){
+        this.departmentName = updateDto.getCompany_profile_update().getDepartment_name();
+        this.position = updateDto.getCompany_profile_update().getPosition();
+        this.companyPhone = updateDto.getCompany_profile_update().getCompany_phone();
+        this.companyEmail = updateDto.getCompany_profile_update().getCompany_email();
+    }
 }

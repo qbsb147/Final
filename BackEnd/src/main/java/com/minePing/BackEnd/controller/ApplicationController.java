@@ -2,7 +2,10 @@ package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
 import com.minePing.BackEnd.service.ApplicationService;
+import java.time.LocalDate;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +46,25 @@ public class ApplicationController {
         applicationService.deleteApplication(id);
         return ResponseEntity.noContent().build();
     }
+
+    //워케이션 업체 별 신청 현황
+    @GetMapping("/reserved_by_worcation")
+    public ResponseEntity<List<ApplicationDto.ReservedResponseDto>> getReservedByWorcation(
+            @RequestParam Long worcationNo) {
+        List<ApplicationDto.ReservedResponseDto> list = applicationService.getReservedByWorcation(worcationNo);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/full_dates")
+    public ResponseEntity<Map<LocalDate, Boolean>> getFullDates(
+            @RequestParam Long worcationNo,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        Map<LocalDate, Boolean> result = applicationService.getFullyReservedDates(worcationNo, start, end);
+        return ResponseEntity.ok(result);
+    }
+
 
     /**
      *

@@ -1,26 +1,14 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import memberService from '../../api/members';
+import { usePosition } from '../../hooks/usePosition';
 
 const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-  const [positionList, setPositionList] = useState([]);
+  const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
+    usePosition(formData2.position_name || '');
   const companyNameTimeout = useRef();
-  const positions = [
-    { position_name: '사원' },
-    { position_name: '주임' },
-    { position_name: '대리' },
-    { position_name: '과장' },
-    { position_name: '차장' },
-    { position_name: '부장' },
-    { position_name: '이사' },
-    { position_name: '상무' },
-    { position_name: '전무' },
-    { position_name: '부사장' },
-    { position_name: '사장' },
-    { position_name: '회장' },
-  ];
 
   const handleChange = (e, step) => {
     const { name, value } = e.target;
@@ -44,7 +32,7 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
         console.error('회사명 검색 에러:', err);
       }
     }, 330);
-  }; 
+  };
 
   const handleDepartmentClick = async (e) => {
     try {
@@ -53,10 +41,6 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
     } catch (err) {
       setDepartmentSearchResults([]);
     }
-  };
-
-  const handlePositionClick = async (e) => {
-    setPositionList(positions);
   };
 
   const handleCompanySelect = (company) => {
@@ -75,14 +59,6 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
       department_name: department.department_name,
     }));
     setDepartmentSearchResults([]);
-  };
-
-  const handlePositionSelect = (position) => {
-    setFormData2((prev) => ({
-      ...prev,
-      position_name: position.position_name,
-    }));
-    setPositionList([]);
   };
 
   return (
@@ -140,10 +116,10 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
           <Label htmlFor="position">직급</Label>
           <div style={{ position: 'relative' }}>
             <InputBox
-              name="position"
+              name="position_name"
               type="text"
               placeholder="직급"
-              value={formData2.position_name || ''}
+              value={selectedPosition}
               onClick={handlePositionClick}
               variant="yellow"
               readOnly
@@ -151,7 +127,13 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
             {positionList.length > 0 && (
               <CompanyDropdown>
                 {positionList.map((position) => (
-                  <DropdownItem key={position.position_no} onClick={() => handlePositionSelect(position)}>
+                  <DropdownItem
+                    key={position.position_no}
+                    onClick={() => {
+                      handlePositionSelect(position);
+                      setFormData2((prev) => ({ ...prev, position_name: position.position_name }));
+                    }}
+                  >
                     {position.position_name}
                   </DropdownItem>
                 ))}
@@ -175,22 +157,22 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="company_email">회사 이메일</Label>
+          <Label htmlFor="company_email">사내 이메일</Label>
           <InputBox
             name="company_email"
             type="text"
-            placeholder="회사 이메일"
+            placeholder="사내 이메일"
             value={formData2.company_email || ''}
             onChange={(e) => handleChange(e, 2)}
             variant="yellow"
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="company_phone">회사 전화번호</Label>
+          <Label htmlFor="company_phone">사내 전화번호</Label>
           <InputBox
             name="company_phone"
             type="text"
-            placeholder="회사 전화번호"
+            placeholder="(-)를 포함해서 입력"
             value={formData2.company_phone || ''}
             onChange={(e) => handleChange(e, 2)}
             variant="yellow"

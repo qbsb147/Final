@@ -66,4 +66,22 @@ public class ApplicationDto {
         private LocalDate startDate;      // 예약 시작일
         private LocalDate endDate;        // 예약 종료일
     }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ReservedResponseDto {
+        private LocalDate startDate;
+        private LocalDate endDate;
+
+        public static ReservedResponseDto fromEntity(WorcationApplication entity) {
+            return ReservedResponseDto.builder()
+                    .startDate(entity.getStartDate())
+                    .endDate(entity.getEndDate())
+                    .build();
+        }
+    }
 }

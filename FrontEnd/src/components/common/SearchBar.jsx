@@ -1,31 +1,151 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import SearchBtn from '../../assets/SearchBtn.png';
 import btn from '../../styles/Button';
-const SearchBar = () => {
+import ReservationCalendar from './ReservationCalendar.jsx';
+import { FaRegCalendarAlt } from 'react-icons/fa';
+import useWorcationStore from '../../store/worcationStore';
+import '../../styles/ReservationCalendar.css'; //캘랜더 전용 CSS
+import { useLocation } from 'react-router-dom';
+
+// n박 계산 함수 (컴포넌트 상단에 위치)
+const getNightCount = (start, end) => {
+  const diff = (end - start) / (1000 * 60 * 60 * 24);
+  return diff > 0 ? `${diff}박` : '1박';
+};
+
+const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [], rightComponent }) => {
+  const setDates = useWorcationStore((state) => state.setDates);
+  // 날짜 상태
+  const [selectedDates, setSelectedDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
+  const [tempDates, setTempDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [inputKeyword, setInputKeyword] = useState('');
+  const prevNightCount = useRef(getNightCount(new Date(2025, 6, 1), new Date(2025, 6, 2)));
+  const location = useLocation();
+
+  // 외부에서 keyword가 바뀌면 input도 같이 초기화
+  useEffect(() => {
+    setInputKeyword(externalKeyword ?? '');
+  }, [externalKeyword]);
+
+  // '확인' 버튼을 누를 때만 날짜 적용 및 zustand에 반영
+  const handleCalendarConfirm = (dates) => {
+    setSelectedDates(dates);
+    setDates(dates[0], dates[1]);
+    setShowCalendar(false);
+    prevNightCount.current = getNightCount(dates[0], dates[1]);
+  };
+
+  // 날짜 포맷 함수
+  const formatDate = (date) => `${date.getFullYear()}년${date.getMonth() + 1}월${date.getDate()}일`;
+
+  // 검색 버튼 클릭 시
+  const handleSearch = () => {
+    if (onSearch) onSearch(inputKeyword);
+  };
+
+  // selectedDates가 바뀌면 tempDates도 동기화(외부에서 날짜 초기화 시)
+  useEffect(() => {
+    setTempDates(selectedDates);
+  }, [selectedDates]);
+
+  // 추천 검색어 클릭 시 keyword에 반영
+  const handleKeywordClick = (word) => {
+    setInputKeyword(word);
+    if (onSearch) onSearch(word);
+    setShowCalendar(false);
+  };
+
+  useEffect(() => {
+    setShowCalendar(false);
+  }, [location.pathname]);
+
   return (
     <BackWrap>
-      <BarWrap>
+      <BarWrap
+        onClick={(e) => {
+          // 검색 버튼 클릭은 제외
+          if (!e.target.closest('button')) setShowCalendar((prev) => !prev);
+        }}
+      >
         <LeftSide>
           <BtnImg src={SearchBtn} />
-          <SearchInput type="text" placeholder="워케이션 떠날 장소를 입력하세요" />
+          <SearchInput
+            type="text"
+            placeholder="워케이션 떠날 장소를 입력하세요"
+            value={inputKeyword}
+            onChange={(e) => setInputKeyword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSearch();
+            }}
+          />
         </LeftSide>
-        <RightSide>
-          <div>|</div>
-          <div>캘랜더 자리 06.04.수 ~ 06.06.금 (2박)</div>
-        </RightSide>
-        <div>
-          <RightBtn style={btn.buttonYb}>검색</RightBtn>
-        </div>
-        <div />
+        <RightSideWrap>
+          <RightSide>
+            <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <FaRegCalendarAlt />
+              <DateText>
+                {showCalendar
+                  ? `${formatDate(tempDates[0])} ~ ${formatDate(tempDates[1])} ${getNightCount(tempDates[0], tempDates[1])}`
+                  : `${formatDate(selectedDates[0])} ~ ${formatDate(selectedDates[1])} ${getNightCount(selectedDates[0], selectedDates[1])}`}
+              </DateText>
+            </div>
+          </RightSide>
+        </RightSideWrap>
+        <ButtonWrap>
+          <RightBtn style={btn.buttonYb} onClick={handleSearch}>
+            검색
+          </RightBtn>
+        </ButtonWrap>
       </BarWrap>
+      {showCalendar && (
+        <BottomRow>
+          <BottomLeft>
+            <ButtomLeftUl>
+              {(popularKeywords || []).slice(0, 5).map((word, idx) => (
+                <KeywordItem key={idx} onClick={() => handleKeywordClick(word)}>
+                  {word}
+                </KeywordItem>
+              ))}
+            </ButtomLeftUl>
+          </BottomLeft>
+          <BottomCenter>
+            <ReservationCalendar
+              selectedDates={tempDates}
+              setSelectedDates={setTempDates}
+              onConfirm={handleCalendarConfirm}
+            />
+          </BottomCenter>
+          <BottomRight>
+            {rightComponent}
+          </BottomRight>
+        </BottomRow>
+      )}
     </BackWrap>
   );
 };
+
+const BackWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.gray[100]};
+  width: 100%;
+  padding: 100px 0;
+  margin-top: 140px;
+  margin-bottom: 40px;
+  border-top: 1px solid ${({ theme }) => theme.colors.brown};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.brown};
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`;
+
 const BarWrap = styled.div`
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   box-shadow: ${({ theme }) => theme.shadows.md};
   padding: ${({ theme }) => theme.spacing.s2};
@@ -34,17 +154,8 @@ const BarWrap = styled.div`
   font-family: ${({ theme }) => theme.fontFamily.secondary};
   background-color: ${({ theme }) => theme.colors.white};
   max-width: 1280px;
-`;
-const BackWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  background-color: ${({ theme }) => theme.colors.gray[100]};
-  width: 100%;
-  padding: 100px;
-  margin-top: 120px;
-  margin-bottom: 20px;
-  border-top: 1px solid ${({ theme }) => theme.colors.brown};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.brown};
+  margin: 0 auto;
+  gap: 10;
 `;
 
 const BtnImg = styled.img`
@@ -58,16 +169,25 @@ const SearchInput = styled.input`
 `;
 
 const LeftSide = styled.div`
-  width: 100%;
+  flex: 1.2;
   display: flex;
   gap: ${({ theme }) => theme.spacing.s2};
   align-items: center;
   padding-left: ${({ theme }) => theme.spacing.s5};
 `;
-const RightSide = styled.div`
-  width: 60%;
+const RightSideWrap = styled.div`
+  flex: 1.2;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+const RightSide = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s2};
+  align-items: flex-start;
 `;
 
 const RightBtn = styled.button`
@@ -76,5 +196,74 @@ const RightBtn = styled.button`
   margin-right: ${({ theme }) => theme.spacing.s5};
   color: ${({ theme }) => theme.colors.black};
   font-family: ${({ theme }) => theme.fontFamily.primary};
+`;
+
+const BottomRow = styled.div`
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  background-color: ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.borderRadius['3xl']};
+  padding: 10px;
+`;
+const BottomLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+`;
+const ButtomLeftUl = styled.ul`
+  list-style: none;
+  padding-left: 64px;
+  margin: 0px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+`;
+const BottomCenter = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+`;
+const BottomRight = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-width: 320px;
+  padding-left: 24px;
+`;
+
+const DateText = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.brown || '#6B4F27'};
+  margin-left: 8px;
+`;
+
+const ButtonWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0.8;
+`;
+
+const KeywordItem = styled.li`
+  width: 360px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 10px 0 10px 10px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  border: 1px solid #5c3b00;
+  text-align: left;
 `;
 export default SearchBar;

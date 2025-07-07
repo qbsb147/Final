@@ -1,10 +1,13 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
+import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import lombok.*;
@@ -16,10 +19,9 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    @ToString
-    public static class CompanyProfileJoinDto {
+    public static class Join {
 
-        @NotBlank(message = "회사 선택은 필수입니다.")
+        @NotNull(message = "회사 선택은 필수입니다.")
         private Long company_no;
 
         @NotBlank(message = "부서 설정은 필수입니다.")
@@ -197,11 +199,15 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class CompanyInfoResponse {
+    public static class CompanyProfileInfoResponse {
+        private String company_name;
         private String department_name;
         private String position;
+        private String phone;
+        private String company_address;
         private String company_email;
         private String company_phone;
+        private CompanyInfoResponse company_info;
     }
 
     @Getter
@@ -209,6 +215,7 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+
     public static class Calendar{
         private Long user_no;
         private String user_name;
@@ -228,4 +235,26 @@ public class CompanyProfileDto {
         }
 
     }
+
+    @ToString
+    public static class Update {
+
+        @NotNull(message = "회사 선택은 필수입니다.")
+        private Long company_no;
+
+        @NotBlank(message = "부서 설정은 필수입니다.")
+        private String department_name;
+
+        @NotBlank(message = "직급 설정은 필수입니다.")
+        private String position;
+
+        @NotBlank(message = "회사 전용 이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String company_email;
+
+        @NotBlank(message = "회사 전용 번호는 필수입니다.")
+        @Pattern(regexp = "^010-[0-9]{4}-[0-9]{4}$", message = "올바른 전화번호 형식이 아닙니다.(010-xxxx-xxxx)")
+        private String company_phone;
+    }
+
 }

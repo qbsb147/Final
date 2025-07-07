@@ -23,7 +23,8 @@ export const API_ENDPOINTS = {
   MEMBER: {
     SIGNUP: (role) => `/member/signUp/${role}`,
     MY_INFO: '/member/userInfo',
-    MY_PAGE: '/member/myPage',
+    BASE: '/member',
+    VALIDATE_PASSWORD: '/member/validate-password',
   },
   COMPANY: {
     SEARCH: (company_name) => `/company/search?company_name=${company_name}`,
@@ -52,13 +53,20 @@ export const API_ENDPOINTS = {
   },
 
   APPLICATION: {
+    //예약 신청
+    CREATE: '/applications',
+    //워케이션별 예약 확인
+    RESERVED_WORCATION: (worcation_no) => `/reserved-by-worcation?worcationNo=${worcation_no}`,
     //예약 확인
     RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
     //지난 예약 정보
     USED: (user_no) => `/applications/used?userNo=${user_no}`,
     //삭제
     DELETE: (application_no) => `/applications/${application_no}`,
+    DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
+    LIST: '/applications',
   },
+
   REVIEW: {
     ADD: '/reviews',
     UPDATE: (review_no) => `/reviews/${review_no}`,

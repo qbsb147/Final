@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import worcationStore from '../store/worcationStore';
 import useAuthStore from '../store/authStore';
 
-//회원가입 폼의 유효성 검사 스키마
+// 회원가입 폼의 유효성 검사 스키마
 const ValidateSchema = yup.object().shape({
   licensee: yup.string().required('사업자 명을 입력... '),
 
@@ -16,7 +16,7 @@ const ValidateSchema = yup.object().shape({
 
   business_id: yup
     .string()
-    .matches(/^\d{10}$/, '사업자등록번호는 10자리 숫자여야 합니다.')
+    .matches(/^[0-9]{10}$/, '사업자등록번호는 10자리 숫자여야 합니다.')
     .required('사업자등록번호 입력...'),
 });
 
