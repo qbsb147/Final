@@ -1,18 +1,22 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Response;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface EmployeeService {
 
-    List<CompanyProfileDto.Response> findAllMember(Long companyNo);
+    Page<CompanyProfileDto.Response> findAllMember(Long companyNo, Pageable pageable);
+
 
     List<CompanyProfileDto.Approval> findgetApprovalList(Long companyNo);
 
-    List<CompanyProfileDto.Consult> findConsultList(Long companyNo);
+    Page<CompanyProfileDto.Consult> findConsultList(Long companyNo, Pageable pageable);
 
-    List<CompanyProfileDto.Applies> findWorcationAppliesList(Long companyNo);
+    Page<CompanyProfileDto.Applies> findWorcationAppliesList(Long companyNo, Pageable pageable);
 
     CompanyProfileDto.Employees findEmployeesNumber(Long companyNo);
 
