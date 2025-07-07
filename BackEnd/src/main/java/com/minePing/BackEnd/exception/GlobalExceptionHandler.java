@@ -48,6 +48,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getErrorCode().getStatus()).body(error);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
+        log.error("RuntimeException 발생 : {}", ex.getMessage(), ex);
+        String message;
+        if(ex.getMessage().length()>=50) {
+            message = "서버 오류 발생";
+        }else {
+            message = ex.getMessage();
+        }
+        ErrorResponse error = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
     //404에러처리
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex,
