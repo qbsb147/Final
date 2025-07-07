@@ -125,16 +125,18 @@ export const validateMypageForm = async (userInfo, role) => {
         .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
         .required('이름을 입력해주세요.'),
       address: yup.string().required('주소를 입력해주세요.'),
-      user_pwd: yup.string().test('password-validation', '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.', function(value) {
-        if (!value || value.length === 0) {
-          return true;
-        }
-        return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
-      }),
-      user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function(value) {
+      user_pwd: yup
+        .string()
+        .test('password-validation', '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.', function (value) {
+          if (!value || value.length === 0) {
+            return true;
+          }
+          return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+        }),
+      user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function (value) {
         const userPwd = this.parent.user_pwd;
         if (!userPwd || userPwd.length === 0) {
-          return true; 
+          return true;
         }
         return value === userPwd;
       }),
