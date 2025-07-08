@@ -13,8 +13,8 @@ const WorcationApply = () => {
   const navigate = useNavigate();
   const passedWorcation = location.state?.worcation;
 
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [start_date, setStartDate] = useState('');
+  const [end_date, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
   const [events, setEvents] = useState([]);
   const [fullDates, setFullDates] = useState({});
@@ -87,19 +87,19 @@ const WorcationApply = () => {
   }, [passedWorcation]);
 
   const handleSubmit = async () => {
-    if (!startDate || !endDate || !worcationInfo || !userInfo) {
+    if (!start_date || !end_date || !worcationInfo || !userInfo) {
       alert('모든 정보를 입력해주세요.');
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
+    if (new Date(start_date) > new Date(end_date)) {
       alert('시작일은 종료일보다 앞서야 합니다.');
       return;
     }
 
     const isFull = () => {
-      const s = new Date(startDate);
-      const e = new Date(endDate);
+      const s = new Date(start_date);
+      const e = new Date(end_date);
       while (s <= e) {
         const d = s.toISOString().split('T')[0];
         if (fullDates[d]) return true;
@@ -116,13 +116,13 @@ const WorcationApply = () => {
     try {
       const application = {
         user_no: userInfo.user_no,
-        worcation_no: worcationInfo.worcationNo,
-        startDate,
-        endDate,
+        worcation_no: worcationInfo.worcation_no,
+        start_date,
+        end_date,
       };
       await applicationService.create(application);
       alert('워케이션 신청이 완료되었습니다!');
-      navigate('/history');
+      navigate('/my/worcation-history');
     } catch (err) {
       console.error('신청 실패:', err);
       alert('신청 중 오류가 발생했습니다.');
@@ -138,14 +138,10 @@ const WorcationApply = () => {
         </Header>
 
         <CalendarSection>
-          <WorcationCalendar
-            events={events}
-            fullDates={fullDates}
-            onSelectSlot={({ start }) => setStartDate(start.toISOString().slice(0, 10))}
-          />
+          <WorcationCalendar events={events} fullDates={fullDates} selectable={false} onSelectSlot={() => {}} />
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value={loginUser?.name ?? ''} readOnly />
+            <ReadOnlyInput value={loginUser?.user_name ?? ''} readOnly />
             <Label>금액</Label>
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
@@ -158,7 +154,7 @@ const WorcationApply = () => {
               <DateInput
                 type="date"
                 style={Input.InputOrange}
-                value={startDate}
+                value={start_date}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </DateBlock>
@@ -168,7 +164,7 @@ const WorcationApply = () => {
               <DateInput
                 type="date"
                 style={Input.InputOrange}
-                value={endDate}
+                value={end_date}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </DateBlock>
