@@ -4,12 +4,12 @@ import WorcationCardList from '../../components/worcation/WorcationCardList';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import useWorcationStore from '../../store/worcationStore';
+import useSearchStore from '../../store/useSearchStore';
 
 const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
   const [viewMode, setViewMode] = useState('partner');
-  const keyword = useWorcationStore((state) => state.keyword);
+  const keyword = useSearchStore((state) => state.keyword);
 
   const navigate = useNavigate();
 
@@ -45,7 +45,7 @@ const WorcationPartnersPage = () => {
     }
   };
 
-  const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
+  const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   useEffect(() => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
   }, [worcations, setPopularKeywords]);

@@ -2,13 +2,13 @@ import React from 'react';
 import SearchBar from './SearchBar';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
-import useWorcationStore from '../../store/worcationStore';
+import useSearchStore from '../../store/useSearchStore';
 
 const Search = () => {
   const location = useLocation();
-  const setKeyword = useWorcationStore((state) => state.setKeyword);
-  const popularKeywords = useWorcationStore((state) => state.popularKeywords);
-  const keyword = useWorcationStore((state) => state.keyword);
+  const setKeyword = useSearchStore((state) => state.setKeyword);
+  const popularKeywords = useSearchStore((state) => state.popularKeywords);
+  const keyword = useSearchStore((state) => state.keyword);
 
   React.useEffect(() => {
     setKeyword('');

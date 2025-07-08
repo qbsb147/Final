@@ -10,11 +10,11 @@ export const useDefaultForm = yup.object().shape({
     .required('아이디를 입력해주세요.'),
   user_pwd: yup
     .string()
-    .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-      '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.'
-    )
+    // .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
+    // .matches(
+    //   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+    //   '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.'
+    // )
     .required('비밀번호를 입력해주세요.'),
   user_pwd_check: yup
     .string()
@@ -134,7 +134,8 @@ export const validateMypageForm = async (userInfo, role) => {
           if (!value || value.length === 0) {
             return true;
           }
-          return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+          // return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+          return true;
         }),
       user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function (value) {
         const userPwd = this.parent.user_pwd;

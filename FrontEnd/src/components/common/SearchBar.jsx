@@ -4,9 +4,9 @@ import SearchBtn from '../../assets/SearchBtn.png';
 import btn from '../../styles/Button';
 import ReservationCalendar from './ReservationCalendar.jsx';
 import { FaRegCalendarAlt } from 'react-icons/fa';
-import useWorcationStore from '../../store/worcationStore';
+import useSearchStore from '../../store/useSearchStore';
 import '../../styles/ReservationCalendar.css'; //캘랜더 전용 CSS
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import MyinfoStatus from '../../components/common/MyinfoStatus';
 
 // n박 계산 함수 (컴포넌트 상단에 위치)
@@ -16,7 +16,8 @@ const getNightCount = (start, end) => {
 };
 
 const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] }) => {
-  const setDates = useWorcationStore((state) => state.setDates);
+  const setDates = useSearchStore((state) => state.setDates);
+  const navigate = useNavigate();
   // 날짜 상태
   const [selectedDates, setSelectedDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
   const [tempDates, setTempDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
@@ -119,7 +120,7 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
           </BottomCenter>
         </BottomRow>
       )}
-      <MyinfoStatus />
+      <MyinfoStatus navigate={navigate} />
     </BackWrap>
   );
 };

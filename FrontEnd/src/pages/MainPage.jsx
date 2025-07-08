@@ -4,7 +4,7 @@ import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../api/worcations';
 import WorcationCardList from '../components/worcation/WorcationCardList';
-import useWorcationStore from '../store/worcationStore';
+import useSearchStore from '../store/useSearchStore';
 import useAuthStore from '../store/authStore';
 
 const MainPage = () => {
@@ -12,9 +12,9 @@ const MainPage = () => {
   const [showAISection, setShowAISection] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
   const [applications, setApplications] = useState([]);
-  const keyword = useWorcationStore((state) => state.keyword);
+  const keyword = useSearchStore((state) => state.keyword);
   const navigate = useNavigate();
-  const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
+  const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   const loginUser = useAuthStore((state) => state.loginUser);
 
   const handleShowAI = () => {
