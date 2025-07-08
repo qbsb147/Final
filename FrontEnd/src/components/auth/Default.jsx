@@ -12,7 +12,9 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
     try {
       const initData = await memberService.init();
       setSocialInfo(initData);
-      setIsSocial(true);
+      if (initData.user_id) {
+        setIsSocial(true);
+      }
     } catch (error) {
       console.log(error);
     }
