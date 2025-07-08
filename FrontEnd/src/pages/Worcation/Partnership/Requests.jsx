@@ -1,16 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import LeftContent from '../../../components/Member/LeftContent';
-import MemberSearchBar from '../../../components/Member/MemberSearchBar';
 import Table from '../../../components/Member/table/AffiliationRequestsTable';
+import useAuthStore from '../../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 const Requests = () => {
+  const { loginUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    if (loginUser.role !== 'WORCATION') {
+      navigate('/error');
+      return;
+    }
+  });
+
   return (
     <ListWrap>
       <MainContent>
         <Title>제휴 요청</Title>
         <Container>
-          <Table />
+          <Table userNo={loginUser.user_no} />
         </Container>
       </MainContent>
     </ListWrap>
