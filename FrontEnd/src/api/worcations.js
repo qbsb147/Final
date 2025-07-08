@@ -46,4 +46,14 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.VALIDATE(), { b_no });
     return response.data;
   },
+
+  WorcationName: async (userNo) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
+    return response.data;
+  },
+
+  WorcationReservation: async (userNo) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(userNo));
+    return response.data;
+  },
 };

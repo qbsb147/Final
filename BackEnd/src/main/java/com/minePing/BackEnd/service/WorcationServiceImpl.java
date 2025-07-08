@@ -1,10 +1,20 @@
 package com.minePing.BackEnd.service;
 
+import com.minePing.BackEnd.dto.WorcationDto.WorcationListName;
+import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
+import com.minePing.BackEnd.entity.Company;
+import com.minePing.BackEnd.entity.CompanyProfile;
+import com.minePing.BackEnd.entity.WorcationApplication;
+import com.minePing.BackEnd.enums.CommonEnums;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -201,6 +211,43 @@ public class WorcationServiceImpl implements WorcationService {
     @Transactional
     public void delete(Long worcationNo) {
         worcationRepository.deleteById(worcationNo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WorcationListName> getWorcationListName(Long userNo) {
+        List<Worcation> worcations = worcationRepository.findByMember_UserNoAndStatus(
+                userNo, CommonEnums.Status.Y
+        );
+
+        return worcations.stream()
+                .map(WorcationListName::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable) {
+        LocalDate today = LocalDate.now();
+
+        Page<WorcationApplication> applications = worcationRepository.findByUserNo(userNo, pageable);
+
+        List<WorcationReservation> content = applications.stream()
+                .map(wa -> {
+                    Member member = wa.getMember();
+                    Worcation worcation = wa.getWorcation();
+                    Company company = member.getCompany();
+                    CompanyProfile companyProfile = member.getCompanyProfile();
+
+                    int age = Period.between(member.getBirthday(), today).getYears();
+
+                    String worcationDate = wa.getStartDate() + " ~ " + wa.getEndDate();
+
+                    return WorcationReservation.toDto(
+                            worcation, member, age, company, companyProfile, worcationDate);
+                })
+                .collect(Collectors.toList());
+
+        return new org.springframework.data.domain.PageImpl<>(content, pageable, applications.getTotalElements());
     }
 
 

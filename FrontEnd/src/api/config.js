@@ -55,6 +55,11 @@ export const API_ENDPOINTS = {
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
     //사업자 정보
     VALIDATE: () => '/worcation/validate',
+
+    //내워케이션이름 가져오기
+    WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
+
+    WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
   },
 
   APPLICATION: {
