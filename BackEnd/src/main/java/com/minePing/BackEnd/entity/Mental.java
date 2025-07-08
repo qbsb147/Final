@@ -34,11 +34,11 @@ public class Mental {
     @Column(name = "result_content", nullable = false, length = 512)
     private String resultContent;
 
-    @Column(name = "separation")
+    @Column(name = "separation", nullable = false)
     @Enumerated(EnumType.STRING)
     private MentalEnums.Separation separation;
 
-    @Column(name="update_date")
+    @Column(name="update_date", nullable = false)
     private LocalDate updateDate;
 
     @PrePersist
