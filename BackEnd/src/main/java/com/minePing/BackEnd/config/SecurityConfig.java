@@ -47,6 +47,8 @@ public class SecurityConfig {
                                 "/api/v1/company/search/department/**",
                                 "/api/v1/member/kakao/login",
                                 "/oauth2/**",
+                                "/api/v1/member/signUp/init",
+                                "/login/**",
                                 "/**")
                         .permitAll() // 이 API 허용
                         .anyRequest().authenticated() // or 필요한 경우만 제한

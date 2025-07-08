@@ -52,7 +52,7 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
                             .uuid(uuid)
                             .email(email)
                             .socialId(openId)
-                            .name(oAuth2User.getAttribute("name") != null ? oAuth2User.getAttribute("name") : "Google User")
+                            .name(oAuth2User.getAttribute("name"))
                             .socialType(SocialType.GOOGLE)
                             .expiresAt(LocalDateTime.now().plusMinutes(30))
                             .build();

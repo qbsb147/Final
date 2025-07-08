@@ -28,4 +28,7 @@ public class TempOAuthUserStore {
     public void remove(String uuid) {
         store.remove(uuid);
     }
+    public void cleanUpExpiredItems() {
+        store.entrySet().removeIf(entry -> entry.getValue().isExpired());
+    }
 }

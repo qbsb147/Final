@@ -26,9 +26,9 @@ public class MemberController {
     private final KakaoService kakaoService;
 
     @GetMapping("/signUp/init")
-    public ResponseEntity<Void> init() {
-        memberService.init();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<MemberDto.init> init() {
+        MemberDto.init memberDto = memberService.init();
+        return ResponseEntity.ok(memberDto);
     }
 
     @PostMapping("signUp/EMPLOYEE")
