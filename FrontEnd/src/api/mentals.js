@@ -1,4 +1,4 @@
-import axiosInstance from './axios';
+import api from './axios';
 import { API_ENDPOINTS } from './config';
 
 export const mentalService = {
@@ -14,11 +14,11 @@ export const mentalService = {
       //스프링 구현하면 살릴 내용//
 
       //스프링 구현하면 지울 내용//
-      await axiosInstance.post(API_ENDPOINTS.MENTALS.STRESS, {
+      await api.post(API_ENDPOINTS.MENTALS.STRESS, {
         stress: stress,
         user_no,
       });
-      const { data } = await axiosInstance.get(API_ENDPOINTS.MENTALS.BASE(1));
+      const { data } = await api.get(API_ENDPOINTS.MENTALS.BASE(1));
       return data[0];
       //스프링 구현하면 지울 내용//
     } catch (error) {
@@ -40,11 +40,11 @@ export const mentalService = {
       //스프링 구현하면 살릴 내용//
 
       //스프링 구현하면 지울 내용//
-      await axiosInstance.post(API_ENDPOINTS.MENTALS.BURNOUT, {
+      await api.post(API_ENDPOINTS.MENTALS.BURNOUT, {
         burnout: burnout,
         user_no,
       });
-      const { data } = await axiosInstance.get(API_ENDPOINTS.MENTALS.BASE(2));
+      const { data } = await api.get(API_ENDPOINTS.MENTALS.BASE(2));
       return data[0];
       //스프링 구현하면 지울 내용//
     } catch (error) {
@@ -56,4 +56,9 @@ export const mentalService = {
       throw new Error('서버 통신 불량');
     }
   },
+  getMental: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.MENTALS(user_no));
+    return response;
+  },
+
 };
