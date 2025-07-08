@@ -20,4 +20,5 @@ public class WebConfig implements WebMvcConfigurer {
         builder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return builder;
     }
+
 }

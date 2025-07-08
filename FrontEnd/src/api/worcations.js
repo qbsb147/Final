@@ -28,18 +28,26 @@ export const worcationService = {
     return response.data;
   },
 
-  updateReview : async(review_no, reviewData) => {
+  updateReview: async (review_no, reviewData) => {
     const response = await api.patch(API_ENDPOINTS.REVIEW.UPDATE(review_no), reviewData, {
-      headers: { ...API_CONFIG.HEADERS }
+      headers: { ...API_CONFIG.HEADERS },
     });
     return response.data;
   },
-  deleteReview : async (review_no) => {
+  deleteReview: async (review_no) => {
     const response = await api.delete(API_ENDPOINTS.REVIEW.DELETE(review_no));
     return response.data;
   },
-  applicationList : async () => {
+  applicationList: async () => {
     const response = await api.get(API_ENDPOINTS.APPLICATION.LIST);
     return response.data;
-  }
+  },
+  validate: async (b_no) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.VALIDATE(), { b_no });
+    return response.data;
+  },
+  getMyList: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
+    return response.data;
+  },
 };

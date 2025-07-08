@@ -41,7 +41,9 @@ export const API_ENDPOINTS = {
     APPROVEEMPLOYEE: (companyNo) => `/employee/applies/${companyNo}`,
     APPROVECHECK: (userNo) => `/employee/applies/${userNo}`,
     EMPLOYEECOUNT: (companyNo) => `/employee/employees-summary/${companyNo}`,
-    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-appliesy/${companyNo}`,
+    WORCATIONAPPLIES: (companyNo) => `/employee/worcation-applies/${companyNo}`,
+    WORCATIONAPLLIECHECK: (userNo) => `/employee/worcation-applies/${userNo}`,
+    CALENDAREMPLOYEE: (companyNo) => `/employee/worcation-calendar/${companyNo}`,
   },
   WORCATION: {
     LIST: '/worcations',
@@ -51,13 +53,14 @@ export const API_ENDPOINTS = {
     //업체 정보 수정
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
+    GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
   },
 
   APPLICATION: {
     //예약 신청
     CREATE: '/applications',
     //워케이션별 예약 확인
-    RESERVED_WORCATION: (worcation_no) => `/reserved-by-worcation?worcationNo=${worcation_no}`,
+    RESERVED_WORCATION: (worcation_no) => `/applications/reserved_by_worcation?worcationNo=${worcation_no}`,
     //예약 확인
     RESERVED: (user_no) => `/applications/reserved?userNo=${user_no}`,
     //지난 예약 정보
@@ -66,6 +69,8 @@ export const API_ENDPOINTS = {
     DELETE: (application_no) => `/applications/${application_no}`,
     DATE_COUNT: (worcation_no) => `/applications/date_count/${worcation_no}`,
     LIST: '/applications',
+    GET_FULL_DATES: ({ worcationNo, startDate, endDate }) =>
+      `/applications/reserved-worcation?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
   },
   REVIEW: {
     ADD: '/reviews',
@@ -73,13 +78,8 @@ export const API_ENDPOINTS = {
     DELETE: (review_no) => `/reviews/${review_no}`,
   },
   LOGIN: '/member/login',
-  MENTALS: {
-    STRESS: '/mental_stress',
-    BURNOUT: '/mental_burnout',
-    //스프링 구현하면 지울 내용//
-    BASE: (mental_no) => `/mental?mental_no=${mental_no}`,
-    //스프링 구현하면 지울 내용//
-  },
+  //심리정보 불러오기
+  MENTALS: (user_no) => `/mentals/${user_no}`,
   // 스프링 구현하면 지울 내용//
   MEMBER_PREFERENCE: '/member_preference',
   // 스프링 구현하면 지울 내용//

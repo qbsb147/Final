@@ -1,4 +1,3 @@
-
 USE mineping;
 DESCRIBE health;
 -- amenity 테이블의 엔티티명 (amenity_no, amenity_name, worcation_amenities)

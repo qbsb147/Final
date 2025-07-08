@@ -4,14 +4,14 @@ import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
 import WorcationCardList from '../../components/worcation/WorcationCardList';
-import useWorcationStore from '../../store/worcationStore';
+import useSearchStore from '../../store/useSearchStore';
 
 const WorcationList = () => {
   const [viewMode, setViewMode] = useState('all');
   const navigate = useNavigate();
   const [worcations, setWorcations] = useState([]);
-  const keyword = useWorcationStore((state) => state.keyword);
-  const setPopularKeywords = useWorcationStore((state) => state.setPopularKeywords);
+  const keyword = useSearchStore((state) => state.keyword);
+  const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
 
   useEffect(() => {
     const fetchData = async () => {

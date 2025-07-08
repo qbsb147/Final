@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Calender from './Calender/Calendar';
+import WorcationCalendar from './Calender/WorcationCalendar';
 
 import userIcon from '../../assets/User.png';
 import chillIcon from '../../assets/Chill.png';
 import tasksIcon from '../../assets/Tasks.png';
 import { companyEmployee } from '../../api/company';
+import useAuthStore from '../../store/authStore';
 
 const CalenderContainoer = () => {
   const [data, setData] = useState({});
+  const { loginUser } = useAuthStore();
 
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const res = await companyEmployee.getEmployeeCount(1);
+        const res = await companyEmployee.getEmployeeCount(loginUser.company_no);
         setData(res);
       } catch (error) {
         console.error('데이터 로딩 실패:', error);
@@ -28,9 +30,9 @@ const CalenderContainoer = () => {
   const month = today.getMonth() + 1;
 
   const InfoListData = [
-    { icon: tasksIcon, title: '총 인원', count: data?.totalEmployees ?? 0 },
-    { icon: userIcon, title: '근무자', count: data?.currentEmployees ?? 0 },
-    { icon: chillIcon, title: '워케이션 근무자', count: data?.worcationEmployees ?? 0 },
+    { icon: tasksIcon, title: '총 인원', count: data?.total_employees ?? 0 },
+    { icon: userIcon, title: '근무자', count: data?.current_employees ?? 0 },
+    { icon: chillIcon, title: '워케이션 근무자', count: data?.worcation_employees ?? 0 },
   ];
   return (
     <Container>
@@ -40,7 +42,7 @@ const CalenderContainoer = () => {
         </DateHeaderTitle>
       </DateHeader>
       <Contents>
-        <Calender />
+        <WorcationCalendar />
         <InfoList>
           <InfoListUl>
             {InfoListData.map((item, index) => (

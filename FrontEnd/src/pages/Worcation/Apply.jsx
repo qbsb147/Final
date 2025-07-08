@@ -3,130 +3,129 @@ import styled from 'styled-components';
 import WorcationCalendar from '../../components/common/WocationCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
-import { useNavigate } from 'react-router-dom';
 
 const WorcationApply = () => {
   const location = useLocation();
-  const passedWorcation = location.state?.worcation;
   const navigate = useNavigate();
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const passedWorcation = location.state?.worcation;
+
+  const [start_date, setStartDate] = useState('');
+  const [end_date, setEndDate] = useState('');
   const [worcationInfo, setWorcationInfo] = useState(null);
   const [events, setEvents] = useState([]);
-  const { loginUser } = useAuthStore();
-  const [userInfo, setUserInfo] = useState(null);
   const [fullDates, setFullDates] = useState({});
+  const [userInfo, setUserInfo] = useState(null);
+  const { loginUser } = useAuthStore();
 
+  // 마감된 날짜 조회
   useEffect(() => {
     const fetchFullDates = async () => {
-      if (!passedWorcation) return;
+      const worcationNo = passedWorcation?.worcationNo;
+      if (!worcationNo) return;
 
       const today = new Date().toISOString().split('T')[0];
-      const end = new Date();
-      end.setMonth(end.getMonth() + 3); // 3개월 후까지 조회
-      const endStr = end.toISOString().split('T')[0];
+      const future = new Date();
+      future.setMonth(future.getMonth() + 3);
+      const endStr = future.toISOString().split('T')[0];
 
       try {
-        const result = await applicationService.getFullDates(passedWorcation.worcation_no, today, endStr);
+        const result = await applicationService.getFullDates(worcationNo, today, endStr);
         setFullDates(result);
-      } catch (e) {
-        console.error('꽉 찬 날짜 조회 실패', e);
+      } catch (err) {
+        console.error('꽉 찬 날짜 조회 실패', err);
       }
     };
-
     fetchFullDates();
   }, [passedWorcation]);
 
+  // 유저 정보 불러오기
   useEffect(() => {
-    if (!loginUser?.user_id) return;
-
+    if (!loginUser?.user_no) return;
     const fetchUserInfo = async () => {
-      const res = await memberService.getMyPage(); // user_no 포함 정보
-      setUserInfo(res);
+      try {
+        const res = await memberService.getMyInfo(loginUser.user_no);
+        setUserInfo(res);
+      } catch (err) {
+        console.error('유저 정보 조회 실패', err);
+      }
     };
-
     fetchUserInfo();
-  }, [loginUser?.user_id]);
+  }, [loginUser?.user_no]);
 
+  // 워케이션 기본 정보 세팅
   useEffect(() => {
     if (passedWorcation) {
       setWorcationInfo({
         name: passedWorcation.worcation_name,
         price: passedWorcation.non_partner_price,
-        no: passedWorcation.worcation_no,
+        worcation_no: passedWorcation.worcation_no,
       });
     }
   }, [passedWorcation]);
 
+  // 예약된 기간 조회 → 달력에 표시
   useEffect(() => {
     const fetchReservations = async () => {
       if (!passedWorcation) return;
-
       try {
         const data = await applicationService.reserved_worcation(passedWorcation.worcation_no);
-        const reservations = data.map((app) => ({
+        const mapped = data.map((app) => ({
           title: '예약됨',
           start: new Date(app.startDate),
           end: new Date(app.endDate),
         }));
-        setEvents(reservations);
-      } catch (error) {
-        console.error('예약 정보 불러오기 실패:', error);
+        setEvents(mapped);
+      } catch (err) {
+        console.error('예약 정보 불러오기 실패:', err);
       }
     };
-
     fetchReservations();
   }, [passedWorcation]);
 
   const handleSubmit = async () => {
-    if (!worcationInfo) {
-      alert('워케이션 정보를 불러오는 중입니다.');
+    if (!start_date || !end_date || !worcationInfo || !userInfo) {
+      alert('모든 정보를 입력해주세요.');
       return;
     }
 
-    if (!startDate || !endDate) {
-      alert('시작일과 종료일을 모두 선택해주세요.');
+    if (new Date(start_date) > new Date(end_date)) {
+      alert('시작일은 종료일보다 앞서야 합니다.');
       return;
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
-      alert('시작일은 종료일보다 먼저여야 합니다.');
-      return;
-    }
-
-    const isFullInRange = () => {
-      const s = new Date(startDate);
-      const e = new Date(endDate);
+    const isFull = () => {
+      const s = new Date(start_date);
+      const e = new Date(end_date);
       while (s <= e) {
-        const dateStr = s.toISOString().slice(0, 10);
-        if (fullDates[dateStr]) return true;
+        const d = s.toISOString().split('T')[0];
+        if (fullDates[d]) return true;
         s.setDate(s.getDate() + 1);
       }
       return false;
     };
 
-    if (isFullInRange()) {
-      alert('선택한 날짜 범위 중 예약 마감된 날짜가 포함되어 있습니다.');
+    if (isFull()) {
+      alert('선택한 날짜 중 예약 마감된 날짜가 포함되어 있습니다.');
       return;
     }
 
-    const newApplication = {
-      user_no: userInfo.user_no, // getMyPage()에서 가져온 user_no 사용
-      worcation_no: worcationInfo.worcation_no, // 미리 저장해둔 워케이션 번호
-      startDate: startDate,
-      endDate: endDate,
-    };
-
     try {
-      await applicationService.create(newApplication);
-      alert('워케이션 신청 완료!');
-    } catch (error) {
-      console.error('신청 실패:', error);
-      alert('신청 중 오류 발생');
+      const application = {
+        user_no: userInfo.user_no,
+        worcation_no: worcationInfo.worcation_no,
+        start_date,
+        end_date,
+      };
+      await applicationService.create(application);
+      alert('워케이션 신청이 완료되었습니다!');
+      navigate('/my/worcation-history');
+    } catch (err) {
+      console.error('신청 실패:', err);
+      alert('신청 중 오류가 발생했습니다.');
     }
   };
 
@@ -139,15 +138,10 @@ const WorcationApply = () => {
         </Header>
 
         <CalendarSection>
-          <WorcationCalendar
-            events={events}
-            fullDates={fullDates} // 마감 날짜 정보
-            onSelectSlot={({ start }) => setStartDate(start.toISOString().slice(0, 10))}
-          />{' '}
+          <WorcationCalendar events={events} fullDates={fullDates} selectable={false} onSelectSlot={() => {}} />
           <InfoBox>
             <Label>워케이션 신청자</Label>
-            <ReadOnlyInput value={loginUser?.name ?? ''} readOnly />
-
+            <ReadOnlyInput value={loginUser?.user_name ?? ''} readOnly />
             <Label>금액</Label>
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
@@ -160,7 +154,7 @@ const WorcationApply = () => {
               <DateInput
                 type="date"
                 style={Input.InputOrange}
-                value={startDate}
+                value={start_date}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </DateBlock>
@@ -170,7 +164,7 @@ const WorcationApply = () => {
               <DateInput
                 type="date"
                 style={Input.InputOrange}
-                value={endDate}
+                value={end_date}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </DateBlock>
@@ -178,7 +172,9 @@ const WorcationApply = () => {
         </DateSection>
 
         <ButtonSection>
-          <CancelButton style={Button.buttonYb}>취소</CancelButton>
+          <CancelButton style={Button.buttonYb} onClick={() => navigate(-1)}>
+            취소
+          </CancelButton>
           <SubmitButton style={Button.buttonWhite} onClick={handleSubmit}>
             신청
           </SubmitButton>
@@ -229,7 +225,7 @@ const Subtitle = styled.h2`
 const CalendarSection = styled.div`
   display: flex;
   justify-content: space-around;
-  gap: ${({ theme }) => theme.spacing.s10};
+  height: 50%;
 `;
 
 const InfoBox = styled.div`
@@ -243,6 +239,7 @@ const Label = styled.label`
   font-size: ${({ theme }) => theme.fontSizes.xl};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme }) => theme.colors.black};
+  text-align: left;
 `;
 
 const ReadOnlyInput = styled.input`

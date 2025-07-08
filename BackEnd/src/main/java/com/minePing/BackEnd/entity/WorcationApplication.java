@@ -37,7 +37,7 @@ public class WorcationApplication {
     @Column(name="approve", nullable = false)
     private CommonEnums.Approve approve;
 
-    @Column(name = "start_date", nullable = false)
+        @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
@@ -63,6 +63,10 @@ public class WorcationApplication {
 
     public void assignReview(Review review) {
         this.review = review;
+    }
+
+    public void updatestatus(CommonEnums.Approve approve) {
+        this.approve = approve;
     }
 
 }

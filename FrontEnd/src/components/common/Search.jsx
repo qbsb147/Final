@@ -1,16 +1,15 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import styled from 'styled-components';
-import MyinfoStatus from './MyinfoStatus';
 import { useLocation } from 'react-router-dom';
-import useWorcationStore from '../../store/worcationStore';
+import useSearchStore from '../../store/useSearchStore';
 
 const Search = () => {
   const location = useLocation();
-  const setKeyword = useWorcationStore((state) => state.setKeyword);
-  const popularKeywords = useWorcationStore((state) => state.popularKeywords);
-  const keyword = useWorcationStore((state) => state.keyword);
-  
+  const setKeyword = useSearchStore((state) => state.setKeyword);
+  const popularKeywords = useSearchStore((state) => state.popularKeywords);
+  const keyword = useSearchStore((state) => state.keyword);
+
   React.useEffect(() => {
     setKeyword('');
   }, [location.pathname, setKeyword]);
@@ -19,15 +18,14 @@ const Search = () => {
     <SearchWrap>
       <SearchBg>
         <SearchInner>
-          <SearchBar onSearch={setKeyword} keyword={keyword} popularKeywords={popularKeywords} rightComponent={<MyinfoStatus />} />
+          <SearchBar onSearch={setKeyword} keyword={keyword} popularKeywords={popularKeywords} />
         </SearchInner>
       </SearchBg>
     </SearchWrap>
   );
 };
 
-const SearchWrap = styled.div`
-`;
+const SearchWrap = styled.div``;
 const SearchBg = styled.div`
   background-color: ${({ theme }) => theme.colors.gray[100]};
   background-position: center;

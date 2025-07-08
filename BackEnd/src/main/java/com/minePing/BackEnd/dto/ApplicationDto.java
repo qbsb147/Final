@@ -1,8 +1,12 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 /**
@@ -30,6 +34,8 @@ public class ApplicationDto {
         private LocalDate startDate;      // 예약 시작일
         private LocalDate endDate;        // 예약 종료일
         private String reviewContent;     // 작성된 리뷰가 있는 경우 내용
+        private Worcation worcation; // 워케이션 엔티티 전체
+        private Member member; //회원 데이터 전체
 
         /**
          * Entity → DTO 변환 메서드
@@ -49,6 +55,18 @@ public class ApplicationDto {
                     .build();
         }
     }
+
+    public static ApplicationResponseDto fromEntity(WorcationApplication app, Worcation enrichedWorcation) {
+        return ApplicationResponseDto.builder()
+                .applicationNo(app.getApplicationNo())
+                .startDate(app.getStartDate())
+                .endDate(app.getEndDate())
+                .approve(app.getApprove())
+                .worcation(enrichedWorcation)
+                .member(app.getMember())
+                .build();
+    }
+
 
     /**
      * 예약 신청 요청 DTO
@@ -82,6 +100,28 @@ public class ApplicationDto {
                     .startDate(entity.getStartDate())
                     .endDate(entity.getEndDate())
                     .build();
+        }
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResponseDto {
+        private LocalDate startDate;
+        private LocalDate endDate;
+
+        // ✅ 날짜 범위 계산 메서드
+        public List<LocalDate> getDateRange() {
+            List<LocalDate> dates = new ArrayList<>();
+            LocalDate current = startDate;
+            while (!current.isAfter(endDate)) {
+                dates.add(current);
+                current = current.plusDays(1);
+            }
+            return dates;
         }
     }
 }

@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
+import useAuthStore from '../../../store/authStore';
 
 const EmployeeApproveTable = ({ searchKeyword }) => {
   const [members, setMembers] = useState([]);
+  const { loginUser } = useAuthStore();
 
   const handleApprove = async (row) => {
     if (!window.confirm(`${row.name}님을 승인하시겠습니까?`)) return;
@@ -60,8 +62,7 @@ const EmployeeApproveTable = ({ searchKeyword }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //현재 2번만 불러오게함 로그인되면 바꿀예정
-        const data = await companyEmployee.getEmployeeApprove(1);
+        const data = await companyEmployee.getEmployeeApprove(loginUser.company_no);
         console.log('승인 대기 멤버 데이터:', data);
         const formatted = data.map((member) => ({
           user_no: member.user_no,

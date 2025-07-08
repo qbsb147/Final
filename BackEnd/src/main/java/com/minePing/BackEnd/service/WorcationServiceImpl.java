@@ -1,8 +1,14 @@
 package com.minePing.BackEnd.service;
 
+import com.minePing.BackEnd.enums.CommonEnums;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -197,5 +203,27 @@ public class WorcationServiceImpl implements WorcationService {
     public void delete(Long worcationNo) {
         worcationRepository.deleteById(worcationNo);
     }
+
+    public Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo) {
+        List<Worcation> all = worcationRepository.findAllByRefWriter(userNo);
+
+        List<WorcationDto.SimpleResponse> registered = all.stream()
+                .filter(w -> w.getStatus() == CommonEnums.Status.Y)
+                .map(WorcationDto.SimpleResponse::fromEntity)
+                .toList();
+
+        List<WorcationDto.SimpleResponse> unregistered = all.stream()
+                .filter(w -> w.getStatus() == CommonEnums.Status.N)
+                .map(WorcationDto.SimpleResponse::fromEntity)
+                .toList();
+
+        return Map.of(
+                "registered", registered,
+                "unregistered", unregistered
+        );
+    }
+
+
+
 
 }

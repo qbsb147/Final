@@ -1,9 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { worcationService } from '../api/worcations';
 import { toast } from 'react-toastify';
-import worcationStore from '../store/worcationStore';
+import useWorcationStore from '../store/useWorcationStore';
 import useAuthStore from '../store/authStore';
 
 // 회원가입 폼의 유효성 검사 스키마
@@ -21,13 +20,14 @@ const ValidateSchema = yup.object().shape({
 });
 
 export const useValidateForm = () => {
-  const { setIsValidate } = worcationStore();
+  const { setIsValidate } = useWorcationStore();
   const { user } = useAuthStore();
   //react-hook-form으로 폼 상태 초기화및 유효성 검사
   const {
     register,
     control,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting }, //유효성 에러및 제출중 상태
     watch,
   } = useForm({
@@ -59,6 +59,7 @@ export const useValidateForm = () => {
     register,
     control,
     handleValidate: handleSubmit(validate),
+    getValues,
     errors,
     isSubmitting,
     watch,

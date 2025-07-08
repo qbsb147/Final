@@ -3,9 +3,11 @@ import { API_ENDPOINTS } from './config';
 
 export const companyEmployee = {
   //직원 조회
-  getEmployeeList: async (companyNo) => {
+  getEmployeeList: async (companyNo, page = 0, size = 15) => {
     try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.EMPLOYEE_LIST(companyNo));
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.EMPLOYEE_LIST(companyNo), {
+        params: { page, size },
+      });
       return data;
     } catch (error) {
       const message = error.response?.data?.message || '직원 리스트 불러오기 실패';
@@ -25,9 +27,11 @@ export const companyEmployee = {
     }
   },
   //심리상태
-  getneedsConsult: async (companyNo) => {
+  getneedsConsult: async (companyNo, page = 0, size = 15) => {
     try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.NEEDS_CONSULT(companyNo));
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.NEEDS_CONSULT(companyNo), {
+        params: { page, size },
+      });
       return data;
     } catch (error) {
       const message = error.response?.data?.message || '직원 리스트 불러오기 실패';
@@ -65,12 +69,36 @@ export const companyEmployee = {
     }
   },
 
-  getWorcationApplies: async (companyNo) => {
+  getWorcationApplies: async (companyNo, page = 0, size = 10) => {
     try {
-      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.WORCATIONAPPLIES(companyNo));
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.WORCATIONAPPLIES(companyNo), {
+        params: { page, size },
+      });
       return data;
     } catch (error) {
       const message = error.response?.data?.message || '직원을 불러오는데 실패했습니다.';
+      throw new Error(message);
+    }
+  },
+
+  UpdateWorcationCheck: async (userNo, status) => {
+    try {
+      const { data } = await axiosInstance.patch(API_ENDPOINTS.COMPANY_EMPLOYEE.WORCATIONAPLLIECHECK(userNo), {
+        status,
+      });
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || '워케이션 승인 및 거부에 실패하였습니다.';
+      throw new Error(message);
+    }
+  },
+
+  CalendarEmployee: async (companyNo) => {
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.COMPANY_EMPLOYEE.CALENDAREMPLOYEE(companyNo));
+      return data;
+    } catch (error) {
+      const message = error.response?.data?.message || '캘린더를 불러오는데 실패했습니다.';
       throw new Error(message);
     }
   },

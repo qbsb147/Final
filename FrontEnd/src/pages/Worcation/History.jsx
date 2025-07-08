@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import useAuthStore from '../../store/authStore';
-import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
 
 const WorcationHistory = () => {
@@ -12,28 +11,17 @@ const WorcationHistory = () => {
   const [reservedList, setReservedList] = useState([]);
   const [usedList, setUsedList] = useState([]);
   const { loginUser } = useAuthStore();
-  const [userInfo, setUserInfo] = useState(null);
-  useEffect(() => {
-    if (!loginUser?.user_id) return;
-
-    const fetchUserInfo = async () => {
-      const res = await memberService.getMyPage(); // user_no 포함 정보
-      setUserInfo(res);
-    };
-
-    fetchUserInfo();
-  }, [loginUser?.user_id]);
 
   useEffect(() => {
-    if (userInfo?.user_no) {
-      getReservedWorcation(); // userInfo가 준비된 이후에만 호출
-    }
-  }, [userInfo]);
+    if (!loginUser?.user_no) return;
+
+    getReservedWorcation();
+  }, [loginUser?.user_no]);
 
   const getReservedWorcation = async () => {
     try {
-      const reserved = await applicationService.reserved(userInfo.user_no);
-      const used = await applicationService.used(userInfo.user_no);
+      const reserved = await applicationService.reserved(loginUser.user_no);
+      const used = await applicationService.used(loginUser.user_no);
       setReservedList(reserved);
       setUsedList(used);
     } catch (err) {
@@ -60,10 +48,6 @@ const WorcationHistory = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getReservedWorcation();
-  }, []);
 
   return (
     <Container>

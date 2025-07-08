@@ -3,7 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { worcationService } from '../api/worcations';
 import { toast } from 'react-toastify';
-import worcationStore from '../store/worcationStore';
+import worcationStore from '../store/useWorcationStore';
 import useAuthStore from '../store/authStore';
 
 //회원가입 폼의 유효성 검사 스키마

@@ -261,4 +261,29 @@ public class WorcationDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SimpleResponse {
+        private Long worcation_no;
+        private String name;
+        private String address;
+        private String theme;
+        private String thumbnailUrl;
+
+        public static SimpleResponse fromEntity(Worcation entity) {
+            return SimpleResponse.builder()
+                    .worcation_no(entity.getWorcationNo())
+                    .name(entity.getWorcationName())
+                    .address(entity.getWorcationAddress())
+                    .theme(entity.getWorcationThema())
+                    .thumbnailUrl(entity.getThumbnailUrl()) // 존재하는 경우
+                    .build();
+        }
+    }
+
+
 }

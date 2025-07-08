@@ -8,7 +8,11 @@ const WorcationCardList = ({ data, navigate }) => (
           <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
           <CardContent>
             <InfoBlock>
-              <PlaceLocation>{item.address}</PlaceLocation>
+              <PlaceLocation>
+                {item.worcation_address
+                  ? item.worcation_address.split(' ').slice(0, 2).join(' ')
+                  : ''}
+              </PlaceLocation>
               <PlaceName>{item.worcation_name}</PlaceName>
               <PlaceReview>
               리뷰 ({item.reviews ? item.reviews.length : 0})
@@ -67,6 +71,7 @@ const InfoBlock = styled.div`
   flex-direction: column;
   justify-content: start;
   gap: 12px;
+  align-items: flex-start;
 `;
 
 const PlaceLocation = styled.p`

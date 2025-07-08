@@ -2,13 +2,19 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.CompanyProfileDto;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Applies;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Calendar;
 import com.minePing.BackEnd.dto.CompanyProfileDto.Employees;
+import com.minePing.BackEnd.dto.CompanyProfileDto.Response;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -24,10 +30,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     @Override
-    public List<CompanyProfileDto.Response> findAllMember(Long companyNo) {
+    public Page<Response> findAllMember(Long companyNo, Pageable pageable) {
         LocalDate today = LocalDate.now();
 
-        return employeeRepository.findAllByCompanyNo(companyNo).stream()
+        return employeeRepository.findAllByCompanyNo(companyNo, pageable)
                 .map(profile -> {
                     Member member = profile.getMember();
 
@@ -35,10 +41,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                             .filter(app -> app.getApprove() == CommonEnums.Approve.Y)
                             .anyMatch(app -> !today.isBefore(app.getStartDate()) && !today.isAfter(app.getEndDate()))
                             ? "워케이션 중" : "근무 중";
+
                     int age = Period.between(member.getBirthday(), today).getYears();
+
                     return CompanyProfileDto.Response.toDto(member, workStatus, age);
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     @Override
@@ -55,14 +62,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<CompanyProfileDto.Consult> findConsultList(Long companyNo) {
+    public Page<CompanyProfileDto.Consult> findConsultList(Long companyNo, Pageable pageable) {
         LocalDate today = LocalDate.now();
 
-        return employeeRepository.findAllConsultByCompanyNo(companyNo).stream()
+        return employeeRepository.findAllConsultByCompanyNo(companyNo, pageable)
                 .map(profile -> {
                     Member member = profile.getMember();
 
                     String workStatus = member.getWorcationApplications().stream()
+                            .filter(app -> app.getApprove() == CommonEnums.Approve.Y)
                             .anyMatch(app -> !today.isBefore(app.getStartDate()) && !today.isAfter(app.getEndDate()))
                             ? "워케이션 중" : "근무 중";
 
@@ -74,20 +82,22 @@ public class EmployeeServiceImpl implements EmployeeService {
                             .orElse("Unknown");
 
                     return CompanyProfileDto.Consult.toDto(member, workStatus, age, psychologicalState);
-                })
-                .collect(Collectors.toList());
+                });
     }
 
     @Override
-    public List<Applies> findWorcationAppliesList(Long companyNo) {
+    public Page<Applies> findWorcationAppliesList(Long companyNo, Pageable pageable) {
         LocalDate today = LocalDate.now();
 
-        return employeeRepository.findallWorcationAppliesByCompanyNo(companyNo).stream()
+        Page<CompanyProfile> pageProfiles = employeeRepository.findallWorcationAppliesByCompanyNo(companyNo, pageable);
+
+        List<Applies> appliesList = pageProfiles.stream()
                 .flatMap(profile -> {
                     Member member = profile.getMember();
                     int age = Period.between(member.getBirthday(), today).getYears();
 
                     return member.getWorcationApplications().stream()
+                            .filter(wa -> wa.getApprove() == CommonEnums.Approve.W) // 승인 대기만 매핑 (필요시)
                             .map(application -> {
                                 String worcationDate = application.getStartDate() + " ~ " + application.getEndDate();
                                 String worcationPlace = application.getWorcation().getWorcationName();
@@ -96,19 +106,16 @@ public class EmployeeServiceImpl implements EmployeeService {
                             });
                 })
                 .collect(Collectors.toList());
+
+        return new PageImpl<>(appliesList, pageable, pageProfiles.getTotalElements());
     }
 
     @Override
     public Employees findEmployeesNumber(Long companyNo) {
         LocalDate today = LocalDate.now();
 
-        // 1. 전체 인원 수
-        int total = employeeRepository.findAllByCompanyNo(companyNo).size();
-
-        // 2. 오늘 기준 워케이션 중인 인원 수 (레포지토리에서 카운트 메서드 사용)
+        int total = employeeRepository.countAllByCompanyNo(companyNo); // ✅ 수정
         int worcation = employeeRepository.countWorcationInProgressByCompanyNo(companyNo, today);
-
-        // 3. 현재 근무 중 인원
         int current = total - worcation;
 
         return Employees.toDto(total, worcation, current);
@@ -121,4 +128,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         companyProfile.updateStatus(CommonEnums.Approve.valueOf(status));
     }
+
+    @Override
+    @Transactional
+    public void updateWorcationStatus(Long userNo, String status) {
+        WorcationApplication application = employeeRepository.findWorcationApplicationByUserNo(userNo)
+                .orElseThrow(() -> new RuntimeException("WorcationApplication not found for userNo: " + userNo));
+        application.updatestatus(CommonEnums.Approve.valueOf(status));
+    }
+
+    @Override
+    public List<Calendar> getWorcationCalendar(Long companyNo) {
+        return employeeRepository.findApprovedWorcationApplications(companyNo).stream()
+
+                .map(app -> CompanyProfileDto.Calendar.toDto(
+                        app,
+                        app.getMember(),
+                        app.getWorcation().getWorcationName()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
 }
