@@ -11,7 +11,8 @@ import EmployeeStep from '../../components/auth/Employee';
 import MasterStep from '../../components/auth/Master';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { someNtsApiCheck } from '../../api/nts';
+import { businessApi } from '../../api/businessApi';
+import { handleBusinessValidationResult } from '../../hooks/useValidation';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -56,14 +57,15 @@ const SignUp = () => {
       // 2-1. 마스터일 때만 국세청 API 호출
       if (selectedRole === 'MASTER') {
         try {
-          // 국세청 API 비동기 호출
-          await someNtsApiCheck({
+          const data = await businessApi({
             business_id: formData2.business_id,
             licensee: formData2.licensee,
             open_date: formData2.open_date,
           });
+          if (!handleBusinessValidationResult(data)) return;
         } catch (err) {
-          toast.error('사업자 진위 확인에 실패했습니다. : '+ err);
+          const msg = err.response?.data?.message || err.message || err;
+          toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
           return;
         }
       }

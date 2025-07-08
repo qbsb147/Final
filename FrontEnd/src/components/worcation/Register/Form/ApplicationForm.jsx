@@ -4,28 +4,30 @@ import { InputLightGray } from '../../../../styles/Input.styles';
 import RadioButton from '../../../common/RadioButton.jsx';
 import CustomDatePicker from '../../../common/DatePicker';
 import { ButtonBorder } from '../../../../styles/Button.styles';
-import { useValidation } from '../../../../hooks/useValidation';
+import { handleBusinessValidationResult, useValidation } from '../../../../hooks/useValidation';
 import { Controller } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
-
-
+import { businessApi } from '../../../../api/businessApi.js';
+import { toast } from 'react-toastify';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
-  const { register, control, errors, isSubmitting, getValues} = useValidation();
+  const { register, control, errors, isSubmitting, getValues } = useValidation();
 
   const checkBusiness = async () => {
-    // if (Object.keys(errors).length > 0) {
-    //   alert('입력값을 모두 올바르게 입력해주세요.');
-    //   return;
-    // }
+    if (Object.keys(errors).length > 0) {
+      alert('입력값을 모두 올바르게 입력해주세요.');
+      return;
+    }
     const formData = getValues();
-    console.log(formData);
+    const { business_id, licensee, open_date } = formData;
     try {
-      
-      alert('사업자 진위확인 성공');
+      const data = await businessApi({ business_id, licensee, open_date });
+      if (handleBusinessValidationResult(data)) return;
     } catch (err) {
-      alert('사업자 진위확인 실패 : ',err);
+      const msg = err.response?.data?.message || err.message || err;
+      toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+      return;
     }
   };
 
@@ -34,7 +36,6 @@ const Form = () => {
     { value: 'Accommodation', label: '숙박' },
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
-
 
   return (
     <Body>
@@ -69,7 +70,7 @@ const Form = () => {
                 name="open_date"
                 render={({ field }) => (
                   <DatePicker
-                    selected={field.value}
+                    selected={field.value || null}
                     onChange={(date) => field.onChange(date)}
                     $error={errors.open_date}
                   />
@@ -90,7 +91,7 @@ const Form = () => {
                     id="business_id"
                     type="text"
                     value={field.value || ''}
-                    onChange={e => field.onChange(formatBusinessNumber(e.target.value))}
+                    onChange={(e) => field.onChange(formatBusinessNumber(e.target.value))}
                     $error={errors.business_id}
                   />
                 )}

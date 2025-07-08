@@ -81,11 +81,6 @@ const WorcationList = () => {
   const { worcation_no } = useParams();
 
   useEffect(() => {
-    if (!loginUser?.user_id || loginUser.role !== 'WORCATION') {
-      navigate('/error');
-      return;
-    }
-
     const fetchUserInfo = async () => {
       try {
         const res = await memberService.getMyInfo();
