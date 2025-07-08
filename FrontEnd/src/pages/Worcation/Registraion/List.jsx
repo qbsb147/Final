@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import useWorcationStore from '../../../store/useWorcationStore';
 import { worcationService } from '../../../api/worcations';
@@ -83,12 +82,12 @@ const WorcationList = () => {
   const { worcation_no } = useParams();
 
   useEffect(() => {
-    if (!loginUser?.user_id) return;
+    // if (!loginUser?.user_id) return;
 
-    if (loginUser.role !== 'WORCATION') {
-      navigate('/error');
-      return;
-    }
+    // if (loginUser.role !== 'WORCATION') {
+    //   navigate('/error');
+    //   return;
+    // }
 
     const fetchUserInfo = async () => {
       try {

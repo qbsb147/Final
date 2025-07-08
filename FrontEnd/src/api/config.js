@@ -79,13 +79,8 @@ export const API_ENDPOINTS = {
     DELETE: (review_no) => `/reviews/${review_no}`,
   },
   LOGIN: '/member/login',
-  MENTALS: {
-    STRESS: '/mental_stress',
-    BURNOUT: '/mental_burnout',
-    //스프링 구현하면 지울 내용//
-    BASE: (mental_no) => `/mental?mental_no=${mental_no}`,
-    //스프링 구현하면 지울 내용//
-  },
+  //심리정보 불러오기
+  MENTALS: (user_no) => `/mentals/${user_no}`,
   // 스프링 구현하면 지울 내용//
   MEMBER_PREFERENCE: '/member_preference',
   // 스프링 구현하면 지울 내용//
