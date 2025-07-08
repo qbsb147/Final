@@ -92,6 +92,13 @@ public class WorcationController {
         return ResponseEntity.noContent().build();
     }
 
+    //본인이 작성한 워케이션 확인
+    @GetMapping("/my-worcations")
+    public ResponseEntity<Map<String, List<WorcationDto.SimpleResponse>>> getMyWorcations(@RequestParam Long userNo) {
+        Map<String, List<WorcationDto.SimpleResponse>> result = worcationService.getMyWorcations(userNo);
+        return ResponseEntity.ok(result);
+    }
+
 
 
 }

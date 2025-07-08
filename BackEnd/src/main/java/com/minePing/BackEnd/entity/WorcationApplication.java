@@ -37,7 +37,7 @@ public class WorcationApplication {
     @Column(name="approve", nullable = false)
     private CommonEnums.Approve approve;
 
-    @Column(name = "start_date", nullable = false)
+        @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)

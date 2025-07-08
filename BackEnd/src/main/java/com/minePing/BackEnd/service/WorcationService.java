@@ -31,6 +31,6 @@ public interface WorcationService {
     void delete(Long worcationNo);
 
     // 오늘까지
+    Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo);
 
-    //사업자
 }
