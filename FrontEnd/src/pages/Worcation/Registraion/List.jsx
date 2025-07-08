@@ -85,6 +85,7 @@ const WorcationList = () => {
       navigate('/error');
       return;
     }
+
     const fetchUserInfo = async () => {
       try {
         const res = await memberService.getMyInfo();
