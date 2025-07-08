@@ -93,7 +93,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             name="user_pwd_check"
             type="password"
             placeholder="비밀번호 확인"
-            value={isSocial ? 'YUI^&*678' : formData1.user_pwd || ''}
+            value={isSocial ? 'YUI^&*678' : formData1.user_pwd_check || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
             readOnly={isSocial}
