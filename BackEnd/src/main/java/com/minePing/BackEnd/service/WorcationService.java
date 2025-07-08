@@ -1,8 +1,11 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.WorcationDto;
+import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface WorcationService {
     /**
@@ -32,5 +35,15 @@ public interface WorcationService {
 
     // 오늘까지
     Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo);
+
+
+    //사업자
+
+
+    //워케이션 이름
+    List<WorcationDto.WorcationListName> getWorcationListName(Long userNo);
+
+    Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable);
+
 
 }

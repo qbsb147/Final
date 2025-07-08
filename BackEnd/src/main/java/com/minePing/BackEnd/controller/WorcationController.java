@@ -1,7 +1,9 @@
 package com.minePing.BackEnd.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minePing.BackEnd.dto.PageResponse;
 import com.minePing.BackEnd.dto.WorcationDto;
+import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
 import com.minePing.BackEnd.service.WorcationService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +12,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -100,5 +104,18 @@ public class WorcationController {
     }
 
 
+    //워케이션 등록목록
+    @GetMapping("/my/{userNo}")
+    public ResponseEntity<List<WorcationDto.WorcationListName>> getWorcationListName(@PathVariable Long userNo) {
+        return ResponseEntity.ok(worcationService.getWorcationListName(userNo));
+    }
+
+    //예약자 목록
+    @GetMapping("/reservaionList/{userNo}")
+    public ResponseEntity<PageResponse<WorcationReservation>> getWorcationReservation(
+            @PathVariable Long userNo,
+            @PageableDefault(size = 15, sort = "userName") Pageable pageable){
+        return ResponseEntity.ok(new PageResponse<>(worcationService.getWorcationReservation(userNo,pageable)));
+    }
 
 }
