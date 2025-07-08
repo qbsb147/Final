@@ -1,89 +1,6 @@
-import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import memberService from '../api/members';
-
-// Default form validation schema
-export const useDefaultForm = yup.object().shape({
-  user_id: yup
-    .string()
-    .matches(/^[a-zA-Z0-9]{4,12}$/, '아이디는 4~12자의 영문 및 숫자만 가능합니다.')
-    .required('아이디를 입력해주세요.'),
-  user_pwd: yup
-    .string()
-    // .min(8, '비밀번호는 최소 8자 이상이어야 합니다.')
-    // .matches(
-    //   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-    //   '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.'
-    // )
-    .required('비밀번호를 입력해주세요.'),
-  user_pwd_check: yup
-    .string()
-    .oneOf([yup.ref('user_pwd')], '비밀번호가 일치하지 않습니다.')
-    .required('비밀번호 확인을 입력해주세요.'),
-  name: yup
-    .string()
-    .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
-    .required('이름을 입력해주세요.'),
-  address: yup.string().required('주소를 입력해주세요.'),
-  birthday: yup
-    .date()
-    .typeError('유효한 날짜 형식이 아닙니다.')
-    .max(new Date(), '생년월일은 이전 날이어야 합니다.')
-    .required('생년월일을 입력해주세요.'),
-  email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
-  phone: yup
-    .string()
-    .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
-    .required('연락처를 입력해주세요.'),
-});
-
-// Employee form validation schema
-export const useEmployeeForm = yup.object().shape({
-  company_no: yup.number().required('회사 선택은 필수입니다.'),
-  department_name: yup.string().required('부서를 선택해주세요.'),
-  position_name: yup.string().required('직급을 입력해주세요.'),
-  company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
-  company_phone: yup
-    .string()
-    .nullable()
-    .notRequired()
-    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, { message: '전화번호 형식이 올바르지 않습니다.', excludeEmptyString: true }),
-});
-
-// Worcation form validation schema
-export const useMasterForm = yup.object().shape({
-  company_name: yup.string().required('기업명을 입력해주세요.'),
-  business_id: yup
-    .string()
-    .matches(/^\d{10}$/, '사업자번호 형식은 10자리 번호입니다.')
-    .required('사업자번호를 입력해주세요.'),
-  licensee: yup.string().required('사업자명을 입력해주세요.'),
-  open_date: yup
-    .date()
-    .typeError('유효한 날짜 형식이 아닙니다.')
-    .max(new Date(), '개업일은 과거 날이어야합니다.')
-    .required('개업일을 선택해주세요.'),
-  departments: yup
-    .array()
-    .of(yup.string().required('부서 항목은 비어 있을 수 없습니다.'))
-    .min(1, '부서는 최소 1개 이상 선택해야 합니다.')
-    .required('부서 목록은 필수입니다.'),
-  company_address: yup.string().required('기업주소를 입력해주세요.'),
-  business_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
-  company_tel: yup
-    .string()
-    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-    .required('기업 전화번호를 입력해주세요.'),
-});
-
-// Login validation schema
-const loginSchema = yup.object().shape({
-  user_id: yup
-    .string()
-    .required('아이디를 입력해주세요.')
-    .matches(/^[a-zA-Z0-9]{4,12}$/, '아이디는 4~12자의 영문 및 숫자만 가능합니다.'),
-  user_pwd: yup.string().required('비밀번호를 입력해주세요.').min(8, '비밀번호는 최소 8자 이상이어야 합니다.'),
-});
+import { loginSchema } from '../schemas/schema';
 
 export async function validateForm(schema, data) {
   try {
@@ -113,93 +30,8 @@ export async function validateLogin(data) {
   }
 }
 
-// Mypage용 validation 함수
-export const validateMypageForm = async (userInfo, role) => {
-  try {
-    // 기본 정보 validation
-    const baseSchema = yup.object().shape({
-      email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
-      phone: yup
-        .string()
-        .matches(/^01[0-9]-\d{3,4}-\d{4}$/, '연락처 형식은 01x-xxxx-xxxx입니다.')
-        .required('연락처를 입력해주세요.'),
-      name: yup
-        .string()
-        .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
-        .required('이름을 입력해주세요.'),
-      address: yup.string().required('주소를 입력해주세요.'),
-      user_pwd: yup
-        .string()
-        .test('password-validation', '비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.', function (value) {
-          if (!value || value.length === 0) {
-            return true;
-          }
-          // return value.length >= 8 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
-          return true;
-        }),
-      user_pwd_check: yup.string().test('password-confirm', '비밀번호가 일치하지 않습니다.', function (value) {
-        const userPwd = this.parent.user_pwd;
-        if (!userPwd || userPwd.length === 0) {
-          return true;
-        }
-        return value === userPwd;
-      }),
-    });
-
-    await baseSchema.validate(userInfo, { abortEarly: false });
-
-    // role별 추가 validation
-    if (role === 'MASTER') {
-      const masterSchema = yup.object().shape({
-        company_name: yup.string().required('기업명을 입력해주세요.'),
-        company_address: yup.string().required('기업주소를 입력해주세요.'),
-        business_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('이메일을 입력해주세요.'),
-        company_tel: yup
-          .string()
-          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, '전화번호 형식이 올바르지 않습니다.')
-          .required('기업 전화번호를 입력해주세요.'),
-        departments: yup
-          .array()
-          .of(
-            yup.object().shape({
-              department_no: yup.number().nullable(),
-              department_name: yup.string().required('부서명은 필수입니다.'),
-            })
-          )
-          .min(1, '부서는 최소 1개 이상 선택해야 합니다.')
-          .required('부서 목록은 필수입니다.'),
-      });
-
-      await masterSchema.validate(userInfo, { abortEarly: false });
-    } else if (role === 'EMPLOYEE' || role === 'MANAGER') {
-      const employeeSchema = yup.object().shape({
-        company_name: yup.string().required('회사명을 입력해주세요.'),
-        department_name: yup.string().required('부서명을 입력해주세요.'),
-        position: yup.string().required('직급을 입력해주세요.'),
-        company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
-        company_phone: yup
-          .string()
-          .nullable()
-          .notRequired()
-          .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, {
-            message: '전화번호 형식이 올바르지 않습니다.',
-            excludeEmptyString: true,
-          }),
-      });
-
-      await employeeSchema.validate(userInfo, { abortEarly: false });
-    }
-
-    return true;
-  } catch (err) {
-    if (err.inner && err.inner.length > 0) {
-      alert(err.inner[0].message);
-    } else {
-      alert(err.message);
-    }
-    return false;
-  }
-};
+// validateMypageForm 등 yup 관련 함수는 필요하다면 schema.jsx에서 관리, 아니면 완전히 삭제
+// 나머지 함수/로직은 그대로 유지
 
 export function useValidatePassword() {
   // 현재 비밀번호 검증 함수
@@ -239,4 +71,30 @@ export function useValidatePassword() {
   };
 
   return { validateCurrentPassword };
+}
+
+export function formatPhoneNumber(value) {
+  // 숫자만 남기고, 11자리까지만 허용
+  let onlyNums = value.replace(/[^0-9]/g, '').slice(0, 11);
+
+  if (onlyNums.length < 4) return onlyNums;
+  if (onlyNums.length < 8) {
+    // 4자리에서 하이픈
+    return onlyNums.replace(/(\d{3})(\d{1,})/, '$1-$2');
+  }
+  // 8자리 이상: 3-4-나머지
+  return onlyNums.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+}
+
+export function formatBusinessNumber(value) {
+  // 숫자만 남기고, 10자리까지만 허용
+  let onlyNums = value.replace(/[^0-9]/g, '').slice(0, 10);
+
+  if (onlyNums.length < 4) return onlyNums;
+  if (onlyNums.length < 6) {
+    // 4~5자리: 3-나머지
+    return onlyNums.replace(/(\d{3})(\d{1,2})/, '$1-$2');
+  }
+  // 6자리 이상: 3-2-나머지(최대 5자리)
+  return onlyNums.replace(/(\d{3})(\d{2})(\d{1,5})/, '$1-$2-$3');
 }

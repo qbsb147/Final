@@ -4,12 +4,14 @@ import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import memberService from '../../api/members';
-import { validateForm, useDefaultForm, useEmployeeForm, useMasterForm } from '../../hooks/useAuth';
+import { validateForm } from '../../hooks/useAuth';
+import { useDefaultForm, useEmployeeForm, useMasterForm } from '../../schemas/schema';
 import DefaultStep from '../../components/auth/Default';
 import EmployeeStep from '../../components/auth/Employee';
 import MasterStep from '../../components/auth/Master';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { someNtsApiCheck } from '../../api/nts';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -19,12 +21,10 @@ const SignUp = () => {
   });
   const [formData2, setFormData2] = useState({});
   const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
-  const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
 
   const handleNext = async () => {
     const valid = await validateForm(useDefaultForm, formData1);
-    setIsFormValid(valid);
     if (!valid) return;
     setFormStep((prev) => prev + 1);
   };
@@ -35,22 +35,41 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 1. 비밀번호 일치 체크
     if (formData1.user_pwd !== formData1.user_pwd_check) {
       toast.error('비밀번호가 일치하지 않습니다.');
-      setIsFormValid(false);
       return;
     }
-    let isValidStep2 = true;
+
+    // 2. 2단계(직원/마스터) 유효성 검사
     if (formStep === 2) {
       let schema = null;
       if (selectedRole === 'EMPLOYEE') schema = useEmployeeForm;
       else if (selectedRole === 'MASTER') schema = useMasterForm;
+
       if (schema) {
-        isValidStep2 = await validateForm(schema, formData2);
-        setIsFormValid(isValidStep2);
-        if (!isValidStep2) return;
+        const isValid = await validateForm(schema, formData2);
+        if (!isValid) return;
+      }
+
+      // 2-1. 마스터일 때만 국세청 API 호출
+      if (selectedRole === 'MASTER') {
+        try {
+          // 국세청 API 비동기 호출
+          await someNtsApiCheck({
+            business_id: formData2.business_id,
+            licensee: formData2.licensee,
+            open_date: formData2.open_date,
+          });
+        } catch (err) {
+          toast.error('사업자 진위 확인에 실패했습니다. : '+ err);
+          return;
+        }
       }
     }
+
+    // 3. 회원가입 API 호출
     try {
       await memberService.register(formData1, formData2);
       toast.success('회원가입에 성공했습니다!');

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
-import { useParams } from 'react-router-dom';
 import useWorcationStore from '../../../store/useWorcationStore';
 import { worcationService } from '../../../api/worcations';
 import useAuthStore from '../../../store/authStore';
@@ -79,6 +78,7 @@ const WorcationList = () => {
   const [registeredList, setRegisteredList] = useState([]);
   const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
+  const { worcation_no } = useParams();
 
   useEffect(() => {
     if (!loginUser?.user_id || loginUser.role !== 'WORCATION') {
@@ -89,7 +89,7 @@ const WorcationList = () => {
     const fetchUserInfo = async () => {
       try {
         const res = await memberService.getMyInfo();
-        setUserInfo(res); // userInfo.user_no 사용 가능
+        setUserInfo(res);
       } catch (err) {
         console.error('회원 정보 조회 실패:', err);
       }

@@ -5,7 +5,6 @@ import { InputRadio } from '../../styles/Input.styles';
 import useAuthStore from '../../store/authStore';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
-import { validateMypageForm } from '../../hooks/useAuth';
 import { usePosition } from '../../hooks/usePosition';
 import Popup from '../../components/auth/Popup';
 import Swal from 'sweetalert2';
@@ -184,11 +183,12 @@ const Mypage = () => {
     }
   };
 
-  const handleDepartmentClick = async (e) => {
+  const handleDepartmentClick = async () => {
     try {
       const data = await memberService.searchDepartment(userInfo.company_no);
       setDepartmentSearchResults(data);
     } catch (err) {
+      console.error(err);
       setDepartmentSearchResults([]);
     }
   };
@@ -205,9 +205,6 @@ const Mypage = () => {
     // 현재 비밀번호 검증
     const isPasswordValid = await validateCurrentPassword();
     if (!isPasswordValid) return;
-
-    const isValid = await validateMypageForm(userInfo, loginUser.role);
-    if (!isValid) return;
 
     try {
       let submitData = {
@@ -402,7 +399,7 @@ const Mypage = () => {
                 type="text"
                 name="address"
                 value={userInfo.address || ''}
-                onClick={doUpdate && (() => handleAddressSearch('address'))}
+                onClick={doUpdate ? () => handleAddressSearch('address') : undefined}
                 readOnly
               />
             </InputGroup>
@@ -599,7 +596,7 @@ const Mypage = () => {
                       type="text"
                       name="company_address"
                       value={userInfo.company_address || ''}
-                      onClick={doUpdate && (() => handleAddressSearch('company_address'))}
+                      onClick={doUpdate ? () => handleAddressSearch('company_address') : undefined}
                       readOnly
                     />
                   </InputGroup>
