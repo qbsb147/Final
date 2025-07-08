@@ -11,6 +11,7 @@ import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
+import com.minePing.BackEnd.dto.TempOAuthUser;
 import com.minePing.BackEnd.entity.*;
 
 import com.minePing.BackEnd.enums.CommonEnums;
@@ -44,12 +45,36 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TempOAuthUserStore tempOAuthUserStore;
 
+    @Override
+    public MemberDto.init init() {
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        MemberDto.init initValue= new MemberDto.init();
 
+        if(temp!= null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            TempOAuthUser tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            initValue.setUser_id(tempUser.getEmail());
+            initValue.setName(tempUser.getName());
+        }
+        return initValue;
+    }
 
     @Override
     @Transactional
     public void createEmployeeMember(EmployeeJoin employeeJoinDto) {
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        TempOAuthUser tempUser;
+        if(temp!=null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            tempUser = TempOAuthUser.builder()
+                    .socialType()
+                    .build();
+        }
         Member member = Member.builder()
                 .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
                 .userPwd(passwordEncoder.encode(employeeJoinDto.getMemberJoinDto().getUser_pwd()))

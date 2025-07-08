@@ -8,12 +8,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import memberService from '../../api/members';
 import useAuthStore from '../../store/authStore';
 import { toast } from 'react-toastify';
+import googleLoginImg from '../../assets/google_login.png';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
   const [userPwd, setUserPwd] = useState('');
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -41,6 +42,32 @@ const Login = () => {
       }
     })();
   }, [navigate]);
+
+  const googleLoginClick = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/config/google/login');
+      const data = await response.json();
+
+      const url =
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${data.clientId}` +
+        `&redirect_uri=${data.redirectUrl}` +
+        `&response_type=code` +
+        `&scope=email profile`;
+
+      window.location.href = url;
+    } catch (err) {
+      console.error('Login config info AJAX 실패:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 로그인 버튼 클릭 시
+  const googleServerLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
 
   return (
     <LoginWrap>
@@ -70,16 +97,33 @@ const Login = () => {
               <SignInBtn type="submit">로그인</SignInBtn>
               <SignUpLink to="/signUp">회원가입</SignUpLink>
             </BtnFlex>
-            <button type="button">
-              <br />
-              구글 로그인 영역
-            </button>
+            <SocialContainer>
+              <SocialImage src={googleLoginImg} alt="Google Login" onClick={googleServerLogin} />
+            </SocialContainer>
           </form>
         </LoginCard>
       </ContentWrap>
     </LoginWrap>
   );
 };
+
+const SocialContainer = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+`;
+const SocialImage = styled.img`
+  max-height: 40px;
+  width: auto;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
 const LoginWrap = styled.div`
   width: 100%;
   height: 100vh;

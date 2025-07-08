@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.config;
 
 import com.minePing.BackEnd.auth.JwtTokenFilter;
+import com.minePing.BackEnd.service.GoogleOauth2LoginSuccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtTokenFilter jwtTokenFilter;
-
+    private final GoogleOauth2LoginSuccess successHandler;
     /*
      * @Bean : 메서드 단위로 빈에 등록할 때, 외부라이브러리의 객체를 등록하고 싶을 때
      */
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
@@ -44,11 +46,13 @@ public class SecurityConfig {
                                 "/api/v1/company/search",
                                 "/api/v1/company/search/department/**",
                                 "/api/v1/member/kakao/login",
+                                "/oauth2/**",
                                 "/**")
                         .permitAll() // 이 API 허용
                         .anyRequest().authenticated() // or 필요한 경우만 제한
                 )
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
                 .build();
     }
 

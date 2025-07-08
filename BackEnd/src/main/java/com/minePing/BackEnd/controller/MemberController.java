@@ -1,12 +1,9 @@
 package com.minePing.BackEnd.controller;
 
-import com.minePing.BackEnd.auth.JwtTokenProvider;
 import com.minePing.BackEnd.dto.AccessTokenDto;
 import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
-import com.minePing.BackEnd.entity.Member;
-import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.service.KakaoService;
 import com.minePing.BackEnd.service.MemberService;
 import jakarta.validation.Valid;
@@ -27,6 +24,12 @@ public class MemberController {
 
     private final MemberService memberService;
     private final KakaoService kakaoService;
+
+    @GetMapping("/signUp/init")
+    public ResponseEntity<Void> init() {
+        memberService.init();
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("signUp/EMPLOYEE")
     public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.EmployeeJoin employeeJoinDto) {

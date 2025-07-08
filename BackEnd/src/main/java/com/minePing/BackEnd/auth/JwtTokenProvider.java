@@ -43,8 +43,6 @@ public class JwtTokenProvider {
     }
 
     public String getUserIdFromToken() {
-        //현재 요청의 JWT 토큰에서 이메일 추출
-        //JwtTokenFilter에서 토큰 검증 후에 호출
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
