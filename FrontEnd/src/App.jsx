@@ -67,8 +67,10 @@ function App() {
       Cookies.remove('token');
       window.location.href = '/';
     }
+    
     const token = localStorage.getItem('token');
     const expireAt = localStorage.getItem('tokenExpireAt');
+    
     if (token && expireAt && Date.now() > Number(expireAt)) {
       localStorage.removeItem('token');
       localStorage.removeItem('tokenExpireAt');
@@ -76,17 +78,15 @@ function App() {
       return;
     }
 
-    if (localStorage.getItem('token')) {
-      useAuthStore.getState().fetchUserInfo();
-      (async () => {
-        try {
-          await useAuthStore.getState().fetchUserInfo();
-        } catch (error) {
-          toast.error('토큰으로 정보를 가져오지 못했습니다');
-          localStorage.removeItem('token');
-          localStorage.removeItem('tokenExpireAt');
-        }
-      })();
+
+    if (token) {
+      useAuthStore.getState().autoFetchUserInfo().catch((error) => {
+        console.error('사용자 정보 조회 실패:', error);
+        toast.error('토큰으로 정보를 가져오지 못했습니다');
+        localStorage.removeItem('token');
+        localStorage.removeItem('tokenExpireAt');
+      });
+
     }
   }, []);
 

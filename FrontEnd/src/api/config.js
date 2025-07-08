@@ -53,6 +53,7 @@ export const API_ENDPOINTS = {
     //업체 정보 수정
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
+
     //사업자 정보
     VALIDATE: () => '/worcation/validate',
 
@@ -60,6 +61,9 @@ export const API_ENDPOINTS = {
     WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
 
     WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
+
+    GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
+
   },
 
   APPLICATION: {
@@ -84,13 +88,8 @@ export const API_ENDPOINTS = {
     DELETE: (review_no) => `/reviews/${review_no}`,
   },
   LOGIN: '/member/login',
-  MENTALS: {
-    STRESS: '/mental_stress',
-    BURNOUT: '/mental_burnout',
-    //스프링 구현하면 지울 내용//
-    BASE: (mental_no) => `/mental?mental_no=${mental_no}`,
-    //스프링 구현하면 지울 내용//
-  },
+  //심리정보 불러오기
+  MENTALS: (user_no) => `/mentals/${user_no}`,
   // 스프링 구현하면 지울 내용//
   MEMBER_PREFERENCE: '/member_preference',
   // 스프링 구현하면 지울 내용//

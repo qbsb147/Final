@@ -34,6 +34,8 @@ public interface WorcationService {
     void delete(Long worcationNo);
 
     // 오늘까지
+    Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo);
+
 
     //사업자
 
@@ -42,4 +44,6 @@ public interface WorcationService {
     List<WorcationDto.WorcationListName> getWorcationListName(Long userNo);
 
     Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable);
+
+
 }

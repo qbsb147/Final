@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.service;
 
+
 import com.minePing.BackEnd.dto.WorcationDto.WorcationListName;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
 import com.minePing.BackEnd.entity.Company;
@@ -8,6 +9,9 @@ import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
 import java.time.Period;
+
+import com.minePing.BackEnd.enums.CommonEnums;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,6 +217,7 @@ public class WorcationServiceImpl implements WorcationService {
         worcationRepository.deleteById(worcationNo);
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public List<WorcationListName> getWorcationListName(Long userNo) {
@@ -249,6 +254,27 @@ public class WorcationServiceImpl implements WorcationService {
 
         return new org.springframework.data.domain.PageImpl<>(content, pageable, applications.getTotalElements());
     }
+
+    public Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo) {
+        List<Worcation> all = worcationRepository.findAllByRefWriter(userNo);
+
+        List<WorcationDto.SimpleResponse> registered = all.stream()
+                .filter(w -> w.getStatus() == CommonEnums.Status.Y)
+                .map(WorcationDto.SimpleResponse::fromEntity)
+                .toList();
+
+        List<WorcationDto.SimpleResponse> unregistered = all.stream()
+                .filter(w -> w.getStatus() == CommonEnums.Status.N)
+                .map(WorcationDto.SimpleResponse::fromEntity)
+                .toList();
+
+        return Map.of(
+                "registered", registered,
+                "unregistered", unregistered
+        );
+    }
+
+
 
 
 }

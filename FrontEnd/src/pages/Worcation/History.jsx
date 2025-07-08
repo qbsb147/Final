@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import useAuthStore from '../../store/authStore';
-import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
 
 const WorcationHistory = () => {

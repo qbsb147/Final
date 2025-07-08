@@ -60,6 +60,11 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
 
 
 
+
     List<Worcation> findByMember_UserNoAndStatus(Long userNo, CommonEnums.Status status);
+
+    @Query("SELECT w FROM Worcation w WHERE w.member.userNo = :member")
+    List<Worcation> findAllByRefWriter(@Param("member") Long member);
+
 
 }
