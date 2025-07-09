@@ -34,6 +34,7 @@ const Login = () => {
     (async () => {
       if (localStorage.getItem('token')) {
         await useAuthStore.getState().fetchUserInfo();
+        console.log('useAuthStore.loginUser', useAuthStore.loginUser);
         if (useAuthStore.loginUser) {
           navigate('/');
         }

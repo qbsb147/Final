@@ -178,6 +178,7 @@ public class MemberDto {
         private String user_id;
         private String user_name;
         private Long company_no;
+        private SocialType social_type;
         private CommonEnums.Role role;
         private CommonEnums.Approve employee_approve;
 
@@ -187,12 +188,7 @@ public class MemberDto {
                     .user_id(member.getUserId())
                     .user_name(member.getName())
                     .role(member.getRole())
-                    .build();
-        }
-
-        public static InfoResponse toCompanyDto(Company company) {
-            return InfoResponse.builder()
-                    .company_no(company.getCompanyNo())
+                    .social_type(member.getSocialType())
                     .build();
         }
     }
