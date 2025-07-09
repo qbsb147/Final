@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Date;
 
 @Component
@@ -43,16 +44,16 @@ public class JwtTokenProvider {
     }
 
     public String getUserIdFromToken() {
-        //현재 요청의 JWT 토큰에서 이메일 추출
-        //JwtTokenFilter에서 토큰 검증 후에 호출
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     public CommonEnums.Role getRoleFromToken() {
         return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(auth -> auth.getAuthority().replace("ROLE_", ""))
+                .filter(roleStr -> Arrays.stream(CommonEnums.Role.values())
+                        .anyMatch(r -> r.name().equals(roleStr)))
                 .map(CommonEnums.Role::valueOf)
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("권한 정보가 없습니다."));
+                .orElse(null);
     }
 }

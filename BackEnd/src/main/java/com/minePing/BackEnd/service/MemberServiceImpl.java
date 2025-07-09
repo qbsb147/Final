@@ -11,6 +11,7 @@ import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Update;
 import com.minePing.BackEnd.dto.MemberDto.WorcationJoin;
+import com.minePing.BackEnd.dto.TempOAuthUser;
 import com.minePing.BackEnd.entity.*;
 
 import com.minePing.BackEnd.enums.CommonEnums;
@@ -44,23 +45,59 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final DepartmentRepository departmentRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TempOAuthUserStore tempOAuthUserStore;
 
+    @Override
+    public MemberDto.init init() {
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        MemberDto.init initValue= new MemberDto.init();
 
+        if(temp!= null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            TempOAuthUser tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            initValue.setUser_id(tempUser.getEmail());
+            initValue.setName(tempUser.getName());
+        }
+        return initValue;
+    }
 
     @Override
     @Transactional
     public void createEmployeeMember(EmployeeJoin employeeJoinDto) {
-        Member member = Member.builder()
-                .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
-                .userPwd(passwordEncoder.encode(employeeJoinDto.getMemberJoinDto().getUser_pwd()))
-                .name(employeeJoinDto.getMemberJoinDto().getName())
-                .gender(employeeJoinDto.getMemberJoinDto().getGender())
-                .address(employeeJoinDto.getMemberJoinDto().getAddress())
-                .birthday(employeeJoinDto.getMemberJoinDto().getBirthday())
-                .email(employeeJoinDto.getMemberJoinDto().getEmail())
-                .phone(employeeJoinDto.getMemberJoinDto().getPhone())
-                .role(employeeJoinDto.getMemberJoinDto().getRole())
-                .build();
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        TempOAuthUser tempUser;
+        Member member;
+        if(temp!=null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            member = Member.builder()
+                    .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd("")
+                    .name(employeeJoinDto.getMemberJoinDto().getName())
+                    .gender(employeeJoinDto.getMemberJoinDto().getGender())
+                    .address(employeeJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(employeeJoinDto.getMemberJoinDto().getBirthday())
+                    .email(employeeJoinDto.getMemberJoinDto().getEmail())
+                    .phone(employeeJoinDto.getMemberJoinDto().getPhone())
+                    .role(employeeJoinDto.getMemberJoinDto().getRole())
+                    .socialId(tempUser.getSocialId())
+                    .socialType(tempUser.getSocialType())
+                    .build();
+        }else{
+            member = Member.builder()
+                    .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd(passwordEncoder.encode(employeeJoinDto.getMemberJoinDto().getUser_pwd()))
+                    .name(employeeJoinDto.getMemberJoinDto().getName())
+                    .gender(employeeJoinDto.getMemberJoinDto().getGender())
+                    .address(employeeJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(employeeJoinDto.getMemberJoinDto().getBirthday())
+                    .email(employeeJoinDto.getMemberJoinDto().getEmail())
+                    .phone(employeeJoinDto.getMemberJoinDto().getPhone())
+                    .role(employeeJoinDto.getMemberJoinDto().getRole())
+                    .build();
+        }
 
         memberRepository.save(member);
 
@@ -79,17 +116,39 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void createMasterMember(MasterJoin masterJoinDto) {
-        Member member = Member.builder()
-                .userId(masterJoinDto.getMemberJoinDto().getUser_id())
-                .userPwd(passwordEncoder.encode(masterJoinDto.getMemberJoinDto().getUser_pwd()))
-                .name(masterJoinDto.getMemberJoinDto().getName())
-                .gender(masterJoinDto.getMemberJoinDto().getGender())
-                .role(masterJoinDto.getMemberJoinDto().getRole())
-                .address(masterJoinDto.getMemberJoinDto().getAddress())
-                .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
-                .email(masterJoinDto.getMemberJoinDto().getEmail())
-                .phone(masterJoinDto.getMemberJoinDto().getPhone())
-                .build();
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        TempOAuthUser tempUser;
+        Member member;
+        if(temp!=null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            member = Member.builder()
+                    .userId(masterJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd("")
+                    .name(masterJoinDto.getMemberJoinDto().getName())
+                    .gender(masterJoinDto.getMemberJoinDto().getGender())
+                    .address(masterJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
+                    .email(masterJoinDto.getMemberJoinDto().getEmail())
+                    .phone(masterJoinDto.getMemberJoinDto().getPhone())
+                    .role(masterJoinDto.getMemberJoinDto().getRole())
+                    .socialId(tempUser.getSocialId())
+                    .socialType(tempUser.getSocialType())
+                    .build();
+        }else{
+            member = Member.builder()
+                    .userId(masterJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd(passwordEncoder.encode(masterJoinDto.getMemberJoinDto().getUser_pwd()))
+                    .name(masterJoinDto.getMemberJoinDto().getName())
+                    .gender(masterJoinDto.getMemberJoinDto().getGender())
+                    .address(masterJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
+                    .email(masterJoinDto.getMemberJoinDto().getEmail())
+                    .phone(masterJoinDto.getMemberJoinDto().getPhone())
+                    .role(masterJoinDto.getMemberJoinDto().getRole())
+                    .build();
+        }
 
         memberRepository.save(member);
 
@@ -112,17 +171,39 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void createWorcationMember(WorcationJoin worcationJoinDto) {
-        Member member = Member.builder()
-                .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
-                .userPwd(passwordEncoder.encode(worcationJoinDto.getMemberJoinDto().getUser_pwd()))
-                .name(worcationJoinDto.getMemberJoinDto().getName())
-                .gender(worcationJoinDto.getMemberJoinDto().getGender())
-                .address(worcationJoinDto.getMemberJoinDto().getAddress())
-                .birthday(worcationJoinDto.getMemberJoinDto().getBirthday())
-                .email(worcationJoinDto.getMemberJoinDto().getEmail())
-                .phone(worcationJoinDto.getMemberJoinDto().getPhone())
-                .role(worcationJoinDto.getMemberJoinDto().getRole())
-                .build();
+        CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        TempOAuthUser tempUser;
+        Member member;
+        if(temp!=null && temp.equals(Role.TEMP)){
+            String uuid = jwtTokenProvider.getUserIdFromToken();
+            tempUser = tempOAuthUserStore.find(uuid)
+                    .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            member = Member.builder()
+                    .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd("")
+                    .name(worcationJoinDto.getMemberJoinDto().getName())
+                    .gender(worcationJoinDto.getMemberJoinDto().getGender())
+                    .address(worcationJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(worcationJoinDto.getMemberJoinDto().getBirthday())
+                    .email(worcationJoinDto.getMemberJoinDto().getEmail())
+                    .phone(worcationJoinDto.getMemberJoinDto().getPhone())
+                    .role(worcationJoinDto.getMemberJoinDto().getRole())
+                    .socialId(tempUser.getSocialId())
+                    .socialType(tempUser.getSocialType())
+                    .build();
+        }else{
+            member = Member.builder()
+                    .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
+                    .userPwd(passwordEncoder.encode(worcationJoinDto.getMemberJoinDto().getUser_pwd()))
+                    .name(worcationJoinDto.getMemberJoinDto().getName())
+                    .gender(worcationJoinDto.getMemberJoinDto().getGender())
+                    .address(worcationJoinDto.getMemberJoinDto().getAddress())
+                    .birthday(worcationJoinDto.getMemberJoinDto().getBirthday())
+                    .email(worcationJoinDto.getMemberJoinDto().getEmail())
+                    .phone(worcationJoinDto.getMemberJoinDto().getPhone())
+                    .role(worcationJoinDto.getMemberJoinDto().getRole())
+                    .build();
+        }
 
         memberRepository.save(member);
     }

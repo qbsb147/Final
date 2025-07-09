@@ -294,8 +294,7 @@ public class WorcationDto {
                     .name(entity.getWorcationName())
                     .address(entity.getWorcationAddress())
                     .theme(entity.getWorcationThema())
-                    .thumbnailUrl(entity.getThumbnailUrl()) // 존재하는 경우
-
+//                    .thumbnailUrl(entity.getThumbnailUrl()) // 존재하는 경우
                     .build();
         }
     }

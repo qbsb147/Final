@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import CustomDatePicker from '../common/DatePicker';
 import styled from 'styled-components';
+import memberService from '../../api/members';
+import { toast } from 'react-toastify';
 
 const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+  const [socialInfo, setSocialInfo] = useState({});
+  const [isSocial, setIsSocial] = useState(false);
+  const fetchInitData = async () => {
+    try {
+      const initData = await memberService.init();
+      setSocialInfo(initData);
+      if (initData.user_id) {
+        setIsSocial(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
+    fetchInitData(); // 호출
+
     const script = document.createElement('script');
     script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
     script.async = true;
@@ -54,9 +71,10 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             name="user_id"
             type="text"
             placeholder="아이디"
-            value={formData1.user_id || ''}
+            value={isSocial.user_id || formData1.user_id || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
+            readOnly={isSocial}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -65,9 +83,10 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             name="user_pwd"
             type="password"
             placeholder="비밀번호"
-            value={formData1.user_pwd || ''}
+            value={isSocial ? 'YUI^&*678' : formData1.user_pwd || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
+            readOnly={isSocial}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -76,9 +95,10 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             name="user_pwd_check"
             type="password"
             placeholder="비밀번호 확인"
-            value={formData1.user_pwd_check || ''}
+            value={isSocial ? 'YUI^&*678' : formData1.user_pwd_check || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
+            readOnly={isSocial}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -87,9 +107,10 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
             name="name"
             type="text"
             placeholder="이름"
-            value={formData1.name || ''}
+            value={isSocial.name || formData1.name || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
+            readOnly={isSocial}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
