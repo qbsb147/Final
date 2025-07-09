@@ -8,7 +8,7 @@ const PartnerApprovedListTable = ({ user_no }) => {
   // 백엔드에서 데이터 불러오기
   const fetchData = async () => {
     try {
-      const response = await partnerService.getAllRequests(user_no);
+      const response = await partnerService.getApprovalRequests(user_no);
       const formattedData = response.map((item) => ({
         partner_no: item.partner_no,
         company_name: item.company_name,

@@ -53,15 +53,39 @@ const Register = () => {
   }, [worcation_no]);
 
   const toRequestDto = () => {
+    const { application, info, description, photos, amenities, location, policy, feature } =
+      useWorcationStore.getState();
+
     return {
-      application: worcationData.application,
-      info: worcationData.info,
-      description: worcationData.description,
-      photos: worcationData.photos,
-      amenities: worcationData.amenities,
-      location: worcationData.location,
-      policy: worcationData.policy,
-      feature: worcationData.feature,
+      worcation_name: info.worcationName,
+      worcation_category: info.category,
+      main_change_photo: photos.thumbnail,
+      worcation_thema: info.intro,
+      max_people: parseInt(info.maxPeople),
+      partner_price: info.partnerPrice,
+      non_partner_price: parseInt(info.nonPartnerPrice),
+      worcation_address: location.address,
+
+      member_id: application.companyNo,
+      licensee: application.ownerName,
+      business_id: application.businessNo,
+      worcation_tel: application.tel,
+      charge_amount: 0,
+      content: description.detailIntro,
+      navigate: location.locationDescription,
+      available_time: policy.policyGuide,
+      refund_policy: policy.refundPolicy,
+      open_date: null,
+
+      location_type: feature.locationType,
+      dominant_color: feature.dominantColor,
+      space_mood: feature.spaceMood,
+      best_for: feature.bestFor,
+      activities: feature.activities.join(','),
+      accommodation_type: feature.accommodationType,
+
+      amenities: amenities,
+      photo_urls: photos.detailImages,
     };
   };
 
@@ -87,10 +111,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        const dto = toRequestDto();
         if (worcation_no) {
-          await worcationService.update();
+          await worcationService.update(worcation_no, dto);
         } else {
-          await worcationService.save();
+          await worcationService.save(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
         navigate('/worcation/list');
@@ -112,10 +137,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        const dto = toRequestDto();
         if (worcation_no) {
-          await worcationService.update();
+          await worcationService.update(worcation_no, dto);
         } else {
-          await worcationService.save();
+          await worcationService.save(dto);
         }
         Swal.fire('등록 완료!', '', 'success');
         navigate('/worcation/list');
@@ -172,8 +198,8 @@ const Register = () => {
             </>
           ) : (
             <ActionButton type="button" disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
-                임시 저장
-              </ActionButton>
+              임시 저장
+            </ActionButton>
           )}
           {isNonNull ? (
             <>

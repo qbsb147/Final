@@ -37,9 +37,4 @@ export const applicationService = {
     worcation_no;
     return res.data;
   },
-
-  getMyList: async (user_no) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
-    return response.data;
-  },
 };
