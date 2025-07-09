@@ -94,6 +94,7 @@ function App() {
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
+        <ToastContainer/>
         <Routes>
           {/* 🟣 Layout1: 기본 레이아웃 (SearchBar 포함) */}
           <Route element={<Layout />}>

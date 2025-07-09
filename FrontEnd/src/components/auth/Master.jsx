@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Popup from './Popup';
 import CustomDatePicker from '../common/DatePicker';
+import { formatPhoneNumber } from '../../hooks/useAuth';
 
 const HIDDEN_FIELDS = ['address', 'email', 'company_tel'];
 
@@ -161,9 +162,12 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
               <InputBox
                 name="company_tel"
                 type="text"
-                placeholder="(-)를 포함해서 입력"
+                placeholder="기업전화번호"
                 value={formData2.company_tel || ''}
-                onChange={(e) => handleChange(e, 2)}
+                onChange={e => setFormData2(prev => ({
+                  ...prev,
+                  company_tel: formatPhoneNumber(e.target.value)
+                }))}
                 variant="yellow"
                 readOnly={showInput}
               />

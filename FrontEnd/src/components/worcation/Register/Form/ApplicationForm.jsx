@@ -4,84 +4,38 @@ import { InputLightGray } from '../../../../styles/Input.styles';
 import RadioButton from '../../../common/RadioButton.jsx';
 import CustomDatePicker from '../../../common/DatePicker';
 import { ButtonBorder } from '../../../../styles/Button.styles';
-import { useValidateForm } from '../../../../hooks/useValidateForm';
+import { handleBusinessValidationResult, useValidation } from '../../../../hooks/useValidation';
 import { Controller } from 'react-hook-form';
-import axios from 'axios';
-import useWorcationStore from '../../../../store/useWorcationStore';
-import { worcationService } from '../../../../api/worcations.js';
+import { formatBusinessNumber } from '../../../../hooks/useAuth';
+import { businessApi } from '../../../../api/businessApi.js';
+import { toast } from 'react-toastify';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
-  const { register, control, errors, isSubmitting, getValues } = useValidateForm();
+  const { register, control, errors, isSubmitting, getValues } = useValidation();
 
-  const setApplication = useWorcationStore((state) => state.setApplication); // zustand 저장 함수 가져오기
+  const checkBusiness = async () => {
+    if (Object.keys(errors).length > 0) {
+      alert('입력값을 모두 올바르게 입력해주세요.');
+      return;
+    }
+    const formData = getValues();
+    const { business_id, licensee, open_date } = formData;
+    try {
+      const data = await businessApi({ business_id, licensee, open_date });
+      if (handleBusinessValidationResult(data)) return;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || err;
+      toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+      return;
+    }
+  };
 
   const radioOptions = [
     { value: 'Office', label: '오피스' },
     { value: 'Accommodation', label: '숙박' },
     { value: 'OfficeAndStay', label: '오피스&숙박' },
   ];
-  const checkBusiness = async () => {
-    const formData = getValues();
-    const { business_id, licensee, worcation_name, open_date } = formData;
-
-    if (!business_id || business_id.length !== 10) {
-      alert('사업자번호는 10자리 숫자로 입력해주세요.');
-      return;
-    }
-
-    const apiUrl = 'https://api.odcloud.kr/api/nts-businessman/v1/validate';
-    const serviceKey = 'bHM92CZd4eRIBau2YkOh2hG5UpF9YxODPwSDqY/cJIdTQHYkOiDJIjABzgFpyelodd0eFsuZIYBrLjjzuwn+eQ==';
-    const encodedKey = encodeURIComponent(serviceKey);
-
-    const formattedDate =
-      open_date instanceof Date
-        ? `${open_date.getFullYear()}${String(open_date.getMonth() + 1).padStart(2, '0')}${String(open_date.getDate()).padStart(2, '0')}`
-        : '';
-
-    try {
-      const response = await axios.post(
-        `${apiUrl}?serviceKey=${encodedKey}`,
-        {
-          businesses: [
-            {
-              b_no: business_id,
-              start_dt: formattedDate,
-              p_nm: licensee,
-              p_nm2: licensee,
-              b_nm: worcation_name,
-              corp_no: '',
-              b_sector: '',
-              b_type: '',
-              b_adr: '',
-            },
-          ],
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const result = response?.data?.data?.[0];
-      if (result && result.b_stt_cd === '01') {
-        setApplication({
-          businessName: worcation_name,
-          ownerName: licensee,
-          businessNo: business_id,
-          type: selected,
-          tel: '',
-        });
-        alert('사업자 등록번호 확인되었습니다.');
-      } else {
-        alert('유효하지 않은 사업자 등록번호입니다.');
-      }
-    } catch (error) {
-      console.error('사업자 진위확인 실패:', error.response?.data || error.message);
-      alert('사업자 진위확인 중 오류가 발생했습니다.');
-    }
-  };
 
   return (
     <Body>
@@ -116,7 +70,7 @@ const Form = () => {
                 name="open_date"
                 render={({ field }) => (
                   <DatePicker
-                    selected={field.value}
+                    selected={field.value || null}
                     onChange={(date) => field.onChange(date)}
                     $error={errors.open_date}
                   />
@@ -128,12 +82,19 @@ const Form = () => {
           <TR>
             <TH>사업자등록번호</TH>
             <TD>
-              <Input
-                placeholder="숫자만 10글자 입력"
-                id="business_id"
-                type="text"
-                {...register('business_id')}
-                $error={errors.business_id}
+              <Controller
+                name="business_id"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    placeholder="사업자등록번호 입력"
+                    id="business_id"
+                    type="text"
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(formatBusinessNumber(e.target.value))}
+                    $error={errors.business_id}
+                  />
+                )}
               />
               {errors.business_id && <ErrorMessage>{errors.business_id.message}</ErrorMessage>}
             </TD>

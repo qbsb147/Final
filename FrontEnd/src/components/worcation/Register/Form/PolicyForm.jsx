@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea.jsx';
 import useWorcationStore from '../../../../store/useWorcationStore';

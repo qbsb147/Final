@@ -21,6 +21,7 @@ export const useCompany = (initialCompanyName = '', onCompanySelect) => {
         const data = await memberService.searchCompany(value);
         setCompanySearchResults(Array.isArray(data) ? data : []);
       } catch (err) {
+        console.err(err);
         setCompanySearchResults([]);
       }
     }, 330);
@@ -39,6 +40,7 @@ export const useCompany = (initialCompanyName = '', onCompanySelect) => {
         const deptData = await memberService.searchDepartment(company.company_no);
         setDepartments(Array.isArray(deptData) ? deptData : []);
       } catch (err) {
+        console.err(err);
         setDepartments([]);
       }
     } else {

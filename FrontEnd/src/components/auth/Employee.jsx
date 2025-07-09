@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import memberService from '../../api/members';
 import { usePosition } from '../../hooks/usePosition';
+import { formatPhoneNumber } from '../../hooks/useAuth';
 
 const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-  const { positionList, selectedPosition, setSelectedPosition, handlePositionClick, handlePositionSelect } =
+  const { positionList, selectedPosition, handlePositionClick, handlePositionSelect } =
     usePosition(formData2.position_name || '');
   const companyNameTimeout = useRef();
 
@@ -34,11 +35,12 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
     }, 330);
   };
 
-  const handleDepartmentClick = async (e) => {
+  const handleDepartmentClick = async () => {
     try {
       const data = await memberService.searchDepartment(formData2.company_no);
       setDepartmentSearchResults(data);
     } catch (err) {
+      console.err(err);
       setDepartmentSearchResults([]);
     }
   };
@@ -172,9 +174,12 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
           <InputBox
             name="company_phone"
             type="text"
-            placeholder="(-)를 포함해서 입력"
+            placeholder="사내 전화번호"
             value={formData2.company_phone || ''}
-            onChange={(e) => handleChange(e, 2)}
+            onChange={e => setFormData2(prev => ({
+              ...prev,
+              company_phone: formatPhoneNumber(e.target.value)
+            }))}
             variant="yellow"
           />
         </div>
