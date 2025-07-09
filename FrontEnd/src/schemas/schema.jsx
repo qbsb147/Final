@@ -4,15 +4,17 @@ import * as yup from 'yup';
 export const useDefaultForm = yup.object().shape({
   user_id: yup
     .string()
-    .matches(/^[a-zA-Z0-9]{4,12}$/, '아이디는 4~12자의 영문 및 숫자만 가능합니다.')
+    .max(40, '아이디는 최대 40자까지 가능합니다.')
+    .test('is-valid-user-id', '아이디는 영문+숫자 4~50자 또는 이메일 형식이어야 합니다.', (value) => {
+      const idRegex = /^[a-zA-Z0-9]{4,50}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return idRegex.test(value) || emailRegex.test(value);
+    })
     .required('아이디를 입력해주세요.'),
   user_pwd: yup
     .string()
     .min(8, '비밀번호는 8자 이상이어야 합니다.')
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}$/,
-      '비밀번호는 영문과 숫자를 반드시 포함해야 합니다.'
-    )
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\S]{8,}$/, '비밀번호는 영문과 숫자를 반드시 포함해야 합니다.')
     .required('비밀번호를 입력해주세요.'),
   user_pwd_check: yup
     .string()

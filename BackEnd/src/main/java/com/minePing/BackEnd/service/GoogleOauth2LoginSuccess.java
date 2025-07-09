@@ -49,23 +49,22 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             String uuid = UUID.randomUUID().toString();
             TempOAuthUser tempUser = TempOAuthUser
                     .builder()
-                            .uuid(uuid)
-                            .email(email)
-                            .socialId(openId)
-                            .name(oAuth2User.getAttribute("name"))
-                            .socialType(SocialType.GOOGLE)
-                            .expiresAt(LocalDateTime.now().plusMinutes(30))
-                            .build();
+                    .uuid(uuid)
+                    .email(email)
+                    .socialId(openId)
+                    .name(oAuth2User.getAttribute("name"))
+                    .socialType(SocialType.GOOGLE)
+                    .expiresAt(LocalDateTime.now().plusHours(2))
+                    .build();
             tempOAuthUserStore.save(uuid, tempUser);
 
             String jwtToken = jwtTokenProvider.createToken(uuid, CommonEnums.Role.TEMP);
-
 
             Cookie jwtCookie = new Cookie("token", jwtToken);
             jwtCookie.setPath("/");
             response.addCookie(jwtCookie);
             response.sendRedirect("http://localhost:5173/signUp");
-
+            return;
         }
         String jwtToken = jwtTokenProvider.createToken(member.getUserId(), member.getRole());
         Cookie jwtCookie = new Cookie("token", jwtToken);
