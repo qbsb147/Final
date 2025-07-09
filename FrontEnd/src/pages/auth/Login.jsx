@@ -33,16 +33,13 @@ const Login = () => {
   useEffect(() => {
     (async () => {
       if (localStorage.getItem('token')) {
-        try {
-          await useAuthStore.getState().fetchUserInfo();
+        await useAuthStore.getState().fetchUserInfo();
+        if (useAuthStore.loginUser) {
           navigate('/');
-        } catch (error) {
-          toast.error(`로그인 실패 : ${error}`);
         }
       }
     })();
   }, [navigate]);
-
   const googleServerLogin = async () => {
     window.location.href = oauth2Service.google();
   };
