@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import LeftContent from '../../../components/Member/LeftContent';
-import MemberSearchBar from '../../../components/Member/MemberSearchBar';
 import Table from '../../../components/Member/table/PartnerApprovedListTable';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../../../store/authStore';
 
 const ApprovedList = () => {
+  const { loginUser } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    if (loginUser.role !== 'MASTER' || loginUser !== 'MANAGER') {
+      navigate('/error');
+      return;
+    }
+  });
   return (
     <ListWrap>
       <MainContent>
         <Title>제휴 승인 목록</Title>
         <Container>
-          <Table />
+          <Table userNo={loginUser.user_no} />
         </Container>
       </MainContent>
     </ListWrap>

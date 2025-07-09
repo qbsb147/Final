@@ -47,7 +47,6 @@ export const worcationService = {
     return response.data;
   },
 
-
   WorcationName: async (userNo) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
     return response.data;
@@ -55,7 +54,8 @@ export const worcationService = {
 
   WorcationReservation: async (userNo) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(userNo));
-
+    return response.data;
+  },
   getMyList: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
 
