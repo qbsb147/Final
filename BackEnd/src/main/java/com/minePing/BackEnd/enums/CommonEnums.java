@@ -12,7 +12,7 @@ public class CommonEnums {
     }
 
     public enum Role {
-        MASTER, MANAGER, EMPLOYEE, WORCATION, ADMIN
+        MASTER, MANAGER, EMPLOYEE, WORCATION, ADMIN, TEMP
     }
 
     public enum Approve {

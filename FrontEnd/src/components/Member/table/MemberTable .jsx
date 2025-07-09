@@ -83,7 +83,6 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
 
       try {
         const data = await companyEmployee.getEmployeeList(loginUser.company_no, currentPage, pageSize);
-        // console.log('API response data:', data);
 
         const formatted = data.content.map((member) => ({
           user_no: member.user_no,

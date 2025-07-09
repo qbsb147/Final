@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     MY_INFO: '/member/userInfo',
     BASE: '/member',
     VALIDATE_PASSWORD: '/member/validate-password',
+    INIT: '/member/signUp/init',
   },
   HEALTH: {
     BASE: '/health',
@@ -44,7 +45,24 @@ export const API_ENDPOINTS = {
     //업체 정보 수정
     UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
+
+    //사업자 정보
+    VALIDATE: () => '/worcation/validate',
+
+    //내워케이션이름 가져오기
+    WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
+
+    WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
+
     GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
+
+  },
+
+  PARTNER: {
+    CREATE: '/partner',
+    GETALLREQUESTS: (user_no) => `/partner/request?userNo=${user_no}`,
+    APPROVE: (partner_no) => `/partner/${partner_no}/approve`,
+    REJECT: (partner_no) => `/partner/${partner_no}/reject`,
   },
 
   APPLICATION: {

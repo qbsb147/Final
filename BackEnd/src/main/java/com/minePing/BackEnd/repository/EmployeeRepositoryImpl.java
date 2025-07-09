@@ -24,6 +24,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepositoryV1 {
     @PersistenceContext
     private EntityManager em;
 
+    @Override
     public Page<CompanyProfile> findAllByCompanyNo(Long companyNo, Pageable pageable) {
         String jpql = """
         SELECT DISTINCT cp FROM CompanyProfile cp

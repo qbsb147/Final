@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
 import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.SocialType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -16,6 +17,17 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class MemberDto {
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class init {
+        private String user_id;
+        private String name;
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor

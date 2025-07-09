@@ -8,6 +8,7 @@ import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.SocialType;
 
 public interface MemberService {
+    MemberDto.init init();
     void createEmployeeMember(MemberDto.EmployeeJoin employeeJoinDto);
     void createMasterMember(MemberDto.MasterJoin masterJoinDto);
     void createWorcationMember(MemberDto.WorcationJoin worcationJoinDto);

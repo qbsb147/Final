@@ -19,6 +19,14 @@ const memberService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
+  init: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.INIT);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
 
   //회원가입
   register: async (formData1, formData2) => {

@@ -1,6 +1,9 @@
 package com.minePing.BackEnd.dto;
 
 import com.minePing.BackEnd.entity.Amenity;
+import com.minePing.BackEnd.entity.Company;
+import com.minePing.BackEnd.entity.CompanyProfile;
+import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Photo;
 import com.minePing.BackEnd.entity.Review;
 import com.minePing.BackEnd.entity.Worcation;
@@ -263,6 +266,17 @@ public class WorcationDto {
     }
 
     @Getter
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class WorcationListName{
+        private String worcation_name;
+
+        public static WorcationListName toDto(Worcation worcation){
+            return WorcationListName.builder()
+                    .worcation_name(worcation.getWorcationName())
+
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -280,10 +294,40 @@ public class WorcationDto {
                     .name(entity.getWorcationName())
                     .address(entity.getWorcationAddress())
                     .theme(entity.getWorcationThema())
-                    // .thumbnailUrl(entity.getThumbnailUrl()) // 존재하는 경우
+//                    .thumbnailUrl(entity.getThumbnailUrl()) // 존재하는 경우
                     .build();
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class WorcationReservation {
+        private String company_name;
+        private String worcation_name;
+        private String user_name;
+        private int age;
+        private String gender;
+        private String phone;
+        private String company_email;
+        private String worcation_date;
+
+        public static WorcationReservation toDto(Worcation worcation, Member member, int age, Company company,
+                                                 CompanyProfile companyProfile,String worcationDate) {
+            return WorcationReservation.builder()
+                    .company_name(company.getCompanyName())
+                    .worcation_name(worcation.getWorcationName())
+                    .user_name(member.getName())
+                    .age(age)
+                    .gender(member.getGender().name())
+                    .phone(member.getPhone())
+                    .company_email(companyProfile.getCompanyEmail())
+                    .worcation_date(worcationDate)
+                    .build();
+        }
+    }
+
 
 
 }

@@ -44,4 +44,6 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m join fetch m.companyProfile where m.userId = :userId and m.status = :status")
     Optional<Member> findByUserIdWithCompanyProfile(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+
+    Optional<Member> findBySocialIdAndStatus(String socialId, CommonEnums.Status status);
 }

@@ -48,6 +48,7 @@ import WorcationAppliesList from './pages/Member/WorcationAppliesList'; // 직�
 // 마이페이지
 import Mypage from './pages/auth/Mypage'; // 내 정보
 import BodyInfo from './pages/auth/BodyInfo'; // 신체 정보
+import Reservation from './pages/Worcation/Reservation'; //예약자확인
 
 // 식단
 import Eat from './pages/eat/Eat'; // 식단 확인
@@ -77,6 +78,7 @@ function App() {
       return;
     }
 
+
     if (token) {
       useAuthStore.getState().autoFetchUserInfo().catch((error) => {
         console.error('사용자 정보 조회 실패:', error);
@@ -84,6 +86,7 @@ function App() {
         localStorage.removeItem('token');
         localStorage.removeItem('tokenExpireAt');
       });
+
     }
   }, []);
 
@@ -97,8 +100,10 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
             <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
-            <Route path="/worcation/partners"element={<WorcationPartnersPage/>} />{/* 워케이션 제휴 리스트 */}
-            <Route path="/worcation/ai" element={<WorcationAIPage />} />{/* 워케이션 AI 리스트 */}
+            <Route path="/worcation/partners" element={<WorcationPartnersPage />} />
+            {/* 워케이션 제휴 리스트 */}
+            <Route path="/worcation/ai" element={<WorcationAIPage />} />
+            {/* 워케이션 AI 리스트 */}
           </Route>
 
           {/* 🔵 Layout2: SearchBar 없음 */}
@@ -108,6 +113,7 @@ function App() {
             <Route path="/my/worcation-history" element={<WorcationHistory />} />
             {/* 워케이션 히스토리 */}
             <Route path="/my/body" element={<BodyInfo />} /> {/* 신체 정보 */}
+            <Route path="my/reservation" element={<Reservation />} /> {/* 예약자 확인*/}
             {/* 워케이션 상세 및 등록 리스트 */}
             <Route path="/worcation/register-list" element={<WorcationRegister />} />
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
@@ -129,14 +135,16 @@ function App() {
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
             <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
-            
             {/* 권한 설정한 페이지 */}
-            <Route path="/partnership/apply" element={
-              <ProtectedRoute allowedRoles={['MASTER', 'MANAGER']}>
-                <PartnershipApplication />
-              </ProtectedRoute>
-
-            } /> {/* 제휴 신청 */}
+            <Route
+              path="/partnership/apply"
+              element={
+                <ProtectedRoute allowedRoles={['MASTER', 'MANAGER']}>
+                  <PartnershipApplication />
+                </ProtectedRoute>
+              }
+            />{' '}
+            {/* 제휴 신청 */}
             <Route path="/partnership/approveList" element={<ApprovedList />} /> {/* 승인된 제휴 목록 */}
             <Route path="/partnership/requsets" element={<Requests />} /> {/* 제휴 요청 목록 */}
           </Route>
