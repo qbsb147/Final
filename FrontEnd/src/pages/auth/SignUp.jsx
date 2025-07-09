@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom';
 import { businessApi } from '../../api/businessApi';
 import { handleBusinessValidationResult } from '../../hooks/useValidation';
 import { useForm } from 'react-hook-form';
+import Cookies from 'js-cookie';
+
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);

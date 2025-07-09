@@ -12,9 +12,19 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
   const fetchInitData = async () => {
     try {
       const initData = await memberService.init();
+      console.log(initData);
       setSocialInfo(initData);
+
       if (initData.user_id) {
         setIsSocial(true);
+        setFormData1((prev) => ({
+          ...prev,
+          name: initData.name,
+          user_id: initData.user_id,
+          user_pwd: 'hfht43423$%$',
+          user_pwd_check: 'hfht43423$%$',
+        }));
+        console.log(formData1);
       }
     } catch (error) {
       console.log(error);
@@ -22,7 +32,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
   };
 
   useEffect(() => {
-    fetchInitData(); // 호출
+    fetchInitData();
 
     const script = document.createElement('script');
     script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -72,7 +82,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
             name="user_id"
             type="text"
             placeholder="아이디"
-            value={isSocial.user_id || formData1.user_id || ''}
+            value={socialInfo.user_id || formData1.user_id || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
             readOnly={isSocial}
@@ -108,10 +118,10 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
             name="name"
             type="text"
             placeholder="이름"
-            value={isSocial.name || formData1.name || ''}
+            value={socialInfo.name || formData1.name || ''}
             onChange={(e) => handleChange(e, 1)}
             variant="yellow"
-            readOnly={isSocial}
+            readOnly={socialInfo.name}
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -196,10 +206,12 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
             type="text"
             placeholder="휴대폰 번호"
             value={formData1.phone || ''}
-            onChange={e => setFormData1(prev => ({
-              ...prev,
-              phone: formatPhoneNumber(e.target.value)
-            }))}
+            onChange={(e) =>
+              setFormData1((prev) => ({
+                ...prev,
+                phone: formatPhoneNumber(e.target.value),
+              }))
+            }
             variant="yellow"
           />
         </div>

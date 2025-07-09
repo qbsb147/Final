@@ -28,6 +28,7 @@ public class MemberController {
     @GetMapping("/signUp/init")
     public ResponseEntity<MemberDto.init> init() {
         MemberDto.init memberDto = memberService.init();
+        System.out.println("memberDto = " + memberDto);
         return ResponseEntity.ok(memberDto);
     }
 
