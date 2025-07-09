@@ -77,8 +77,15 @@ const useWorcationStore = create((set, get) => ({
   setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
 
   // 8. 특징
-  features: [],
-  setFeatures: (data) => set(() => ({ features: data })),
+  feature: {
+    locationType: '',
+    dominantColor: '',
+    spaceMood: '',
+    bestFor: '',
+    activities: [],
+    accommodationType: '',
+  },
+  setFeature: (data) => set((state) => ({ feature: { ...state.feature, ...data } })),
 
   // 유효성 검사
   isNonNull: () => {

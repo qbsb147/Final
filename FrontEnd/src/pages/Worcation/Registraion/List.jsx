@@ -154,10 +154,10 @@ const WorcationList = () => {
     <Container>
       <NameBox>
         <SectionTitle>워케이션 등록 목록</SectionTitle>
-        <button onClick={handleAddClick}>+추가</button>
+        <Btn onClick={handleAddClick}>+추가</Btn>
       </NameBox>
       <CardList>
-        {registeredList.map((item) => (
+        {registeredList?.map((item) => (
           <PlaceCard key={item.worcation_no}>
             <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
             <CardContent>
@@ -203,7 +203,7 @@ const WorcationList = () => {
         <SectionTitle>미등록 목록</SectionTitle>
       </NameBox>
       <CardList>
-        {unregisteredList.map((item) => (
+        {unregisteredList?.map((item) => (
           <BeforePlaceCard key={item.worcation_no}>
             <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
             <CardContent>

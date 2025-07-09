@@ -23,7 +23,7 @@ const Menu = ({ onMenuSelect, selectedMenu }) => {
         <MenuItem
           key="Application"
           isActive={selectedMenu === 'Application'}
-          onClick={() => onMenuSelect('호스트 신청')}
+          onClick={() => onMenuSelect('Application')}
         >
           <FolderIcon />
           <MenuLabel>호스트 신청</MenuLabel>
@@ -52,8 +52,7 @@ const MenuContainer = styled.div``;
 
 const MenuHeader = styled.div`
   display: flex;
-  width: 256px;
-  height: 50px;
+  min-height: 50px;
   align-items: center;
   justify-content: center;
   background: ${({ theme }) => theme.colors.white};
@@ -66,7 +65,7 @@ const MenuList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  height: 562px;
+  height: 566px;
   background: #fff;
   padding: 40px;
   border: 2px solid ${({ theme }) => theme.colors.gray[200]};

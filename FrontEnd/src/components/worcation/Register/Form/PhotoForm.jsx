@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import AddButton from '../../../common/AddButton';
 import ImageUploader from '../../../common/ImageUploader';
@@ -160,7 +160,6 @@ const Body = styled.div`
   padding: 40px;
   height: 562px;
   background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: flex-start;
   flex-direction: column;

@@ -178,8 +178,6 @@ const Body = styled.div`
   gap: ${({ theme }) => theme.spacing.s8};
   padding: ${({ theme }) => theme.spacing.s10};
   height: 562px;
-  background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
