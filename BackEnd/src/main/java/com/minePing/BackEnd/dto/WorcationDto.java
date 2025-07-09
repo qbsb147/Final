@@ -266,7 +266,6 @@ public class WorcationDto {
     }
 
     @Getter
-
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -276,8 +275,11 @@ public class WorcationDto {
         public static WorcationListName toDto(Worcation worcation){
             return WorcationListName.builder()
                     .worcation_name(worcation.getWorcationName())
+                    .build();
+        }
+    }
 
-    @Setter
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -329,5 +331,5 @@ public class WorcationDto {
     }
 
 
-
+        
 }
