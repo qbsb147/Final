@@ -6,6 +6,7 @@ import logoText from '../../assets/LoginText.png';
 import Input from '../../styles/Input';
 import { Link, useNavigate } from 'react-router-dom';
 import memberService from '../../api/members';
+import oauth2Service from '../../api/oauth';
 import useAuthStore from '../../store/authStore';
 import { toast } from 'react-toastify';
 import googleLoginImg from '../../assets/google_login.png';
@@ -42,11 +43,9 @@ const Login = () => {
     })();
   }, [navigate]);
 
-  // 로그인 버튼 클릭 시
-  const googleServerLogin = () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  const googleServerLogin = async () => {
+    window.location.href = oauth2Service.google();
   };
-
   return (
     <LoginWrap>
       <ContentWrap>

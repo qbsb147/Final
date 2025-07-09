@@ -65,12 +65,11 @@ function App() {
     if (cookieToken) {
       localStorage.setItem('token', cookieToken);
       Cookies.remove('token');
-      window.location.href = '/';
     }
-    
+
     const token = localStorage.getItem('token');
     const expireAt = localStorage.getItem('tokenExpireAt');
-    
+
     if (token && expireAt && Date.now() > Number(expireAt)) {
       localStorage.removeItem('token');
       localStorage.removeItem('tokenExpireAt');
@@ -78,15 +77,8 @@ function App() {
       return;
     }
 
-
     if (token) {
-      useAuthStore.getState().autoFetchUserInfo().catch((error) => {
-        console.error('사용자 정보 조회 실패:', error);
-        toast.error('토큰으로 정보를 가져오지 못했습니다');
-        localStorage.removeItem('token');
-        localStorage.removeItem('tokenExpireAt');
-      });
-
+      useAuthStore.getState().autoFetchUserInfo();
     }
   }, []);
 
@@ -94,7 +86,7 @@ function App() {
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <ToastContainer/>
+        <ToastContainer />
         <Routes>
           {/* 🟣 Layout1: 기본 레이아웃 (SearchBar 포함) */}
           <Route element={<Layout />}>

@@ -159,5 +159,12 @@ const memberService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
+  google: async () => {
+    try {
+      await axiosInstance.google(API_);
+    } catch (error) {
+      ('http://localhost:8080/oauth2/authorization/google');
+    }
+  },
 };
 export default memberService;

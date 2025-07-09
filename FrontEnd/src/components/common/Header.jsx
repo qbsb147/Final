@@ -87,6 +87,8 @@ const Header = () => {
   // 로그아웃 클릭 핸들러
   const handleLogout = () => {
     logout();
+    localStorage.removeItem('token');
+    localStorage.removeItem('tokenExpireAt');
     toast.success('로그아웃했습니다.');
     navigate('/');
   };

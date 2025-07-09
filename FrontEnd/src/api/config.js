@@ -55,7 +55,6 @@ export const API_ENDPOINTS = {
     WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
 
     GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
-
   },
 
   PARTNER: {

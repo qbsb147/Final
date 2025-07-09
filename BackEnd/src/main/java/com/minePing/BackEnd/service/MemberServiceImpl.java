@@ -51,7 +51,6 @@ public class MemberServiceImpl implements MemberService {
     public MemberDto.init init() {
         CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
         MemberDto.init initValue= new MemberDto.init();
-
         if(temp!= null && temp.equals(Role.TEMP)){
             String uuid = jwtTokenProvider.getUserIdFromToken();
             TempOAuthUser tempUser = tempOAuthUserStore.find(uuid)
@@ -172,12 +171,14 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void createWorcationMember(WorcationJoin worcationJoinDto) {
         CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        System.out.println("tempUser.getSocialId() = " + temp);
         TempOAuthUser tempUser;
         Member member;
         if(temp!=null && temp.equals(Role.TEMP)){
             String uuid = jwtTokenProvider.getUserIdFromToken();
             tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+
             member = Member.builder()
                     .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd("")
