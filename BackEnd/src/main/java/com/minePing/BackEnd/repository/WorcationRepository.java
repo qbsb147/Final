@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Worcation;
+import com.minePing.BackEnd.enums.CommonEnums;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface WorcationRepository extends JpaRepository<Worcation, Long> {
+public interface WorcationRepository extends JpaRepository<Worcation, Long>, WorcationRepositoryV1  {
     
     // 워케이션과 관련된 모든 정보를 한 번에 조회
     @Query("SELECT w FROM Worcation w " +
@@ -57,7 +58,13 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long> {
     @Query("SELECT w FROM Worcation w WHERE w.worcationNo = :worcationNo")
     Optional<Worcation> findByIdForUpdate(@Param("worcationNo") Long worcationNo);
 
+
+
+
+    List<Worcation> findByMember_UserNoAndStatus(Long userNo, CommonEnums.Status status);
+
     @Query("SELECT w FROM Worcation w WHERE w.member.userNo = :member")
     List<Worcation> findAllByRefWriter(@Param("member") Long member);
+
 
 }

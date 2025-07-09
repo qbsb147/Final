@@ -48,6 +48,7 @@ const menuData = [
       { title: '내 정보', path: '/my/info' },
       { title: '신체 정보', path: '/my/body' },
       { title: '워케이션 신청내역', path: '/my/worcation-history' },
+      { title: '예약자 명단', path: 'my/reservation' },
     ],
   },
 ];
@@ -74,6 +75,7 @@ const Header = () => {
             { title: '신체 정보', path: '/my/body' },
             { title: '워케이션 신청내역', path: '/my/worcation-history' },
             { title: '로그아웃', path: '/logout' },
+            { title: '예약자 명단', path: 'my/reservation' },
           ],
         };
       }
