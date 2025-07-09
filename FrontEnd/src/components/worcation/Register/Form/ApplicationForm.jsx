@@ -71,10 +71,10 @@ const Form = () => {
                 control={control}
                 name="open_date"
                 render={({ field }) => (
-                  <DatePicker
+                  <CustomDatePicker
                     selected={field.value || null}
-                    onChange={(date) => field.onChange(date)}
-                    $error={errors.open_date}
+                    onChange={field.onChange}
+                    variant="application"
                   />
                 )}
               />

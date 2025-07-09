@@ -4,7 +4,6 @@ import { ko } from 'date-fns/locale';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useValidation, validateDate } from '@mui/x-date-pickers/validation';
 import {
   useSplitFieldProps,
@@ -14,11 +13,10 @@ import {
 import { CalendarIcon } from '@mui/x-date-pickers/icons';
 import dayjs from 'dayjs';
 
-// styled-components 사용 (예시로 래핑한 container)
 const Wrapper = styled.div`
-  width: 200px; /* 원하는 width */
+  width: 100%;
   .MuiInputBase-root {
-    background: #fff;
+    background: #f3f3f3;
     border-radius: 10px;
     border: 1px solid #ffeb8c;
     color: black;
@@ -27,68 +25,74 @@ const Wrapper = styled.div`
   .MuiOutlinedInput-input {
     padding: 10px 14px;
   }
+  .MuiInputBase-root:hover {
+    border: 1px solid #ffeb8c !important;
+    outline: none !important;
+  }
 `;
 
-const getStylesByVariant = (variant) => {
-  switch (variant) {
-    case 'yellow':
-      return {
-        width:'200px',
-        background: '#fff',
-        borderRadius: '10px',
-        border: '1px solid #ffeb8c',
-        color: 'black',
-        '& input': {
-          padding: '10px 14px',
-        },
-      };
-    default:
-      return {
-        width: 400,
-        background: '#fff',
-        borderRadius: '10px',
-        border: '3px solid #ffeb8c',
-        boxShadow: '4px 4px 4px rgba(0,0,0,0.25)',
-        color: 'black',
-        '& input': {
-          padding: '10px 14px',
-        },
-      };
-  }
-};
-
-const CustomDatePicker = ({ selected, onChange, variant = 'yellow' }) => {
-  return (
-    <Wrapper>
-      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-        <DatePicker
-          value={selected}
-          onChange={onChange}
-          views={['year', 'month', 'day']}
-          format="yyyy년 MM월 dd일"
-          slots={{
-            field: ReadOnlyDateField
-          }
-          }
-          slotProps={{
-            toolbar:{
-              hidden:true
-            },
-            calendarHeader:{
-              format: 'yyyy/MM'
-            },
-            textField: {
-              placeholder: '날짜를 선택해주세요',
-              size: 'small',
-              sx: getStylesByVariant(variant),
-            },
-          }}
+const StyledTextField = styled(TextField)`
+  .MuiInputBase-root,
+  .MuiInputBase-root:focus,
+  .MuiInputBase-root.Mui-focused,
+  .MuiOutlinedInput-root,
+  .MuiOutlinedInput-root:focus,
+  .MuiOutlinedInput-root.Mui-focused {
+    ${({ $variant }) =>
+      $variant === 'application'
+        ? `
+          width: 200px !important;
+          border: 1px solid #e5e7eb !important;
+          box-shadow: none !important;
+          height: 30px !important;
+          background: #f3f3f3 important;
+          border-radius: 4px !important;
           
-        />
-      </LocalizationProvider>
-    </Wrapper>
-  );
-};
+  }
+        `
+        : `
+          width: 400px !important;
+          border: 3px solid #ffeb8c !important;
+          box-shadow: 4px 4px 4px 0 rgba(0,0,0,0.25) !important;
+          height: 52.41px !important;
+          background: #fff !important;
+          border-radius: 10px !important;
+        `
+    }
+    color: black !important;
+    font-family: inherit;
+  }
+  .MuiOutlinedInput-notchedOutline {
+    border: none !important;
+  }
+  .MuiOutlinedInput-input {
+    padding: 10px 14px !important;
+  }
+`;
+
+const CustomDatePicker = ({ selected, onChange, variant = 'yellow' }) => (
+  <Wrapper>
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
+      <DatePicker
+        value={selected}
+        onChange={onChange}
+        views={['year', 'month', 'day']}
+        format="yyyy년 MM월 dd일"
+        slots={{
+          field: (fieldProps) => <ReadOnlyDateField {...fieldProps} variant={variant} />,
+        }}
+        slotProps={{
+          toolbar: { hidden: true },
+          calendarHeader: { format: 'yyyy/MM' },
+          textField: {
+            placeholder: '날짜를 선택해주세요',
+            size: 'small',
+          },
+        }}
+      />
+    </LocalizationProvider>
+  </Wrapper>
+);
 
 function convertFormat(format) {
   // MUI/DateFns 스타일 → dayjs 스타일로 변환
@@ -99,6 +103,7 @@ function convertFormat(format) {
 
 function ReadOnlyDateField(props) {
   const { internalProps, forwardedProps } = useSplitFieldProps(props, 'date');
+  const { variant: _variant, ...restForwardedProps } = forwardedProps;
 
   const pickerContext = usePickerContext();
   const parsedFormat = useParsedFormat();
@@ -110,8 +115,9 @@ function ReadOnlyDateField(props) {
   });
 
   return (
-    <TextField
-      {...forwardedProps}
+    <StyledTextField
+      {...restForwardedProps}
+      $variant={props.variant}
       value={
         pickerContext.value == null
           ? ''
