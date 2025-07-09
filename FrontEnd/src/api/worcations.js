@@ -47,7 +47,6 @@ export const worcationService = {
     return response.data;
   },
 
-
   WorcationName: async (userNo) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
     return response.data;

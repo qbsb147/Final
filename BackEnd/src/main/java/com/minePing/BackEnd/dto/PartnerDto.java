@@ -2,6 +2,7 @@ package com.minePing.BackEnd.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.minePing.BackEnd.entity.WorcationPartner;
+import com.minePing.BackEnd.enums.CommonEnums.Approve;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,6 +71,12 @@ public class PartnerDto {
                     .approve(partner.getApprove().name())
                     .build();
         }
+    }
+
+    @Getter
+    @Setter
+    public class PartnerApproveRequestDto {
+        private Approve approve; // W, Y, N 중 하나 (대기, 승인, 거절)
     }
 }
 

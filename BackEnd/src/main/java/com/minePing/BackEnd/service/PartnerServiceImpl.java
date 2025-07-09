@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.PartnerDto;
+import com.minePing.BackEnd.dto.PartnerDto.PartnerApproveRequestDto;
 import com.minePing.BackEnd.dto.PartnerDto.Response;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.Member;
@@ -60,5 +61,24 @@ public class PartnerServiceImpl implements PartnerService {
                     .map(PartnerDto.Response::fromEntity)
                     .collect(Collectors.toList());
         }
+
+    @Override
+    public List<Response> getApprovalRequestsByUser(Long userNo) {
+        List<WorcationPartner> list = partnerRepository.findAllApprovalByWorcationWriter(userNo);
+        return list.stream()
+                .map(PartnerDto.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public WorcationPartner updateApproveStatus(Long partnerNo, PartnerApproveRequestDto dto) {
+        WorcationPartner partner = partnerRepository.findById(partnerNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 파트너가 존재하지 않습니다."));
+
+        partner.updateStatus(dto.getApprove());
+        return partnerRepository.save(partner); // 수정 후 저장 및 반환
+    }
+
 
 }

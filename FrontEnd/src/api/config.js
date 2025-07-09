@@ -55,14 +55,12 @@ export const API_ENDPOINTS = {
     WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
 
     GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
-
   },
 
   PARTNER: {
     CREATE: '/partner',
     GETALLREQUESTS: (user_no) => `/partner/request?userNo=${user_no}`,
-    APPROVE: (partner_no) => `/partner/${partner_no}/approve`,
-    REJECT: (partner_no) => `/partner/${partner_no}/reject`,
+    UPDATE_STATUS: (partner_no) => `/partner/${partner_no}/status`,
   },
 
   APPLICATION: {
