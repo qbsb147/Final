@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import memberService from '../api/members';
 import { loginSchema } from '../schemas/schema';
+import useAuthStore from '../store/authStore';
 
 export async function validateForm(schema, data) {
   try {
@@ -34,8 +35,13 @@ export async function validateLogin(data) {
 // 나머지 함수/로직은 그대로 유지
 
 export function useValidatePassword() {
+  const { loginUser } = useAuthStore();
   // 현재 비밀번호 검증 함수
   const validateCurrentPassword = async () => {
+    console.log('loginUser.social_type', loginUser.social_type);
+    if (loginUser?.social_type != null) {
+      return true;
+    }
     const { value: currentPassword } = await Swal.fire({
       title: '현재 비밀번호 확인',
       text: '정보 수정을 위해 현재 비밀번호를 입력해주세요.',

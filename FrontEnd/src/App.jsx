@@ -78,7 +78,14 @@ function App() {
     }
 
     if (token) {
-      useAuthStore.getState().autoFetchUserInfo();
+      useAuthStore
+        .getState()
+        .autoFetchUserInfo()
+        .catch((error) => {
+          toast.error(`로그인 오류 : ${error}`);
+          localStorage.removeItem('token');
+          localStorage.removeItem('tokenExpireAt');
+        });
     }
   }, []);
 

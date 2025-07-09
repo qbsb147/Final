@@ -231,6 +231,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public InfoResponse getUserInfoByUserId() {
         String userId = jwtTokenProvider.getUserIdFromToken();
+        CommonEnums.Role role = jwtTokenProvider.getRoleFromToken();
+        if(role.equals(Role.TEMP)){
+            return null;
+        }
         Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(()->new UserAuthenticationException("유저 정보를 찾을 수 없습니다."));
         InfoResponse infoDto = InfoResponse.toMemberDto(member);
