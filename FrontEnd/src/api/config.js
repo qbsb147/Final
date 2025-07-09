@@ -67,6 +67,13 @@ export const API_ENDPOINTS = {
 
   },
 
+  PARTNER: {
+    CREATE: '/partner',
+    GETALLREQUESTS: (user_no) => `/partner/request?userNo=${user_no}`,
+    APPROVE: (partner_no) => `/partner/${partner_no}/approve`,
+    REJECT: (partner_no) => `/partner/${partner_no}/reject`,
+  },
+
   APPLICATION: {
     //예약 신청
     CREATE: '/applications',
