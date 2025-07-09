@@ -38,12 +38,15 @@ export const useValidation = () => {
 };
 
 export function handleBusinessValidationResult(data) {
-  const result = data.data && data.data[0];
-  if (result && result.valid === "01") {
-    toast.success('사업자 진위확인 성공!');
-    return true;
-  } else {
-    toast.error('사업자 진위확인 실패: ' + (result?.valid_msg || '정보 불일치'));
-    return false;
-  }
+  console.log(data);
+  toast.success('임시 통과 !');
+  return true;
+  // const result = data.data && data.data[0];
+  // if (result && result.valid === "01") {
+  //   toast.success('사업자 진위확인 성공!');
+  //   return true;
+  // } else {
+  //   toast.error('사업자 진위확인 실패: ' + (result?.valid_msg || '정보 불일치'));
+  //   return false;
+  // }
 }

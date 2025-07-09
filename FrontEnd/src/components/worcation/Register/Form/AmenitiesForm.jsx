@@ -238,8 +238,6 @@ const Body = styled.div`
   padding: 40px;
   gap: 40px;
   height: 562px;
-  background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   flex-direction: column;
   overflow-x: auto;

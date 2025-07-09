@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import CustomSelect from '../../../common/Select';
 import Checkbox from '../../../common/Checkbox';
@@ -188,8 +188,6 @@ const Body = styled.div`
   gap: 40px;
   padding: 40px;
   height: 562px;
-  background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
