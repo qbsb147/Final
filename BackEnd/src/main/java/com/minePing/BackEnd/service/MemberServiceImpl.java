@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final TempOAuthUserStore tempOAuthUserStore;
     private final RedisTemplate<String, String> redisTemplate;
-    private final MailSender mailSender;
+    private final JavaMailSender mailSender;
     private static final long EXPIRE_TIME = 5*60;
 
     @Override
