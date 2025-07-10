@@ -1,35 +1,34 @@
-import React from 'react'
+import React from 'react';
 import styled from 'styled-components';
 import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
 const WorcationCardList = ({ data, navigate }) => (
-    <CardList>
-      {data.map((item) => (
-        <PlaceCard key={item.worcation_no}>
-          <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
-          <CardContent>
-            <InfoBlock>
-              <PlaceLocation>
-                {item.worcation_address
-                  ? item.worcation_address.split(' ').slice(0, 2).join(' ')
-                  : ''}
-              </PlaceLocation>
-              <PlaceName>{item.worcation_name}</PlaceName>
-              <PlaceReview>
-              리뷰 ({item.reviews ? item.reviews.length : 0})
-              </PlaceReview>
-            </InfoBlock>
-            <ThemeBlock>
-              <ThemeLabel>테마</ThemeLabel>
-              <ThemeText>{item.worcation_thema || '미지정'}</ThemeText>
-              <ButtonDetail onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</ButtonDetail>
-            </ThemeBlock>
-          </CardContent>
-        </PlaceCard>
-      ))}
-    </CardList>
-  );
+  <CardList>
+    {data.map((item) => (
+      <PlaceCard key={item.worcation_no}>
+        <picture>
+          <source srcSet={item.main_change_photo + '.webp'} type="image/webp" />
+          <PlaceImage src={item.main_change_photo} alt={item.worcation_name} loading="lazy" />
+        </picture>
+        <CardContent>
+          <InfoBlock>
+            <PlaceLocation>
+              {item.worcation_address ? item.worcation_address.split(' ').slice(0, 2).join(' ') : ''}
+            </PlaceLocation>
+            <PlaceName>{item.worcation_name}</PlaceName>
+            <PlaceReview>리뷰 ({item.reviews ? item.reviews.length : 0})</PlaceReview>
+          </InfoBlock>
+          <ThemeBlock>
+            <ThemeLabel>테마</ThemeLabel>
+            <ThemeText>{item.worcation_thema || '미지정'}</ThemeText>
+            <ButtonDetail onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</ButtonDetail>
+          </ThemeBlock>
+        </CardContent>
+      </PlaceCard>
+    ))}
+  </CardList>
+);
 
-export default WorcationCardList
+export default WorcationCardList;
 
 const CardList = styled.div`
   display: flex;

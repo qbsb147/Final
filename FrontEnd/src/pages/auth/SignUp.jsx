@@ -13,7 +13,9 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { businessApi } from '../../api/businessApi';
 import { handleBusinessValidationResult } from '../../hooks/useValidation';
+import { useForm } from 'react-hook-form';
 import Cookies from 'js-cookie';
+
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -24,7 +26,7 @@ const SignUp = () => {
   const [formData2, setFormData2] = useState({});
   const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
   const navigate = useNavigate();
-
+  const { control } = useForm();
   const handleNext = async () => {
     const valid = await validateForm(useDefaultForm, formData1);
     if (!valid) return;
@@ -99,6 +101,7 @@ const SignUp = () => {
               setFormData1={setFormData1}
               setSelectedRole={setSelectedRole}
               setFormData2={setFormData2}
+              control={control}
             />
           )}
 

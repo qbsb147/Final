@@ -217,7 +217,10 @@ const WorcationDetail = () => {
           <PhotoSliderWrapper>
             <Slider {...settings}>
               {images.map((src, idx) => (
-                <SliderImage key={idx} src={src} alt={`slide-${idx}`} />
+                <picture key={idx}>
+                  <source srcSet={src + '.webp'} type="image/webp" />
+                  <SliderImage src={src} alt={`slide-${idx}`} loading="lazy" />
+                </picture>
               ))}
             </Slider>
           </PhotoSliderWrapper>

@@ -60,7 +60,7 @@ const CustomRadio = styled.span`
     content: '';
     position: absolute;
     top: 4px;
-    left: 4px;
+    right: 4px;
     width: 8px;
     height: 8px;
     background: ${({ theme }) => theme.colors.black};
