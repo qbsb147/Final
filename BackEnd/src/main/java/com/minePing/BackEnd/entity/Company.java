@@ -35,6 +35,7 @@ public class Company {
     @JoinColumn(name = "chief_user_no", nullable = false, unique = true)
     private Member member;
 
+
     @Column(name = "company_name", nullable = false, length = 150)
     private String companyName;
 

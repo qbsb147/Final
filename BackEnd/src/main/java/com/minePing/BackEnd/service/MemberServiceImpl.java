@@ -224,8 +224,31 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
-        Member member = memberRepository.findById(userNo).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
-        member.updateRole(updateRoleDto.getRole());
+        Member newMaster = memberRepository.findById(userNo)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+
+        if (updateRoleDto.getRole() == CommonEnums.Role.MASTER) {
+            Company company = newMaster.getCompany();
+            if (company == null) throw new RuntimeException("소속된 회사가 없습니다.");
+
+            Member currentMaster = company.getMember();
+
+            if (currentMaster != null && !currentMaster.getUserNo().equals(newMaster.getUserNo())) {
+                // 기존 대표는 매니저로 역할 변경
+                currentMaster.updateRole(CommonEnums.Role.MANAGER);
+                memberRepository.save(currentMaster);
+
+                // 회사의 대표 멤버 변경
+                company.changeMember(newMaster);
+                companyRepository.save(company);
+            }
+
+            newMaster.updateRole(CommonEnums.Role.MASTER);
+            memberRepository.save(newMaster);
+        } else {
+            newMaster.updateRole(updateRoleDto.getRole());
+            memberRepository.save(newMaster);
+        }
     }
 
     @Override
