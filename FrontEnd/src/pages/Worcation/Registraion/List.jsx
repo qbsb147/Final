@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ButtonBorder, ButtonDetail } from '../../../styles/Button.styles';
+import { useParams } from 'react-router-dom';
 import useWorcationStore from '../../../store/useWorcationStore';
 import { worcationService } from '../../../api/worcations';
 import useAuthStore from '../../../store/authStore';
@@ -81,10 +82,17 @@ const WorcationList = () => {
   const { worcation_no } = useParams();
 
   useEffect(() => {
+    if (!loginUser?.user_id) return;
+
+    if (loginUser.role !== 'WORCATION') {
+      navigate('/error');
+      return;
+    }
+
     const fetchUserInfo = async () => {
       try {
         const res = await memberService.getMyInfo();
-        setUserInfo(res);
+        setUserInfo(res); // userInfo.user_no 사용 가능
       } catch (err) {
         console.error('회원 정보 조회 실패:', err);
       }
@@ -154,12 +162,13 @@ const WorcationList = () => {
     <Container>
       <NameBox>
         <SectionTitle>워케이션 등록 목록</SectionTitle>
-        <button onClick={handleAddClick}>+추가</button>
+        <Btn onClick={handleAddClick}>+추가</Btn>
       </NameBox>
       <CardList>
-        {registeredList.map((item) => (
+        {registeredList?.map((item) => (
           <PlaceCard key={item.worcation_no}>
-            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
+            {/* <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} /> */}
+            <PlaceImage src={item.main_change_photo || '/default.jpg'} alt={item.name} />
             <CardContent>
               <InfoBlock>
                 <PlaceLocation>{item.address}</PlaceLocation>
@@ -203,7 +212,7 @@ const WorcationList = () => {
         <SectionTitle>미등록 목록</SectionTitle>
       </NameBox>
       <CardList>
-        {unregisteredList.map((item) => (
+        {unregisteredList?.map((item) => (
           <BeforePlaceCard key={item.worcation_no}>
             <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
             <CardContent>

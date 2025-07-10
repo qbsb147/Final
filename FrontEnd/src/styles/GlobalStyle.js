@@ -97,6 +97,23 @@ const GlobalStyle = createGlobalStyle`
   * {
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
+
+  button:focus,
+  button:active,
+  button:hover {
+    outline: none !important;
+    box-shadow: none !important;
+    background: inherit;
+    color: inherit;
+  }
+  .reservation-calendar-confirm-btn:focus,
+  .reservation-calendar-confirm-btn:active,
+  .reservation-calendar-confirm-btn:hover {
+    outline: 2px solid #ffdd38 !important;
+    box-shadow: 0 0 0 2px #ffdd3833 !important;
+    background: #ffdd38 !important;
+    color: #000 !important;
+}
 `;
 
 export default GlobalStyle;

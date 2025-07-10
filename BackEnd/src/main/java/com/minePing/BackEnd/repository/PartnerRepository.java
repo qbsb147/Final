@@ -18,5 +18,12 @@ public interface PartnerRepository extends JpaRepository<WorcationPartner, Long>
             "AND wp.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.W")
     List<WorcationPartner> findAllByWorcationWriter(@Param("userNo") Long userNo);
 
+    @Query("SELECT wp FROM WorcationPartner wp " +
+            "JOIN FETCH wp.worcation w " +
+            "JOIN FETCH wp.company c " +
+            "WHERE w.member.userNo = :userNo " +
+            "AND wp.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y")
+    List<WorcationPartner> findAllApprovalByWorcationWriter(@Param("userNo") Long userNo);
+
 
 }

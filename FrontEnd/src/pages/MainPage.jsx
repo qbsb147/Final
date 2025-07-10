@@ -66,11 +66,15 @@ const MainPage = () => {
         .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
         .map((matchedWorcation) => (
           <PartnerCard key={matchedWorcation.worcation_no}>
-            <PartnerImage
-              src={matchedWorcation.main_change_photo}
-              alt={matchedWorcation.worcation_name}
-              onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
-            />
+            <picture>
+              <source srcSet={matchedWorcation.main_change_photo + '.webp'} type="image/webp" />
+              <PartnerImage
+                src={matchedWorcation.main_change_photo}
+                alt={matchedWorcation.worcation_name}
+                onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
+                loading="lazy"
+              />
+            </picture>
             <ImageLabel>
               <ImageLabelT>
                 {matchedWorcation.worcation_address

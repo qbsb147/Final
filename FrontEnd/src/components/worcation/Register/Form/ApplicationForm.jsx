@@ -8,7 +8,7 @@ import { handleBusinessValidationResult, useValidation } from '../../../../hooks
 import { Controller } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
 import { businessApi } from '../../../../api/businessApi.js';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
@@ -21,14 +21,16 @@ const Form = () => {
     }
     const formData = getValues();
     const { business_id, licensee, open_date } = formData;
-    try {
+    // 실제 데이터가 없으므로 무조건 통과처리 --------------
+    // try {
       const data = await businessApi({ business_id, licensee, open_date });
       if (handleBusinessValidationResult(data)) return;
-    } catch (err) {
-      const msg = err.response?.data?.message || err.message || err;
-      toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-      return;
-    }
+    // } catch (err) {
+      // const msg = err.response?.data?.message || err.message || err;
+      // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+      // return;
+    // }
+    // 실제 데이터가 없으므로 무조건 통과처리 --------------
   };
 
   const radioOptions = [
@@ -69,10 +71,10 @@ const Form = () => {
                 control={control}
                 name="open_date"
                 render={({ field }) => (
-                  <DatePicker
+                  <CustomDatePicker
                     selected={field.value || null}
-                    onChange={(date) => field.onChange(date)}
-                    $error={errors.open_date}
+                    onChange={field.onChange}
+                    variant="application"
                   />
                 )}
               />
@@ -132,8 +134,6 @@ const Body = styled.div`
   gap: 40px;
   padding: 40px;
   height: 562px;
-  background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: flex-start;
   flex-direction: column;

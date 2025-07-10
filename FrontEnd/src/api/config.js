@@ -57,13 +57,16 @@ export const API_ENDPOINTS = {
     WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
 
     GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
+
+    //이미지 업로드
+    UPLOADIMAGE: () => '/worcations/upload',
   },
 
   PARTNER: {
     CREATE: '/partner',
     GETALLREQUESTS: (user_no) => `/partner/request?userNo=${user_no}`,
-    APPROVE: (partner_no) => `/partner/${partner_no}/approve`,
-    REJECT: (partner_no) => `/partner/${partner_no}/reject`,
+    GETAPPROVALREQUESTS: (user_no) => `partner/approval?userNo=${user_no}`,
+    UPDATE_STATUS: (partner_no) => `/partner/${partner_no}/status`,
   },
 
   APPLICATION: {

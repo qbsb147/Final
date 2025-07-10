@@ -207,7 +207,7 @@ const BottomRow = styled.div`
   padding: 10px;
   z-index: 100;
   position: absolute;
-  top: 226px;
+  top: 60%;
   left: 0;
   width: 61%;
 `;

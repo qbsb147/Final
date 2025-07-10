@@ -72,6 +72,13 @@ export const ButtonWhite = styled.button`
 `;
 
 export const ButtonDetail = styled.button`
+  &:focus, &:active, &:hover {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.secondary}33;
+    background: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.black};
+  }
+
   background: rgba(250, 215, 0, 0.7);
   border-radius: ${({ theme }) => theme.borderRadius.lg};
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));

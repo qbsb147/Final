@@ -15,12 +15,12 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.REVIEW.ADD, review);
     return response.data;
   },
-  save: async () => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.SAVE);
+  save: async (data) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
-  update: async () => {
-    const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE);
+  update: async (worcation_no, data) => {
+    const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
   },
   delete: async () => {
@@ -60,5 +60,16 @@ export const worcationService = {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
 
     return response.data;
+  },
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data; // 서버에서 반환한 URL
   },
 };

@@ -26,7 +26,6 @@ const Register = () => {
   const worcationData = useWorcationStore((state) => state);
   const { worcation_no } = useParams();
   const navigate = useNavigate();
-  const businessStore = useBusinessStore((state) => state);
 
   const handleSample = async () => {
     if (worcation_no) {
@@ -54,15 +53,39 @@ const Register = () => {
   }, [worcation_no]);
 
   const toRequestDto = () => {
+    const { application, info, description, photos, amenities, location, policy, feature } =
+      useWorcationStore.getState();
+
     return {
-      application: worcationData.application,
-      info: worcationData.info,
-      description: worcationData.description,
-      photos: worcationData.photos,
-      amenities: worcationData.amenities,
-      location: worcationData.location,
-      policy: worcationData.policy,
-      feature: worcationData.feature,
+      worcation_name: info.worcationName,
+      worcation_category: info.category,
+      main_change_photo: photos.thumbnail,
+      worcation_thema: info.intro,
+      max_people: parseInt(info.maxPeople),
+      partner_price: info.partnerPrice,
+      non_partner_price: parseInt(info.nonPartnerPrice),
+      worcation_address: location.address,
+
+      member_id: application.companyNo,
+      licensee: application.ownerName,
+      business_id: application.businessNo,
+      worcation_tel: application.tel,
+      charge_amount: 0,
+      content: description.detailIntro,
+      navigate: location.locationDescription,
+      available_time: policy.policyGuide,
+      refund_policy: policy.refundPolicy,
+      open_date: null,
+
+      location_type: feature.locationType,
+      dominant_color: feature.dominantColor,
+      space_mood: feature.spaceMood,
+      best_for: feature.bestFor,
+      activities: feature.activities.join(','),
+      accommodation_type: feature.accommodationType,
+
+      amenities: amenities,
+      photo_urls: photos.detailImages,
     };
   };
 
@@ -88,10 +111,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        const dto = toRequestDto();
         if (worcation_no) {
-          const data = await worcationService.update();
+          await worcationService.update(worcation_no, dto);
         } else {
-          const data = await worcationService.save();
+          await worcationService.save(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
         navigate('/worcation/list');
@@ -113,10 +137,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        const dto = toRequestDto();
         if (worcation_no) {
-          const data = await worcationService.update();
+          await worcationService.update(worcation_no, dto);
         } else {
-          const data = await worcationService.save();
+          await worcationService.save(dto);
         }
         Swal.fire('등록 완료!', '', 'success');
         navigate('/worcation/list');
@@ -153,16 +178,18 @@ const Register = () => {
     <RegisterContainer>
       <SwalStyles />
       <RegisterForm>
-        <FormContent>
+        <MenuBar>
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
-          <FormActions>
-            <ActionButton type="button" onClick={handleSample}>
-              미리 보기
-            </ActionButton>
-            {renderForm()}
-          </FormActions>
-        </FormContent>
-        <FormFooter>
+          <ContentContainer>
+            <BtnGroup>
+              <ActionButton type="button" onClick={handleSample}>
+                미리 보기
+              </ActionButton>
+            </BtnGroup>
+            <RenderForm>{renderForm()}</RenderForm>
+          </ContentContainer>
+        </MenuBar>
+        <BtnGroup>
           {isValidate ? (
             <>
               <ActionButton type="button" onClick={handleSave}>
@@ -170,15 +197,15 @@ const Register = () => {
               </ActionButton>
             </>
           ) : (
-            <>
-              <ActionButton type="button" style={{ opacity: 0.3 }}>
-                임시 저장
-              </ActionButton>
-            </>
+            <ActionButton type="button" disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
+              임시 저장
+            </ActionButton>
           )}
           {isNonNull ? (
             <>
-              <ActionButton disabled={!isBusinessValidated}>등록</ActionButton>
+              <ActionButton disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
+                등록
+              </ActionButton>
             </>
           ) : (
             <>
@@ -187,7 +214,7 @@ const Register = () => {
               </ActionButton>
             </>
           )}
-        </FormFooter>
+        </BtnGroup>
       </RegisterForm>
     </RegisterContainer>
   );
@@ -196,10 +223,25 @@ const Register = () => {
 export default Register;
 
 const ActionButton = styled(BtnWhiteYellowBorder)`
-  height: 30px;
-  margin: 5px 0px 10px 20px;
-  margin-left: auto;
-  padding: 15px 10px;
+  max-height: 20px;
+`;
+const BtnGroup = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 50px;
+  gap: 10px;
+`;
+const RegisterForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 1280px;
+  min-height: 500px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 10px;
 `;
 
 const RegisterContainer = styled.div`
@@ -211,29 +253,19 @@ const RegisterContainer = styled.div`
   align-items: center;
   flex-direction: column;
 `;
-
-const RegisterForm = styled.form`
-  display: flex;
-  gap: 16px;
-  align-items: flex-end;
-  flex-direction: column;
-`;
-
-const FormActions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`;
-
-const FormFooter = styled.div`
+const MenuBar = styled.div`
   display: flex;
   gap: 20px;
 `;
-
-const FormContent = styled.div`
+const ContentContainer = styled.div`
   display: flex;
-  width: 100%;
-  gap: 40px;
-  padding: 10px 0;
-  box-sizing: border-box;
+  flex: 1;
+  align-items: flex-end;
+  flex-direction: column;
+`;
+const RenderForm = styled.div`
+  background-color: #fff;
+  display: flex;
+  min-width: 1000px;
+  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
 `;

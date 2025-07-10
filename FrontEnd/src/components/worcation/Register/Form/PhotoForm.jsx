@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import AddButton from '../../../common/AddButton';
 import ImageUploader from '../../../common/ImageUploader';
 import useWorcationStore from '../../../../store/useWorcationStore';
+import { worcationService } from '../../../../api/worcations';
 
 const Form = () => {
   // const [officeImages, setOfficeImages] = useState([]);
@@ -55,16 +56,26 @@ const Form = () => {
     setPhotos({ stayPhotos: [...stayPhotos, null] });
   };
 
-  const handleOfficeChange = (file, index) => {
-    const newList = [...officePhotos];
-    newList[index] = file;
-    setPhotos({ officePhotos: newList });
+  const handleOfficeChange = async (file, index) => {
+    try {
+      const imageUrl = await worcationService.uploadImage(file);
+      const newList = [...officePhotos];
+      newList[index] = imageUrl;
+      setPhotos({ officePhotos: newList });
+    } catch (error) {
+      alert('오피스 이미지 업로드 실패');
+    }
   };
 
-  const handleStayChange = (file, index) => {
-    const newList = [...stayPhotos];
-    newList[index] = file;
-    setPhotos({ stayPhotos: newList });
+  const handleStayChange = async (file, index) => {
+    try {
+      const imageUrl = await worcationService.uploadImage(file);
+      const newList = [...stayPhotos];
+      newList[index] = imageUrl;
+      setPhotos({ stayPhotos: newList });
+    } catch (error) {
+      alert('숙소 이미지 업로드 실패');
+    }
   };
 
   const handleOfficeDelete = (index) => {
@@ -160,7 +171,6 @@ const Body = styled.div`
   padding: 40px;
   height: 562px;
   background: ${({ theme }) => theme.colors.white};
-  border: 2px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: flex-start;
   flex-direction: column;

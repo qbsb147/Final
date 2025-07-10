@@ -63,6 +63,9 @@ public class WorcationPartner {
             this.approve = Approve.W;
         }
     }
+    public void updateStatus(CommonEnums.Approve approve) {
+        this.approve = approve;
+    }
 
     public WorcationPartner changeMember(Member member) {
         this.member = member;
