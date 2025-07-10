@@ -167,4 +167,9 @@ public class Member {
         this.phone = updateDto.getPhone();
         this.company.updateThis(updateDto);
     }
+
+    public Member changeStatus(CommonEnums.Status status) {
+        this.status = status;
+        return this;
+    }
 }

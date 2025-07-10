@@ -3,12 +3,21 @@ import CustomDatePicker from '../common/DatePicker';
 import styled from 'styled-components';
 import { formatPhoneNumber } from '../../hooks/useAuth';
 import memberService from '../../api/members';
+import { toast } from 'react-toastify';
+import Timer from '../common/Timer';
+import { useAsyncError } from 'react-router-dom';
 import { Controller } from 'react-hook-form';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, control }) => {
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, emailVerified, setEmailVerified, control }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
   const [socialInfo, setSocialInfo] = useState({}); // socialInfo 미사용?
+
   const [isSocial, setIsSocial] = useState(false);
+  const [emailAuthStarted, setEmailAuthStarted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // emailVerified 상태는 props로 관리
+
   const fetchInitData = async () => {
     try {
       const initData = await memberService.init();
@@ -173,6 +182,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="birthday">생년월일</Label>
+
           <Controller
             control={control}
             name="birthday"
@@ -186,6 +196,12 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
                 variant="yellow"
               />
             )}
+
+//           <CustomDatePicker
+//             selected={formData1.birthday || null}
+//             onChange={(date) => handleChange({ target: { name: 'birthday', value: date } }, 1)}
+//             variant="yellow"
+
           />
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -327,25 +343,12 @@ const RadioItem = styled.div`
   cursor: pointer;
 
   input[type='radio'] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid #ffeb8c;
-    border-radius: 50%;
-    background: #fff;
-    outline: none;
     cursor: pointer;
-    position: relative;
-    margin-right: 4px;
   }
-  input[type='radio']:checked {
-    background: #ffeb8c;
-    border: 1px solid ${({ theme }) => theme.colors['gray200']};
-  }
+
   label {
     cursor: pointer;
     margin: 0;
-    text-decoration: none;
   }
 `;
 

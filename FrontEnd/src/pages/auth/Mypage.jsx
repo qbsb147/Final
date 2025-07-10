@@ -9,6 +9,8 @@ import { usePosition } from '../../hooks/usePosition';
 import Popup from '../../components/auth/Popup';
 import Swal from 'sweetalert2';
 import { useValidatePassword } from '../../hooks/useAuth';
+import { toast } from 'react-toastify';
+import Timer from '../../components/common/Timer';
 
 const Mypage = () => {
   const { loginUser } = useAuthStore();
@@ -18,6 +20,10 @@ const Mypage = () => {
   const [doUpdate, setDoUpdate] = useState(false);
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
   const companyNameTimeout = useRef();
+  const [emailChange, setEmailChange] = useState(false);
+  const [emailAuthStarted, setEmailAuthStarted] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [showInput, setShowInput] = useState(false);
   const [departments, setDepartments] = useState([]);
@@ -201,6 +207,12 @@ const Mypage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (emailChange || !emailVerified) {
+      console.log('emailChange', emailChange);
+      console.log('emailVerified', emailVerified);
+      toast.warn('이메일 검증이 되지 않았습니다.');
+      return;
+    }
 
     // 현재 비밀번호 검증
     const isPasswordValid = await validateCurrentPassword();
@@ -238,7 +250,7 @@ const Mypage = () => {
         text: '회원정보가 성공적으로 수정되었습니다.',
         confirmButtonColor: '#3085d6',
       });
-
+      setEmailVerified(false);
       setDoUpdate(false);
     } catch (err) {
       Swal.fire({
@@ -285,6 +297,37 @@ const Mypage = () => {
         console.error('회사명 검색 에러:', err);
       }
     }, 330);
+  };
+
+  const handleEmailAuth = async () => {
+    try {
+      setLoading(true);
+      setEmailAuthStarted(false);
+      setEmailChange(true);
+      await memberService.sendEmailCode(userInfo.email);
+      setEmailVerified(false);
+      setEmailAuthStarted(true);
+      setLoading(false);
+      toast.success('인증 코드가 발송되었습니다. 메일을 확인해주세요.');
+    } catch (error) {
+      toast.error(error || '인증코드 발송 실패');
+    }
+  };
+  const handleVerifyCode = async () => {
+    try {
+      await memberService.verifyEmailCode(userInfo.email, userInfo.code);
+      setUserInfo((prev) => ({ ...prev, code: '' }));
+      setEmailVerified(true);
+      setEmailAuthStarted(false);
+      setEmailChange(false);
+    } catch (error) {
+      setEmailVerified(false);
+      toast.error(error.message || '인증코드가 올바르지 않습니다.');
+    }
+  };
+  const handleTimeout = () => {
+    setEmailAuthStarted(false);
+    setUserInfo((prev) => ({ ...prev, code: '' }));
   };
 
   return (
@@ -358,15 +401,68 @@ const Mypage = () => {
             )}
             <InputGroup>
               <InputName>이메일</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="email"
-                name="email"
-                value={userInfo.email || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
-              />
+              <div style={{ display: 'flex' }}>
+                <InputText
+                  style={Input.InputGray}
+                  type="email"
+                  name="email"
+                  value={userInfo.email || ''}
+                  onChange={handleInputChange}
+                  readOnly={!doUpdate || !emailChange}
+                />
+                {doUpdate &&
+                  (emailChange ? (
+                    <>
+                      {loading ? (
+                        <EmailChangeButton type="button" disabled={!isPostcodeReady}>
+                          전송 중...
+                        </EmailChangeButton>
+                      ) : (
+                        <EmailChangeButton type="button" onClick={handleEmailAuth} disabled={!isPostcodeReady}>
+                          인증
+                        </EmailChangeButton>
+                      )}
+                    </>
+                  ) : (
+                    <EmailChangeButton
+                      type="button"
+                      onClick={() => {
+                        setEmailChange(true);
+                        setEmailVerified(false);
+                      }}
+                    >
+                      변경
+                    </EmailChangeButton>
+                  ))}
+              </div>
             </InputGroup>
+            {!doUpdate ||
+              (!emailVerified && emailAuthStarted && (
+                <InputGroup>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '400px' }}>
+                    <InputText
+                      style={Input.InputGray}
+                      name="code"
+                      type="text"
+                      placeholder="인증코드 입력"
+                      value={userInfo.code}
+                      onChange={(e) => handleInputChange(e, 1)}
+                    />
+                    <EmailChangeButton type="button" onClick={handleVerifyCode} disabled={!isPostcodeReady}>
+                      확인
+                    </EmailChangeButton>
+                  </div>
+                  {emailAuthStarted ? (
+                    <Timer seconds={300} isActive={emailAuthStarted} onTimeout={handleTimeout} colorChangeSec={30} />
+                  ) : (
+                    <div style={{ color: 'red' }}>시간이 초과되었습니다</div>
+                  )}
+                </InputGroup>
+              ))}
+            {doUpdate && emailVerified && emailChange && (
+              <span style={{ color: '#388e3c', fontWeight: 'bold', marginLeft: 8 }}>인증 완료</span>
+            )}
+
             <InputGroup>
               <InputName>핸드폰 번호</InputName>
               <InputText
@@ -676,7 +772,12 @@ const Mypage = () => {
                 완료
               </button>
             ) : (
-              <button style={btn.buttonWbShadow} onClick={() => setDoUpdate(true)}>
+              <button
+                style={btn.buttonWbShadow}
+                onClick={() => {
+                  setDoUpdate(true), setEmailAuthStarted(false);
+                }}
+              >
                 수정
               </button>
             )}
@@ -715,6 +816,8 @@ const InputText = styled.input`
 const Box = styled.div``;
 
 const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
   height: 90px;
 `;
 
@@ -790,6 +893,20 @@ const Btn = styled.button`
   background-color: ${({ theme }) => theme.colors.primary};
   color: ${({ theme }) => theme.colors.black};
   border: none;
+`;
+
+const EmailChangeButton = styled.button`
+  margin-left: 8px;
+  height: 35px;
+  border: 1px solid #ffeb8c;
+  text-align: center;
+  position: relative;
+  background: #fffbe6;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `;
 
 export default Mypage;

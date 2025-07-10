@@ -40,7 +40,7 @@ public class HealthServiceImpl implements HealthService {
     public Response findByUserId() {
         String userId = jwtTokenProvider.getUserIdFromToken();
         Health health = healthRepository.findByMember_UserId(userId)
-                .orElseThrow(()-> new EntityNotFoundException("신체정보를 못 가져왔습니다."));
+                .orElseThrow(()-> new EntityNotFoundException("등록 되어있는 정보가 없습니다."));
         return Response.toDto(health);
     }
 

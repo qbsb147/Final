@@ -159,11 +159,25 @@ const memberService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
-  google: async () => {
+
+  sendEmailCode: async (email) => {
     try {
-      await axiosInstance.google(API_);
+      await axiosInstance.post(API_ENDPOINTS.MEMBER.SEND_CODE, {
+        email: email,
+      });
     } catch (error) {
-      ('http://localhost:8080/oauth2/authorization/google');
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+
+  verifyEmailCode: async (email, code) => {
+    try {
+      await axiosInstance.post(API_ENDPOINTS.MEMBER.VERIFY_CODE, {
+        email: email,
+        code: code,
+      });
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 };

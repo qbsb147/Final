@@ -2,6 +2,7 @@ package com.minePing.BackEnd.controller;
 
 import com.minePing.BackEnd.dto.AccessTokenDto;
 import com.minePing.BackEnd.dto.KakaoProfileDto;
+import com.minePing.BackEnd.dto.MailVerificationRequestDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
 import com.minePing.BackEnd.service.KakaoService;
@@ -109,6 +110,21 @@ public class MemberController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("등급 변경 중 오류가 발생했습니다.");
+        }
+    }
+
+    @PostMapping( "send_code")
+    public ResponseEntity<String> sendCode(@RequestBody MailVerificationRequestDto.Send request) {
+        memberService.sendVerificationCode(request.getEmail());
+        return ResponseEntity.ok("인증 코드가 발송되었습니다.");
+    }
+
+    @PostMapping("verify_code")
+    public ResponseEntity<String> verifyCode(@RequestBody MailVerificationRequestDto.Verify request) {
+        if (memberService.verifyCode(request.getEmail(), request.getCode())){
+            return ResponseEntity.ok("인증이 완료되었습니다.");
+        }else{
+            return ResponseEntity.badRequest().body("인증코드가 올바르지 않거나 만료되었습니다.");
         }
     }
 }

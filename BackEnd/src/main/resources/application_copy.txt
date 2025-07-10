@@ -15,6 +15,33 @@ jwt:
 business:
   api-key: EvXNxqKNWH0I%2BH0glM3%2FxHbjHG0ctJs6WB6HVfEqL5wazLbpaeMFvx8sCsEZLhxr7iQqtwnW57i%2FprOP9BnfXw%3D%3D
 
+# AWS S3 설정
+aws:
+  access-key-id: 키
+  secret-access-key: 시크릿키
+  s3:
+    bucket-name: myping-images
+    region: ap-northeast-2
+  cloudfront:
+    domain: dvr2ybzswd4qy.cloudfront.net
+---
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 구글 클라우드 클라이언트 아이디
+            client-secret: 구글 클라우드 클라이언트 시크릿키
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, email, profile
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
 ---
 spring:
   config:

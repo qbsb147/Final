@@ -47,7 +47,7 @@ const BodyInfo = () => {
         setValue('diet_type', response.diet_type);
         setValue('health_condition', response.health_condition);
       } catch (error) {
-        toast.error(`${error}` || '등록된 신체정보가 없습니다.');
+        toast.info(`${error}` || '등록된 신체정보가 없습니다.');
       }
     })();
   }, []);

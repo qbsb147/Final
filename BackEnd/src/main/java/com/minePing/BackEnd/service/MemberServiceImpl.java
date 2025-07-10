@@ -16,6 +16,7 @@ import com.minePing.BackEnd.entity.*;
 
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import com.minePing.BackEnd.enums.SocialType;
 
 import com.minePing.BackEnd.exception.CompanyNotFoundException;
@@ -26,10 +27,15 @@ import com.minePing.BackEnd.repository.CompanyRepository;
 import com.minePing.BackEnd.repository.DepartmentRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +52,9 @@ public class MemberServiceImpl implements MemberService {
     private final DepartmentRepository departmentRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final TempOAuthUserStore tempOAuthUserStore;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final JavaMailSender mailSender;
+    private static final long EXPIRE_TIME = 5*60;
 
     @Override
     public MemberDto.init init() {
@@ -224,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
-        Member member = memberRepository.findById(userNo).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByUserNoAndStatus(userNo, CommonEnums.Status.Y).orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         member.updateRole(updateRoleDto.getRole());
     }
 
@@ -396,6 +405,7 @@ public class MemberServiceImpl implements MemberService {
 
         Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(UserNotFoundException::new);
+
         for (Worcation worcation : member.getWorcations()) {
             worcation.changeMember(null);
         }
@@ -406,5 +416,30 @@ public class MemberServiceImpl implements MemberService {
         }
         member.getWorcationPartners().clear();
         memberRepository.delete(member);
+    }
+
+    @Override
+    public void sendVerificationCode(String email) {
+        String code = String.format("%06d", new Random().nextInt(999999));
+
+        String key = "verify:"+email;
+        redisTemplate.opsForValue().set(key, code, EXPIRE_TIME, TimeUnit.SECONDS);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("이메일 인증코드");
+        message.setText("인증코드 : "+code);
+        mailSender.send(message);
+    }
+
+    @Override
+    public boolean verifyCode(String email, String inputCode){
+        String Key = "verify:"+email;
+        String saveCode = redisTemplate.opsForValue().get(Key);
+        if (saveCode == null) {
+            throw new NoSuchElementException("인증 정보가 만료되었습니다.");
+        }
+
+        return inputCode.equals(saveCode);
     }
 }

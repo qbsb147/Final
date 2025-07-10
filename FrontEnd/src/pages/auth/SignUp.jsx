@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import loginBg from '../../assets/loginBgImg.jpg';
 import logo from '../../assets/LoginLogo.png';
@@ -24,6 +24,7 @@ const SignUp = () => {
   });
   const [formData2, setFormData2] = useState({});
   const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
+  const [emailVerified, setEmailVerified] = useState(false);
   const navigate = useNavigate();
   const { control } = useForm();
   const handleNext = async () => {
@@ -101,6 +102,8 @@ const SignUp = () => {
               setSelectedRole={setSelectedRole}
               setFormData2={setFormData2}
               control={control}
+              emailVerified={emailVerified}
+              setEmailVerified={setEmailVerified}
             />
           )}
 
@@ -116,11 +119,19 @@ const SignUp = () => {
 
           {/* 버튼 영역 */}
           <BtnFlex>
-            {/* 타입 A, 1단계 → 취소 & 다음 */}
             {formStep === 1 && (
               <>
                 <Btn onClick={() => window.history.back()}>취소</Btn>
-                <Btn onClick={selectedRole === 'WORCATION' ? handleSubmit : handleNext}>
+                <Btn
+                  onClick={(e) => {
+                    if (!emailVerified) {
+                      toast.error('이메일 인증을 완료해주세요.');
+                      return;
+                    }
+                    if (selectedRole === 'WORCATION') handleSubmit(e);
+                    else handleNext(e);
+                  }}
+                >
                   {selectedRole === 'WORCATION' ? '완료' : '다음'}
                 </Btn>
               </>
