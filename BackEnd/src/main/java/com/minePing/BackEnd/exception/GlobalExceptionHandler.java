@@ -77,24 +77,30 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.of(ErrorCode.INVALID_USER_INPUT, ex.getMessage(), request.getRequestURI());
         return ResponseEntity.badRequest().body(error);
     }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        log.error("데이터 무결성 예외: {}", ex.getMessage(), ex);
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex,
-                                                                      HttpServletRequest request) {
-        log.error("데이터 무결성 위반: {}", ex.getMessage(), ex);
+        Throwable cause = ex.getCause();
+        if (cause instanceof ConstraintViolationException cvex) {
+            log.error("데이터 무결성 위반: {}", cvex.getMessage(), cvex);
 
-        String constraintName = ex.getConstraintName();
-        if(constraintName != null && constraintHandlers.containsKey(constraintName)) {
-            ErrorResponse error = ErrorResponse.of(
-                    HttpStatus.CONFLICT.value(),
-                    constraintHandlers.get(constraintName),
-                    request.getRequestURI()
-            );
+            String constraintName = cvex.getConstraintName();
+            if(constraintName != null && constraintHandlers.containsKey(constraintName)) {
+                ErrorResponse error = ErrorResponse.of(
+                        HttpStatus.CONFLICT.value(),
+                        constraintHandlers.get(constraintName),
+                        request.getRequestURI()
+                );
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+
+            }
+            ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-
         }
 
-        ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, request.getRequestURI());
+        // ConstraintViolationException이 아닌 다른 무결성 예외 처리
+        ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
@@ -107,12 +113,6 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = ErrorResponse.of(ErrorCode.INVALID_USER_INPUT, errorMessage, request.getRequestURI());
         return ResponseEntity.badRequest().body(error);
-    }
-
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
-        log.error("데이터 무결성 예외: {}", ex.getMessage(), ex);
-        ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(IllegalStateException.class)

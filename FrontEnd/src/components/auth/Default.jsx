@@ -4,11 +4,17 @@ import styled from 'styled-components';
 import { formatPhoneNumber } from '../../hooks/useAuth';
 import memberService from '../../api/members';
 import { toast } from 'react-toastify';
+import Timer from '../common/Timer';
+import { useAsyncError } from 'react-router-dom';
 
-const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 }) => {
+const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, emailVerified, setEmailVerified }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
   const [socialInfo, setSocialInfo] = useState({});
   const [isSocial, setIsSocial] = useState(false);
+  const [emailAuthStarted, setEmailAuthStarted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // emailVerified 상태는 props로 관리
+
   const fetchInitData = async () => {
     try {
       const initData = await memberService.init();
@@ -70,6 +76,35 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
         setFormData1((prev) => ({ ...prev, address: addr }));
       },
     }).open();
+  };
+
+  const handleEmailAuth = async () => {
+    try {
+      setLoading(true);
+      setEmailVerified(false);
+      await memberService.sendEmailCode(formData1.email);
+      setEmailAuthStarted(true);
+      setLoading(false);
+      toast.success('인증 코드가 발송되었습니다. 메일을 확인해주세요.');
+    } catch (error) {
+      toast.error(error || '인증코드 발송 실패');
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    try {
+      await memberService.verifyEmailCode(formData1.email, formData1.code);
+      setEmailVerified(true);
+      setEmailAuthStarted(false);
+    } catch (error) {
+      setEmailVerified(false);
+      toast.error(error.message || '인증코드가 올바르지 않습니다.');
+    }
+  };
+  const handleTimeout = () => {
+    toast.warn('시간이 초과되었습니다');
+    setEmailAuthStarted(false);
+    setFormData1((prev) => ({ ...prev, code: '' }));
   };
 
   return (
@@ -166,9 +201,9 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
               variant="yellow"
               onClick={handleAddressSearch}
             />
-            <AddressSearchButton type="button" onClick={handleAddressSearch} disabled={!isPostcodeReady}>
+            <SearchButton type="button" onClick={handleAddressSearch} disabled={!isPostcodeReady}>
               검색
-            </AddressSearchButton>
+            </SearchButton>
           </div>
         </div>
         <div style={{ marginBottom: '16px' }}>
@@ -181,17 +216,48 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2 })
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="email">이메일</Label>
-          <InputBox
-            name="email"
-            type="text"
-            placeholder="이메일"
-            value={formData1.email || ''}
-            onChange={(e) => handleChange(e, 1)}
-            variant="yellow"
-          />
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '400px' }}>
+            <InputBox
+              name="email"
+              type="text"
+              placeholder="이메일"
+              value={formData1.email || ''}
+              onChange={(e) => handleChange(e, 1)}
+              variant="yellow"
+            />
+            {loading ? (
+              <SearchButton type="button" disabled={!isPostcodeReady}>
+                전송 중...
+              </SearchButton>
+            ) : (
+              <SearchButton type="button" onClick={handleEmailAuth} disabled={!isPostcodeReady}>
+                인증
+              </SearchButton>
+            )}
+          </div>
         </div>
+        {!emailVerified && emailAuthStarted && (
+          <>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '400px' }}>
+              <InputBox
+                name="code"
+                type="text"
+                placeholder="인증코드 입력"
+                value={formData1.code}
+                onChange={(e) => handleChange(e, 1)}
+                variant="yellow"
+              />
+              <SearchButton type="button" onClick={handleVerifyCode} disabled={!isPostcodeReady}>
+                확인
+              </SearchButton>
+            </div>
+            <Timer seconds={300} isActive={emailAuthStarted} onTimeout={handleTimeout} colorChangeSec={30} />
+          </>
+        )}
+        {emailVerified && <span style={{ color: '#388e3c', fontWeight: 'bold', marginLeft: 8 }}>인증 완료</span>}
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="phone">휴대폰 번호</Label>
+
           <InputBox
             name="phone"
             type="text"
@@ -334,7 +400,7 @@ const Label = styled.label`
   margin-left: ${({ theme }) => theme.spacing.s1};
 `;
 
-const AddressSearchButton = styled.button`
+const SearchButton = styled.button`
   height: 52.41px;
   min-width: 80px;
   padding: 0 12px;
