@@ -1,62 +1,38 @@
 // store/useWorcationStore.js
 import { create } from 'zustand';
 
-const useWorcationStore = create((set, get) => ({
+const initialState = {
   // 1. 신청 정보
   application: {
-    companyNo: null,
+    companyNo: '',
     businessNo: '',
     businessName: '',
     ownerName: '',
     tel: '',
   },
-  setApplication: (data) => set((state) => ({ application: { ...state.application, ...data } })),
-
   // 2. 기본 정보
   info: {
     worcationName: '',
     category: '',
     intro: '',
   },
-  setInfo: (data) => set((state) => ({ info: { ...state.info, ...data } })),
-
   // 3. 설명/소개
   description: {
     detailIntro: '',
   },
-  setDescription: (data) => set((state) => ({ description: { ...state.description, ...data } })),
-
   // 4. 사진
   photos: {
-    thumbnail: null,
-    detailImages: [],
+    officePhotos: [],
+    stayPhotos: [],
   },
-  setPhotos: (data) => set((state) => ({ photos: { ...state.photos, ...data } })),
-
   // 5. 편의시설
   amenities: [],
-  setAmenities: (data) => set(() => ({ amenities: data })),
-
   // 6. 위치
-  // location: {
-  //   address: '',
-  //   lat: null,
-  //   lng: null,
-  // },
-  // setLocation: (data) => set((state) => ({ location: { ...state.location, ...data } })),
-
   location: {
     address: '',
     locationDescription: '',
   },
-  setLocation: (newLocation) => set({ location: newLocation }),
   // 7. 정책
-  // policy: {
-  //   refundPolicy: '',
-  //   notice: '',
-  // },
-  // setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
-
   policy: {
     refundPolicy: '',
     notice: '',
@@ -74,8 +50,6 @@ const useWorcationStore = create((set, get) => ({
     officeEndMinute: '00',
     policyGuide: '',
   },
-  setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
-
   // 8. 특징
   feature: {
     locationType: '',
@@ -85,17 +59,47 @@ const useWorcationStore = create((set, get) => ({
     activities: [],
     accommodationType: '',
   },
+};
+
+const useWorcationStore = create((set, get) => ({
+  ...initialState,
+
+  // 각 섹션별 setter
+  setApplication: (data) => set((state) => ({ application: { ...state.application, ...data } })),
+  setInfo: (data) => set((state) => ({ info: { ...state.info, ...data } })),
+  setDescription: (data) => set((state) => ({ description: { ...state.description, ...data } })),
+  setPhotos: (data) => set((state) => ({ photos: { ...state.photos, ...data } })),
+  setAmenities: (data) => set(() => ({ amenities: data })),
+  setLocation: (data) => set((state) => ({ location: { ...state.location, ...data } })),
+  setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
   setFeature: (data) => set((state) => ({ feature: { ...state.feature, ...data } })),
 
-  // 유효성 검사
+  // 전체 초기화
+  resetAll: () => set(initialState),
+
+  // 유효성 검사 예시
   isNonNull: () => {
     const { application, info, location } = get();
-    return application.companyNo && info.worcationName && info.category && location.address;
+    return !!application.companyNo && !!info.worcationName && !!info.category && !!location.address;
   },
-
   isValidate: () => {
     const { info } = get();
     return info.worcationName.length >= 2; // 예시
+  },
+
+  // 모든 데이터 한 번에 반환
+  getAll: () => {
+    const state = get();
+    return {
+      application: state.application,
+      info: state.info,
+      description: state.description,
+      photos: state.photos,
+      amenities: state.amenities,
+      location: state.location,
+      policy: state.policy,
+      feature: state.feature,
+    };
   },
 }));
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Menu from '../../../components/worcation/Register/Menu.jsx';
 import ApplicationForm from '../../../components/worcation/Register/Form/ApplicationForm.jsx';
@@ -12,165 +12,103 @@ import FeatureForm from '../../../components/worcation/Register/Form/FeatureForm
 import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
-import useBusinessStore from '../../../store/useBusinessStore.js';
-import useWorcationStore from '../../../store/useWorcationStore';
-
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { worcationService } from '../../../api/worcations.js';
+import useWorcationStore from '../../../store/useWorcationStore.js';
+import api from '../../../api/axios.js';
+// import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
-  const isValidate = useWorcationStore((state) => state.isValidate);
-  const isNonNull = useWorcationStore((state) => state.isNonNull);
-  const worcationData = useWorcationStore((state) => state);
-  const { worcation_no } = useParams();
-  const navigate = useNavigate();
+  const applicationFormRef = useRef();
+  const infoFormRef = useRef();
+  const descriptionFormRef = useRef();
+  const photoFormRef = useRef();
+  const amenitiesFormRef = useRef();
+  const locationFormRef = useRef();
+  const policyFormRef = useRef();
+  const featureFormRef = useRef();
+  const getAll = useWorcationStore((state) => state.getAll);
+  // const isNonNull = useWorcationStore((state) => state.isNonNull);
+  // const isValidate = useWorcationStore((state) => state.isValidate);
+  // const navigate = useNavigate();
 
-  const handleSample = async () => {
-    if (worcation_no) {
-      try {
-        const res = await worcationService.getDetail(worcation_no); //바로 await
-        const data = res.data;
-
-        useWorcationStore.setApplication(data.application);
-        useWorcationStore.setInfo(data.info);
-        useWorcationStore.setDescription(data.description);
-        useWorcationStore.setPhotos(data.photos);
-        useWorcationStore.setAmenities(data.amenities);
-        useWorcationStore.setLocation(data.location);
-        useWorcationStore.setPolicy(data.policy);
-        useWorcationStore.setFeature(data.feature);
-      } catch (err) {
-        console.error('데이터 불러오기 실패:', err);
-        Swal.fire('불러오기 실패', '다시 시도해주세요.', 'error');
-      }
+  const renderForm = () => {
+    switch (selectedMenu) {
+      case 'Application':
+        return <ApplicationForm ref={applicationFormRef} />;
+      case 'Info':
+        return <InfoForm ref={infoFormRef} />;
+      case 'Description':
+        return <DescriptionForm ref={descriptionFormRef} />;
+      case 'Photo':
+        return <PhotoForm ref={photoFormRef} />;
+      case 'Amenities':
+        return <AmenitiesForm ref={amenitiesFormRef} />;
+      case 'Location':
+        return <LocationForm ref={locationFormRef} />;
+      case 'Policy':
+        return <PolicyForm ref={policyFormRef} />;
+      case 'Feature':
+        return <FeatureForm ref={featureFormRef} />;
+      default:
+        return <ApplicationForm ref={applicationFormRef} />;
     }
   };
 
-  useEffect(() => {
-    handleSample(); // 처음 들어올 때 id가 있으면 자동 로딩
-  }, [worcation_no]);
-
-  const toRequestDto = () => {
-    const { application, info, description, photos, amenities, location, policy, feature } =
-      useWorcationStore.getState();
-
-    return {
-      worcation_name: info.worcationName,
-      worcation_category: info.category,
-      main_change_photo: photos.thumbnail,
-      worcation_thema: info.intro,
-      max_people: parseInt(info.maxPeople),
-      partner_price: info.partnerPrice,
-      non_partner_price: parseInt(info.nonPartnerPrice),
-      worcation_address: location.address,
-
-      member_id: application.companyNo,
-      licensee: application.ownerName,
-      business_id: application.businessNo,
-      worcation_tel: application.tel,
-      charge_amount: 0,
-      content: description.detailIntro,
-      navigate: location.locationDescription,
-      available_time: policy.policyGuide,
-      refund_policy: policy.refundPolicy,
-      open_date: null,
-
-      location_type: feature.locationType,
-      dominant_color: feature.dominantColor,
-      space_mood: feature.spaceMood,
-      best_for: feature.bestFor,
-      activities: feature.activities.join(','),
-      accommodation_type: feature.accommodationType,
-
-      amenities: amenities,
-      photo_urls: photos.detailImages,
-    };
-  };
-
-  // const handleSave = () =>
-  //   Swal.fire({
-  //     title: '저장하시겠습니까?',
-  //     showCancelButton: true,
-  //     confirmButtonText: '저장',
-  //     cancelButtonText: '취소',
-  //     buttonsStyling: true,
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       console.log('저장');
-  //     }
-  //   });
   const handleSave = async () => {
-    const result = await Swal.fire({
+    // if (!isValidate()) {
+    //   alert('입력값을 모두 올바르게 입력해주세요.');
+    //   return;
+    // }
+    const allValues = getAll();
+    console.log(allValues); // 모든 폼 데이터가 한 객체로 출력됨
+
+    const tmp = await Swal.fire({
       title: '임시 저장하시겠습니까?',
       showCancelButton: true,
       confirmButtonText: '저장',
       cancelButtonText: '취소',
     });
-
-    if (result.isConfirmed) {
+    if (tmp.isConfirmed) {
       try {
-        const dto = toRequestDto();
-        if (worcation_no) {
-          await worcationService.update(worcation_no, dto);
-        } else {
-          await worcationService.save(dto);
-        }
+        //서버 전송 로직
+        await api.saveTmpWorcation(allValues);
         Swal.fire('임시 저장되었습니다.', '', 'success');
-        navigate('/worcation/list');
+        // navigate('/worcation/list');
       } catch (error) {
-        console.error('임시 저장 실패:', error);
-        Swal.fire('임시 저장 실패', '다시 시도해주세요.', 'error');
+        console.log(error);
+        Swal.fire('저장에 실패하였습니다.', '', 'error');
+        return;
       }
+    } else {
+      return;
     }
   };
-  const isBusinessValidated = !!useBusinessStore((state) => state.formData.businessId);
-
   const handleSubmit = async () => {
-    const result = await Swal.fire({
+    // if (!isValidate()) {
+    //   alert('입력값을 모두 올바르게 입력해주세요.');
+    //   return;
+    // }
+    const allValues = getAll();
+
+    const res = await Swal.fire({
       title: '등록하시겠습니까?',
       showCancelButton: true,
-      confirmButtonText: '등록',
+      confirmButtonText: '저장',
       cancelButtonText: '취소',
     });
-
-    if (result.isConfirmed) {
+    if (res.isConfirmed) {
       try {
-        const dto = toRequestDto();
-        if (worcation_no) {
-          await worcationService.update(worcation_no, dto);
-        } else {
-          await worcationService.save(dto);
-        }
-        Swal.fire('등록 완료!', '', 'success');
-        navigate('/worcation/list');
+        //서버 전송 로직
+        await api.saveWorcation(allValues);
+        Swal.fire('등록되었습니다.', '', 'success');
+        // navigate('/worcation/list');
       } catch (error) {
-        console.error('등록 실패:', error);
-        Swal.fire('등록 실패', '다시 시도해주세요.', 'error');
+        console.log(error);
+        Swal.fire('등록에 실패하였습니다.', '', 'error');
+        return;
       }
-    }
-  };
-  const renderForm = () => {
-    switch (selectedMenu) {
-      case 'Application':
-        return <ApplicationForm />;
-      case 'Info':
-        return <InfoForm />;
-      case 'Description':
-        return <DescriptionForm />;
-      case 'Photo':
-        return <PhotoForm />;
-      case 'Amenities':
-        return <AmenitiesForm />;
-      case 'Location':
-        return <LocationForm />;
-      case 'Policy':
-        return <PolicyForm />;
-      case 'Feature':
-        return <FeatureForm />;
-      default:
-        return <ApplicationForm />;
+    } else {
+      return;
     }
   };
 
@@ -182,38 +120,18 @@ const Register = () => {
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
           <ContentContainer>
             <BtnGroup>
-              <ActionButton type="button" onClick={handleSample}>
-                미리 보기
-              </ActionButton>
+              <ActionButton type="button">미리 보기</ActionButton>
             </BtnGroup>
             <RenderForm>{renderForm()}</RenderForm>
           </ContentContainer>
         </MenuBar>
         <BtnGroup>
-          {isValidate ? (
-            <>
-              <ActionButton type="button" onClick={handleSave}>
-                임시 저장
-              </ActionButton>
-            </>
-          ) : (
-            <ActionButton type="button" disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
-              임시 저장
-            </ActionButton>
-          )}
-          {isNonNull ? (
-            <>
-              <ActionButton disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
-                등록
-              </ActionButton>
-            </>
-          ) : (
-            <>
-              <ActionButton type="button" onClick={handleSubmit} style={{ opacity: 0.3 }}>
-                등록
-              </ActionButton>
-            </>
-          )}
+          <ActionButton type="button" onClick={handleSave}>
+            임시 저장
+          </ActionButton>
+          <ActionButton type="button" onClick={handleSubmit}>
+            등록
+          </ActionButton>
         </BtnGroup>
       </RegisterForm>
     </RegisterContainer>

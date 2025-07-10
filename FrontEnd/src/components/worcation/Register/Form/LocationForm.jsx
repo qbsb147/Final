@@ -1,44 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../../styles/Input.styles';
 import { ButtonBorder } from '../../../../styles/Button.styles.js';
 import CustomTextArea from '../../../common/TextArea';
 import useWorcationStore from '../../../../store/useWorcationStore';
 
-const Form = () => {
-  // const [address, setAddress] = useState('');
-  // const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-  //   script.async = true;
-  //   script.onload = () => setIsPostcodeReady(true);
-  //   script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
-  //   document.body.appendChild(script);
-  //   return () => {
-  //     if (script.parentNode) {
-  //       script.parentNode.removeChild(script);
-  //     }
-  //   };
-  // }, []);
-
-  // const handleSearch = () => {
-  //   if (!isPostcodeReady) {
-  //     alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
-  //     return;
-  //   }
-  //   new window.daum.Postcode({
-  //     oncomplete: function (data) {
-  //       const addr = data.address;
-  //       setAddress(addr);
-  //     },
-  //   }).open();
-  // };
+const LocationForm = forwardRef((props, ref) => {
   const location = useWorcationStore((state) => state.location);
   const setLocation = useWorcationStore((state) => state.setLocation);
-
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -53,6 +25,7 @@ const Form = () => {
       }
     };
   }, []);
+
   const handleSearch = () => {
     if (!isPostcodeReady) {
       alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
@@ -77,13 +50,7 @@ const Form = () => {
           <TR>
             <TH>주소</TH>
             <TD>
-              <InputLightGray
-                type="text"
-                // value={address}
-                value={location.address || ''}
-                readOnly
-                placeholder="주소"
-              />
+              <InputLightGray type="text" value={location.address || ''} readOnly placeholder="주소" />
               <ButtonBorder type="button" onClick={handleSearch} disabled={!isPostcodeReady}>
                 주소 검색
               </ButtonBorder>
@@ -104,9 +71,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default LocationForm;
 
 const Body = styled.div`
   gap: 40px;

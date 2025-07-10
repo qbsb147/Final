@@ -1,19 +1,14 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import CustomSelect from '../../../common/Select';
 import Checkbox from '../../../common/Checkbox';
 import useWorcationStore from '../../../../store/useWorcationStore';
 
-const Form = () => {
-  // const [locationType, setLocationType] = useState('');
-  // const [dominantColor, setDominantColor] = useState('');
-  // const [spaceMood, setSpaceMood] = useState('');
-  // const [bestFor, setBestFor] = useState('');
-  // const [activities, setActivities] = useState([]);
-  // const [accommodationType, setAccommodationType] = useState('');
-
+const FeatureForm = forwardRef((props, ref) => {
   const feature = useWorcationStore((state) => state.feature);
   const setFeature = useWorcationStore((state) => state.setFeature);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
   const locationTypeOptions = [
     { value: 'mountain', label: '산' },
@@ -63,10 +58,6 @@ const Form = () => {
     { value: 'shared_space', label: '공유 공간 포함 숙소' },
   ];
 
-  // const handleActivitiesChange = (value) => {
-  //   setActivities((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
-  // };
-
   const handleActivitiesChange = (value) => {
     const updated = feature.activities.includes(value)
       ? feature.activities.filter((item) => item !== value)
@@ -81,11 +72,6 @@ const Form = () => {
           <TR>
             <TH>위치 유형</TH>
             <TD>
-              {/* <CustomSelect
-                options={locationTypeOptions}
-                value={locationType}
-                onChange={(e) => setLocationType(e.target.value)}
-              /> */}
               <CustomSelect
                 options={locationTypeOptions}
                 value={feature.locationType}
@@ -96,11 +82,6 @@ const Form = () => {
           <TR>
             <TH>전반적 색감</TH>
             <TD>
-              {/* <CustomSelect
-                options={dominantColorOptions}
-                value={dominantColor}
-                onChange={(e) => setDominantColor(e.target.value)}
-              /> */}
               <CustomSelect
                 options={dominantColorOptions}
                 value={feature.dominantColor}
@@ -111,11 +92,6 @@ const Form = () => {
           <TR>
             <TH>공간 분위기</TH>
             <TD>
-              {/* <CustomSelect
-                options={spaceMoodOptions}
-                value={spaceMood}
-                onChange={(e) => setSpaceMood(e.target.value)}
-              /> */}
               <CustomSelect
                 options={spaceMoodOptions}
                 value={feature.spaceMood}
@@ -126,7 +102,6 @@ const Form = () => {
           <TR>
             <TH>추천 목적</TH>
             <TD>
-              {/* <CustomSelect options={bestForOptions} value={bestFor} onChange={(e) => setBestFor(e.target.value)} /> */}
               <CustomSelect
                 options={bestForOptions}
                 value={feature.bestFor}
@@ -137,17 +112,6 @@ const Form = () => {
           <TR>
             <TH>여가 활동</TH>
             <TD>
-              {/* <AmenitiesContainer>
-                {activitiesOptions.map((activity) => (
-                  <Checkbox
-                    key={activity.value}
-                    id={activity.value}
-                    label={activity.label}
-                    checked={activities.includes(activity.value)}
-                    onChange={() => handleActivitiesChange(activity.value)}
-                  />
-                ))}
-              </AmenitiesContainer> */}
               <AmenitiesContainer>
                 {activitiesOptions.map((activity) => (
                   <Checkbox
@@ -164,11 +128,6 @@ const Form = () => {
           <TR>
             <TH>숙소 형태</TH>
             <TD>
-              {/* <CustomSelect
-                options={accommodationTypeOptions}
-                value={accommodationType}
-                onChange={(e) => setAccommodationType(e.target.value)}
-              /> */}
               <CustomSelect
                 options={accommodationTypeOptions}
                 value={feature.accommodationType}
@@ -180,9 +139,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default FeatureForm;
 
 const Body = styled.div`
   gap: 40px;

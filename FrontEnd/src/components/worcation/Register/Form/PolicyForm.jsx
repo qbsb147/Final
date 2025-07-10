@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea.jsx';
 import useWorcationStore from '../../../../store/useWorcationStore';
 
-const Form = () => {
+const PolicyForm = forwardRef((props, ref) => {
   // const [checkinPeriod, setCheckinPeriod] = useState('AM');
   // const [checkinHour, setCheckinHour] = useState('9');
   // const [checkinMinute, setCheckinMinute] = useState('00');
@@ -20,6 +20,8 @@ const Form = () => {
 
   const policy = useWorcationStore((state) => state.policy);
   const setPolicy = useWorcationStore((state) => state.setPolicy);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
   const handleChange = (field) => (e) => {
     setPolicy({ [field]: e.target.value });
@@ -170,9 +172,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default PolicyForm;
 
 const Body = styled.div`
   gap: ${({ theme }) => theme.spacing.s8};

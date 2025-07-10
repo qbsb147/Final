@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../../styles/Input.styles';
 import RadioButton from '../../../common/RadioButton.jsx';
@@ -8,29 +8,50 @@ import { handleBusinessValidationResult, useValidation } from '../../../../hooks
 import { Controller } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
 import { businessApi } from '../../../../api/businessApi.js';
+import useWorcationStore from '../../../../store/useWorcationStore';
 // import { toast } from 'react-toastify';
 
-const Form = () => {
+const ApplicationForm = forwardRef((props, ref) => {
   const [selected, setSelected] = useState('Office');
-  const { register, control, errors, isSubmitting, getValues } = useValidation();
+  const application = useWorcationStore((state) => state.application);
+  const setApplication = useWorcationStore((state) => state.setApplication);
+  const { register, control, getValues, errors, isSubmitting, isValid } = useValidation(application);
+
+  useImperativeHandle(ref, () => ({
+    getValues,
+    isValid,
+  }));
+
+  // 폼 언마운트 시 zustand에 저장
+  useEffect(() => {
+    return () => {
+      setApplication(getValues());
+    };
+  }, []);
 
   const checkBusiness = async () => {
-    if (Object.keys(errors).length > 0) {
+    const allValues = getValues();
+    const { business_id, licensee, open_date } = allValues;
+
+    if (!business_id || !licensee || !open_date || Object.keys(errors).length > 0) {
       alert('입력값을 모두 올바르게 입력해주세요.');
       return;
     }
-    const formData = getValues();
-    const { business_id, licensee, open_date } = formData;
     // 실제 데이터가 없으므로 무조건 통과처리 --------------
     // try {
-      const data = await businessApi({ business_id, licensee, open_date });
-      if (handleBusinessValidationResult(data)) return;
+    const data = await businessApi({ business_id, licensee, open_date });
+    if (handleBusinessValidationResult(data)) return;
     // } catch (err) {
-      // const msg = err.response?.data?.message || err.message || err;
-      // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-      // return;
+    // const msg = err.response?.data?.message || err.message || err;
+    // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+    // return;
     // }
     // 실제 데이터가 없으므로 무조건 통과처리 --------------
+  };
+
+  const handleTypeChange = (value) => {
+    setSelected(value);
+    setApplication({ companyType: value });
   };
 
   const radioOptions = [
@@ -47,20 +68,34 @@ const Form = () => {
           <TR>
             <TH>업체 유형</TH>
             <TD>
-              <RadioButton options={radioOptions} selected={selected} onChange={setSelected} />
+              <RadioButton options={radioOptions} selected={selected} onChange={handleTypeChange} />
             </TD>
           </TR>
           <TR>
             <TH>사업자명</TH>
             <TD>
-              <Input id="licensee" type="text" {...register('licensee')} $error={errors.licensee} />
+              <Input
+                id="licensee"
+                type="text"
+                {...register('licensee', {
+                  onChange: (e) => setApplication({ licensee: e.target.value }),
+                })}
+                $error={errors.licensee}
+              />
               {errors.licensee && <ErrorMessage>{errors.licensee.message}</ErrorMessage>}
             </TD>
           </TR>
           <TR>
             <TH>상호명</TH>
             <TD>
-              <Input id="worcation_name" type="text" {...register('worcation_name')} $error={errors.worcation_name} />
+              <Input
+                id="worcation_name"
+                type="text"
+                {...register('worcation_name', {
+                  onChange: (e) => setApplication({ worcation_name: e.target.value }),
+                })}
+                $error={errors.worcation_name}
+              />
               {errors.worcation_name && <ErrorMessage>{errors.worcation_name.message}</ErrorMessage>}
             </TD>
           </TR>
@@ -73,7 +108,10 @@ const Form = () => {
                 render={({ field }) => (
                   <CustomDatePicker
                     selected={field.value || null}
-                    onChange={field.onChange}
+                    onChange={(date) => {
+                      field.onChange(date);
+                      setApplication({ open_date: date });
+                    }}
                     variant="application"
                   />
                 )}
@@ -93,7 +131,10 @@ const Form = () => {
                     id="business_id"
                     type="text"
                     value={field.value || ''}
-                    onChange={(e) => field.onChange(formatBusinessNumber(e.target.value))}
+                    onChange={(e) => {
+                      field.onChange(formatBusinessNumber(e.target.value));
+                      setApplication({ business_id: formatBusinessNumber(e.target.value) });
+                    }}
                     $error={errors.business_id}
                   />
                 )}
@@ -110,9 +151,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default ApplicationForm;
 
 const Input = styled(InputLightGray)`
   width: 200px;
