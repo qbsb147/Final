@@ -10,7 +10,7 @@ import { Controller } from 'react-hook-form';
 
 const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, emailVerified, setEmailVerified, control }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-  const [_socialInfo, setSocialInfo] = useState({}); // socialInfo 미사용?
+  const [socialInfo, setSocialInfo] = useState({});
   const [isSocial, setIsSocial] = useState(false);
   const [emailAuthStarted, setEmailAuthStarted] = useState(false);
   const [loading, setLoading] = useState(false);

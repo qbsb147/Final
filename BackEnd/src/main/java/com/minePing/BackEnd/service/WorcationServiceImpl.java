@@ -44,6 +44,7 @@ import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.exception.WorcationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import com.minePing.BackEnd.service.S3Service;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +52,7 @@ public class WorcationServiceImpl implements WorcationService {
 //    private final AmazonS3 amazonS3;
     private final WorcationRepository worcationRepository;
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     @Override
     @Transactional
@@ -101,7 +103,6 @@ public class WorcationServiceImpl implements WorcationService {
         return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                 List.of());
     }
-
     @Override
     @Transactional(readOnly = true)
     public WorcationDto.Response getById(Long worcationNo) {
