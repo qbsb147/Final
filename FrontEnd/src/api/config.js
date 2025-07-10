@@ -17,6 +17,8 @@ export const API_ENDPOINTS = {
     BASE: '/member',
     VALIDATE_PASSWORD: '/member/validate-password',
     INIT: '/member/signUp/init',
+    SEND_CODE: '/member/send_code',
+    VERIFY_CODE: '/member/verify_code',
   },
   HEALTH: {
     BASE: '/health',

@@ -9,7 +9,7 @@ import memberService from '../../api/members';
 import oauth2Service from '../../api/oauth';
 import useAuthStore from '../../store/authStore';
 import { toast } from 'react-toastify';
-import googleLoginImg from '../../assets/google_login.png';
+import { GoogleSignInButton } from '../../components/common/Google';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
@@ -48,7 +48,7 @@ const Login = () => {
     <LoginWrap>
       <ContentWrap>
         <LoginCard>
-          <LogoWrap>
+          <LogoWrap to="/">
             <LogoImg src={logo} alt="logo" />
             <img src={logoText} alt="logoText" />
           </LogoWrap>
@@ -72,10 +72,8 @@ const Login = () => {
               <SignInBtn type="submit">로그인</SignInBtn>
               <SignUpLink to="/signUp">회원가입</SignUpLink>
             </BtnFlex>
-            <SocialContainer>
-              <SocialImage src={googleLoginImg} alt="Google Login" onClick={googleServerLogin} />
-            </SocialContainer>
           </form>
+          <GoogleSignInButton type="button" onClick={googleServerLogin} />
         </LoginCard>
       </ContentWrap>
     </LoginWrap>
@@ -128,7 +126,7 @@ const LoginCard = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.base};
 `;
 
-const LogoWrap = styled.div`
+const LogoWrap = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;

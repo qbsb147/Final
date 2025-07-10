@@ -24,4 +24,7 @@ public interface MemberService {
     void checkPassword(String password);
     void updateUser(MemberDto.Update updateDto);
     void delete();
+    void sendVerificationCode(String email);
+
+    boolean verifyCode(String email, String code);
 }
