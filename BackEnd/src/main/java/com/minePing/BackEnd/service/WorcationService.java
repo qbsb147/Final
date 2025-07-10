@@ -44,6 +44,7 @@ public interface WorcationService {
     List<WorcationDto.WorcationListName> getWorcationListName(Long userNo);
 
     Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable);
-
+    //s3
+//    String generatePresignedUrl(String filename);
 
 }

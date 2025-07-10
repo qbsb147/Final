@@ -117,5 +117,12 @@ public class WorcationController {
             @PageableDefault(size = 15, sort = "userName") Pageable pageable){
         return ResponseEntity.ok(new PageResponse<>(worcationService.getWorcationReservation(userNo,pageable)));
     }
+//    // S3 Presigned URL 발급 API 만들기
+//    @PostMapping("/presigned-url")
+//    public ResponseEntity<String> getPresignedUrl(@RequestParam String filename) {
+//        String url = worcationService.generatePresignedUrl(filename);
+//        return ResponseEntity.ok(url);
+//    }
+
 
 }

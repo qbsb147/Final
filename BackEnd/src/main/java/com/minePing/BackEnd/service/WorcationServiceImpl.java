@@ -7,9 +7,11 @@ import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
+import java.util.Date;
 import java.time.LocalDate;
 import java.time.Period;
-
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.minePing.BackEnd.enums.CommonEnums;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import com.amazonaws.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +48,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class WorcationServiceImpl implements WorcationService {
-
+//    private final AmazonS3 amazonS3;
     private final WorcationRepository worcationRepository;
     private final MemberRepository memberRepository;
 
@@ -254,6 +257,19 @@ public class WorcationServiceImpl implements WorcationService {
 
         return new org.springframework.data.domain.PageImpl<>(content, pageable, applications.getTotalElements());
     }
+    //s3
+//    @Override
+//    public String generatePresignedUrl(String fileName) {
+//        Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 10); // 10분 유효
+//
+//        GeneratePresignedUrlRequest request =
+//                new GeneratePresignedUrlRequest("your-bucket-name", fileName)
+//                        .withMethod(HttpMethod.PUT)
+//                        .withExpiration(expiration);
+//
+//        return amazonS3.generatePresignedUrl(request).toString();
+//    }
+
 
     public Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo) {
         List<Worcation> all = worcationRepository.findAllByRefWriter(userNo);
