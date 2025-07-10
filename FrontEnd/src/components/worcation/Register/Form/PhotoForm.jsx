@@ -96,6 +96,23 @@ const Form = () => {
       <Table>
         <TBody>
           <TR>
+            <TH>섬네일</TH>
+            <TD>
+              <ImageUploader
+                label="대표 이미지"
+                onChange={async (file) => {
+                  try {
+                    const imageUrl = await worcationService.uploadImage(file);
+                    setPhotos({ thumbnail: imageUrl });
+                  } catch {
+                    alert('섬네일 업로드 실패');
+                  }
+                }}
+                onDelete={() => setPhotos({ thumbnail: '' })}
+              />
+            </TD>
+          </TR>
+          <TR>
             <TH>오피스 사진</TH>
             <TD>
               {officePhotos.map((_, i) => (
@@ -187,7 +204,7 @@ const Table = styled.table`
 const TBody = styled.tbody`
   display: flex;
   flex-direction: column;
-  gap: 42px;
+  gap: 30px;
 `;
 
 const TR = styled.tr`

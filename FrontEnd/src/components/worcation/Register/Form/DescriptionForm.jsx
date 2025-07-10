@@ -20,8 +20,7 @@ const Form = () => {
             <TH>설명</TH>
             <TD>
               <CustomTextArea
-                value={description.detailIntro}
-                // onChange={(e) => setPolicy(e.target.value)}
+                value={description.detailIntro || ''} // onChange={(e) => setPolicy(e.target.value)}
                 onChange={handleChange}
                 rows={13}
               />

@@ -28,6 +28,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -50,6 +51,16 @@ public class WorcationController {
             @RequestBody @Valid WorcationDto.Request request
     ) {
         WorcationDto.Response dto = worcationService.create(request);
+        return ResponseEntity.created(
+                URI.create("/api/worcations/" + dto.getWorcation_no())
+        ).body(dto);
+    }
+
+    @PostMapping("/sample")
+    public ResponseEntity<WorcationDto.Response> SampleCreate(
+            @RequestBody @Valid WorcationDto.Request request
+    ) {
+        WorcationDto.Response dto = worcationService.SampleCreate(request);
         return ResponseEntity.created(
                 URI.create("/api/worcations/" + dto.getWorcation_no())
         ).body(dto);
@@ -123,6 +134,13 @@ public class WorcationController {
 //        String url = worcationService.generatePresignedUrl(filename);
 //        return ResponseEntity.ok(url);
 //    }
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadPhoto(@RequestParam MultipartFile file) {
+        String savedName = worcationService.uploadWithoutWorcation(file); // worcation 없이 업로드
+        return ResponseEntity.ok(savedName); // UUID+확장자만 반환
+    }
+
+
 
 
 }

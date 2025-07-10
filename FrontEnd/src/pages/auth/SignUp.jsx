@@ -16,7 +16,6 @@ import { handleBusinessValidationResult } from '../../hooks/useValidation';
 import { useForm } from 'react-hook-form';
 import Cookies from 'js-cookie';
 
-
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({

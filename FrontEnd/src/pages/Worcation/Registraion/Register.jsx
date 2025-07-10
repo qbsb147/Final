@@ -14,17 +14,18 @@ import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
 import useBusinessStore from '../../../store/useBusinessStore.js';
 import useWorcationStore from '../../../store/useWorcationStore';
-
+import useAuthStore from '../../../store/authStore.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { worcationService } from '../../../api/worcations.js';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
-  const isValidate = useWorcationStore((state) => state.isValidate);
-  const isNonNull = useWorcationStore((state) => state.isNonNull);
+  const isValidate = useWorcationStore((state) => state.isValidate());
+  const isNonNull = useWorcationStore((state) => state.isNonNull());
   const worcationData = useWorcationStore((state) => state);
   const { worcation_no } = useParams();
+  const isVerified = useBusinessStore((state) => state.isVerified);
   const navigate = useNavigate();
 
   const handleSample = async () => {
@@ -47,45 +48,69 @@ const Register = () => {
       }
     }
   };
+  const loginUser = useAuthStore((state) => state.loginUser);
+
+  useEffect(() => {
+    console.log('로그인 유저 확인:', loginUser);
+  }, [loginUser]);
 
   useEffect(() => {
     handleSample(); // 처음 들어올 때 id가 있으면 자동 로딩
   }, [worcation_no]);
 
   const toRequestDto = () => {
-    const { application, info, description, photos, amenities, location, policy, feature } =
-      useWorcationStore.getState();
+    const loginUser = useAuthStore.getState().loginUser;
+    const {
+      application = {},
+      info = {},
+      description = {},
+      photos = {},
+      amenities = [],
+      location = {},
+      policy = {},
+      feature = {},
+    } = useWorcationStore.getState();
 
+    const photo_urls = [];
+    if (Array.isArray(photos.officePhotos)) {
+      photos.officePhotos
+        .filter((url) => !!url) // null, undefined, '' 제거
+        .forEach((url) => photo_urls.push(url));
+    }
+
+    if (Array.isArray(photos.stayPhotos)) {
+      photos.stayPhotos.filter((url) => !!url).forEach((url) => photo_urls.push(url));
+    }
     return {
-      worcation_name: info.worcationName,
-      worcation_category: info.category,
-      main_change_photo: photos.thumbnail,
-      worcation_thema: info.intro,
-      max_people: parseInt(info.maxPeople),
-      partner_price: info.partnerPrice,
-      non_partner_price: parseInt(info.nonPartnerPrice),
-      worcation_address: location.address,
+      worcation_name: application.worcation_name ?? '',
+      worcation_category: application.worcation_category ?? null,
+      main_change_photo: photos.thumbnail || 'https://dummy.com/default.jpg',
+      worcation_thema: info.theme ?? '',
+      max_people: info.maxPeople ? parseInt(info.maxPeople) : null,
+      partner_price: info.partnerPrice ? parseInt(info.partnerPrice) : null,
+      non_partner_price: info.nonPartnerPrice ? parseInt(info.nonPartnerPrice) : null,
+      worcation_address: location.address ?? '',
 
-      member_id: application.companyNo,
-      licensee: application.ownerName,
-      business_id: application.businessNo,
-      worcation_tel: application.tel,
+      member_id: loginUser.user_no ?? '',
+      licensee: application.licensee ?? '',
+      business_id: application.business_id ?? '',
+      worcation_tel: info.phone ?? '',
       charge_amount: 0,
-      content: description.detailIntro,
-      navigate: location.locationDescription,
-      available_time: policy.policyGuide,
-      refund_policy: policy.refundPolicy,
-      open_date: null,
+      content: description.detailIntro ?? '',
+      navigate: location.locationDescription ?? '',
+      available_time: policy.policyGuide || '09:00~18:00',
+      refund_policy: policy.refundPolicy ?? '',
+      open_date: application.open_date?.split('T')[0] || '2025-07-10',
 
-      location_type: feature.locationType,
-      dominant_color: feature.dominantColor,
-      space_mood: feature.spaceMood,
-      best_for: feature.bestFor,
-      activities: feature.activities.join(','),
-      accommodation_type: feature.accommodationType,
+      location_type: feature.locationType ?? null,
+      dominant_color: feature.dominantColor ?? null,
+      space_mood: feature.spaceMood ?? null,
+      best_for: feature.bestFor ?? null,
+      activities: Array.isArray(feature.activities) ? feature.activities.join(',') : '',
+      accommodation_type: feature.accommodationType ?? null,
 
-      amenities: amenities,
-      photo_urls: photos.detailImages,
+      amenities: amenities ?? [],
+      photo_urls: photo_urls.length > 0 ? photo_urls : ['https://dummy.com/default.jpg'],
     };
   };
 
@@ -115,7 +140,7 @@ const Register = () => {
         if (worcation_no) {
           await worcationService.update(worcation_no, dto);
         } else {
-          await worcationService.save(dto);
+          await worcationService.samplesave(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
         navigate('/worcation/list');
@@ -125,7 +150,8 @@ const Register = () => {
       }
     }
   };
-  const isBusinessValidated = !!useBusinessStore((state) => state.formData.businessId);
+
+  const isBusinessValidated = useBusinessStore((state) => !!state.formData.businessId);
 
   const handleSubmit = async () => {
     const result = await Swal.fire({
@@ -134,7 +160,6 @@ const Register = () => {
       confirmButtonText: '등록',
       cancelButtonText: '취소',
     });
-
     if (result.isConfirmed) {
       try {
         const dto = toRequestDto();
@@ -190,14 +215,12 @@ const Register = () => {
           </ContentContainer>
         </MenuBar>
         <BtnGroup>
-          {isValidate ? (
-            <>
-              <ActionButton type="button" onClick={handleSave}>
-                임시 저장
-              </ActionButton>
-            </>
+          {isVerified ? (
+            <ActionButton type="button" onClick={handleSave}>
+              임시 저장
+            </ActionButton>
           ) : (
-            <ActionButton type="button" disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
+            <ActionButton type="button" disabled style={{ background: '#AEAEAE' }}>
               임시 저장
             </ActionButton>
           )}

@@ -7,7 +7,7 @@ import { Controller } from 'react-hook-form';
 
 const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, control }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
-  const [_socialInfo, setSocialInfo] = useState({}); // socialInfo 미사용?
+  const [socialInfo, setSocialInfo] = useState({}); // socialInfo 미사용?
   const [isSocial, setIsSocial] = useState(false);
   const fetchInitData = async () => {
     try {
@@ -181,7 +181,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, c
                 selected={field.value || null}
                 onChange={(date) => {
                   field.onChange(date);
-                  setFormData1(prev => ({ ...prev, birthday: date }));
+                  setFormData1((prev) => ({ ...prev, birthday: date }));
                 }}
                 variant="yellow"
               />

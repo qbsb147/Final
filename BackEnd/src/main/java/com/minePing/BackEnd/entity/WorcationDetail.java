@@ -34,7 +34,7 @@ public class WorcationDetail {
     @Column(name="licensee", length=100, nullable = false)
     private String licensee;
 
-    @Column(name="business_id", length=10, nullable = false, unique = true)
+    @Column(name="business_id", length=20, nullable = false, unique = true)
     private String businessId;
 
     @Column(name="worcation_tel", length=13, unique = true)

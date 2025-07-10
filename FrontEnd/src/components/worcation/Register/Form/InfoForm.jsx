@@ -64,7 +64,7 @@ const Form = () => {
             <TD>
               <InputLightGray
                 value={info.phone}
-                onChange={(e) => setInfo({ tel: e.target.value })}
+                onChange={(e) => setInfo({ phone: e.target.value })}
                 placeholder="연락처를 입력해주세요"
               />
             </TD>
@@ -73,21 +73,21 @@ const Form = () => {
             <TH>비제휴 가격</TH>
             <TD>
               <NumberInput
-                value={info.price}
+                value={info.nonPartnerPrice}
                 // onChange={setPrice}
-                onChange={(val) => setInfo({ price: val })}
+                onChange={(val) => setInfo({ nonPartnerPrice: val })}
                 format={true}
               />
             </TD>
           </TR>
           <TR>
-            <TH>제휴 정책</TH>
+            <TH>제휴 가격</TH>
             <TD>
-              <CustomTextArea
-                value={info.policy}
+              <NumberInput
+                value={info.partnerPrice}
                 // onChange={(e) => setPolicy(e.target.value)}
-                onChange={(e) => setInfo({ policy: e.target.value })}
-                rows={3}
+                onChange={(val) => setInfo({ partnerPrice: val })}
+                format={true}
               />
             </TD>
           </TR>
