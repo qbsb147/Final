@@ -245,11 +245,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        useWorcationStore.getState().setStatus('N');
         const dto = toRequestDto();
         if (worcation_no) {
           await worcationService.update(worcation_no, dto);
         } else {
-          console.log('최종 전송 데이터:\n', dto);
           await worcationService.save(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
@@ -326,7 +326,33 @@ const Register = () => {
             <RenderForm>{renderForm()}</RenderForm>
           </ContentContainer>
         </MenuBar>
+
         <BtnGroup>
+          <ActionButton
+            type="button"
+            onClick={handleSave}
+            disabled={!isVerified}
+            style={{
+              background: !isVerified ? '#AEAEAE' : '',
+              opacity: !isVerified ? 0.3 : 1,
+            }}
+          >
+            임시 저장
+          </ActionButton>
+
+          <ActionButton
+            type="button"
+            onClick={handleSubmit}
+            disabled={!(isNonNull && isBusinessValidated)}
+            style={{
+              background: !(isNonNull && isBusinessValidated) ? '#AEAEAE' : '',
+              opacity: !(isNonNull && isBusinessValidated) ? 0.3 : 1,
+            }}
+          >
+            등록
+          </ActionButton>
+        </BtnGroup>
+        {/* <BtnGroup>
           {isVerified ? (
             <ActionButton type="button" onClick={handleSave}>
               임시 저장
@@ -338,9 +364,7 @@ const Register = () => {
           )}
           {isNonNull ? (
             <>
-              <ActionButton disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
-                등록
-              </ActionButton>
+              <ActionButton disabled={!isBusinessValidated}>등록</ActionButton>
             </>
           ) : (
             <>
@@ -349,7 +373,7 @@ const Register = () => {
               </ActionButton>
             </>
           )}
-        </BtnGroup>
+        </BtnGroup> */}
       </RegisterForm>
     </RegisterContainer>
   );
