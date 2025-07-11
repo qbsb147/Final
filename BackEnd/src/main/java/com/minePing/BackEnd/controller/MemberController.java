@@ -126,10 +126,9 @@ public class MemberController {
 
     @PostMapping("verify_code")
     public ResponseEntity<String> verifyCode(@RequestBody MailVerificationRequestDto.Verify request) {
-        if (memberService.verifyCode(request.getEmail(), request.getCode())){
+        if (memberService.verifyCode(request.getEmail(), request.getCode())) {
             return ResponseEntity.ok("인증이 완료되었습니다.");
-        }else{
-            return ResponseEntity.badRequest().body("인증코드가 올바르지 않거나 만료되었습니다.");
         }
+        return ResponseEntity.badRequest().body("인증코드가 올바르지 않거나 만료되었습니다.");
     }
 }
