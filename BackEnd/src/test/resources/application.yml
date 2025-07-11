@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: mineping-test
+  profiles:
+    active: test
+
+gemini:
+  api-key: test-api-key
+
+stablediffusion:
+  api-key: test-stablediffusion-api-key
+business:
+  api-key: test-bussiness-key
+nts:
+  api:
+    url: https://api.odcloud.kr/api/nts-businessman/v1/status
+    key: test-nts-key
+
+jwt:
+  secret: mineping-jwt-secret-key-2024-very-long-and-secure-key-for-development
+  expiration: 60
+# AWS S3 설정
+aws:
+  access-key-id: test-access-id
+  secret-access-key: test-access-key
+  s3:
+    bucket-name: myping-images
+    region: ap-northeast-2
+---
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-client-id
+            client-secret: test-client-secret
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, email, profile
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
+
+server:
+  port: 0
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+logging:
+  level:
+    root: info 

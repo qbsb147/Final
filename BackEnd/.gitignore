@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 application.properties
-application.yml
+application-secret.yml
 
 ### STS ###
 .apt_generated
@@ -37,3 +37,5 @@ out/
 
 ### VS Code ###
 .vscode/
+.env
+.env.*
