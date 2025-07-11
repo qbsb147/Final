@@ -2,28 +2,44 @@ spring:
   application:
     name: mineping
   profiles:
-    active: dev  # 실행 환경에 따라 dev 또는 prod로 변경
+    active: dev
 gemini:
-  api-key: ${GEMINI_API_KEY:발급받은 API키}
-logging:
-  level:
-    root: info
+  api-key: ${GEMINI_API_KEY:제미니 API키}
+stablediffusion:
+  api-key: ${STABLEDIFFUSION_API_KEY:test-stablediffusion-api-key}
+business:
+  api-key: ${BUSINESS_API_KEY:국세청 인코딩 키}
+nts:
+  api:
+    url: https://api.odcloud.kr/api/nts-businessman/v1/status
+    key: ${BUSINESS_API_KEY:국세청 API 키}
 
 jwt:
-  secret: #gitbash에 < /dev/urandom tr -dc 'A-Za-z0-9' | head -c64 입력
-  expiration: 만료시간
-business:
-  api-key: EvXNxqKNWH0I%2BH0glM3%2FxHbjHG0ctJs6WB6HVfEqL5wazLbpaeMFvx8sCsEZLhxr7iQqtwnW57i%2FprOP9BnfXw%3D%3D
-
+  secret: mineping-jwt-secret-key-2024-very-long-and-secure-key-for-development
+  expiration: 60
 # AWS S3 설정
 aws:
-  access-key-id: 키
-  secret-access-key: 시크릿키
+  access-key-id: AWS 엑세스 키
+  secret-access-key: 엑세스 비밀번호
   s3:
     bucket-name: myping-images
     region: ap-northeast-2
   cloudfront:
     domain: dvr2ybzswd4qy.cloudfront.net
+mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 구글이메일
+    password: 앱 보안 비밀번호
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
 ---
 spring:
   security:
@@ -56,7 +72,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update 
     show-sql: true
     properties:
       hibernate:
@@ -109,3 +125,6 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+logging:
+  level:
+    root: info
