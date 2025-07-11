@@ -164,27 +164,22 @@ const WorcationDetail = () => {
 
   const handleSaveEdit = async (review_no) => {
     try {
-      await worcationService.updateReview(
-        review_no,
-        {
-          review_content: editedContent,
-          update_at: new Date().toISOString(),
-        }
-      );
-      alert("댓글을 수정하였습니다.");
+      await worcationService.updateReview(review_no, {
+        review_content: editedContent,
+        update_at: new Date().toISOString(),
+      });
+      alert('댓글을 수정하였습니다.');
 
       setEditingId(null);
       setEditedContent('');
 
       setReviews((prev) =>
         prev.map((r) =>
-          r.review_no === review_no
-            ? { ...r, review_content: editedContent, update_at: new Date().toISOString() }
-            : r
+          r.review_no === review_no ? { ...r, review_content: editedContent, update_at: new Date().toISOString() } : r
         )
       );
     } catch {
-      alert("댓글 수정에 실패하였습니다.");
+      alert('댓글 수정에 실패하였습니다.');
     }
   };
 
@@ -192,12 +187,12 @@ const WorcationDetail = () => {
     try {
       await worcationService.deleteReview(review_no);
       setReviews((prev) => prev.filter((r) => r.review_no !== review_no));
-      alert("댓글이 삭제되었습니다.");
+      alert('댓글이 삭제되었습니다.');
     } catch {
-      alert("댓글 삭제에 실패하였습니다.");
+      alert('댓글 삭제에 실패하였습니다.');
     }
   };
-// 댓글 막기
+  // 댓글 막기
   const today = new Date();
   const endDate = appData ? new Date(appData.end_date) : null;
   const isDisabled = !(appData && appData.approve === 'Y' && endDate > today);
@@ -283,11 +278,7 @@ const WorcationDetail = () => {
               onChange={(e) => setNewComment(e.target.value)}
               disabled={isDisabled}
             />
-            <CommentSubmit
-              as={ButtonYbShadow}
-              onClick={handleAddComment}
-              disabled={isDisabled}
-            >
+            <CommentSubmit as={ButtonYbShadow} onClick={handleAddComment} disabled={isDisabled}>
               등록
             </CommentSubmit>
           </CommentInputWrap>
@@ -497,4 +488,3 @@ const ActionBtn = styled.button`
   font-family: 'Godo B';
   color: ${({ theme }) => theme.colors.black};
 `;
-

@@ -24,6 +24,7 @@ const Register = () => {
   const isNonNull = useWorcationStore((state) => state.isNonNull());
   const { worcation_no } = useParams();
   const isVerified = useBusinessStore((state) => state.isVerified);
+  const setIsVerified = useBusinessStore((state) => state.setIsVerified);
   const resetStore = useWorcationStore((state) => state.reset);
   const navigate = useNavigate();
 
@@ -34,10 +35,6 @@ const Register = () => {
         try {
           const data = await worcationService.getDetail(worcation_no);
           const store = useWorcationStore.getState();
-          console.log('✅ [DATA]', data);
-          console.log('▶ worcation_name:', data.worcation_name);
-          console.log('▶ photos:', data.photos);
-          console.log('▶ amenities:', data.amenities);
 
           // 각 스토어 슬라이스에 데이터 설정
           store.setApplication({
@@ -152,6 +149,10 @@ const Register = () => {
   useEffect(() => {
     console.log('로그인 유저 확인:', loginUser);
   }, [loginUser]);
+
+  useEffect(() => {
+    setIsVerified(false); // 진입 시 진위확인 초기화
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -288,6 +289,13 @@ const Register = () => {
       }
     }
   };
+
+  useEffect(() => {
+    console.log('[DEBUG] isVerified:', isVerified);
+  }, [isVerified]);
+  useEffect(() => {
+    console.log('[DEBUG] isVerified:', isVerified);
+  }, [isVerified]);
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -330,7 +338,7 @@ const Register = () => {
         <BtnGroup>
           <ActionButton
             type="button"
-            onClick={handleSave}
+            onClick={isVerified ? handleSave : undefined}
             disabled={!isVerified}
             style={{
               background: !isVerified ? '#AEAEAE' : '',
