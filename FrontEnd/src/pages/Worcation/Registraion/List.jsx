@@ -181,7 +181,7 @@ const WorcationList = () => {
         {registeredList?.map((item) => (
           <PlaceCard key={item.worcation_no}>
             {/* <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} /> */}
-            <PlaceImage src={item.main_change_photo || '/default.jpg'} alt={item.name} />
+            <PlaceImage src={item.main_change_photo || '/default.jpg'} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
                 <PlaceLocation>{item.address}</PlaceLocation>
