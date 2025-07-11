@@ -166,7 +166,7 @@ const SearchInput = styled.input`
 `;
 
 const LeftSide = styled.div`
-  flex: 1.2;
+  flex: 1;
   display: flex;
   gap: ${({ theme }) => theme.spacing.s2};
   align-items: center;
