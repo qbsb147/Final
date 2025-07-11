@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea';
 import useWorcationStore from '../../../../store/useWorcationStore';
 import { ButtonBorder } from '../../../../styles/Button.styles';
 
-const Form = () => {
+const DescriptionForm = forwardRef((props, ref) => {
   const description = useWorcationStore((state) => state.description);
   const setDescription = useWorcationStore((state) => state.setDescription);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
   const handleChange = (e) => {
     setDescription({ detailIntro: e.target.value });
@@ -20,7 +22,7 @@ const Form = () => {
             <TH>설명</TH>
             <TD>
               <CustomTextArea
-                value={description.detailIntro || ''}
+                value={description.detailIntro}
                 // onChange={(e) => setPolicy(e.target.value)}
                 onChange={handleChange}
                 rows={13}
@@ -31,9 +33,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default DescriptionForm;
 
 const Body = styled.div`
   gap: 40px;

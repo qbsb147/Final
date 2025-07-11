@@ -1,47 +1,25 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import AddButton from '../../../common/AddButton';
 import ImageUploader from '../../../common/ImageUploader';
 import useWorcationStore from '../../../../store/useWorcationStore';
 import { worcationService } from '../../../../api/worcations';
 
-const Form = () => {
-  // const [officeImages, setOfficeImages] = useState([]);
-  // const [stayImages, setStayImages] = useState([]);
-  // const [officeVisited, setOfficeVisited] = useState(true);
-  // const [stayVisited, setStayVisited] = useState(true);
+// 개발 환경에서 mock URL 반환
+async function uploadImageWithMock(file) {
+  if (import.meta.env.MODE === 'development') {
+    // 실제 업로드 없이 가짜 URL 반환
+    return 'https://via.placeholder.com/300x200?text=Mock+Image';
+  }
+  // 운영 환경: 실제 S3 업로드
+  return worcationService.uploadImage(file);
+}
 
-  // const handleOfficeAddClick = () => {
-  //   if (officeImages.length < 2) {
-  //     setOfficeImages((prev) => [...prev, { id: Date.now() }]);
-  //     setOfficeVisited(true);
-  //   } else {
-  //     setOfficeImages((prev) => [...prev, { id: Date.now() }]);
-  //     setOfficeVisited(false);
-  //   }
-  // };
-
-  // const handleStayAddClick = () => {
-  //   if (stayImages.length < 2) {
-  //     setStayImages((prev) => [...prev, { id: Date.now() }]);
-  //     setStayVisited(true);
-  //   } else {
-  //     setStayImages((prev) => [...prev, { id: Date.now() }]);
-  //     setStayVisited(false);
-  //   }
-  // };
-
-  // const handleOfficeDelete = (id) => {
-  //   setOfficeImages((prev) => prev.filter((image) => image.id !== id));
-  //   setOfficeVisited(true);
-  // };
-
-  // const handleStayDelete = (id) => {
-  //   setStayImages((prev) => prev.filter((image) => image.id !== id));
-  //   setStayVisited(true);
-  // };
+const PhotoForm = forwardRef((props, ref) => {
   const photos = useWorcationStore((state) => state.photos);
   const setPhotos = useWorcationStore((state) => state.setPhotos);
+
+  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
   const officePhotos = photos.officePhotos || [];
   const stayPhotos = photos.stayPhotos || [];
@@ -58,22 +36,22 @@ const Form = () => {
 
   const handleOfficeChange = async (file, index) => {
     try {
-      const imageUrl = await worcationService.uploadImage(file);
+      const imageUrl = await uploadImageWithMock(file);
       const newList = [...officePhotos];
       newList[index] = imageUrl;
       setPhotos({ officePhotos: newList });
-    } catch (error) {
+    } catch {
       alert('오피스 이미지 업로드 실패');
     }
   };
 
   const handleStayChange = async (file, index) => {
     try {
-      const imageUrl = await worcationService.uploadImage(file);
+      const imageUrl = await uploadImageWithMock(file);
       const newList = [...stayPhotos];
       newList[index] = imageUrl;
       setPhotos({ stayPhotos: newList });
-    } catch (error) {
+    } catch {
       alert('숙소 이미지 업로드 실패');
     }
   };
@@ -96,23 +74,6 @@ const Form = () => {
       <Table>
         <TBody>
           <TR>
-            <TH>섬네일</TH>
-            <TD>
-              <ImageUploader
-                label="대표 이미지"
-                onChange={async (file) => {
-                  try {
-                    const imageUrl = await worcationService.uploadImage(file);
-                    setPhotos({ thumbnail: imageUrl });
-                  } catch {
-                    alert('섬네일 업로드 실패');
-                  }
-                }}
-                onDelete={() => setPhotos({ thumbnail: '' })}
-              />
-            </TD>
-          </TR>
-          <TR>
             <TH>오피스 사진</TH>
             <TD>
               {officePhotos.map((_, i) => (
@@ -125,12 +86,6 @@ const Form = () => {
               ))}
               {officePhotos.length < 4 && (
                 <AddContainer onClick={handleAddOfficePhoto}>
-                  {/* <ImageUploader label="메인 사진" />
-              {officeImages.map((image) => (
-                <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleOfficeDelete(image.id)} />
-              ))}
-              {officeVisited && (
-                <AddContainer onClick={handleOfficeAddClick}> */}
                   <AddButton />
                   <p>사진 추가</p>
                 </AddContainer>
@@ -148,14 +103,6 @@ const Form = () => {
                   onDelete={() => handleStayDelete(i)}
                 />
               ))}
-              {/* <TH>숙소 사진</TH>
-            <TD>
-              <ImageUploader label="메인 사진" />
-              {stayImages.map((image) => (
-                <ImageUploader key={image.id} label="추가 사진" onDelete={() => handleStayDelete(image.id)} />
-              ))} */}
-              {/* {stayVisited && (
-                <AddContainer onClick={handleStayAddClick}> */}
               {stayPhotos.length < 4 && (
                 <AddContainer onClick={handleAddStayPhoto}>
                   <AddButton />
@@ -168,9 +115,9 @@ const Form = () => {
       </Table>
     </Body>
   );
-};
+});
 
-export default Form;
+export default PhotoForm;
 
 const AddContainer = styled.div`
   padding-top: 20px;
@@ -204,7 +151,7 @@ const Table = styled.table`
 const TBody = styled.tbody`
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 42px;
 `;
 
 const TR = styled.tr`
