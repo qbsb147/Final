@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface WorcationService {
     /**
      * 새로운 워케이션을 생성하고, DTO 응답을 반환한다.
      */
     WorcationDto.Response create(WorcationDto.Request request);
+
+    WorcationDto.Response SampleCreate(WorcationDto.Request request);
 
     /**
      * 특정 ID의 워케이션 상세 정보를 조회한다.
@@ -46,5 +49,7 @@ public interface WorcationService {
     Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable);
     //s3
 //    String generatePresignedUrl(String filename);
+
+    String uploadWithoutWorcation(MultipartFile file);
 
 }

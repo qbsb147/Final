@@ -20,8 +20,10 @@ export const useValidation = () => {
     register,
     control,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(businessValidationSchema),
     mode: 'onChange',
@@ -31,9 +33,11 @@ export const useValidation = () => {
     register,
     control,
     getValues,
+    setValue,
     errors,
     isSubmitting,
     watch,
+    reset,
   };
 };
 

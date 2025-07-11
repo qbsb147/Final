@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { InputLightGray } from '../../../../styles/Input.styles';
 import RadioButton from '../../../common/RadioButton.jsx';
 import CustomDatePicker from '../../../common/DatePicker';
 import { ButtonBorder } from '../../../../styles/Button.styles';
-import { handleBusinessValidationResult, useValidation } from '../../../../hooks/useValidation';
-import { Controller } from 'react-hook-form';
+import { handleBusinessValidationResult } from '../../../../hooks/useValidation';
+import { Controller, useForm } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
 import { businessApi } from '../../../../api/businessApi.js';
+import useWorcationStore from '../../../../store/useWorcationStore';
+import useBusinessStore from '../../../../store/useBusinessStore.js';
+import { useValidation } from '../../../../hooks/useValidation';
+
 // import { toast } from 'react-toastify';
 
 const Form = () => {
   const [selected, setSelected] = useState('Office');
-  const { register, control, errors, isSubmitting, getValues } = useValidation();
+  const { application, setApplication } = useWorcationStore();
+  const { data, result } = useValidation(); // 사업자 진위 확인 결과
+  const setIsVerified = useBusinessStore((state) => state.setIsVerified);
+  useBusinessStore.getState().setIsVerified(true);
+
+  const {
+    register,
+    control,
+    formState: { errors, isSubmitting },
+    getValues,
+    reset,
+  } = useForm({
+    defaultValues: application,
+  });
+  useEffect(() => {
+    if (result === 'success') {
+      setIsVerified(true); // useEffect로 렌더 이후에만 실행
+    }
+  }, [result, setIsVerified]);
+
+  // 최초 마운트 시 zustand 상태 → form으로 반영
+  useEffect(() => {
+    reset(application);
+  }, [application, reset]);
+
+  const saveFormData = () => {
+    setApplication(getValues());
+  };
 
   const checkBusiness = async () => {
     if (Object.keys(errors).length > 0) {
@@ -23,12 +54,16 @@ const Form = () => {
     const { business_id, licensee, open_date } = formData;
     // 실제 데이터가 없으므로 무조건 통과처리 --------------
     // try {
-      const data = await businessApi({ business_id, licensee, open_date });
-      if (handleBusinessValidationResult(data)) return;
+    const parsedDate = typeof open_date === 'string' ? new Date(open_date) : open_date;
+
+    const data = await businessApi({ business_id, licensee, open_date: parsedDate });
+    if (handleBusinessValidationResult(data)) setApplication({ ...formData, isVerified: true });
+
+    // return;
     // } catch (err) {
-      // const msg = err.response?.data?.message || err.message || err;
-      // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-      // return;
+    // const msg = err.response?.data?.message || err.message || err;
+    // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+    // return;
     // }
     // 실제 데이터가 없으므로 무조건 통과처리 --------------
   };
@@ -47,20 +82,42 @@ const Form = () => {
           <TR>
             <TH>업체 유형</TH>
             <TD>
-              <RadioButton options={radioOptions} selected={selected} onChange={setSelected} />
+              <RadioButton
+                options={radioOptions}
+                selected={application?.category || 'Office'}
+                onChange={(value) => setApplication({ ...application, category: value })}
+              />
             </TD>
           </TR>
           <TR>
             <TH>사업자명</TH>
             <TD>
-              <Input id="licensee" type="text" {...register('licensee')} $error={errors.licensee} />
+              <InputLightGray
+                id="licensee"
+                type="text"
+                {...register('licensee')}
+                $error={errors.licensee}
+                onChange={(e) => {
+                  register('licensee').onChange(e); // react-hook-form에 값 저장
+                  setApplication({ ...getValues(), licensee: e.target.value });
+                }}
+              />
               {errors.licensee && <ErrorMessage>{errors.licensee.message}</ErrorMessage>}
             </TD>
           </TR>
           <TR>
             <TH>상호명</TH>
             <TD>
-              <Input id="worcation_name" type="text" {...register('worcation_name')} $error={errors.worcation_name} />
+              <InputLightGray
+                id="worcation_name"
+                type="text"
+                {...register('worcation_name')}
+                $error={errors.worcation_name}
+                onChange={(e) => {
+                  register('worcation_name').onChange(e); // react-hook-form에 값 저장
+                  setApplication({ ...getValues(), worcation_name: e.target.value });
+                }}
+              />
               {errors.worcation_name && <ErrorMessage>{errors.worcation_name.message}</ErrorMessage>}
             </TD>
           </TR>
@@ -73,7 +130,10 @@ const Form = () => {
                 render={({ field }) => (
                   <CustomDatePicker
                     selected={field.value || null}
-                    onChange={field.onChange}
+                    onChange={(date) => {
+                      field.onChange(date);
+                      setApplication({ ...getValues(), open_date: date });
+                    }}
                     variant="application"
                   />
                 )}
@@ -88,12 +148,16 @@ const Form = () => {
                 name="business_id"
                 control={control}
                 render={({ field }) => (
-                  <Input
+                  <InputLightGray
                     placeholder="사업자등록번호 입력"
                     id="business_id"
                     type="text"
                     value={field.value || ''}
-                    onChange={(e) => field.onChange(formatBusinessNumber(e.target.value))}
+                    onChange={(e) => {
+                      const formatted = formatBusinessNumber(e.target.value);
+                      field.onChange(formatted);
+                      setApplication({ ...getValues(), business_id: formatted });
+                    }}
                     $error={errors.business_id}
                   />
                 )}
@@ -113,11 +177,6 @@ const Form = () => {
 };
 
 export default Form;
-
-const Input = styled(InputLightGray)`
-  width: 200px;
-  height: 30px;
-`;
 
 const DatePicker = styled(CustomDatePicker)`
   width: 200px;

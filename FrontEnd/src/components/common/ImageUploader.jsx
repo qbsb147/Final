@@ -49,7 +49,7 @@ const Container = styled.div`
 
 const Image = styled.img`
   width: 150px;
-  height: 125px;
+  height: 100px;
   border: 1px solid ${({ theme }) => theme.colors.gray[300]};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   display: flex;
@@ -61,7 +61,7 @@ const Image = styled.img`
 
 const EmptyImage = styled.div`
   width: 150px;
-  height: 125px;
+  height: 100px;
   border: 1px solid ${({ theme }) => theme.colors.gray[300]};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   display: flex;

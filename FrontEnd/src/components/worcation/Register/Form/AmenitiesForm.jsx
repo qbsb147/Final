@@ -5,10 +5,8 @@ import Checkbox from '../../../common/Checkbox';
 import useWorcationStore from '../../../../store/useWorcationStore.js';
 
 const Form = () => {
-  // const [selectedAmenities, setSelectedAmenities] = useState([]);
   const selectedAmenities = useWorcationStore((state) => state.amenities);
-  const setSelectedAmenities = useWorcationStore((state) => state.setAmenities);
-
+  const setAmenities = useWorcationStore((state) => state.setAmenities);
   // const handleAmenityChange = (value) => {
   //   setSelectedAmenities((prev) => {
   //     if (prev.includes(value)) {
@@ -20,11 +18,15 @@ const Form = () => {
   // };
 
   const handleAmenityChange = (value) => {
+    let updatedAmenities;
+
     if (selectedAmenities.includes(value)) {
-      setSelectedAmenities(selectedAmenities.filter((item) => item !== value));
+      updatedAmenities = selectedAmenities.filter((item) => item !== value);
     } else {
-      setSelectedAmenities([...selectedAmenities, value]);
+      updatedAmenities = [...selectedAmenities, value];
     }
+
+    setAmenities(updatedAmenities); // zustand 상태에 반영
   };
 
   // const amenities = [

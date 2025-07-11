@@ -19,12 +19,16 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
+  samplesave: async (data) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
+    return response.data;
+  },
   update: async (worcation_no, data) => {
     const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
   },
-  delete: async () => {
-    const response = await api.delete(API_ENDPOINTS.WORCATION.DELETE);
+  delete: async (worcation_no) => {
+    const response = await api.delete(API_ENDPOINTS.WORCATION.DELETE(worcation_no));
     return response.data;
   },
 
@@ -65,11 +69,12 @@ export const worcationService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE, formData, {
+    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE(), formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+
     return response.data; // 서버에서 반환한 URL
   },
 };

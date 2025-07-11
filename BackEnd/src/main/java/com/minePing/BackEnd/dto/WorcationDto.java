@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.minePing.BackEnd.entity.Amenity;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
@@ -36,7 +37,7 @@ public class WorcationDto {
         private String worcation_address;
         private Long member_id;
         private Long area_id;
-
+        private CommonEnums.Status status;
         // Detail
         private String licensee;
         private String business_id;
@@ -46,6 +47,7 @@ public class WorcationDto {
         private String navigate;
         private String available_time;
         private String refund_policy;
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate open_date;
 
         // Features
@@ -56,7 +58,7 @@ public class WorcationDto {
         private String activities;
         private WorcationEnums.AccommodationType accommodation_type;
 
-        private List<String> amenities;
+            private List<Long> amenities;
         private List<String> photo_urls;
     }
 

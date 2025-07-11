@@ -82,17 +82,18 @@ const WorcationList = () => {
   const { worcation_no } = useParams();
 
   useEffect(() => {
-    if (!loginUser?.user_id) return;
+    if (!loginUser?.user_id) return; // 아직 로그인 정보 없음
 
     if (loginUser.role !== 'WORCATION') {
       navigate('/error');
       return;
     }
 
+    // 유저 정보 불러오기
     const fetchUserInfo = async () => {
       try {
         const res = await memberService.getMyInfo();
-        setUserInfo(res); // userInfo.user_no 사용 가능
+        setUserInfo(res);
       } catch (err) {
         console.error('회원 정보 조회 실패:', err);
       }
@@ -130,6 +131,8 @@ const WorcationList = () => {
     const fetchWorcations = async () => {
       try {
         const res = await worcationService.getMyList(userInfo.user_no);
+        console.log('✔️ registered:', res.registered);
+        console.log('✔️ unregistered:', res.unregistered);
         setRegisteredList(res.registered);
         setUnregisteredList(res.unregistered);
       } catch (error) {
@@ -158,6 +161,18 @@ const WorcationList = () => {
     navigate('/worcation/register');
   };
 
+  const themeOptions = [
+    { value: 'modern', label: '모던' },
+    { value: 'eco_friendly', label: '에코 프렌들리' },
+    { value: 'quiet', label: '조용한 분위기' },
+    { value: 'urban_nature', label: '도심 속 자연' },
+    { value: 'camping', label: '캠핑 스타일' },
+  ];
+
+  const getThemeLabel = (value) => {
+    const match = themeOptions.find((opt) => opt.value === value);
+    return match ? match.label : value; // 못 찾으면 원래 값 그대로
+  };
   return (
     <Container>
       <NameBox>
@@ -176,7 +191,7 @@ const WorcationList = () => {
               </InfoBlock>
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
+                <ThemeText>{getThemeLabel(item.theme)}</ThemeText>
                 <BtnBox>
                   <Btn onClick={() => handleEdit(item.worcation_no)}>수정하기</Btn>
                   <Btn onClick={() => handleDelete(item.worcation_no)}>삭제하기</Btn>
@@ -187,26 +202,26 @@ const WorcationList = () => {
         ))}
       </CardList>
       {/* <CardList>
-        {Adata.map((item) => (
-          <PlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
-            <CardContent>
-              <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
-              </InfoBlock>
-              <ThemeBlock tabIndex="0">
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
-                <BtnBox>
-                  <Btn>수정하기</Btn>
-                  <Btn>삭제하기</Btn>
-                </BtnBox>
-              </ThemeBlock>
-            </CardContent>
-          </PlaceCard>
-        ))}
-      </CardList> */}
+          {Adata.map((item) => (
+            <PlaceCard key={item.id}>
+              <PlaceImage src={item.image} alt={item.name} />
+              <CardContent>
+                <InfoBlock>
+                  <PlaceLocation>{item.location}</PlaceLocation>
+                  <PlaceName>{item.name}</PlaceName>
+                </InfoBlock>
+                <ThemeBlock tabIndex="0">
+                  <ThemeLabel>테마</ThemeLabel>
+                  <ThemeText>{item.theme}</ThemeText>
+                  <BtnBox>
+                    <Btn>수정하기</Btn>
+                    <Btn>삭제하기</Btn>
+                  </BtnBox>
+                </ThemeBlock>
+              </CardContent>
+            </PlaceCard>
+          ))}
+        </CardList> */}
 
       <NameBox>
         <SectionTitle>미등록 목록</SectionTitle>
@@ -222,7 +237,7 @@ const WorcationList = () => {
               </InfoBlock>
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
+                <ThemeText>{getThemeLabel(item.theme)}</ThemeText>{' '}
                 <BtnBox>
                   <Btn onClick={() => handleEdit(item.worcation_no)}>수정하기</Btn>
                   <Btn onClick={() => handleDelete(item.worcation_no)}>삭제하기</Btn>
@@ -233,26 +248,26 @@ const WorcationList = () => {
         ))}
       </CardList>
       {/* <CardList>
-        {Bdata.map((item) => (
-          <BeforePlaceCard key={item.id}>
-            <PlaceImage src={item.image} alt={item.name} />
-            <CardContent>
-              <InfoBlock>
-                <PlaceLocation>{item.location}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
-              </InfoBlock>
-              <ThemeBlock tabIndex="0">
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
-                <BtnBox>
-                  <Btn>수정하기</Btn>
-                  <Btn>삭제하기</Btn>
-                </BtnBox>
-              </ThemeBlock>
-            </CardContent>
-          </BeforePlaceCard>
-        ))}
-      </CardList> */}
+          {Bdata.map((item) => (
+            <BeforePlaceCard key={item.id}>
+              <PlaceImage src={item.image} alt={item.name} />
+              <CardContent>
+                <InfoBlock>
+                  <PlaceLocation>{item.location}</PlaceLocation>
+                  <PlaceName>{item.name}</PlaceName>
+                </InfoBlock>
+                <ThemeBlock tabIndex="0">
+                  <ThemeLabel>테마</ThemeLabel>
+                  <ThemeText>{item.theme}</ThemeText>
+                  <BtnBox>
+                    <Btn>수정하기</Btn>
+                    <Btn>삭제하기</Btn>
+                  </BtnBox>
+                </ThemeBlock>
+              </CardContent>
+            </BeforePlaceCard>
+          ))}
+        </CardList> */}
     </Container>
   );
 };

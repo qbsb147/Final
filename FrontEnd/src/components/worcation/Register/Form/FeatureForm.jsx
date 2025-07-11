@@ -82,10 +82,10 @@ const Form = () => {
             <TH>위치 유형</TH>
             <TD>
               {/* <CustomSelect
-                options={locationTypeOptions}
-                value={locationType}
-                onChange={(e) => setLocationType(e.target.value)}
-              /> */}
+                  options={locationTypeOptions}
+                  value={locationType}
+                  onChange={(e) => setLocationType(e.target.value)}
+                /> */}
               <CustomSelect
                 options={locationTypeOptions}
                 value={feature.locationType}
@@ -97,12 +97,12 @@ const Form = () => {
             <TH>전반적 색감</TH>
             <TD>
               {/* <CustomSelect
-                options={dominantColorOptions}
-                value={dominantColor}
-                onChange={(e) => setDominantColor(e.target.value)}
-              /> */}
+                  options={dominantColorOptions}
+                  value={dominantColor}
+                  onChange={(e) => setDominantColor(e.target.value)}
+                /> */}
               <CustomSelect
-                options={dominantColorOptions}
+                options={dominantColor}
                 value={feature.dominantColor}
                 onChange={(e) => setFeature({ dominantColor: e.target.value })}
               />
@@ -112,10 +112,10 @@ const Form = () => {
             <TH>공간 분위기</TH>
             <TD>
               {/* <CustomSelect
-                options={spaceMoodOptions}
-                value={spaceMood}
-                onChange={(e) => setSpaceMood(e.target.value)}
-              /> */}
+                  options={spaceMoodOptions}
+                  value={spaceMood}
+                  onChange={(e) => setSpaceMood(e.target.value)}
+                /> */}
               <CustomSelect
                 options={spaceMoodOptions}
                 value={feature.spaceMood}
@@ -138,16 +138,16 @@ const Form = () => {
             <TH>여가 활동</TH>
             <TD>
               {/* <AmenitiesContainer>
-                {activitiesOptions.map((activity) => (
-                  <Checkbox
-                    key={activity.value}
-                    id={activity.value}
-                    label={activity.label}
-                    checked={activities.includes(activity.value)}
-                    onChange={() => handleActivitiesChange(activity.value)}
-                  />
-                ))}
-              </AmenitiesContainer> */}
+                  {activitiesOptions.map((activity) => (
+                    <Checkbox
+                      key={activity.value}
+                      id={activity.value}
+                      label={activity.label}
+                      checked={activities.includes(activity.value)}
+                      onChange={() => handleActivitiesChange(activity.value)}
+                    />
+                  ))}
+                </AmenitiesContainer> */}
               <AmenitiesContainer>
                 {activitiesOptions.map((activity) => (
                   <Checkbox
@@ -165,10 +165,10 @@ const Form = () => {
             <TH>숙소 형태</TH>
             <TD>
               {/* <CustomSelect
-                options={accommodationTypeOptions}
-                value={accommodationType}
-                onChange={(e) => setAccommodationType(e.target.value)}
-              /> */}
+                  options={accommodationTypeOptions}
+                  value={accommodationType}
+                  onChange={(e) => setAccommodationType(e.target.value)}
+                /> */}
               <CustomSelect
                 options={accommodationTypeOptions}
                 value={feature.accommodationType}

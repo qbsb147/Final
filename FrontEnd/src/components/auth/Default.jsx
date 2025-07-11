@@ -12,7 +12,6 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, e
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
   const [socialInfo, setSocialInfo] = useState({});
-
   const [isSocial, setIsSocial] = useState(false);
   const [emailAuthStarted, setEmailAuthStarted] = useState(false);
   const [loading, setLoading] = useState(false);
