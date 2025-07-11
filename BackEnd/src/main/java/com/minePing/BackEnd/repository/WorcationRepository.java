@@ -66,5 +66,8 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
     @Query("SELECT w FROM Worcation w WHERE w.member.userNo = :member")
     List<Worcation> findAllByRefWriter(@Param("member") Long member);
 
+    @Query("SELECT w.worcationNo FROM Worcation w WHERE w.member.userNo = :userNo")
+    List<Long> findIdsByWriter(@Param("userNo") Long userNo);
+
 
 }

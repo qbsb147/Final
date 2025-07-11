@@ -4,17 +4,19 @@ import SearchBtn from '../../assets/SearchBtn.png';
 import btn from '../../styles/Button';
 import { worcationService } from '../../api/worcations';
 import Select from 'react-select';
+import useAuthStore from '../../store/authStore';
 
-const ReservationSearchBar = ({ userNo, onSearch }) => {
+const ReservationSearchBar = ({ onSearch }) => {
   const [worcationList, setWorcationList] = useState([]);
   const [selectedWorcation, setSelectedWorcation] = useState(null);
+  const { loginUser } = useAuthStore();
 
   useEffect(() => {
-    if (!userNo) return;
+    if (!loginUser?.user_no) return;
 
     const fetchWorcations = async () => {
       try {
-        const data = await worcationService.WORCATIONNAME(userNo);
+        const data = await worcationService.WorcationName(loginUser.user_no);
         const formatted = data.map((w) => ({
           value: w.worcation_name,
           label: w.worcation_name,
@@ -26,7 +28,7 @@ const ReservationSearchBar = ({ userNo, onSearch }) => {
     };
 
     fetchWorcations();
-  }, [userNo]);
+  }, [loginUser?.user_no]);
 
   const handleSearchClick = () => {
     if (onSearch && selectedWorcation) {
@@ -45,7 +47,7 @@ const ReservationSearchBar = ({ userNo, onSearch }) => {
             onChange={setSelectedWorcation}
             placeholder="업체를 선택해주세요"
             styles={customStyles}
-            isSearchable={false} // ✅ 입력창 비활성화
+            isSearchable={false}
             menuPlacement="auto"
             noOptionsMessage={() => '등록된 업체가 없습니다'}
           />
