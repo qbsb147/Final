@@ -9,6 +9,7 @@ import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.repository.ApplicationRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
@@ -84,7 +85,8 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .worcation(worcation)
                 .startDate(requestDto.getStartDate())
                 .endDate(requestDto.getEndDate())
-                .approve(CommonEnums.Approve.W) // 신청 시 W(대기)
+                // 신청 시 W(대기), role이 master이면 Y(승인)
+                .approve(member.getRole() != Role.MASTER ? CommonEnums.Approve.Y :  CommonEnums.Approve.W)
                 .build();
 
         //DB에 신청 정보 저장

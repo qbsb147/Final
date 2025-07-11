@@ -166,6 +166,15 @@ const Register = () => {
 
     init();
   }, []); //의존성 없이 최초 진입 시 1회만 실행
+  const handlePreview = async (worcation_no) => {
+    try {
+      const data = await worcationService.getDetail(worcation_no); // 현재 작성 중인 워케이션 데이터를 DTO로 변환
+      navigate(`/worcation/temp/preview/${worcation_no}`, { state: data }); // preview용 route로 이동
+    } catch (err) {
+      console.error('미리보기 실패:', err);
+      Swal.fire('미리보기 실패', '임시 저장 또는 등록 후 다시 시도해주세요.', 'error');
+    }
+  };
 
   const toRequestDto = () => {
     const loginUser = useAuthStore.getState().loginUser;
@@ -293,9 +302,7 @@ const Register = () => {
   useEffect(() => {
     console.log('[DEBUG] isVerified:', isVerified);
   }, [isVerified]);
-  useEffect(() => {
-    console.log('[DEBUG] isVerified:', isVerified);
-  }, [isVerified]);
+
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -327,7 +334,13 @@ const Register = () => {
           <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
           <ContentContainer>
             <BtnGroup>
-              <ActionButton type="button" onClick={handleSample}>
+              <ActionButton
+                type="button"
+                onClick={async () => {
+                  await handleSample(); // 먼저 상태 초기화
+                  handlePreview(worcation_no); // 미리보기 이동
+                }}
+              >
                 미리 보기
               </ActionButton>
             </BtnGroup>
@@ -335,7 +348,7 @@ const Register = () => {
           </ContentContainer>
         </MenuBar>
 
-        <BtnGroup>
+        {/* <BtnGroup>
           <ActionButton
             type="button"
             onClick={isVerified ? handleSave : undefined}
@@ -359,8 +372,8 @@ const Register = () => {
           >
             등록
           </ActionButton>
-        </BtnGroup>
-        {/* <BtnGroup>
+        </BtnGroup> */}
+        <BtnGroup>
           {isVerified ? (
             <ActionButton type="button" onClick={handleSave}>
               임시 저장
@@ -381,6 +394,33 @@ const Register = () => {
               </ActionButton>
             </>
           )}
+        </BtnGroup>
+
+        {/* <BtnGroup>
+          <ActionButton
+            type="button"
+            onClick={handleSave}
+            disabled={!isVerified}
+            style={{
+              background: !isVerified ? '#AEAEAE' : '',
+              opacity: !isVerified ? 0.3 : 1,
+              pointerEvents: !isVerified ? 'none' : 'auto',
+            }}
+          >
+            임시 저장
+          </ActionButton>
+
+          <ActionButton
+            type="button"
+            onClick={handleSubmit}
+            disabled={!isNonNull || !isBusinessValidated}
+            style={{
+              background: !isNonNull || !isBusinessValidated ? '#AEAEAE' : '',
+              opacity: !isNonNull || !isBusinessValidated ? 0.3 : 1,
+            }}
+          >
+            등록
+          </ActionButton>
         </BtnGroup> */}
       </RegisterForm>
     </RegisterContainer>

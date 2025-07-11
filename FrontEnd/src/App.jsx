@@ -116,6 +116,7 @@ function App() {
             {/* 워케이션 상세 및 등록 리스트 */}
             <Route path="/worcation/register-list" element={<WorcationRegister />} />
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
+            <Route path="/worcation/temp/:worcationNo" element={<WorcationDetail />} />
             {/* 식단 */}
             <Route path="/eat" element={<Eat />} /> {/* 식단 정보 */}
             {/* 심리 테스트 */}
