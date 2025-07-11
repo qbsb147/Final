@@ -53,9 +53,9 @@ export const API_ENDPOINTS = {
     VALIDATE: () => '/worcation/validate',
 
     //내워케이션이름 가져오기
-    WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
+    WORCATIONNAME: (user_no) => `/worcations/my/${user_no}`,
 
-    WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
+    WORCATIONRESERVATION: (user_no) => `/worcations/reservaionList/${user_no}`,
 
     GETMYLIST: (user_no) => `/worcations/my-worcations?userNo=${user_no}`,
     //이미지 업로드
