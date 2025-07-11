@@ -1,9 +1,52 @@
 // store/useWorcationStore.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 const useWorcationStore = create(
   persist(
     (set, get) => ({
+      reset: () =>
+        set({
+          application: {
+            worcation_name: '',
+            worcation_category: '',
+            licensee: '',
+            business_id: '',
+            open_date: '',
+          },
+          info: {
+            theme: '',
+            maxPeople: '',
+            partnerPrice: '',
+            nonPartnerPrice: '',
+            phone: '',
+          },
+          description: {
+            detailIntro: '',
+          },
+          photos: {
+            thumbnail: '',
+            officePhotos: [],
+            stayPhotos: [],
+          },
+          location: {
+            address: '',
+            locationDescription: '',
+          },
+          policy: {
+            policyGuide: '',
+            refundPolicy: '',
+          },
+          feature: {
+            locationType: '',
+            dominantColor: '',
+            spaceMood: '',
+            bestFor: '',
+            activities: [],
+            accommodationType: '',
+          },
+          amenities: [],
+        }),
       // 1. 신청 정보
       application: {
         business_id: '',
@@ -23,7 +66,7 @@ const useWorcationStore = create(
       setInfo: (data) => {
         const sanitized = {
           ...data,
-          category: data.category === '' ? null : data.category,
+          category: data.category === '' ? '' : data.category,
         };
         set((state) => ({ info: { ...state.info, ...sanitized } }));
       },
@@ -70,18 +113,18 @@ const useWorcationStore = create(
       policy: {
         refundPolicy: '',
         notice: '',
-        checkinPeriod: 'AM',
-        checkinHour: '9',
-        checkinMinute: '00',
-        checkoutPeriod: 'AM',
-        checkoutHour: '11',
-        checkoutMinute: '00',
-        officeStartPeriod: 'AM',
-        officeStartHour: '9',
-        officeStartMinute: '00',
-        officeEndPeriod: 'PM',
-        officeEndHour: '6',
-        officeEndMinute: '00',
+        checkinPeriod: '',
+        checkinHour: '',
+        checkinMinute: '',
+        checkoutPeriod: '',
+        checkoutHour: '',
+        checkoutMinute: '',
+        officeStartPeriod: '',
+        officeStartHour: '',
+        officeStartMinute: '',
+        officeEndPeriod: '',
+        officeEndHour: '',
+        officeEndMinute: '',
         policyGuide: '',
       },
       setPolicy: (data) => set((state) => ({ policy: { ...state.policy, ...data } })),
@@ -103,8 +146,8 @@ const useWorcationStore = create(
 
       //가격
       price: {
-        partnerPrice: null,
-        nonPartnerPrice: null,
+        partnerPrice: '',
+        nonPartnerPrice: '',
       },
       setPrice: (data) =>
         set((state) => ({

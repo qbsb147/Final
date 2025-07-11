@@ -21,9 +21,7 @@ import { worcationService } from '../../../api/worcations.js';
 
 const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
-  const isValidate = useWorcationStore((state) => state.isValidate());
   const isNonNull = useWorcationStore((state) => state.isNonNull());
-  const worcationData = useWorcationStore((state) => state);
   const { worcation_no } = useParams();
   const isVerified = useBusinessStore((state) => state.isVerified);
   const navigate = useNavigate();
@@ -31,17 +29,55 @@ const Register = () => {
   const handleSample = async () => {
     if (worcation_no) {
       try {
-        const res = await worcationService.getDetail(worcation_no); //바로 await
+        const res = await worcationService.getDetail(worcation_no);
         const data = res.data;
 
-        useWorcationStore.setApplication(data.application);
-        useWorcationStore.setInfo(data.info);
-        useWorcationStore.setDescription(data.description);
-        useWorcationStore.setPhotos(data.photos);
-        useWorcationStore.setAmenities(data.amenities);
-        useWorcationStore.setLocation(data.location);
-        useWorcationStore.setPolicy(data.policy);
-        useWorcationStore.setFeature(data.feature);
+        useWorcationStore.setApplication({
+          worcation_name: data.worcation_name,
+          worcation_category: data.worcation_category,
+          licensee: data.licensee,
+          business_id: data.business_id,
+          open_date: data.open_date?.join('-'),
+        });
+
+        useWorcationStore.setInfo({
+          theme: data.worcation_thema,
+          maxPeople: data.max_people,
+          partnerPrice: data.partner_price,
+          nonPartnerPrice: data.non_partner_price,
+          phone: data.worcation_tel,
+        });
+
+        useWorcationStore.setDescription({
+          detailIntro: data.content,
+        });
+
+        useWorcationStore.setPhotos({
+          thumbnail: data.main_change_photo,
+          officePhotos: [],
+          stayPhotos: [],
+        });
+
+        useWorcationStore.setLocation({
+          address: data.worcation_address,
+          locationDescription: data.navigate,
+        });
+
+        useWorcationStore.setPolicy({
+          policyGuide: data.available_time,
+          refundPolicy: data.refund_policy,
+        });
+
+        useWorcationStore.setFeature({
+          locationType: data.location_type,
+          dominantColor: data.dominant_color,
+          spaceMood: data.space_mood,
+          bestFor: data.best_for,
+          activities: data.activities?.split(','),
+          accommodationType: data.accommodation_type,
+        });
+
+        useWorcationStore.setAmenities(data.amenities || []);
       } catch (err) {
         console.error('데이터 불러오기 실패:', err);
         Swal.fire('불러오기 실패', '다시 시도해주세요.', 'error');
@@ -55,8 +91,17 @@ const Register = () => {
   }, [loginUser]);
 
   useEffect(() => {
-    handleSample(); // 처음 들어올 때 id가 있으면 자동 로딩
-  }, [worcation_no]);
+    const init = async () => {
+      const store = useWorcationStore.getState();
+      if (!worcation_no) {
+        store.reset(); // 새 등록이면 초기화
+      } else {
+        await handleSample(); // 수정이면 데이터 불러오기
+      }
+    };
+
+    init();
+  }, []); //의존성 없이 최초 진입 시 1회만 실행
 
   const toRequestDto = () => {
     const loginUser = useAuthStore.getState().loginUser;
@@ -68,52 +113,47 @@ const Register = () => {
       amenities = [],
       location = {},
       policy = {},
+      price = {},
       feature = {},
     } = useWorcationStore.getState();
 
-    const photo_urls = [];
-    if (Array.isArray(photos.officePhotos)) {
-      photos.officePhotos
-        .filter((url) => !!url) // null, undefined, '' 제거
-        .forEach((url) => photo_urls.push(url));
-    }
+    const photo_urls = [
+      ...(Array.isArray(photos.officePhotos) ? photos.officePhotos.filter(Boolean) : []),
+      ...(Array.isArray(photos.stayPhotos) ? photos.stayPhotos.filter(Boolean) : []),
+    ];
 
-    if (Array.isArray(photos.stayPhotos)) {
-      photos.stayPhotos.filter((url) => !!url).forEach((url) => photo_urls.push(url));
-    }
     return {
-      worcation_name: application.worcation_name ?? '',
-      worcation_category: application.worcation_category ?? null,
-      main_change_photo: photos.thumbnail || 'https://dummy.com/default.jpg',
-      worcation_thema: info.theme ?? '',
-      max_people: info.maxPeople ? parseInt(info.maxPeople) : null,
-      partner_price: info.partnerPrice ? parseInt(info.partnerPrice) : null,
-      non_partner_price: info.nonPartnerPrice ? parseInt(info.nonPartnerPrice) : null,
-      worcation_address: location.address ?? '',
+      worcation_name: info.worcationName || '',
+      worcation_category: info.category || 'Office', // 예시 기본값
+      main_change_photo: photos.mainPhoto || 'https://dummy.com/default.jpg',
+      worcation_thema: info.intro || 'default',
+      max_people: parseInt(info.maxPeople) || null,
+      partner_price: parseInt(price.partnerPrice) || null,
+      non_partner_price: parseInt(price.nonPartnerPrice) || null,
+      worcation_address: location.address || '',
+      member_id: loginUser?.user_no,
+      licensee: application.ownerName || '',
+      business_id: application.businessNo || '',
+      worcation_tel: application.tel || '',
+      charge_amount: info.chargeAmount || 0,
+      content: description.detailIntro || '',
+      navigate: policy.navigate || '',
+      available_time: policy.availableTime || '09:00~18:00',
+      refund_policy: policy.refundPolicy || '',
+      open_date: application.open_date
+        ? new Date(application.open_date).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
 
-      member_id: loginUser.user_no ?? '',
-      licensee: application.licensee ?? '',
-      business_id: application.business_id ?? '',
-      worcation_tel: info.phone ?? '',
-      charge_amount: 0,
-      content: description.detailIntro ?? '',
-      navigate: location.locationDescription ?? '',
-      available_time: policy.policyGuide || '09:00~18:00',
-      refund_policy: policy.refundPolicy ?? '',
-      open_date: application.open_date?.split('T')[0] || '2025-07-10',
-
-      location_type: feature.locationType ?? null,
-      dominant_color: feature.dominantColor ?? null,
-      space_mood: feature.spaceMood ?? null,
-      best_for: feature.bestFor ?? null,
-      activities: Array.isArray(feature.activities) ? feature.activities.join(',') : '',
-      accommodation_type: feature.accommodationType ?? null,
-
-      amenities: amenities ?? [],
-      photo_urls: photo_urls.length > 0 ? photo_urls : ['https://dummy.com/default.jpg'],
+      location_type: feature.locationType || 'city',
+      dominant_color: feature.dominantColor || 'achromatic',
+      space_mood: feature.spaceMood || 'modern',
+      best_for: feature.bestFor || 'work_efficiency',
+      activities: feature.activities?.join(', ') || '',
+      accommodation_type: feature.accommodationType || 'clean_convenient',
+      amenities: amenities.list || [],
+      photo_urls: photos.photos || [],
     };
   };
-
   // const handleSave = () =>
   //   Swal.fire({
   //     title: '저장하시겠습니까?',
@@ -140,10 +180,11 @@ const Register = () => {
         if (worcation_no) {
           await worcationService.update(worcation_no, dto);
         } else {
+          console.log('✅ 최종 전송 데이터:\n', JSON.stringify(dto, null, 2));
           await worcationService.samplesave(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
-        navigate('/worcation/list');
+        navigate('/worcation/register-list');
       } catch (error) {
         console.error('임시 저장 실패:', error);
         Swal.fire('임시 저장 실패', '다시 시도해주세요.', 'error');

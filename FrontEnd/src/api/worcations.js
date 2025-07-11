@@ -21,6 +21,7 @@ export const worcationService = {
   },
   samplesave: async (data) => {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
+    console.log('안녕2 : ' + data);
     return response.data;
   },
   update: async (worcation_no, data) => {
