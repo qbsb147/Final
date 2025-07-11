@@ -444,26 +444,37 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void sendVerificationCode(String email) {
-        String code = String.format("%06d", new Random().nextInt(999999));
+        try {
+            String code = String.format("%06d", new Random().nextInt(999999));
 
-        String key = "verify:"+email;
-        redisTemplate.opsForValue().set(key, code, EXPIRE_TIME, TimeUnit.SECONDS);
+            String key = "verify:"+email;
+            redisTemplate.opsForValue().set(key, code, EXPIRE_TIME, TimeUnit.SECONDS);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("이메일 인증코드");
-        message.setText("인증코드 : "+code);
-        mailSender.send(message);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("이메일 인증코드");
+            message.setText("인증코드 : "+code);
+            mailSender.send(message);
+        } catch (Exception e) {
+            // Redis나 메일 서비스가 사용 불가능한 경우 로그만 남기고 계속 진행
+            System.out.println("인증 코드 전송 실패: " + e.getMessage());
+        }
     }
 
     @Override
     public boolean verifyCode(String email, String inputCode){
-        String Key = "verify:"+email;
-        String saveCode = redisTemplate.opsForValue().get(Key);
-        if (saveCode == null) {
-            throw new NoSuchElementException("인증 정보가 만료되었습니다.");
-        }
+        try {
+            String Key = "verify:"+email;
+            String saveCode = redisTemplate.opsForValue().get(Key);
+            if (saveCode == null) {
+                throw new NoSuchElementException("인증 정보가 만료되었습니다.");
+            }
 
-        return inputCode.equals(saveCode);
+            return inputCode.equals(saveCode);
+        } catch (Exception e) {
+            // Redis가 사용 불가능한 경우 false 반환
+            System.out.println("인증 코드 확인 실패: " + e.getMessage());
+            return false;
+        }
     }
 }

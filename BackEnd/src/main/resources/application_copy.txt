@@ -3,6 +3,10 @@ spring:
     name: mineping
   profiles:
     active: dev
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 gemini:
   api-key: ${GEMINI_API_KEY:제미니 API키}
 stablediffusion:
@@ -29,8 +33,8 @@ aws:
 mail:
     host: smtp.gmail.com
     port: 587
-    username: 구글이메일
-    password: 앱 보안 비밀번호
+    username: ${MAIL_USERNAME:구글이메일}
+    password: ${MAIL_PASSWORD:앱 보안 비밀번호}
     properties:
       mail:
         smtp:
