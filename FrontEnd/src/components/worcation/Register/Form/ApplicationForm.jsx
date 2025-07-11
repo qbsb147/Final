@@ -84,8 +84,8 @@ const Form = () => {
             <TD>
               <RadioButton
                 options={radioOptions}
-                selected={application?.category || 'Office'}
-                onChange={(value) => setApplication({ ...application, category: value })}
+                selected={application?.worcation_category || 'Office'}
+                onChange={(value) => setApplication({ ...application, worcation_category: value })}
               />
             </TD>
           </TR>

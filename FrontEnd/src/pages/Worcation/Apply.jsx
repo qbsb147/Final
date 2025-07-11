@@ -143,7 +143,7 @@ const WorcationApply = () => {
             <Label>워케이션 신청자</Label>
             <ReadOnlyInput value={loginUser?.user_name ?? ''} readOnly />
             <Label>금액</Label>
-            <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
+            <ReadOnlyInput value={worcationInfo?.non_partner_price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
         </CalendarSection>
 

@@ -44,9 +44,9 @@ export const API_ENDPOINTS = {
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
     //임시저장
     SAVE: '/worcations',
-    SAMPLESAVE: '/worcations/sample',
+    // SAMPLESAVE: '/worcations/sample',
     //업체 정보 수정
-    UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
+    UPDATE: (worcation_no) => `/worcations/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
 
     //사업자 정보

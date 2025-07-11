@@ -114,6 +114,7 @@ public class Worcation {
     public void changePartnerPrice(String price) { this.partnerPrice = price; }
     public void changeNonPartnerPrice(Integer price) { this.nonPartnerPrice = price; }
     public void changeAddress(String address) { this.worcationAddress = address; }
+    public void changeStatus(CommonEnums.Status status) {this.status = status;}
     public void assignDetail(WorcationDetail detail) {
         this.worcationDetail = detail;
     }

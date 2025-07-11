@@ -76,7 +76,7 @@
                     .partnerPrice(request.getPartner_price())
                     .nonPartnerPrice(request.getNon_partner_price())
                     .worcationAddress(request.getWorcation_address())
-                    .status(CommonEnums.Status.Y)
+                    .status(request.getStatus() != null ? request.getStatus() : CommonEnums.Status.N)
                     .build();
 
             WorcationDetail detail = WorcationDetail.builder()
@@ -110,56 +110,56 @@
             return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                     List.of());
         }
-        @Override
-        @Transactional
-        public WorcationDto.Response SampleCreate(WorcationDto.Request request) {
-            Member member = memberRepository.findById(request.getMember_id())
-                    .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
-
-            Worcation worcation = Worcation.builder()
-                    .member(member)
-                    .worcationName(request.getWorcation_name())
-                    .worcationCategory(request.getWorcation_category())
-                    .mainChangePhoto(request.getMain_change_photo())
-                    .worcationThema(request.getWorcation_thema())
-                    .maxPeople(request.getMax_people())
-                    .partnerPrice(request.getPartner_price())
-                    .nonPartnerPrice(request.getNon_partner_price())
-                    .worcationAddress(request.getWorcation_address())
-                    .status(CommonEnums.Status.N)
-                    .build();
-
-            WorcationDetail detail = WorcationDetail.builder()
-                    .licensee(request.getLicensee())
-                    .businessId(request.getBusiness_id())
-                    .worcationTel(request.getWorcation_tel())
-                    .chargeAmount(request.getCharge_amount())
-                    .content(request.getContent())
-                    .navigate(request.getNavigate())
-                    .availableTime(request.getAvailable_time())
-                    .refundPolicy(request.getRefund_policy())
-                    .openDate(request.getOpen_date())
-                    .build();
-            detail.assignWorcation(worcation);
-            worcation.assignDetail(detail);
-
-            WorcationFeatures features = WorcationFeatures.builder()
-                    .worcation(worcation)
-                    .locationType(request.getLocation_type())
-                    .dominantColor(request.getDominant_color())
-                    .spaceMood(request.getSpace_mood())
-                    .bestFor(request.getBest_for())
-                    .activities(request.getActivities())
-                    .accommodationType(request.getAccommodation_type())
-                    .build();
-            features.assignWorcation(worcation);
-            worcation.assignFeatures(features);
-
-            worcationRepository.save(worcation); // cascade 설정 시 detail, features도 자동 저장
-
-            return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
-                    List.of());
-        }
+//        @Override
+//        @Transactional
+//        public WorcationDto.Response SampleCreate(WorcationDto.Request request) {
+//            Member member = memberRepository.findById(request.getMember_id())
+//                    .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
+//
+//            Worcation worcation = Worcation.builder()
+//                    .member(member)
+//                    .worcationName(request.getWorcation_name())
+//                    .worcationCategory(request.getWorcation_category())
+//                    .mainChangePhoto(request.getMain_change_photo())
+//                    .worcationThema(request.getWorcation_thema())
+//                    .maxPeople(request.getMax_people())
+//                    .partnerPrice(request.getPartner_price())
+//                    .nonPartnerPrice(request.getNon_partner_price())
+//                    .worcationAddress(request.getWorcation_address())
+//                    .status(request.getStatus() != null ? request.getStatus() : CommonEnums.Status.N)
+//                    .build();
+//
+//            WorcationDetail detail = WorcationDetail.builder()
+//                    .licensee(request.getLicensee())
+//                    .businessId(request.getBusiness_id())
+//                    .worcationTel(request.getWorcation_tel())
+//                    .chargeAmount(request.getCharge_amount())
+//                    .content(request.getContent())
+//                    .navigate(request.getNavigate())
+//                    .availableTime(request.getAvailable_time())
+//                    .refundPolicy(request.getRefund_policy())
+//                    .openDate(request.getOpen_date())
+//                    .build();
+//            detail.assignWorcation(worcation);
+//            worcation.assignDetail(detail);
+//
+//            WorcationFeatures features = WorcationFeatures.builder()
+//                    .worcation(worcation)
+//                    .locationType(request.getLocation_type())
+//                    .dominantColor(request.getDominant_color())
+//                    .spaceMood(request.getSpace_mood())
+//                    .bestFor(request.getBest_for())
+//                    .activities(request.getActivities())
+//                    .accommodationType(request.getAccommodation_type())
+//                    .build();
+//            features.assignWorcation(worcation);
+//            worcation.assignFeatures(features);
+//
+//            worcationRepository.save(worcation); // cascade 설정 시 detail, features도 자동 저장
+//
+//            return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
+//                    List.of());
+//        }
 
         @Override
         @Transactional(readOnly = true)
@@ -246,6 +246,8 @@
             worcation.changePartnerPrice(request.getPartner_price());
             worcation.changeNonPartnerPrice(request.getNon_partner_price());
             worcation.changeAddress(request.getWorcation_address());
+
+            worcation.changeStatus(request.getStatus());
             // 연관 엔티티도 필요시 수정
             WorcationDetail detail = worcation.getWorcationDetail();
             if (detail != null) {

@@ -9,19 +9,11 @@ public class WorcationEnums {
     public enum Category {
         Office, Accommodation, OfficeAndStay;
 
-        @JsonCreator
-        public static Category from(String value) {
-            return Arrays.stream(Category.values())
-                    .filter(e -> e.name().equalsIgnoreCase(value))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid Category: " + value));
-        }
     }
 
     public enum LocationType {
         mountain, river, sea, plain, city;
 
-        @JsonCreator
         public static LocationType from(String value) {
             return Arrays.stream(LocationType.values())
                     .filter(e -> e.name().equalsIgnoreCase(value))
@@ -33,7 +25,6 @@ public class WorcationEnums {
     public enum DominantColor {
         nature_earth, blue_sky, achromatic, yellow_orange, purple;
 
-        @JsonCreator
         public static DominantColor from(String value) {
             return Arrays.stream(DominantColor.values())
                     .filter(e -> e.name().equalsIgnoreCase(value))
@@ -45,7 +36,6 @@ public class WorcationEnums {
     public enum SpaceMood {
         modern, eco_friendly, quiet, urban_nature, camping;
 
-        @JsonCreator
         public static SpaceMood from(String value) {
             return Arrays.stream(SpaceMood.values())
                     .filter(e -> e.name().equalsIgnoreCase(value))
@@ -57,7 +47,6 @@ public class WorcationEnums {
     public enum BestFor {
         work_efficiency, scenery, activity, rest, overall_vibe;
 
-        @JsonCreator
         public static BestFor from(String value) {
             return Arrays.stream(BestFor.values())
                     .filter(e -> e.name().equalsIgnoreCase(value))
@@ -69,7 +58,6 @@ public class WorcationEnums {
     public enum AccommodationType {
         clean_convenient, nature_lodging, camping_car, emotional_style, shared_space;
 
-        @JsonCreator
         public static AccommodationType from(String value) {
             return Arrays.stream(AccommodationType.values())
                     .filter(e -> e.name().equalsIgnoreCase(value))
