@@ -10,7 +10,9 @@ import { Controller } from 'react-hook-form';
 
 const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, emailVerified, setEmailVerified, control }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
   const [socialInfo, setSocialInfo] = useState({});
+
   const [isSocial, setIsSocial] = useState(false);
   const [emailAuthStarted, setEmailAuthStarted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -180,10 +182,21 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, e
         </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="birthday">생년월일</Label>
-          <CustomDatePicker
-            selected={formData1.birthday || null}
-            onChange={(date) => handleChange({ target: { name: 'birthday', value: date } }, 1)}
-            variant="yellow"
+
+          <Controller
+            control={control}
+            name="birthday"
+            render={({ field }) => (
+              <CustomDatePicker
+                selected={field.value || null}
+                onChange={(date) => {
+                  field.onChange(date);
+                  setFormData1((prev) => ({ ...prev, birthday: date }));
+                }}
+                variant="yellow"
+              />
+            )}
+
           />
         </div>
         <div style={{ marginBottom: '16px' }}>

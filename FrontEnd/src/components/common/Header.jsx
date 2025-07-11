@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiUser } from 'react-icons/fi';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 const menuData = [
   {
@@ -47,8 +49,8 @@ const menuData = [
     items: [
       { title: '내 정보', path: '/my/info' },
       { title: '신체 정보', path: '/my/body' },
-      { title: '워케이션 신청내역', path: '/my/worcation-history' },
       { title: '예약자 명단', path: 'my/reservation' },
+      { title: '워케이션 신청내역', path: '/my/worcation-history' },
     ],
   },
 ];
@@ -58,33 +60,29 @@ const Header = () => {
   const navigate = useNavigate();
   const loginUser = useAuthStore((state) => state.loginUser);
   const logout = useAuthStore((state) => state.logout);
-
-  // 로그인 상태 판단 (user가 있으면 로그인된 상태)
   const isLoggedIn = Boolean(loginUser);
 
-  // 메뉴 데이터 로그인 상태에 따라 변경
   const menus = menuData.map((menu) => {
     if (menu.title === '로그인') {
       if (isLoggedIn) {
         return {
           ...menu,
-          title: loginUser.user_name || '내 정보',
+          title: loginUser.user_name + '님' || '내 정보',
           path: '/my/info',
           items: [
             { title: '내 정보', path: '/my/info' },
             { title: '신체 정보', path: '/my/body' },
+            { title: '예약자 명단', path: 'my/reservation' },
             { title: '워케이션 신청내역', path: '/my/worcation-history' },
             { title: '로그아웃', path: '/logout' },
-            { title: '예약자 명단', path: 'my/reservation' },
           ],
         };
       }
-      return menu; // 비로그인 시 '로그인' 버튼 유지
+      return menu;
     }
     return menu;
   });
 
-  // 로그아웃 클릭 핸들러
   const handleLogout = () => {
     logout();
     localStorage.removeItem('token');
@@ -107,9 +105,14 @@ const Header = () => {
               {menus.map((menu, idx) => (
                 <NavItem key={idx} className="nav-item">
                   {menu.title === '로그인' && !isLoggedIn ? (
-                    <StyleLinkButton to="/login">{menu.title}</StyleLinkButton>
-                  ) : menu.title === (loginUser?.user_name || '내 정보') && isLoggedIn ? (
-                    <StyleLink to={menu.path}>{menu.title}</StyleLink>
+                    <StyleLinkColumn to="/login">
+                      <FiUser size={30} />
+                    </StyleLinkColumn>
+                  ) : menu.title === loginUser?.user_name + '님' && isLoggedIn ? (
+                    <StyleLinkColumn to={menu.path}>
+                      <FaRegUserCircle size={24} />
+                      <span>{menu.title}</span>
+                    </StyleLinkColumn>
                   ) : (
                     <StyleLink to={menu.path}>{menu.title}</StyleLink>
                   )}
@@ -165,6 +168,8 @@ const Header = () => {
     </HeaderWrap>
   );
 };
+
+// --- styled-components ---
 
 const HeaderWrap = styled.header`
   position: absolute;
@@ -310,6 +315,30 @@ const StyleLink = styled(Link)`
   color: ${({ theme }) => theme.colors.black};
   text-decoration: none;
   font-weight: ${({ theme }) => theme.fontWeights.bold};
+
+  &:focus {
+    outline: none;
+    border-radius: ${({ theme }) => theme.borderRadius.base};
+    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const StyleLinkColumn = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: ${({ theme }) => theme.colors.black};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+
+  span {
+    margin-top: 6px;
+  }
+
+  &:hover {
+    color: #535bf2;
+  }
 
   &:focus {
     outline: none;
