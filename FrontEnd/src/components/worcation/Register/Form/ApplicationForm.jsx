@@ -19,7 +19,6 @@ const Form = () => {
   const { application, setApplication } = useWorcationStore();
   const { data, result } = useValidation(); // 사업자 진위 확인 결과
   const setIsVerified = useBusinessStore((state) => state.setIsVerified);
-  useBusinessStore.getState().setIsVerified(true);
 
   const {
     register,
@@ -58,6 +57,7 @@ const Form = () => {
 
     const data = await businessApi({ business_id, licensee, open_date: parsedDate });
     if (handleBusinessValidationResult(data)) setApplication({ ...formData, isVerified: true });
+    setIsVerified(true);
 
     // return;
     // } catch (err) {

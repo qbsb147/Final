@@ -8,6 +8,7 @@ const useBusinessStore = create((set) => ({
     openDate: '',
     category: '',
   },
+  isVerified: false,
   setFormData: (data) =>
     set((state) => ({
       formData: { ...state.formData, ...data },

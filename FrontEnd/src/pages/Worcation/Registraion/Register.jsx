@@ -24,6 +24,7 @@ const Register = () => {
   const isNonNull = useWorcationStore((state) => state.isNonNull());
   const { worcation_no } = useParams();
   const isVerified = useBusinessStore((state) => state.isVerified);
+  const setIsVerified = useBusinessStore((state) => state.setIsVerified);
   const resetStore = useWorcationStore((state) => state.reset);
   const navigate = useNavigate();
 
@@ -34,10 +35,6 @@ const Register = () => {
         try {
           const data = await worcationService.getDetail(worcation_no);
           const store = useWorcationStore.getState();
-          console.log('✅ [DATA]', data);
-          console.log('▶ worcation_name:', data.worcation_name);
-          console.log('▶ photos:', data.photos);
-          console.log('▶ amenities:', data.amenities);
 
           // 각 스토어 슬라이스에 데이터 설정
           store.setApplication({
@@ -154,6 +151,10 @@ const Register = () => {
   }, [loginUser]);
 
   useEffect(() => {
+    setIsVerified(false); // 진입 시 진위확인 초기화
+  }, []);
+
+  useEffect(() => {
     const init = async () => {
       const store = useWorcationStore.getState();
       if (!worcation_no) {
@@ -245,11 +246,11 @@ const Register = () => {
 
     if (result.isConfirmed) {
       try {
+        useWorcationStore.getState().setStatus('N');
         const dto = toRequestDto();
         if (worcation_no) {
           await worcationService.update(worcation_no, dto);
         } else {
-          console.log('최종 전송 데이터:\n', dto);
           await worcationService.save(dto);
         }
         Swal.fire('임시 저장되었습니다.', '', 'success');
@@ -288,6 +289,13 @@ const Register = () => {
       }
     }
   };
+
+  useEffect(() => {
+    console.log('[DEBUG] isVerified:', isVerified);
+  }, [isVerified]);
+  useEffect(() => {
+    console.log('[DEBUG] isVerified:', isVerified);
+  }, [isVerified]);
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
@@ -326,7 +334,33 @@ const Register = () => {
             <RenderForm>{renderForm()}</RenderForm>
           </ContentContainer>
         </MenuBar>
+
         <BtnGroup>
+          <ActionButton
+            type="button"
+            onClick={isVerified ? handleSave : undefined}
+            disabled={!isVerified}
+            style={{
+              background: !isVerified ? '#AEAEAE' : '',
+              opacity: !isVerified ? 0.3 : 1,
+            }}
+          >
+            임시 저장
+          </ActionButton>
+
+          <ActionButton
+            type="button"
+            onClick={handleSubmit}
+            disabled={!(isNonNull && isBusinessValidated)}
+            style={{
+              background: !(isNonNull && isBusinessValidated) ? '#AEAEAE' : '',
+              opacity: !(isNonNull && isBusinessValidated) ? 0.3 : 1,
+            }}
+          >
+            등록
+          </ActionButton>
+        </BtnGroup>
+        {/* <BtnGroup>
           {isVerified ? (
             <ActionButton type="button" onClick={handleSave}>
               임시 저장
@@ -338,9 +372,7 @@ const Register = () => {
           )}
           {isNonNull ? (
             <>
-              <ActionButton disabled={!isBusinessValidated} style={{ background: '#AEAEAE' }}>
-                등록
-              </ActionButton>
+              <ActionButton disabled={!isBusinessValidated}>등록</ActionButton>
             </>
           ) : (
             <>
@@ -349,7 +381,7 @@ const Register = () => {
               </ActionButton>
             </>
           )}
-        </BtnGroup>
+        </BtnGroup> */}
       </RegisterForm>
     </RegisterContainer>
   );
