@@ -52,13 +52,13 @@ export const worcationService = {
     return response.data;
   },
 
-  WorcationName: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
+  WorcationName: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(user_no));
     return response.data;
   },
 
-  WorcationReservation: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(userNo));
+  WorcationReservation: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(user_no));
     return response.data;
   },
   getMyList: async (user_no) => {

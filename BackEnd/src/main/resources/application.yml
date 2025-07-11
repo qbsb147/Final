@@ -74,7 +74,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mineping?serverTimezone=Asia/Seoul
-    username: user01
+    username: mine01
     password: pass01
 
   jpa:
