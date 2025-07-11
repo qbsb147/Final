@@ -9,25 +9,46 @@ import { Controller } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
 import { businessApi } from '../../../../api/businessApi.js';
 import useWorcationStore from '../../../../store/useWorcationStore';
+
 // import { toast } from 'react-toastify';
 
 const ApplicationForm = forwardRef((props, ref) => {
-  const [selected, setSelected] = useState('Office');
   const application = useWorcationStore((state) => state.application);
+  const [selected, setSelected] = useState(application.companyType || 'Office');
   const setApplication = useWorcationStore((state) => state.setApplication);
-  const { register, control, getValues, errors, isSubmitting, isValid } = useValidation(application);
+  const { register, control, getValues, errors, isSubmitting, isValid, setValue } = useValidation(application);
+  const setInfo = useWorcationStore((state) => state.setInfo);
 
   useImperativeHandle(ref, () => ({
     getValues,
     isValid,
   }));
 
-  // 폼 언마운트 시 zustand에 저장
+  // 마운트 시 zustand에도 기본값 세팅
   useEffect(() => {
-    return () => {
-      setApplication(getValues());
-    };
-  }, []);
+    if (!application.companyType) {
+      setApplication({ companyType: 'Office' });
+    }
+  }, [application.companyType, setApplication]);
+
+  useEffect(() => {
+    setSelected(application.companyType || 'Office');
+  }, [application.companyType]);
+
+  // store의 값이 변경될 때 form 값 동기화 (무한 루프 방지)
+  useEffect(() => {
+    if (application && Object.keys(application).length > 0) {
+      // 한 번만 실행되도록 조건 추가
+      const currentValues = getValues();
+      if (!currentValues.worcation_name && application.worcation_name) {
+        setValue('worcation_name', application.worcation_name || '');
+        setValue('business_id', application.business_id || '');
+        setValue('licensee', application.licensee || '');
+        setValue('open_date', application.open_date || null);
+        setValue('companyType', application.companyType || 'Office');
+      }
+    }
+  }, []); // 마운트 시에만 실행
 
   const checkBusiness = async () => {
     const allValues = getValues();
@@ -52,6 +73,7 @@ const ApplicationForm = forwardRef((props, ref) => {
   const handleTypeChange = (value) => {
     setSelected(value);
     setApplication({ companyType: value });
+    setInfo({ category: value });
   };
 
   const radioOptions = [

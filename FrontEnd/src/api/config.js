@@ -42,6 +42,8 @@ export const API_ENDPOINTS = {
   WORCATION: {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
+    LISTALL: (user_no) => `/worcations/list/all/${user_no}`,
+    SAVETMP: `worcations/tmp`,
     //임시저장
     SAVE: '/worcations',
     // SAMPLESAVE: '/worcations/sample',

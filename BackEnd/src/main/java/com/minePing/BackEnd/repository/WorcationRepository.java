@@ -69,5 +69,12 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
     @Query("SELECT w.worcationNo FROM Worcation w WHERE w.member.userNo = :userNo")
     List<Long> findIdsByWriter(@Param("userNo") Long userNo);
 
+    // 임시저장: 사업자번호+status로 기존 워케이션 찾기
+    @Query("SELECT w FROM Worcation w JOIN w.worcationDetail d WHERE d.businessId = :businessId AND w.status = :status")
+    Optional<Worcation> findByBusinessIdAndStatus(@Param("businessId") String businessId, @Param("status") CommonEnums.Status status);
+
+    // 최종등록: 사업자번호+status로 중복 존재 여부 체크
+    @Query("SELECT COUNT(w) > 0 FROM Worcation w JOIN w.worcationDetail d WHERE d.businessId = :businessId AND w.status = :status")
+    boolean existsByBusinessIdAndStatus(@Param("businessId") String businessId, @Param("status") CommonEnums.Status status);
 
 }

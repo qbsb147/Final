@@ -6,6 +6,10 @@ export const worcationService = {
     const response = await api.get(API_ENDPOINTS.WORCATION.LIST);
     return response.data;
   },
+  getMyWorcationList: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.LISTALL(user_no));
+    return response.data;
+  },
 
   getDetail: async (worcation_no) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.DETAIL(worcation_no));
@@ -19,11 +23,11 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
-  // samplesave: async (data) => {
-  //   const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
-  //   console.log('안녕2 : ' + data);
-  //   return response.data;
-  // },
+  saveTmpWorcation: async (payload) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.SAVETMP, payload);
+    return response.data;
+  },
+
   update: async (worcation_no, data) => {
     const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
@@ -63,7 +67,6 @@ export const worcationService = {
   },
   getMyList: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
-
     return response.data;
   },
   uploadImage: async (file) => {

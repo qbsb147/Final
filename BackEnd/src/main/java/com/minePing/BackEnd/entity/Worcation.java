@@ -125,4 +125,6 @@ public class Worcation {
         this.member = member;
         return this;
     }
+    public class Response {
+    }
 }
