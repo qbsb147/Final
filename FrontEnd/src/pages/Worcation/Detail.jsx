@@ -9,7 +9,7 @@ import { worcationService } from '../../api/worcations.js';
 import useAuthStore from '../../store/authStore.js';
 
 const WorcationDetail = () => {
-  const loginUser = useAuthStore((state) => state.loginUser?.userId);
+  const loginUser = useAuthStore((state) => state.loginUser);
   const navigate = useNavigate();
   const { worcationNo } = useParams();
   const [worcation, setWorcation] = useState(null);
@@ -80,7 +80,7 @@ const WorcationDetail = () => {
       setEditedContent(review ? review.review_content : '');
     }
   }, [loginUser, reviews]);
-
+  console.log(loginUser?.user_id);
   console.log(worcation);
   if (!worcation) return null;
   const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
@@ -294,7 +294,6 @@ const WorcationDetail = () => {
             {reviews.map((review) => (
               <CommentItem key={review.review_no}>
                 <CommentUser>{review.writer_id} :</CommentUser>
-
                 {editingId === review.review_no ? (
                   <>
                     <CommentText>
@@ -310,7 +309,7 @@ const WorcationDetail = () => {
                     <CommentText>{review.review_content}</CommentText>
 
                     <CommentActions>
-                      {review.writer_id === loginUserId ? (
+                      {review.writer_id === loginUser?.user_id ? (
                         <>
                           <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
                           <ActionBtn onClick={() => handleDelete(review.review_no)}>삭제</ActionBtn>
