@@ -65,6 +65,13 @@ dependencies {
 
 	//s3
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.656'
+	//Spring Boot에서 메일 전송 기능을 간편하게 구현할 수 있도록
+	//필요한 의존성들을 묶어서 제공하는 스타터 패키지입니다.
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	//메일형식을 html로 쉽게 작성하기위한 템플릿엔진
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.withType(JavaCompile).configureEach {

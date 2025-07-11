@@ -131,18 +131,34 @@ const Header = () => {
               .map((menu, idx) => (
                 <DropdownColumn key={idx}>
                   <ul>
-                    {menu.items.map((item, subIdx) => (
-                      <li
-                        key={subIdx}
-                        onClick={() => {
-                          if (item.title === '로그아웃') {
-                            handleLogout();
-                          }
-                        }}
-                      >
-                        <StyleLink to={item.path}>{item.title}</StyleLink>
-                      </li>
-                    ))}
+                    {menu.items
+                      // 로그인 메뉴의 경우, 비로그인 시 특정 항목 숨김
+                      .filter((item) => {
+                        if (
+                          !isLoggedIn &&
+                          (
+                            item.title === '내 정보' ||
+                            item.title === '신체 정보' ||
+                            item.title === '워케이션 신청내역' ||
+                            item.title === '예약자 명단'
+                          )
+                        ) {
+                          return false;
+                        }
+                        return true;
+                      })
+                      .map((item, subIdx) => (
+                        <li
+                          key={subIdx}
+                          onClick={() => {
+                            if (item.title === '로그아웃') {
+                              handleLogout();
+                            }
+                          }}
+                        >
+                          <StyleLink to={item.path}>{item.title}</StyleLink>
+                        </li>
+                      ))}
                   </ul>
                 </DropdownColumn>
               ))}

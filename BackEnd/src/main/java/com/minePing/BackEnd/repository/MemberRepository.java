@@ -2,6 +2,7 @@ package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -46,4 +47,6 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
     Optional<Member> findByUserIdWithCompanyProfile(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
 
     Optional<Member> findBySocialIdAndStatus(String socialId, CommonEnums.Status status);
+
+    Optional<Member> findByUserNoAndStatus(Long userNo, Status status);
 }
