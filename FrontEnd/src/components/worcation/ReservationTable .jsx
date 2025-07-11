@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { worcationService } from '../../api/worcations';
 import ReusableTable from '../Member/table/ReusableTable';
 import styled from 'styled-components';
-import useAuthStore from '../../store/userStore';
+import useAuthStore from '../../store/authStore';
 
 const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   const [members, setMembers] = useState([]);
@@ -20,22 +20,20 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
       { header: '성별', accessor: 'gender' },
       { header: '전화번호', accessor: 'phone' },
       { header: '이메일', accessor: 'company_email' },
-      { header: '예약일자', accessor: 'date' },
+      { header: '예약일자', accessor: 'worcation_date' },
     ],
     []
   );
 
   const filteredMembers = useMemo(() => {
     if (!searchKeyword) return members;
-    return members.filter((m) => m.user_name.toLowerCase().includes(searchKeyword.toLowerCase()));
+    return members.filter((m) => m.worcation_name.toLowerCase().includes(searchKeyword.toLowerCase()));
   }, [members, searchKeyword]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!loginUser) return;
-
       try {
-        const data = await worcationService.WorcationReservation(loginUser.company_no, currentPage, pageSize);
+        const data = await worcationService.WorcationReservation(loginUser.user_no, currentPage, pageSize);
 
         setMembers(data.content);
         setTotalPages(data.total_page);
@@ -45,7 +43,7 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     };
 
     fetchData();
-  }, [loginUser, currentPage, searchKeyword]);
+  }, [loginUser?.user_no, currentPage, searchKeyword]);
 
   const maxPageButtons = 5;
   const currentGroup = Math.floor(currentPage / maxPageButtons);

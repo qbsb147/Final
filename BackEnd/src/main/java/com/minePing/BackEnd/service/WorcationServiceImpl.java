@@ -11,6 +11,8 @@
     import com.minePing.BackEnd.repository.PhotoRepository;
     import java.io.File;
     import java.io.IOException;
+    import java.time.ZoneId;
+    import java.util.Collections;
     import java.util.Date;
     import java.time.LocalDate;
     import java.time.Period;
@@ -21,11 +23,13 @@
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
+    import java.util.Objects;
     import java.util.UUID;
     import java.util.stream.Collectors;
 
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.Pageable;
+    import org.springframework.data.domain.PageImpl;
     import org.springframework.http.HttpEntity;
     import org.springframework.http.HttpHeaders;
     import com.amazonaws.HttpMethod;
@@ -296,28 +300,33 @@
         }
 
         @Override
+        @Transactional(readOnly = true)
         public Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable) {
-            LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
-            Page<WorcationApplication> applications = worcationRepository.findByUserNo(userNo, pageable);
+            List<Long> worcationNos = worcationRepository.findIdsByWriter(userNo);
+            if (worcationNos.isEmpty()) {
+                return Page.empty(pageable);
+            }
 
-            List<WorcationReservation> content = applications.stream()
+            Page<WorcationApplication> pageResult =
+                    worcationRepository.findByWorcationNosAndDate(worcationNos, today, pageable);
+
+            List<WorcationReservation> dtoList = pageResult.getContent().stream()
                     .map(wa -> {
                         Member member = wa.getMember();
                         Worcation worcation = wa.getWorcation();
-                        Company company = member.getCompany();
-                        CompanyProfile companyProfile = member.getCompanyProfile();
+                        CompanyProfile profile = member.getCompanyProfile();
+                        Company company = profile.getCompany();
 
                         int age = Period.between(member.getBirthday(), today).getYears();
+                        String dateRange = wa.getStartDate() + " ~ " + wa.getEndDate();
 
-                        String worcationDate = wa.getStartDate() + " ~ " + wa.getEndDate();
-
-                        return WorcationReservation.toDto(
-                                worcation, member, age, company, companyProfile, worcationDate);
+                        return WorcationReservation.toDto(worcation, member, age, company, profile, dateRange);
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return new org.springframework.data.domain.PageImpl<>(content, pageable, applications.getTotalElements());
+            return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());
         }
         //s3
     //    @Override
