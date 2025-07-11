@@ -56,15 +56,16 @@ public class WorcationController {
         ).body(dto);
     }
 
-    @PostMapping("/sample")
-    public ResponseEntity<WorcationDto.Response> SampleCreate(
-            @RequestBody @Valid WorcationDto.Request request
-    ) {
-        WorcationDto.Response dto = worcationService.SampleCreate(request);
-        return ResponseEntity.created(
-                URI.create("/api/worcations/" + dto.getWorcation_no())
-        ).body(dto);
-    }
+//    @PostMapping("/sample")
+//    public ResponseEntity<WorcationDto.Response> SampleCreate(
+//            @RequestBody @Valid WorcationDto.Request request
+//    ) {
+//        System.out.println("request.getWorcation_category() = " + request.getWorcation_category());
+//        WorcationDto.Response dto = worcationService.SampleCreate(request);
+//        return ResponseEntity.created(
+//                URI.create("/api/worcations/" + dto.getWorcation_no())
+//        ).body(dto);
+//    }
 
     /**
      * 단건 조회
@@ -94,6 +95,7 @@ public class WorcationController {
             @PathVariable("id") Long id,
             @RequestBody @Valid WorcationDto.Request request
     ) {
+        System.out.println("request = " + request.getWorcation_category());
         WorcationDto.Response dto = worcationService.update(id, request);
         return ResponseEntity.ok(dto);
     }

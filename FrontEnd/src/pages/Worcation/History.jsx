@@ -5,13 +5,14 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import useAuthStore from '../../store/authStore';
 import { applicationService } from '../../api/application';
+import { worcationService } from '../../api/worcations';
 
 const WorcationHistory = () => {
   const navigate = useNavigate();
   const [reservedList, setReservedList] = useState([]);
   const [usedList, setUsedList] = useState([]);
   const { loginUser } = useAuthStore();
-
+  const worcationNo = reservedList.worcation_no;
   useEffect(() => {
     if (!loginUser?.user_no) return;
 
@@ -26,6 +27,15 @@ const WorcationHistory = () => {
       setUsedList(used);
     } catch (err) {
       console.log('예약 데이터 조회 실패:', err);
+    }
+  };
+
+  const handleDetail = async (worcationNo) => {
+    try {
+      const data = await worcationService.getDetail(worcationNo);
+      navigate(`/worcation/detail/${worcationNo}`, { state: data });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -67,7 +77,7 @@ const WorcationHistory = () => {
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.space_mood}</ThemeText>
                 <BtnBox>
-                  <Btn onClick={() => navigate(`/worcation/detail/${item.worcation_no}`)}>상세보기</Btn>
+                  <Btn onClick={() => handleDetail}>상세보기</Btn>
                   <Btn onClick={() => handleDelete(item.applicationNo)}>예약취소</Btn>
                 </BtnBox>
               </ThemeBlock>

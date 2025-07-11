@@ -15,12 +15,13 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.REVIEW.ADD, review);
     return response.data;
   },
-  save: async (data) => {
-    const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
-    return response.data;
-  },
+  // save: async (data) => {
+  //   const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
+  //   return response.data;
+  // },
   samplesave: async (data) => {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
+    console.log('안녕2 : ' + data);
     return response.data;
   },
   update: async (worcation_no, data) => {

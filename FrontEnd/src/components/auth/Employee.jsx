@@ -7,8 +7,9 @@ import { formatPhoneNumber } from '../../hooks/useAuth';
 const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [companySearchResults, setCompanySearchResults] = useState([]);
   const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
-  const { positionList, selectedPosition, handlePositionClick, handlePositionSelect } =
-    usePosition(formData2.position_name || '');
+  const { positionList, selectedPosition, handlePositionClick, handlePositionSelect } = usePosition(
+    formData2.position_name
+  );
   const companyNameTimeout = useRef();
 
   const handleChange = (e, step) => {
@@ -74,7 +75,7 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
               name="company_name"
               type="text"
               placeholder="회사명"
-              value={formData2.company_name || ''}
+              value={formData2.company_name}
               onChange={(e) => handleChange(e, 2)}
               onKeyUp={handleCompanyNameKeyUp}
               autoComplete="off"
@@ -98,7 +99,7 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
               name="department"
               type="text"
               placeholder="부서명"
-              value={formData2.department_name || ''}
+              value={formData2.department_name}
               onClick={handleDepartmentClick}
               variant="yellow"
               readOnly
@@ -176,10 +177,12 @@ const EmployeeStep = ({ setFormData1, formData2, setFormData2 }) => {
             type="text"
             placeholder="사내 전화번호"
             value={formData2.company_phone || ''}
-            onChange={e => setFormData2(prev => ({
-              ...prev,
-              company_phone: formatPhoneNumber(e.target.value)
-            }))}
+            onChange={(e) =>
+              setFormData2((prev) => ({
+                ...prev,
+                company_phone: formatPhoneNumber(e.target.value),
+              }))
+            }
             variant="yellow"
           />
         </div>

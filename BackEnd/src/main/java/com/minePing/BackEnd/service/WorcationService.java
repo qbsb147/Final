@@ -14,7 +14,7 @@ public interface WorcationService {
      */
     WorcationDto.Response create(WorcationDto.Request request);
 
-    WorcationDto.Response SampleCreate(WorcationDto.Request request);
+//    WorcationDto.Response SampleCreate(WorcationDto.Request request);
 
     /**
      * 특정 ID의 워케이션 상세 정보를 조회한다.

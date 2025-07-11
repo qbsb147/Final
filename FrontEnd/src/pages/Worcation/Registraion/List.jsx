@@ -131,8 +131,6 @@ const WorcationList = () => {
     const fetchWorcations = async () => {
       try {
         const res = await worcationService.getMyList(userInfo.user_no);
-        console.log('✔️ registered:', res.registered);
-        console.log('✔️ unregistered:', res.unregistered);
         setRegisteredList(res.registered);
         setUnregisteredList(res.unregistered);
       } catch (error) {
