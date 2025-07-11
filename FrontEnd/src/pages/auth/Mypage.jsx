@@ -337,11 +337,18 @@ const Mypage = () => {
           <Title>마이페이지</Title>
           <WithdrawButton
             onClick={async () => {
-              const isPasswordValid = await validateCurrentPassword();
-              if (!isPasswordValid) return;
               const result = await Swal.fire({
                 title: '정말 탈퇴하시겠습니까?',
-                text: '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
+                html:
+                  loginUser.role === 'MASTER'
+                    ? `
+    <p>회사 대표자가 탈퇴하면</p>
+        <p><strong style="color: red;">모든 회사 데이터와 사원 정보가 지워질 수 있습니다.</strong></p>
+    <p>회사 정보를 유지하려면</p>
+    <p><strong style="color: blue;">대표자 권한을 다른 사원에게 위임</strong>하세요.</p>
+
+  `
+                    : '탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -350,6 +357,8 @@ const Mypage = () => {
                 cancelButtonText: '취소',
               });
               if (result.isConfirmed) {
+                const isPasswordValid = await validateCurrentPassword();
+                if (!isPasswordValid) return;
                 await memberService.delete();
                 Swal.fire({
                   icon: 'success',
