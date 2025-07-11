@@ -3,46 +3,49 @@ spring:
     name: mineping
   profiles:
     active: dev
+  config:
+    import: application-secret.yml
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+
 gemini:
-  api-key: ${GEMINI_API_KEY:제미니 API키}
+  api-key: ${GEMINI_API_KEY}
 stablediffusion:
-  api-key: ${STABLEDIFFUSION_API_KEY:test-stablediffusion-api-key}
+  api-key: ${STABLEDIFFUSION_API_KEY}
 business:
-  api-key: ${BUSINESS_API_KEY:국세청 인코딩 키}
+  api-key: ${BUSINESS_API_KEY}
 nts:
   api:
     url: https://api.odcloud.kr/api/nts-businessman/v1/status
-    key: ${BUSINESS_API_KEY:국세청 API 키}
+    key: ${BUSINESS_API_KEY}
 
 jwt:
-  secret: mineping-jwt-secret-key-2024-very-long-and-secure-key-for-development
+  secret: ${JWT_SECRET}
   expiration: 60
-# AWS S3 설정
+
 aws:
-  access-key-id: AWS 엑세스 키
-  secret-access-key: 엑세스 비밀번호
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   s3:
-    bucket-name: myping-images
+    bucket-name: ${AWS_S3_BUCKET}
     region: ap-northeast-2
   cloudfront:
-    domain: dvr2ybzswd4qy.cloudfront.net
+    domain: ${AWS_CLOUDFRONT_DOMAIN}
 mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:구글이메일}
-    password: ${MAIL_PASSWORD:앱 보안 비밀번호}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          starttls:
-            enable: true
-    default-encoding: UTF-8
+  host: ${MAIL_HOST}
+  port: ${MAIL_PORT:587}
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+  properties:
+    mail:
+      smtp:
+        auth: true
+        timeout: 5000
+        starttls:
+          enable: true
+  default-encoding: UTF-8
 
 ---
 spring:
@@ -51,8 +54,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 구글 클라우드 클라이언트 아이디
-            client-secret: 구글 클라우드 클라이언트 시크릿키
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid, email, profile
             authorization-grant-type: authorization_code
@@ -71,8 +74,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mineping?serverTimezone=Asia/Seoul
-    username: ${sql아이디}
-    password: ${sql비밀번호}
+    username: user01
+    password: pass01
 
   jpa:
     hibernate:
