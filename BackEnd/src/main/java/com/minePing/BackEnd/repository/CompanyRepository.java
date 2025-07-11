@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.minePing.BackEnd.enums.CommonEnums;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,4 +23,8 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, Company
     Optional<Long> getCompanyNoByUserNo(@Param("userNo") Long user_no, CommonEnums.Status status);
 
     Company findByCompanyNoAndStatus(Long companyNo, CommonEnums.Status status);
+
+    @Modifying
+    @Query("UPDATE Company c SET c.member.userNo = :newChiefUserNo WHERE c.companyNo = :companyNo")
+    int updateChiefUser(@Param("companyNo") Long companyNo, @Param("newChiefUserNo") Long newChiefUserNo);
 }

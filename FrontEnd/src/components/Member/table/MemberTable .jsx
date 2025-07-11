@@ -3,13 +3,17 @@ import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
 import styled from 'styled-components';
 import useAuthStore from '../../../store/authStore';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../../styles/SwalStyles';
 
 const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   const [members, setMembers] = useState([]);
-  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수
+  const [totalPages, setTotalPages] = useState(1);
   const { loginUser } = useAuthStore();
 
-  const pageSize = 15; // 한 페이지에 보여줄 데이터 수 (백엔드와 맞춰야 함)
+  const isMaster = loginUser?.role === 'MASTER';
+
+  const pageSize = 15;
 
   const roleMap = {
     MASTER: '대표',
@@ -35,10 +39,18 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
           const handleChange = async (e) => {
             const newRoleKey = e.target.value;
 
-            const confirmed = window.confirm(
-              `"${userName}"님의 등급을 "${roleMap[currentRole]}"에서 "${roleMap[newRoleKey]}"로 변경하시겠습니까?`
-            );
-            if (!confirmed) {
+            const result = await Swal.fire({
+              title: '등급 변경',
+              text: `"${userName}"님의 등급을 "${roleMap[currentRole]}"에서 "${roleMap[newRoleKey]}"로 변경하시겠습니까?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: '변경',
+              cancelButtonText: '취소',
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+            });
+
+            if (!result.isConfirmed) {
               e.target.value = currentRole;
               return;
             }
@@ -49,14 +61,26 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
               setMembers((prev) =>
                 prev.map((m) => (m.user_no === currentMember.user_no ? { ...m, role: newRoleKey } : m))
               );
+
+              Swal.fire({
+                icon: 'success',
+                title: '변경 완료',
+                text: `"${userName}"님의 등급이 변경되었습니다.`,
+                timer: 1500,
+                showConfirmButton: false,
+              });
             } catch (err) {
-              alert(err.message || '등급 변경에 실패했습니다.');
+              Swal.fire({
+                icon: 'error',
+                title: '오류 발생',
+                text: err.message || '등급 변경에 실패했습니다.',
+              });
               e.target.value = currentRole;
             }
           };
 
           return (
-            <Select value={currentRole} onChange={handleChange}>
+            <Select value={currentRole} onChange={handleChange} disabled={!isMaster}>
               {Object.entries(roleMap).map(([key, label]) => (
                 <option key={key} value={key}>
                   {label}
@@ -97,7 +121,7 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
         }));
 
         setMembers(formatted);
-        setTotalPages(data.total_page); // 여기 수정됨
+        setTotalPages(data.total_page);
       } catch (error) {
         console.error('데이터 로딩 실패:', error);
       }
@@ -106,7 +130,6 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     fetchData();
   }, [loginUser, currentPage, searchKeyword]);
 
-  // 페이지네이션: 5개씩 묶어서 그룹 단위 이동 구현
   const maxPageButtons = 5;
   const currentGroup = Math.floor(currentPage / maxPageButtons);
   const startPage = currentGroup * maxPageButtons;
@@ -138,6 +161,7 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
 
   return (
     <>
+      <SwalStyles />
       <ReusableTable columns={columns} data={filteredMembers} />
 
       <PaginationContainer>
@@ -168,7 +192,6 @@ const Select = styled.select`
   text-align-last: center;
 `;
 
-// active prop이 DOM으로 전달되지 않도록 처리
 const PageButton = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== 'active',
 })`

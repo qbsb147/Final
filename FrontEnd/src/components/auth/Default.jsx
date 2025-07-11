@@ -11,8 +11,7 @@ import { Controller } from 'react-hook-form';
 const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, emailVerified, setEmailVerified, control }) => {
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
-  const [socialInfo, setSocialInfo] = useState({}); // socialInfo 미사용?
-
+  const [socialInfo, setSocialInfo] = useState({});
   const [isSocial, setIsSocial] = useState(false);
   const [emailAuthStarted, setEmailAuthStarted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -196,11 +195,6 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, e
                 variant="yellow"
               />
             )}
-
-//           <CustomDatePicker
-//             selected={formData1.birthday || null}
-//             onChange={(date) => handleChange({ target: { name: 'birthday', value: date } }, 1)}
-//             variant="yellow"
 
           />
         </div>

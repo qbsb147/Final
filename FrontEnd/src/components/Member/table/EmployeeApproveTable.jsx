@@ -2,34 +2,78 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
 import useAuthStore from '../../../store/authStore';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../../styles/SwalStyles';
 
 const EmployeeApproveTable = ({ searchKeyword }) => {
   const [members, setMembers] = useState([]);
   const { loginUser } = useAuthStore();
 
   const handleApprove = async (row) => {
-    if (!window.confirm(`${row.name}님을 승인하시겠습니까?`)) return;
+    const result = await Swal.fire({
+      title: '승인 요청',
+      text: `${row.name}님을 승인하시겠습니까?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '승인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await companyEmployee.UpdateApproveCheck(row.user_no, 'Y');
-      alert('승인 완료');
+      Swal.fire({
+        icon: 'success',
+        title: '승인 완료',
+        text: `${row.name}님이 승인되었습니다.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
       setMembers((prev) => prev.filter((member) => member.user_no !== row.user_no));
     } catch (error) {
-      alert(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '승인 처리 중 문제가 발생했습니다.',
+      });
     }
   };
 
   const handleReject = async (row) => {
-    if (!window.confirm(`${row.name}님을 거부하시겠습니까?`)) return;
+    const result = await Swal.fire({
+      title: '거부 요청',
+      text: `${row.name}님을 거부하시겠습니까?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '거부',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#999',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await companyEmployee.UpdateApproveCheck(row.user_no, 'N');
-      alert('거부 완료');
+      Swal.fire({
+        icon: 'success',
+        title: '거부 완료',
+        text: `${row.name}님이 거부되었습니다.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
       setMembers((prev) => prev.filter((member) => member.user_no !== row.user_no));
     } catch (error) {
-      alert(error.message);
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '거부 처리 중 문제가 발생했습니다.',
+      });
     }
   };
 
@@ -60,6 +104,7 @@ const EmployeeApproveTable = ({ searchKeyword }) => {
   }, [members, searchKeyword]);
 
   useEffect(() => {
+    if (!loginUser) return;
     const fetchData = async () => {
       try {
         const data = await companyEmployee.getEmployeeApprove(loginUser.company_no);
@@ -84,9 +129,14 @@ const EmployeeApproveTable = ({ searchKeyword }) => {
     };
 
     fetchData();
-  }, []);
+  }, [loginUser]);
 
-  return <ReusableTable columns={columns} data={filteredMembers} onApprove={handleApprove} onReject={handleReject} />;
+  return (
+    <>
+      <SwalStyles />
+      <ReusableTable columns={columns} data={filteredMembers} onApprove={handleApprove} onReject={handleReject} />
+    </>
+  );
 };
 
 export default EmployeeApproveTable;

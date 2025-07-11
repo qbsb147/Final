@@ -3,6 +3,8 @@ import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
 import styled from 'styled-components';
 import useAuthStore from '../../../store/authStore';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../../styles/SwalStyles';
 
 const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   const [members, setMembers] = useState([]);
@@ -28,26 +30,68 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
           const row = filteredMembers[rowIndex];
 
           const handleApprove = async () => {
-            if (!window.confirm(`${row.name}님의 워케이션을 승인하시겠습니까?`)) return;
+            const result = await Swal.fire({
+              title: '승인 요청',
+              text: `${row.name}님의 워케이션을 승인하시겠습니까?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: '승인',
+              cancelButtonText: '취소',
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+            });
+
+            if (!result.isConfirmed) return;
 
             try {
               await companyEmployee.UpdateWorcationCheck(row.user_no, 'Y');
-              alert('승인 완료');
+              await Swal.fire({
+                icon: 'success',
+                title: '승인 완료',
+                text: `${row.name}님의 워케이션이 승인되었습니다.`,
+                timer: 1500,
+                showConfirmButton: false,
+              });
               setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
             } catch (error) {
-              alert(error.message);
+              Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: error.message || '승인 처리 중 문제가 발생했습니다.',
+              });
             }
           };
 
           const handleReject = async () => {
-            if (!window.confirm(`${row.name}님의 워케이션을 거부하시겠습니까?`)) return;
+            const result = await Swal.fire({
+              title: '거부 요청',
+              text: `${row.name}님의 워케이션을 거부하시겠습니까?`,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: '거부',
+              cancelButtonText: '취소',
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#999',
+            });
+
+            if (!result.isConfirmed) return;
 
             try {
               await companyEmployee.UpdateWorcationCheck(row.user_no, 'N');
-              alert('거부 완료');
+              await Swal.fire({
+                icon: 'success',
+                title: '거부 완료',
+                text: `${row.name}님의 워케이션이 거부되었습니다.`,
+                timer: 1500,
+                showConfirmButton: false,
+              });
               setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
             } catch (error) {
-              alert(error.message);
+              Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: error.message || '거부 처리 중 문제가 발생했습니다.',
+              });
             }
           };
 
@@ -131,6 +175,7 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
 
   return (
     <>
+      <SwalStyles />
       <ReusableTable columns={columns} data={filteredMembers} />
 
       <PaginationContainer>
