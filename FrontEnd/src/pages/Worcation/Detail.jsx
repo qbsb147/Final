@@ -6,10 +6,10 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import { worcationService } from '../../api/worcations.js';
+import useAuthStore from '../../store/authStore.js';
 
 const WorcationDetail = () => {
-  // const navigate = useNavigate();
-  // const loginUserId = useUserStore((state) => state.loginUser?.userId);  아마 이걸로 수정할 듯
+  const loginUser = useAuthStore((state) => state.loginUser?.userId);
   const navigate = useNavigate();
   const { worcationNo } = useParams();
   const [worcation, setWorcation] = useState(null);
@@ -73,6 +73,13 @@ const WorcationDetail = () => {
     };
     addFetchData();
   }, []);
+
+  useEffect(() => {
+    if (loginUser !== null) {
+      const review = reviews.find((r) => r.review_no === loginUser);
+      setEditedContent(review ? review.review_content : '');
+    }
+  }, [loginUser, reviews]);
 
   console.log(worcation);
   if (!worcation) return null;
@@ -164,27 +171,22 @@ const WorcationDetail = () => {
 
   const handleSaveEdit = async (review_no) => {
     try {
-      await worcationService.updateReview(
-        review_no,
-        {
-          review_content: editedContent,
-          update_at: new Date().toISOString(),
-        }
-      );
-      alert("댓글을 수정하였습니다.");
+      await worcationService.updateReview(review_no, {
+        review_content: editedContent,
+        update_at: new Date().toISOString(),
+      });
+      alert('댓글을 수정하였습니다.');
 
       setEditingId(null);
       setEditedContent('');
 
       setReviews((prev) =>
         prev.map((r) =>
-          r.review_no === review_no
-            ? { ...r, review_content: editedContent, update_at: new Date().toISOString() }
-            : r
+          r.review_no === review_no ? { ...r, review_content: editedContent, update_at: new Date().toISOString() } : r
         )
       );
     } catch {
-      alert("댓글 수정에 실패하였습니다.");
+      alert('댓글 수정에 실패하였습니다.');
     }
   };
 
@@ -192,12 +194,12 @@ const WorcationDetail = () => {
     try {
       await worcationService.deleteReview(review_no);
       setReviews((prev) => prev.filter((r) => r.review_no !== review_no));
-      alert("댓글이 삭제되었습니다.");
+      alert('댓글이 삭제되었습니다.');
     } catch {
-      alert("댓글 삭제에 실패하였습니다.");
+      alert('댓글 삭제에 실패하였습니다.');
     }
   };
-// 댓글 막기
+  // 댓글 막기
   const today = new Date();
   const endDate = appData ? new Date(appData.end_date) : null;
   const isDisabled = !(appData && appData.approve === 'Y' && endDate > today);
@@ -277,17 +279,14 @@ const WorcationDetail = () => {
       <Wrapper2>
         <ContentSection>
           <CommentInputWrap>
+            {isDisabled && <Overlay>댓글 작성은 워케이션 이용후 이용 가능합니다.</Overlay>}
             <CommentInput
               placeholder="댓글을 입력하세요."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               disabled={isDisabled}
             />
-            <CommentSubmit
-              as={ButtonYbShadow}
-              onClick={handleAddComment}
-              disabled={isDisabled}
-            >
+            <CommentSubmit as={ButtonYbShadow} onClick={handleAddComment} disabled={isDisabled}>
               등록
             </CommentSubmit>
           </CommentInputWrap>
@@ -310,12 +309,19 @@ const WorcationDetail = () => {
                   <>
                     <CommentText>{review.review_content}</CommentText>
 
-                    {review.writer_id === loginUserId && (
-                      <CommentActions>
-                        <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
-                        <ActionBtn onClick={() => handleDelete(review.review_no)}>삭제</ActionBtn>
-                      </CommentActions>
-                    )}
+                    <CommentActions>
+                      {review.writer_id === loginUserId ? (
+                        <>
+                          <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
+                          <ActionBtn onClick={() => handleDelete(review.review_no)}>삭제</ActionBtn>
+                        </>
+                      ) : (
+                        <>
+                          <ActionBtn style={{ visibility: 'hidden' }}>수정</ActionBtn>
+                          <ActionBtn style={{ visibility: 'hidden' }}>삭제</ActionBtn>
+                        </>
+                      )}
+                    </CommentActions>
                   </>
                 )}
               </CommentItem>
@@ -435,6 +441,7 @@ const CommentTitle = styled.h3`
 `;
 
 const CommentInputWrap = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -443,12 +450,15 @@ const CommentInputWrap = styled.div`
 
 const CommentInput = styled.input`
   flex: 1;
+  width: 100%;
   height: 50px;
   border: 2px solid ${({ theme }) => theme.colors.gray[400]};
   border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: 0 20px;
+  padding: 0 10px;
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-family: 'GyeonggiTitleOTF';
+  background: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const CommentSubmit = styled.button``;
@@ -461,30 +471,34 @@ const CommentList = styled.div`
 
 const CommentItem = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid ${({ theme }) => theme.colors.black};
   padding: 10px 0;
 `;
 
 const CommentUser = styled.span`
+  flex-basis: 10%;
+  min-width: 80px;
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-family: 'GyeonggiTitleOTF';
-  width: 20%;
 `;
 
-const CommentText = styled.span`
-  margin-right: 200px;
-  width: auto;
+const CommentText = styled.div`
+  flex-basis: 80%;
   font-size: ${({ theme }) => theme.fontSizes.lg};
   flex: 1;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  padding: 0;
 `;
 
 const CommentActions = styled.div`
+  flex-basis: 10%;
   display: flex;
   gap: 10px;
-  width: 10%;
+  justify-content: flex-end;
 `;
 
 const ActionBtn = styled.button`
@@ -498,3 +512,18 @@ const ActionBtn = styled.button`
   color: ${({ theme }) => theme.colors.black};
 `;
 
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 1);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #e2e2e2;
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+`;
