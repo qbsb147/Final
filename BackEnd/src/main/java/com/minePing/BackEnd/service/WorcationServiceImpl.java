@@ -55,6 +55,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -126,6 +127,12 @@ public class WorcationServiceImpl implements WorcationService {
     }
 
     private WorcationDto.Response saveWorcation(WorcationDto.Request request, CommonEnums.Status status) {
+        // business_id 중복 체크 (모든 상태에서)
+        if (worcationRepository.existsByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.Y) ||
+            worcationRepository.existsByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.N)) {
+            throw new com.minePing.BackEnd.exception.DuplicateResourceException("이미 사용 중인 사업자번호입니다: " + request.getBusiness_id());
+        }
+        
         Member member = memberRepository.findById(request.getMember_id())
             .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
 
@@ -176,34 +183,22 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional(readOnly = true)
     public WorcationDto.Response getById(Long worcationNo) {
-        // 1. 기본 정보 조회
-        Worcation w = worcationRepository.findByIdWithBasicDetails(worcationNo)
+        // 최적화: 한 번의 쿼리로 모든 데이터 조회
+        Worcation w = worcationRepository.findByIdWithAllDetails(worcationNo)
                 .orElseThrow(() -> new WorcationNotFoundException("워케이션을 찾을 수 없습니다: " + worcationNo));
 
-        // 2. Amenities 별도 조회
-        Worcation wWithAmenities = worcationRepository.findByIdWithAmenities(worcationNo).orElse(w);
-
-        // 3. Photos 별도 조회
-        Worcation wWithPhotos = worcationRepository.findByIdWithPhotos(worcationNo).orElse(w);
-
-        // 4. Partners 별도 조회
-        Worcation wWithPartners = worcationRepository.findByIdWithPartners(worcationNo).orElse(w);
-
-        // 5. Applications & Reviews 별도 조회
-        Worcation wWithApplications = worcationRepository.findByIdWithApplications(worcationNo).orElse(w);
-
-        // 6. 엔티티에서 관련 데이터 추출
+        // 모든 데이터가 이미 로드되어 있으므로 별도 조회 불필요
         WorcationDetail d = w.getWorcationDetail();
         WorcationFeatures f = w.getWorcationFeatures();
-        List<WorcationPartner> partners = wWithPartners.getWorcationPartners();
-        List<Review> reviews = wWithApplications.getWorcationApplications().stream()
+        List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
+        List<Review> reviews = w.getWorcationApplications().stream()
                 .map(app -> app.getReview())
                 .filter(java.util.Objects::nonNull)
                 .collect(java.util.stream.Collectors.toList());
-        List<Amenity> amenities = wWithAmenities.getWorcationAmenities().stream()
+        List<Amenity> amenities = w.getWorcationAmenities().stream()
                 .map(WorcationAmenity::getAmenity)
                 .collect(Collectors.toList());
-        List<Photo> photos = wWithPhotos.getPhotos();
+        List<Photo> photos = new ArrayList<>(w.getPhotos());
 
         return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
     }
@@ -211,30 +206,21 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional(readOnly = true)
     public List<WorcationDto.Response> getAll() {
-        return worcationRepository.findAllWithBasicDetails().stream()
+        return worcationRepository.findAllWithAllDetails().stream()
                 .map(w -> {
-                    // 1. 기본 정보에서 추출
+                    // 모든 데이터가 이미 로드되어 있으므로 별도 조회 불필요
                     WorcationDetail d = w.getWorcationDetail();
                     WorcationFeatures f = w.getWorcationFeatures();
 
-                    // 2. Amenities 별도 조회
-                    Worcation wWithAmenities = worcationRepository.findByIdWithAmenities(w.getWorcationNo()).orElse(w);
-                    List<Amenity> amenities = wWithAmenities.getWorcationAmenities().stream()
+                    List<Amenity> amenities = w.getWorcationAmenities().stream()
                             .map(WorcationAmenity::getAmenity)
                             .collect(Collectors.toList());
 
-                    // 3. Photos 별도 조회
-                    Worcation wWithPhotos = worcationRepository.findByIdWithPhotos(w.getWorcationNo()).orElse(w);
-                    List<Photo> photos = wWithPhotos.getPhotos();
+                    List<Photo> photos = new ArrayList<>(w.getPhotos());
 
-                    // 4. Partners 별도 조회
-                    Worcation wWithPartners = worcationRepository.findByIdWithPartners(w.getWorcationNo()).orElse(w);
-                    List<WorcationPartner> partners = wWithPartners.getWorcationPartners();
+                    List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
 
-                    // 5. Applications & Reviews 별도 조회
-                    Worcation wWithApplications = worcationRepository.findByIdWithApplications(w.getWorcationNo())
-                            .orElse(w);
-                    List<Review> reviews = wWithApplications.getWorcationApplications().stream()
+                    List<Review> reviews = w.getWorcationApplications().stream()
                             .map(app -> app.getReview())
                             .filter(java.util.Objects::nonNull)
                             .collect(Collectors.toList());
@@ -248,11 +234,27 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional(readOnly = true)
     public List<WorcationDto.Response> getMyListALl(Long id) {
-        // 전체 워케이션 목록 조회
-        List<WorcationDto.Response> all = getAll();
-        // 작성자 id로 필터링
-        return all.stream()
-            .filter(w -> w.getMember_id().equals(id))
+        // 최적화: 특정 사용자의 워케이션만 조회
+        return worcationRepository.findAllByUserNoWithAllDetails(id).stream()
+                .map(w -> {
+                    WorcationDetail d = w.getWorcationDetail();
+                    WorcationFeatures f = w.getWorcationFeatures();
+                    
+                    List<Amenity> amenities = w.getWorcationAmenities().stream()
+                            .map(WorcationAmenity::getAmenity)
+                            .collect(Collectors.toList());
+                    
+                    List<Photo> photos = new ArrayList<>(w.getPhotos());
+                    
+                    List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
+                    
+                    List<Review> reviews = w.getWorcationApplications().stream()
+                            .map(app -> app.getReview())
+                            .filter(java.util.Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                })
             .collect(Collectors.toList());
     }
 
@@ -309,7 +311,8 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional(readOnly = true)
     public List<WorcationListName> getWorcationListName(Long userNo) {
-        List<Worcation> worcations = worcationRepository.findByMember_UserNoAndStatus(
+        // 최적화: 필요한 데이터만 조회
+        List<Worcation> worcations = worcationRepository.findByMemberUserNoAndStatus(
                 userNo, CommonEnums.Status.Y
         );
 
@@ -362,7 +365,8 @@ public class WorcationServiceImpl implements WorcationService {
 
 
     public Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo) {
-        List<Worcation> all = worcationRepository.findAllByRefWriter(userNo);
+        // 최적화: 한 번의 쿼리로 모든 데이터 조회
+        List<Worcation> all = worcationRepository.findAllByUserNoWithAllDetails(userNo);
 
         List<WorcationDto.SimpleResponse> registered = all.stream()
                 .filter(w -> w.getStatus() == CommonEnums.Status.Y)

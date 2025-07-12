@@ -25,7 +25,6 @@ const Register = () => {
   const [selectedMenu, setSelectedMenu] = useState('Application');
   const [isLoading, setIsLoading] = useState(false);
   const applicationFormRef = useRef();
-  const infoFormRef = useRef();
   const descriptionFormRef = useRef();
   const photoFormRef = useRef();
   const amenitiesFormRef = useRef();
@@ -127,14 +126,14 @@ const Register = () => {
     };
 
     initializeStore();
-  }, []); // 빈 의존성 배열로 변경하여 마운트 시에만 실행
+  }, [worcation, worcation_no]); // 의존성 추가하여 데이터 변경 시 재실행
 
   const renderForm = () => {
     switch (selectedMenu) {
       case 'Application':
         return <ApplicationForm ref={applicationFormRef} />;
       case 'Info':
-        return <InfoForm ref={infoFormRef} />;
+        return <InfoForm />;
       case 'Description':
         return <DescriptionForm ref={descriptionFormRef} />;
       case 'Photo':
@@ -199,6 +198,28 @@ const Register = () => {
     });
   }
 
+  // 파일 업로드 처리 함수
+  async function uploadPhotos(photos) {
+    const uploadedUrls = [];
+
+    for (const photo of photos) {
+      if (photo && photo.file && !photo.uploaded) {
+        try {
+          const imageUrl = await worcationService.uploadImage(photo.file);
+          uploadedUrls.push(imageUrl);
+        } catch (error) {
+          console.error('파일 업로드 실패:', error);
+          throw new Error('파일 업로드에 실패했습니다.');
+        }
+      } else if (photo && photo.uploaded) {
+        // 이미 업로드된 파일은 URL 그대로 사용
+        uploadedUrls.push(photo.url || photo);
+      }
+    }
+
+    return uploadedUrls;
+  }
+
   async function showConfirmSwal(title) {
     return await Swal.fire({
       title,
@@ -214,15 +235,28 @@ const Register = () => {
       alert('사업자번호와 상호명을 입력해주세요.');
       return;
     }
-    const payload = makePayload(allValues, loginUser);
-    const tmp = await showConfirmSwal('임시 저장하시겠습니까?');
-    if (tmp.isConfirmed) {
-      try {
+
+    try {
+      // 임시저장 시에는 사진 정보를 빈 배열로 전달 (File 객체는 서버에서 처리 불가)
+      const payload = makePayload(
+        {
+          ...allValues,
+          photos: {
+            mainPhoto: '',
+            officePhotos: [],
+            stayPhotos: [],
+          },
+        },
+        loginUser
+      );
+
+      const tmp = await showConfirmSwal('임시 저장하시겠습니까?');
+      if (tmp.isConfirmed) {
         await worcationService.saveTmpWorcation(payload);
         Swal.fire('임시 저장되었습니다.', '', 'success');
-      } catch {
-        Swal.fire('저장에 실패하였습니다.', '', 'error');
       }
+    } catch (error) {
+      Swal.fire('저장에 실패하였습니다.', error.message, 'error');
     }
   };
 
@@ -231,18 +265,41 @@ const Register = () => {
       alert('사업자 정보(기본 정보)를 올바르게 입력해주세요.');
       return;
     }
-    const allValues = getAll();
-    const payload = makePayload(allValues, loginUser);
 
-    // 수정 모드인지 확인
-    const isEditMode = worcation || worcation_no;
-    const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
-    const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
-    const errorMessage = isEditMode ? '수정에 실패하였습니다.' : '등록에 실패하였습니다.';
+    try {
+      // 자동 진위확인 수행
+      const isBusinessValid = await applicationFormRef.current.autoCheckBusiness();
+      if (!isBusinessValid) {
+        Swal.fire('사업자 정보 확인 실패', '사업자 정보를 다시 확인해주세요.', 'error');
+        return;
+      }
 
-    const res = await showConfirmSwal(confirmMessage);
-    if (res.isConfirmed) {
-      try {
+      const allValues = getAll();
+
+      // 최종 등록 시에만 사진 업로드 처리
+      const officePhotoUrls = await uploadPhotos(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = await uploadPhotos(allValues.photos.stayPhotos || []);
+
+      const payload = makePayload(
+        {
+          ...allValues,
+          photos: {
+            ...allValues.photos,
+            officePhotos: officePhotoUrls,
+            stayPhotos: stayPhotoUrls,
+          },
+        },
+        loginUser
+      );
+
+      // 수정 모드인지 확인 (미등록 목록에서는 등록 모드로 처리)
+      const isEditMode =
+        (worcation || worcation_no) && (worcation?.status === 'Y' || allValues.application.status === 'Y');
+      const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
+      const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
+
+      const res = await showConfirmSwal(confirmMessage);
+      if (res.isConfirmed) {
         if (isEditMode) {
           // 수정 모드: PATCH API 호출
           const targetWorcationNo = worcation?.worcation_no || worcation_no;
@@ -252,9 +309,9 @@ const Register = () => {
           await worcationService.save(payload);
         }
         Swal.fire(successMessage, '', 'success');
-      } catch {
-        Swal.fire(errorMessage, '', 'error');
       }
+    } catch (error) {
+      Swal.fire('처리에 실패하였습니다.', error.message, 'error');
     }
   };
 

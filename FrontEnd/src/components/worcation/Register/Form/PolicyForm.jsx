@@ -12,21 +12,21 @@ const PolicyForm = forwardRef((props, ref) => {
   // store의 policy 값이 변경될 때마다 동기화 (무한 루프 방지)
   useEffect(() => {
     // store에 이미 값이 있으면 그대로 사용, 없으면 기본값으로 초기화
-    if (policy.checkinHour === undefined) {
+    if (policy.checkinHour === undefined || policy.refundPolicy === undefined) {
       setPolicy({
-        checkinPeriod: 'AM',
-        checkinHour: '9',
-        checkinMinute: '00',
-        checkoutPeriod: 'AM',
-        checkoutHour: '11',
-        checkoutMinute: '00',
-        officeStartPeriod: 'AM',
-        officeStartHour: '9',
-        officeStartMinute: '00',
-        officeEndPeriod: 'PM',
-        officeEndHour: '6',
-        officeEndMinute: '00',
-        refundPolicy: '',
+        checkinPeriod: policy.checkinPeriod || 'AM',
+        checkinHour: policy.checkinHour || '9',
+        checkinMinute: policy.checkinMinute || '00',
+        checkoutPeriod: policy.checkoutPeriod || 'AM',
+        checkoutHour: policy.checkoutHour || '11',
+        checkoutMinute: policy.checkoutMinute || '00',
+        officeStartPeriod: policy.officeStartPeriod || 'AM',
+        officeStartHour: policy.officeStartHour || '9',
+        officeStartMinute: policy.officeStartMinute || '00',
+        officeEndPeriod: policy.officeEndPeriod || 'PM',
+        officeEndHour: policy.officeEndHour || '6',
+        officeEndMinute: policy.officeEndMinute || '00',
+        refundPolicy: policy.refundPolicy || '',
       });
     }
   }, []); // 마운트 시에만 실행

@@ -36,14 +36,62 @@ const WorcationList = () => {
       try {
         const data = await worcationService.getDetail(worcation_no);
 
-        useWorcationStore.setApplication(data.application);
-        useWorcationStore.setInfo(data.info);
-        useWorcationStore.setDescription(data.description);
-        useWorcationStore.setPhotos(data.photos);
-        useWorcationStore.setAmenities(data.amenities);
-        useWorcationStore.setLocation(data.location);
-        useWorcationStore.setPolicy(data.policy);
-        useWorcationStore.setFeature(data.feature);
+        // 스토어에 데이터를 올바른 구조로 설정
+        useWorcationStore.getState().setAllData({
+          application: {
+            worcation_name: data.worcation_name || '',
+            business_id: data.business_id || '',
+            licensee: data.licensee || '',
+            open_date: data.open_date || null,
+            companyType: data.worcation_category || 'Office',
+            partner_price: data.partner_price || '',
+            charge_amount: data.charge_amount || '',
+            status: data.status || 'N',
+          },
+          info: {
+            theme: data.worcation_thema || '',
+            maxPeople: data.max_people || '',
+            price: data.non_partner_price || '',
+            tel: data.worcation_tel || '',
+            policy: data.policy || '',
+          },
+          description: {
+            detailIntro: data.content || '',
+          },
+          location: {
+            address: data.worcation_address || '',
+            locationDescription: data.navigate || '',
+          },
+          policy: {
+            availableTime: data.available_time || '',
+            refundPolicy: data.refund_policy || '',
+            checkinPeriod: 'AM',
+            checkinHour: '9',
+            checkinMinute: '00',
+            checkoutPeriod: 'AM',
+            checkoutHour: '11',
+            checkoutMinute: '00',
+            officeStartPeriod: 'AM',
+            officeStartHour: '9',
+            officeStartMinute: '00',
+            officeEndPeriod: 'PM',
+            officeEndHour: '6',
+            officeEndMinute: '00',
+          },
+          feature: {
+            locationType: data.location_type || '',
+            dominantColor: data.dominant_color || '',
+            spaceMood: data.space_mood || '',
+            bestFor: data.best_for || '',
+            activities: data.activities ? data.activities.split(',') : [],
+            accommodationType: data.accommodation_type || '',
+          },
+          amenities: data.amenities || [],
+          photos: {
+            officePhotos: data.photo_urls || [],
+            stayPhotos: [],
+          },
+        });
       } catch (error) {
         console.error('워케이션 상세 조회 실패:', error);
       }

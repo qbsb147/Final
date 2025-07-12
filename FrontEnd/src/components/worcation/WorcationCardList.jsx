@@ -6,6 +6,7 @@ import useAuthStore from '../../store/authStore';
 
 const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
   const loginUser = useAuthStore((state) => state.loginUser);
+
   const handleDelete = async (worcation_no) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       try {
@@ -26,7 +27,14 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
               {item.main_change_photo ? (
                 <>
                   <source srcSet={item.main_change_photo + '.webp'} type="image/webp" />
-                  <PlaceImage src={item.main_change_photo} alt={item.worcation_name} loading="lazy" />
+                  <PlaceImage
+                    src={item.main_change_photo}
+                    alt={item.worcation_name}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = '/default-image.png';
+                    }}
+                  />
                 </>
               ) : (
                 <PlaceImage src="/default-image.png" alt="no image" loading="lazy" />

@@ -1,5 +1,5 @@
-import api from './axios';
-import { API_CONFIG, API_ENDPOINTS } from './config';
+import api, { fileApi } from './axios';
+import { API_CONFIG, API_ENDPOINTS, IMG_CONFIG } from './config';
 
 export const worcationService = {
   list: async () => {
@@ -73,12 +73,13 @@ export const worcationService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE(), formData, {
+    // fileApi 사용 (일관성 유지)
+    const response = await fileApi.post('/files/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
-    return response.data; // 서버에서 반환한 URL
+    return response.data.imageUrl; // 서버에서 반환한 imageUrl 필드
   },
 };
