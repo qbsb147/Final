@@ -18,7 +18,7 @@ import Cookies from 'js-cookie';
 import MasterProfileStep from '../../components/auth/MaterProfile';
 
 const SignUp = () => {
-  const [formStep, setFormStep] = useState(3);
+  const [formStep, setFormStep] = useState(2);
   const [formData1, setFormData1] = useState({
     gender: 'M',
     role: 'MASTER',
@@ -57,54 +57,44 @@ const SignUp = () => {
     if (formStep === 1) {
       const valid = await validateForm(useDefaultForm, formData1);
       if (!valid) return;
-    } else if (formStep === 2) {
-      let schema = null;
-      if (selectedRole === 'EMPLOYEE') schema = useEmployeeForm;
-      else if (selectedRole === 'MASTER') schema = useMasterProfileForm;
-      if (schema) {
-        const isValid = await validateForm(schema, formData2);
-        if (!isValid) return;
-      }
+    } else if (formStep === 2 && selectedRole === 'EMPLOYEE') {
+      // EMPLOYEE 2단계: 직원 정보 유효성 검사
+      const isValid = await validateForm(useEmployeeForm, formData2);
+      if (!isValid) return;
 
-      // // 2-1. 마스터일 때만 국세청 API 호출
-      // if (selectedRole === 'MASTER') {
-      //   try {
-      //     const data = await businessApi({
-      //       business_id: formData2.business_id,
-      //       licensee: formData2.licensee,
-      //       open_date: formData2.open_date,
-      //     });
-      //     if (!handleBusinessValidationResult(data)) return;
-      //   } catch (err) {
-      //     const msg = err.response?.data?.message || err.message || err;
-      //     toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-      //     return;
-      //   }
-      // }
+      // 2-1. 마스터일 때만 국세청 API 호출
+      if (selectedRole === 'MASTER') {
+        try {
+          const data = await businessApi({
+            business_id: formData2.business_id,
+            licensee: formData2.licensee,
+            open_date: formData2.open_date,
+          });
+          if (!handleBusinessValidationResult(data)) return;
+        } catch (err) {
+          const msg = err.response?.data?.message || err.message || err;
+          toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+          return;
+        }
+      }
+    } else if (formStep === 2 && formData1.role === 'MASTER') {
+      // MASTER 2단계: 회사 정보 유효성 검사
+      const isValid = await validateForm(useMasterForm, formData2);
+      if (!isValid) return;
+      // 2단계에서는 회원가입하지 않고 3단계로 이동
+      setFormStep(3);
+      return;
     } else if (formStep === 3 && formData1.role === 'MASTER') {
-      // 직원 정보 입력 단계 (formData3)
+      // MASTER 3단계: 직원 정보 입력 단계 (formData3)
       const isValid = await validateForm(useMasterProfileForm, formData3);
       if (!isValid) return;
-      try {
-        await memberService.registerProfile(formData3);
-        toast.success('회원가입에 성공했습니다!');
-        navigate('/login');
-      } catch (error) {
-        toast.error(`회원가입 실패 : ${error}`);
-      }
-      return; // 아래 코드 실행 방지
     }
 
-    // 3. 회원가입 API 호출 (1, 2단계)
+    // 3. 회원가입 API 호출
     try {
-      await memberService.register(formData1, formData2);
-      if (selectedRole === 'MASTER') {
-        toast.success('회사 정보가 등록되었습니다, 직원 정보도 등록해주세요.');
-        setFormStep(3);
-      } else {
-        toast.success('회원가입에 성공했습니다!');
-        navigate('/login');
-      }
+      await memberService.register(formData1, formData2, formData3);
+      toast.success('회원가입에 성공했습니다!');
+      navigate('/login');
     } catch (error) {
       toast.error(`회원가입 실패 : ${error}`);
     }
@@ -156,6 +146,7 @@ const SignUp = () => {
               setFormData2={setFormData2}
               setFormData3={setFormData3}
               formData3={formData3}
+              formData2={formData2}
             />
           )}
 
@@ -174,7 +165,7 @@ const SignUp = () => {
                     else handleNext(e);
                   }}
                 >
-                  다음
+                  {selectedRole === 'WORCATION' ? '완료' : '다음'}
                 </Btn>
               </>
             )}

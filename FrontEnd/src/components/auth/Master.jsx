@@ -4,18 +4,37 @@ import Popup from './Popup';
 import CustomDatePicker from '../common/DatePicker';
 import { formatPhoneNumber } from '../../hooks/useAuth';
 
-const HIDDEN_FIELDS = ['address', 'email', 'company_tel'];
-
 const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [showInput, setShowInput] = useState(false);
-  const [departments, setDepartments] = useState({});
+  const [departments, setDepartments] = useState(formData2.departments ? 
+    formData2.departments.reduce((acc, dept, index) => {
+      acc[index + 1] = dept;
+      return acc;
+    }, {}) : {});
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
+  // departments가 변경될 때만 formData2 업데이트 (초기 로드 시 제외)
   useEffect(() => {
-    // departments 객체를 department_name 배열로 변환하여 서버에 전송
-    const departmentNames = Object.values(departments);
-    setFormData2((prev) => ({ ...prev, departments: departmentNames }));
+    // departments가 비어있지 않고, formData2.departments와 다를 때만 업데이트
+    const department_names = Object.values(departments);
+    if (department_names.length > 0) {
+      const currentDepartments = formData2.departments || [];
+      if (JSON.stringify(department_names) !== JSON.stringify(currentDepartments)) {
+        setFormData2((prev) => ({ ...prev, departments: department_names }));
+      }
+    }
   }, [departments]);
+
+  // 초기 로드 시에만 formData2.departments를 departments로 설정
+  useEffect(() => {
+    if (formData2.departments && formData2.departments.length > 0 && Object.keys(departments).length === 0) {
+      const departmentsObj = formData2.departments.reduce((acc, dept, index) => {
+        acc[index + 1] = dept;
+        return acc;
+      }, {});
+      setDepartments(departmentsObj);
+    }
+  }, [formData2.departments]);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -57,6 +76,13 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
       setFormData2((prev) => ({ ...prev, departments: departmentNames }));
     }
     setShowInput(!showInput);
+  };
+
+  // 부서 등록 완료 시 formData2에 저장
+  const handleDepartmentComplete = () => {
+    const department_names = Object.values(departments);
+    setFormData2((prev) => ({ ...prev, departments: department_names }));
+    setShowInput(false);
   };
 
   return (
@@ -113,7 +139,7 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
           {showInput ? (
             <>
               <Popup
-                handleDeptBtnClick={handleDeptBtnClick}
+                handleDeptBtnClick={handleDepartmentComplete}
                 departments={departments}
                 setDepartments={setDepartments}
               />

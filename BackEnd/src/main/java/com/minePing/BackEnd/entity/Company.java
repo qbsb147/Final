@@ -21,7 +21,6 @@ import java.util.List;
                 @UniqueConstraint(name = "uk_business_id", columnNames = "business_id"),
                 @UniqueConstraint(name = "uk_business_email", columnNames = "business_email"),
                 @UniqueConstraint(name = "uk_company_tel", columnNames = "company_tel"),
-                @UniqueConstraint(name = "uk_chief_user_no", columnNames = "chief_user_no")
         }
 )
 public class Company {

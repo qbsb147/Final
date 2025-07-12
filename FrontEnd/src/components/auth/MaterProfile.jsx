@@ -1,16 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import memberService from '../../api/members';
 import { usePosition } from '../../hooks/usePosition';
 import { formatPhoneNumber } from '../../hooks/useAuth';
 
-const MasterProfileStep = ({ setFormData2, setFormData1, formData3, setFormData3 }) => {
-  const [companySearchResults, setCompanySearchResults] = useState([]);
-  const [departmentSearchResults, setDepartmentSearchResults] = useState([]);
+const MasterProfileStep = ({ setFormData2, setFormData1, formData3, setFormData3, formData2 }) => {
+  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
   const { positionList, selectedPosition, handlePositionClick, handlePositionSelect } = usePosition(
     formData3.position_name
   );
-  const companyNameTimeout = useRef();
 
   const handleChange = (e, step) => {
     const { name, value } = e.target;
@@ -18,80 +15,22 @@ const MasterProfileStep = ({ setFormData2, setFormData1, formData3, setFormData3
     else if (step === 2) setFormData3((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCompanyNameKeyUp = (e) => {
-    const value = e.target.value;
-    if (companyNameTimeout.current) clearTimeout(companyNameTimeout.current);
-    companyNameTimeout.current = setTimeout(async () => {
-      if (!value) {
-        setCompanySearchResults([]);
-        return;
-      }
-      try {
-        const data = await memberService.searchCompany(value);
-        setCompanySearchResults(Array.isArray(data) ? data : []);
-      } catch (err) {
-        setCompanySearchResults([]);
-        console.error('회사명 검색 에러:', err);
-      }
-    }, 330);
+  const handleDepartmentClick = () => {
+    setShowDepartmentDropdown(!showDepartmentDropdown);
   };
 
-  const handleDepartmentClick = async () => {
-    try {
-      const data = await memberService.searchDepartment(formData3.company_no);
-      setDepartmentSearchResults(data);
-    } catch (err) {
-      console.err(err);
-      setDepartmentSearchResults([]);
-    }
-  };
-
-  const handleCompanySelect = (company) => {
+  const handleDepartmentSelect = (department_name) => {
     setFormData3((prev) => ({
       ...prev,
-      company_no: company.company_no,
-      company_name: company.company_name,
-      company_address: company.company_address,
+      department_name: department_name,
     }));
-    setCompanySearchResults([]);
-  };
-
-  const handleDepartmentSelect = (department) => {
-    setFormData3((prev) => ({
-      ...prev,
-      department_name: department.department_name,
-    }));
-    setDepartmentSearchResults([]);
+    setShowDepartmentDropdown(false);
   };
 
   return (
     <Body className="InputWrap">
       {/* 왼쪽 컬럼 */}
       <Left>
-        <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="company_name">회사명</Label>
-          <div style={{ position: 'relative' }}>
-            <InputBox
-              name="company_name"
-              type="text"
-              placeholder="회사명"
-              value={formData3.company_name}
-              onChange={(e) => handleChange(e, 2)}
-              onKeyUp={handleCompanyNameKeyUp}
-              autoComplete="off"
-              variant="yellow"
-            />
-            {companySearchResults.length > 0 && (
-              <CompanyDropdown>
-                {companySearchResults.map((company) => (
-                  <DropdownItem key={company.company_no} onClick={() => handleCompanySelect(company)}>
-                    {company.company_name}
-                  </DropdownItem>
-                ))}
-              </CompanyDropdown>
-            )}
-          </div>
-        </div>
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="department">부서명</Label>
           <div style={{ position: 'relative' }}>
@@ -104,11 +43,11 @@ const MasterProfileStep = ({ setFormData2, setFormData1, formData3, setFormData3
               variant="yellow"
               readOnly
             />
-            {departmentSearchResults.length > 0 && (
+            {showDepartmentDropdown && formData2.departments && formData2.departments.length > 0 && (
               <CompanyDropdown>
-                {departmentSearchResults.map((department) => (
-                  <DropdownItem key={department.department_no} onClick={() => handleDepartmentSelect(department)}>
-                    {department.department_name}
+                {formData2.departments.map((department_name, index) => (
+                  <DropdownItem key={index} onClick={() => handleDepartmentSelect(department_name)}>
+                    {department_name}
                   </DropdownItem>
                 ))}
               </CompanyDropdown>
@@ -147,18 +86,7 @@ const MasterProfileStep = ({ setFormData2, setFormData1, formData3, setFormData3
       </Left>
       {/* 오른쪽 컬럼 */}
       <Right>
-        <div style={{ marginBottom: '16px' }}>
-          <Label htmlFor="company_address">회사주소</Label>
-          <InputBox
-            name="company_address"
-            type="text"
-            placeholder="회사주소"
-            value={formData3.company_address || ''}
-            onChange={(e) => handleChange(e, 2)}
-            variant="yellow"
-            readOnly
-          />
-        </div>
+
         <div style={{ marginBottom: '16px' }}>
           <Label htmlFor="company_email">사내 이메일</Label>
           <InputBox

@@ -1,5 +1,7 @@
 package com.minePing.BackEnd.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minePing.BackEnd.dto.AccessTokenDto;
 import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MailVerificationRequestDto;
@@ -25,6 +27,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final KakaoService kakaoService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/signUp/init")
     public ResponseEntity<MemberDto.init> init() {
@@ -40,7 +43,10 @@ public class MemberController {
     }
 
     @PostMapping("signUp/MASTER")
-    public ResponseEntity<Long> singUp(@Valid @RequestBody MemberDto.MasterJoin masterJoinDto) {
+    public ResponseEntity<Long> singUp(@Valid @RequestBody MemberDto.MasterJoin masterJoinDto) throws JsonProcessingException {
+        String json = objectMapper.writerWithDefaultPrettyPrinter()
+                        .writeValueAsString(masterJoinDto);
+        log.debug("json = \n{}",json);
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -82,16 +88,6 @@ public class MemberController {
         memberService.delete();
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("kakao/login")
-    public ResponseEntity<?> kakaoLogin(@RequestBody MemberDto.KakaoLogin kakaoLoginDto) {
-        AccessTokenDto accessTokenDto = kakaoService.getAccessToken(kakaoLoginDto.getCode());
-        KakaoProfileDto kakaoProfileDto = kakaoService.getKakaoProfile(accessTokenDto.getAccess_token());
-//        Member member = memberService.getMemberBySocialId(kakaoProfileDto.getId());
-
-        return ResponseEntity.ok(null);
-    }
-
 
     @PostMapping("validate-password")
     public ResponseEntity<Void> checkPassword(@RequestBody Map<String, String> body){

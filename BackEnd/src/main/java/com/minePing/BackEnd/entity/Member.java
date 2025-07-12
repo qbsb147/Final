@@ -151,12 +151,21 @@ public class Member {
         this.companyProfile.changeCompany(changeCompany);
         this.companyProfile.updateThis(updateDto);
     }
+    public void updateEmployee(MemberDto.Update updateDto){
+        this.name = updateDto.getName();
+        this.address = updateDto.getAddress();
+        this.email = updateDto.getEmail();
+        this.phone = updateDto.getPhone();
+        this.companyProfile.updateThis(updateDto);
+    }
 
     public void updateMaster(MemberDto.Update updateDto){
         this.name = updateDto.getName();
         this.address = updateDto.getAddress();
         this.email = updateDto.getEmail();
         this.phone = updateDto.getPhone();
+        this.companyProfile.updateThis(updateDto);
+        this.companyProfile.getCompany().updateThis(updateDto);
     }
 
     public Member changeStatus(CommonEnums.Status status) {

@@ -81,7 +81,7 @@ public class MemberDto {
         @Valid
         private MemberJoinDto memberJoinDto;
         @Valid
-        private CompanyProfileDto.Join companyProfileJoinDto;
+        private CompanyProfileDto.EmployeeJoin companyProfileJoinDto;
 
         public CompanyProfile toCompanyProfileEntity() {
             return CompanyProfile.builder()
@@ -104,6 +104,8 @@ public class MemberDto {
         private MemberJoinDto memberJoinDto;
         @Valid
         private CompanyDto.Join companyJoinDto;
+        @Valid
+        private CompanyProfileDto.MasterJoin masterProfileJoinDto;
 
         public Company toCompanyEntity() {
             return Company.builder()
@@ -114,6 +116,16 @@ public class MemberDto {
                     .licensee(this.companyJoinDto.getLicensee())
                     .companyTel(this.companyJoinDto.getCompany_tel())
                     .openDate(this.companyJoinDto.getOpen_date())
+                    .build();
+        }
+
+        public CompanyProfile toCompanyProfileEntity() {
+            return CompanyProfile.builder()
+                    .departmentName(this.masterProfileJoinDto.getDepartment_name())
+                    .position(this.masterProfileJoinDto.getPosition())
+                    .companyEmail(this.masterProfileJoinDto.getCompany_email())
+                    .companyPhone(this.masterProfileJoinDto.getCompany_phone())
+                    .approve(CommonEnums.Approve.Y)
                     .build();
         }
     }
@@ -240,6 +252,13 @@ public class MemberDto {
                                     ).collect(Collectors.toList())
                             )
                             .build())
+                    .company_profile_info(CompanyProfileInfoResponse.builder()
+                            .company_phone(member.getCompanyProfile().getCompanyPhone())
+                            .company_email(member.getCompanyProfile().getCompanyEmail())
+                            .position(member.getCompanyProfile().getPosition())
+                            .department_name(member.getCompanyProfile().getDepartmentName())
+                            .build()
+                    )
                     .build();
         }
 

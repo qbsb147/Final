@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 
             }
-            ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
+            ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "중복된 데이터가 존재합니다.", request.getRequestURI());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 
@@ -120,5 +121,12 @@ public class GlobalExceptionHandler {
         log.error("잘못된 상태 예외: {}", ex.getMessage(), ex);
         ErrorResponse error = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException ex, HttpServletRequest request) {
+        log.error("잘못된 상태 예외: {}", ex.getMessage(), ex);
+        ErrorResponse error = ErrorResponse.of(ErrorCode.EXPIRED_JWT, ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

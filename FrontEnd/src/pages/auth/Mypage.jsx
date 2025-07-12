@@ -26,6 +26,7 @@ const Mypage = () => {
   const [loading, setLoading] = useState(false);
 
   const [showInput, setShowInput] = useState(false);
+  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
   const [departments, setDepartments] = useState([]);
   const handleDeptBtnClick = () => {
     if (showInput) {
@@ -97,14 +98,24 @@ const Mypage = () => {
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_name: memberData?.company_info?.company_name || '',
-            company_address: memberData?.company_info?.company_address || '',
-            business_email: memberData?.company_info?.business_email || '',
-            company_tel: memberData?.company_info?.company_tel || '',
+            company_name: memberData?.company_info?.company_name,
+            company_address: memberData?.company_info?.company_address,
+            business_email: memberData?.company_info?.business_email,
+            company_tel: memberData?.company_info?.company_tel,
             departments: mappedDepartments,
+            department_name: memberData.company_profile_info?.department_name,
+            position: memberData.company_profile_info?.position,
+            company_email: memberData.company_profile_info?.company_email,
+            company_phone: memberData.company_profile_info?.company_phone,
           };
 
           setDepartments(mappedDepartments);
+          // departmentsArray 형태로 변환하여 userInfo에 설정
+          const initialDepartmentsArray = Object.entries(mappedDepartments).map(([key, deptName]) => ({
+            department_no: parseInt(key) > 0 ? parseInt(key) : null,
+            department_name: deptName,
+          }));
+          setUserInfo((prev) => ({ ...prev, departments: initialDepartmentsArray }));
         } else if (loginUser.role === 'EMPLOYEE' || loginUser.role === 'MANAGER') {
           mappedData = {
             user_no: memberData.user_no,
@@ -116,12 +127,12 @@ const Mypage = () => {
             birthday: memberData.birthday,
             gender: memberData.gender,
             registration_role: memberData.role,
-            company_no: memberData.company_profile_info?.company_info?.company_no || '',
-            company_name: memberData.company_profile_info?.company_info?.company_name || '',
-            department_name: memberData.company_profile_info?.department_name || '',
-            position: memberData.company_profile_info?.position || '',
-            company_email: memberData.company_profile_info?.company_email || '',
-            company_phone: memberData.company_profile_info?.company_phone || '',
+            company_no: memberData.company_profile_info?.company_info?.company_no,
+            company_name: memberData.company_profile_info?.company_info?.company_name,
+            department_name: memberData.company_profile_info?.department_name,
+            position: memberData.company_profile_info?.position,
+            company_email: memberData.company_profile_info?.company_email,
+            company_phone: memberData.company_profile_info?.company_phone,
           };
         }
 
@@ -151,7 +162,6 @@ const Mypage = () => {
   }
 
   const handleCompanySelect = (company) => {
-    // 현재 회사와 다른 회사를 선택했을 때만 확인 다이얼로그 표시
     if (userInfo.company_no && userInfo.company_no !== company.company_no) {
       Swal.fire({
         title: '정말 회사를 바꾸시겠습니까?',
@@ -164,7 +174,6 @@ const Mypage = () => {
         cancelButtonText: '취소',
       }).then((result) => {
         if (result.isConfirmed) {
-          // 승인하면 회사 변경
           setUserInfo((prev) => ({
             ...prev,
             position: null,
@@ -174,12 +183,10 @@ const Mypage = () => {
           }));
           setCompanySearchResults([]);
         } else {
-          // 취소하면 이전 값으로 되돌리기 위해 검색 결과만 초기화
           setCompanySearchResults([]);
         }
       });
     } else {
-      // 같은 회사이거나 처음 선택하는 경우 바로 변경
       setUserInfo((prev) => ({
         ...prev,
         company_no: company.company_no,
@@ -208,8 +215,6 @@ const Mypage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (emailChange || !emailVerified) {
-      console.log('emailChange', emailChange);
-      console.log('emailVerified', emailVerified);
       toast.warn('이메일 검증이 되지 않았습니다.');
       return;
     }
@@ -219,6 +224,19 @@ const Mypage = () => {
     if (!isPasswordValid) return;
 
     try {
+      // MASTER 역할인 경우 departments를 배열 형태로 변환
+      let departmentsArray = userInfo.departments;
+      if (
+        loginUser.role === 'MASTER' &&
+        typeof userInfo.departments === 'object' &&
+        !Array.isArray(userInfo.departments)
+      ) {
+        departmentsArray = Object.entries(userInfo.departments).map(([key, deptName]) => ({
+          department_no: parseInt(key) > 0 ? parseInt(key) : null,
+          department_name: deptName,
+        }));
+      }
+
       let submitData = {
         user_pwd: userInfo.user_pwd,
         name: userInfo.name,
@@ -237,11 +255,10 @@ const Mypage = () => {
           company_address: userInfo.company_address,
           business_email: userInfo.business_email,
           company_tel: userInfo.company_tel,
-          departments: userInfo.departments,
+          departments: departmentsArray,
         },
       };
 
-      console.log(submitData);
       await memberService.updateMember(submitData);
 
       Swal.fire({
@@ -461,8 +478,13 @@ const Mypage = () => {
                       확인
                     </EmailChangeButton>
                   </div>
-                  {emailAuthStarted ? (
-                    <Timer seconds={300} isActive={emailAuthStarted} onTimeout={handleTimeout} colorChangeSec={30} />
+                  {emailAuthStarted && !emailVerified ? (
+                    <Timer
+                      seconds={300}
+                      isActive={emailAuthStarted && !emailVerified}
+                      onTimeout={handleTimeout}
+                      colorChangeSec={30}
+                    />
                   ) : (
                     <div style={{ color: 'red' }}>시간이 초과되었습니다</div>
                   )}
@@ -494,6 +516,17 @@ const Mypage = () => {
                 readOnly={!doUpdate}
               />
             </InputGroup>
+            <InputGroup>
+              <InputName>나이</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="number"
+                name="age"
+                value={userInfo.age || ''}
+                onChange={handleInputChange}
+                readOnly
+              />
+            </InputGroup>
           </Box>
           {/* 두 번째 박스: 추가 정보 */}
           <Box>
@@ -505,17 +538,6 @@ const Mypage = () => {
                 name="address"
                 value={userInfo.address || ''}
                 onClick={doUpdate ? () => handleAddressSearch('address') : undefined}
-                readOnly
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputName>나이</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="number"
-                name="age"
-                value={userInfo.age || ''}
-                onChange={handleInputChange}
                 readOnly
               />
             </InputGroup>
@@ -570,6 +592,28 @@ const Mypage = () => {
                 />
                 워케이션 업체
               </RadioGroup>
+            </InputGroup>
+            <InputGroup>
+              <InputName>사내 이메일</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="company_email"
+                value={userInfo.company_email || ''}
+                onChange={handleInputChange}
+                readOnly={!doUpdate}
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputName>사내 전화번호</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="company_phone"
+                value={userInfo.company_phone || ''}
+                onChange={handleInputChange}
+                readOnly={!doUpdate}
+              />
             </InputGroup>
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
@@ -664,6 +708,38 @@ const Mypage = () => {
                     )}
                   </InputGroup>
                 )}
+                {loginUser?.role === 'MASTER' && (
+                  <InputGroup style={{ position: 'relative' }}>
+                    <InputName>부서명</InputName>
+                    <InputText
+                      style={Input.InputGray}
+                      type="text"
+                      name="department_name"
+                      value={userInfo.department_name || ''}
+                      onClick={doUpdate ? () => setShowDepartmentDropdown(!showDepartmentDropdown) : undefined}
+                      readOnly
+                    />
+                    {doUpdate && showDepartmentDropdown && (
+                      <>
+                        {Object.entries(departments).length > 0 && (
+                          <CompanyDropdown>
+                            {Object.entries(departments).map(([deptNo, deptName]) => (
+                              <DropdownItem
+                                key={deptNo}
+                                onClick={() => {
+                                  setUserInfo((prev) => ({ ...prev, department_name: deptName }));
+                                  setShowDepartmentDropdown(false);
+                                }}
+                              >
+                                {deptName}
+                              </DropdownItem>
+                            ))}
+                          </CompanyDropdown>
+                        )}
+                      </>
+                    )}
+                  </InputGroup>
+                )}
                 {(loginUser?.role === 'EMPLOYEE' || loginUser?.role === 'MANAGER' || loginUser?.role === 'MASTER') && (
                   <InputGroup style={{ position: 'relative' }}>
                     <InputName>직급</InputName>
@@ -671,8 +747,8 @@ const Mypage = () => {
                       style={Input.InputGray}
                       type="text"
                       name="position"
-                      value={loginUser?.role === 'MASTER' ? '대표' : selectedPosition}
-                      onClick={loginUser?.role !== 'MASTER' && doUpdate ? handlePositionClick : undefined}
+                      value={selectedPosition}
+                      onClick={doUpdate && handlePositionClick}
                       readOnly
                     />
                     {positionList.length > 0 && (
