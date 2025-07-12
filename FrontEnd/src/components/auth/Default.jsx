@@ -87,6 +87,7 @@ const DefaultStep = ({ formData1, setFormData1, setSelectedRole, setFormData2, e
       setLoading(false);
       toast.success('인증 코드가 발송되었습니다. 메일을 확인해주세요.');
     } catch (error) {
+      setLoading(false);
       toast.error(error || '인증코드 발송 실패');
     }
   };
