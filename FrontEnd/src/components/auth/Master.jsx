@@ -164,10 +164,12 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
                 type="text"
                 placeholder="기업전화번호"
                 value={formData2.company_tel || ''}
-                onChange={e => setFormData2(prev => ({
-                  ...prev,
-                  company_tel: formatPhoneNumber(e.target.value)
-                }))}
+                onChange={(e) =>
+                  setFormData2((prev) => ({
+                    ...prev,
+                    company_tel: formatPhoneNumber(e.target.value),
+                  }))
+                }
                 variant="yellow"
                 readOnly={showInput}
               />
@@ -247,32 +249,6 @@ const Label = styled.label`
   text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing.s2};
   margin-left: ${({ theme }) => theme.spacing.s1};
-`;
-
-const CompanyDropdown = styled.ul`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #fffbe6;
-  border: 1px solid #ffeb8c;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  z-index: 10;
-  max-height: 220px;
-  overflow-y: auto;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-`;
-
-const DropdownItem = styled.li`
-  padding: 10px 16px;
-  height: 44px;
-  cursor: pointer;
-  &:hover {
-    background: #fff3b0;
-  }
 `;
 
 const AddressSearchButton = styled.button`

@@ -18,7 +18,7 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
     Optional<Member> findByUserIdAndStatus(String userId, CommonEnums.Status status);
     Optional<Member> findById(Long userNo);
 
-    @Query("select m from Member m join fetch m.company c join fetch c.departments where m.userId = :userId and m.status = :status")
+    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.userId = :userId and m.status = :status")
     Optional<Member> findMasterInfoByUserId(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
 
     @Query("""
@@ -40,7 +40,7 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
     @Query("update Member m set m.userPwd = :updatedPwd where m.userId = :userId")
     int updatePwdByUserId(@Param("userId") String userId, @Param("updatedPwd") String updatedPwd);
 
-    @Query("select m from Member m join fetch m.company c join fetch c.departments where m.userId = :userId and m.status = :status")
+    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.userId = :userId and m.status = :status")
     Optional<Member> findByUserIdWithCompany(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
 
     @Query("select m from Member m join fetch m.companyProfile where m.userId = :userId and m.status = :status")
@@ -48,5 +48,6 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
 
     Optional<Member> findBySocialIdAndStatus(String socialId, CommonEnums.Status status);
 
-    Optional<Member> findByUserNoAndStatus(Long userNo, Status status);
+    @Query("select m from Member m join fetch m.companyProfile cp where cp.company.companyNo = :companyNo and m.role = :role ")
+    Optional<Member> findMaster(@Param("companyNo")Long companyNo, @Param("role") CommonEnums.Role role);
 }

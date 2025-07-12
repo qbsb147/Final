@@ -31,11 +31,6 @@ public class Company {
     @Column(name = "company_no")
     private Long companyNo;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chief_user_no", nullable = false, unique = true)
-    private Member member;
-
-
     @Column(name = "company_name", nullable = false, length = 150)
     private String companyName;
 
@@ -86,11 +81,6 @@ public class Company {
         if(this.status == null) {
             this.status = CommonEnums.Status.Y;
         }
-    }
-
-    public void changeMember(Member member) {
-        this.member = member;
-        member.assignCompany(this);
     }
 
     @PreUpdate

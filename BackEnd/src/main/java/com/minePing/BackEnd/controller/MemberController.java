@@ -40,7 +40,7 @@ public class MemberController {
     }
 
     @PostMapping("signUp/MASTER")
-    public ResponseEntity<Void> singUp(@Valid @RequestBody MemberDto.MasterJoin masterJoinDto) {
+    public ResponseEntity<Long> singUp(@Valid @RequestBody MemberDto.MasterJoin masterJoinDto) {
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
