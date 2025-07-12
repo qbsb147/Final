@@ -44,18 +44,18 @@ export const API_ENDPOINTS = {
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
     //임시저장
     SAVE: '/worcations',
-    SAMPLESAVE: '/worcations/sample',
+    // SAMPLESAVE: '/worcations/sample',
     //업체 정보 수정
-    UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
+    UPDATE: (worcation_no) => `/worcations/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
 
     //사업자 정보
     VALIDATE: () => '/worcation/validate',
 
     //내워케이션이름 가져오기
-    WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
+    WORCATIONNAME: (user_no) => `/worcations/my/${user_no}`,
 
-    WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
+    WORCATIONRESERVATION: (user_no) => `/worcations/reservaionList/${user_no}`,
 
     GETMYLIST: (user_no) => `/worcations/my-worcations?userNo=${user_no}`,
     //이미지 업로드

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { companyEmployee } from '../../../api/company';
 import ReusableTable from './ReusableTable';
 import styled from 'styled-components';
-import useAuthStore from '../../../store/authStore';
+import useAuthStore from '../../../store/userStore';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles';
 

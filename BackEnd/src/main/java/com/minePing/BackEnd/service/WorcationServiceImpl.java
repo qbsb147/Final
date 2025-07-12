@@ -11,6 +11,8 @@
     import com.minePing.BackEnd.repository.PhotoRepository;
     import java.io.File;
     import java.io.IOException;
+    import java.time.ZoneId;
+    import java.util.Collections;
     import java.util.Date;
     import java.time.LocalDate;
     import java.time.Period;
@@ -21,11 +23,13 @@
     import java.util.HashMap;
     import java.util.List;
     import java.util.Map;
+    import java.util.Objects;
     import java.util.UUID;
     import java.util.stream.Collectors;
 
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.Pageable;
+    import org.springframework.data.domain.PageImpl;
     import org.springframework.http.HttpEntity;
     import org.springframework.http.HttpHeaders;
     import com.amazonaws.HttpMethod;
@@ -76,7 +80,7 @@
                     .partnerPrice(request.getPartner_price())
                     .nonPartnerPrice(request.getNon_partner_price())
                     .worcationAddress(request.getWorcation_address())
-                    .status(CommonEnums.Status.Y)
+                    .status(request.getStatus() != null ? request.getStatus() : CommonEnums.Status.N)
                     .build();
 
             WorcationDetail detail = WorcationDetail.builder()
@@ -110,57 +114,57 @@
             return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                     List.of());
         }
-
-        @Override
-        @Transactional
-        public WorcationDto.Response SampleCreate(WorcationDto.Request request) {
-            Member member = memberRepository.findById(request.getMember_id())
-                    .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
-
-            Worcation worcation = Worcation.builder()
-                    .member(member)
-                    .worcationName(request.getWorcation_name())
-                    .worcationCategory(request.getWorcation_category())
-                    .mainChangePhoto(request.getMain_change_photo())
-                    .worcationThema(request.getWorcation_thema())
-                    .maxPeople(request.getMax_people())
-                    .partnerPrice(request.getPartner_price())
-                    .nonPartnerPrice(request.getNon_partner_price())
-                    .worcationAddress(request.getWorcation_address())
-                    .status(CommonEnums.Status.N)
-                    .build();
-
-            WorcationDetail detail = WorcationDetail.builder()
-                    .licensee(request.getLicensee())
-                    .businessId(request.getBusiness_id())
-                    .worcationTel(request.getWorcation_tel())
-                    .chargeAmount(request.getCharge_amount())
-                    .content(request.getContent())
-                    .navigate(request.getNavigate())
-                    .availableTime(request.getAvailable_time())
-                    .refundPolicy(request.getRefund_policy())
-                    .openDate(request.getOpen_date())
-                    .build();
-            detail.assignWorcation(worcation);
-            worcation.assignDetail(detail);
-
-            WorcationFeatures features = WorcationFeatures.builder()
-                    .worcation(worcation)
-                    .locationType(request.getLocation_type())
-                    .dominantColor(request.getDominant_color())
-                    .spaceMood(request.getSpace_mood())
-                    .bestFor(request.getBest_for())
-                    .activities(request.getActivities())
-                    .accommodationType(request.getAccommodation_type())
-                    .build();
-            features.assignWorcation(worcation);
-            worcation.assignFeatures(features);
-
-            worcationRepository.save(worcation); // cascade 설정 시 detail, features도 자동 저장
-
-            return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
-                    List.of());
-        }
+      
+//        @Override
+//        @Transactional
+//        public WorcationDto.Response SampleCreate(WorcationDto.Request request) {
+//            Member member = memberRepository.findById(request.getMember_id())
+//                    .orElseThrow(() -> new UserNotFoundException("해당 멤버가 없습니다: " + request.getMember_id()));
+//
+//            Worcation worcation = Worcation.builder()
+//                    .member(member)
+//                    .worcationName(request.getWorcation_name())
+//                    .worcationCategory(request.getWorcation_category())
+//                    .mainChangePhoto(request.getMain_change_photo())
+//                    .worcationThema(request.getWorcation_thema())
+//                    .maxPeople(request.getMax_people())
+//                    .partnerPrice(request.getPartner_price())
+//                    .nonPartnerPrice(request.getNon_partner_price())
+//                    .worcationAddress(request.getWorcation_address())
+//                    .status(request.getStatus() != null ? request.getStatus() : CommonEnums.Status.N)
+//                    .build();
+//
+//            WorcationDetail detail = WorcationDetail.builder()
+//                    .licensee(request.getLicensee())
+//                    .businessId(request.getBusiness_id())
+//                    .worcationTel(request.getWorcation_tel())
+//                    .chargeAmount(request.getCharge_amount())
+//                    .content(request.getContent())
+//                    .navigate(request.getNavigate())
+//                    .availableTime(request.getAvailable_time())
+//                    .refundPolicy(request.getRefund_policy())
+//                    .openDate(request.getOpen_date())
+//                    .build();
+//            detail.assignWorcation(worcation);
+//            worcation.assignDetail(detail);
+//
+//            WorcationFeatures features = WorcationFeatures.builder()
+//                    .worcation(worcation)
+//                    .locationType(request.getLocation_type())
+//                    .dominantColor(request.getDominant_color())
+//                    .spaceMood(request.getSpace_mood())
+//                    .bestFor(request.getBest_for())
+//                    .activities(request.getActivities())
+//                    .accommodationType(request.getAccommodation_type())
+//                    .build();
+//            features.assignWorcation(worcation);
+//            worcation.assignFeatures(features);
+//
+//            worcationRepository.save(worcation); // cascade 설정 시 detail, features도 자동 저장
+//
+//            return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
+//                    List.of());
+//        }
 
         @Override
         @Transactional(readOnly = true)
@@ -247,6 +251,8 @@
             worcation.changePartnerPrice(request.getPartner_price());
             worcation.changeNonPartnerPrice(request.getNon_partner_price());
             worcation.changeAddress(request.getWorcation_address());
+
+            worcation.changeStatus(request.getStatus());
             // 연관 엔티티도 필요시 수정
             WorcationDetail detail = worcation.getWorcationDetail();
             if (detail != null) {
@@ -294,28 +300,33 @@
         }
 
         @Override
+        @Transactional(readOnly = true)
         public Page<WorcationReservation> getWorcationReservation(Long userNo, Pageable pageable) {
-            LocalDate today = LocalDate.now();
+            LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
 
-            Page<WorcationApplication> applications = worcationRepository.findByUserNo(userNo, pageable);
+            List<Long> worcationNos = worcationRepository.findIdsByWriter(userNo);
+            if (worcationNos.isEmpty()) {
+                return Page.empty(pageable);
+            }
 
-            List<WorcationReservation> content = applications.stream()
+            Page<WorcationApplication> pageResult =
+                    worcationRepository.findByWorcationNosAndDate(worcationNos, today, pageable);
+
+            List<WorcationReservation> dtoList = pageResult.getContent().stream()
                     .map(wa -> {
                         Member member = wa.getMember();
                         Worcation worcation = wa.getWorcation();
-                        Company company = member.getCompany();
-                        CompanyProfile companyProfile = member.getCompanyProfile();
+                        CompanyProfile profile = member.getCompanyProfile();
+                        Company company = profile.getCompany();
 
                         int age = Period.between(member.getBirthday(), today).getYears();
+                        String dateRange = wa.getStartDate() + " ~ " + wa.getEndDate();
 
-                        String worcationDate = wa.getStartDate() + " ~ " + wa.getEndDate();
-
-                        return WorcationReservation.toDto(
-                                worcation, member, age, company, companyProfile, worcationDate);
+                        return WorcationReservation.toDto(worcation, member, age, company, profile, dateRange);
                     })
-                    .collect(Collectors.toList());
+                    .toList();
 
-            return new org.springframework.data.domain.PageImpl<>(content, pageable, applications.getTotalElements());
+            return new PageImpl<>(dtoList, pageable, pageResult.getTotalElements());
         }
         //s3
     //    @Override

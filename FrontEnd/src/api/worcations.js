@@ -19,10 +19,11 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
-  samplesave: async (data) => {
-    const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
-    return response.data;
-  },
+  // samplesave: async (data) => {
+  //   const response = await api.post(API_ENDPOINTS.WORCATION.SAMPLESAVE, data);
+  //   console.log('안녕2 : ' + data);
+  //   return response.data;
+  // },
   update: async (worcation_no, data) => {
     const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
@@ -51,13 +52,13 @@ export const worcationService = {
     return response.data;
   },
 
-  WorcationName: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
+  WorcationName: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(user_no));
     return response.data;
   },
 
-  WorcationReservation: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(userNo));
+  WorcationReservation: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(user_no));
     return response.data;
   },
   getMyList: async (user_no) => {

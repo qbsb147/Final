@@ -131,8 +131,6 @@ const WorcationList = () => {
     const fetchWorcations = async () => {
       try {
         const res = await worcationService.getMyList(userInfo.user_no);
-        console.log('✔️ registered:', res.registered);
-        console.log('✔️ unregistered:', res.unregistered);
         setRegisteredList(res.registered);
         setUnregisteredList(res.unregistered);
       } catch (error) {
@@ -183,7 +181,7 @@ const WorcationList = () => {
         {registeredList?.map((item) => (
           <PlaceCard key={item.worcation_no}>
             {/* <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} /> */}
-            <PlaceImage src={item.main_change_photo || '/default.jpg'} alt={item.name} />
+            <PlaceImage src={item.main_change_photo || '/default.jpg'} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
                 <PlaceLocation>{item.address}</PlaceLocation>
