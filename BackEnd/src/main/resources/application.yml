@@ -35,7 +35,7 @@ aws:
     domain: ${AWS_CLOUDFRONT_DOMAIN}
 mail:
   host: ${MAIL_HOST}
-  port: ${MAIL_PORT}
+  port: ${MAIL_PORT:587}
   username: ${MAIL_USERNAME}
   password: ${MAIL_PASSWORD}
   properties:
@@ -74,13 +74,12 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mineping?serverTimezone=Asia/Seoul
-    username: user01
-    password: pass01
-
+    username: root
+    password: 1234
 
   jpa:
     hibernate:
-      ddl-auto: update 
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
