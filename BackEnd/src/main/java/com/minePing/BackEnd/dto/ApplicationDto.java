@@ -7,6 +7,7 @@ import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.text.html.parser.Entity;
 import lombok.*;
 
 /**
@@ -36,6 +37,8 @@ public class ApplicationDto {
         private String reviewContent;     // 작성된 리뷰가 있는 경우 내용
         private Worcation worcation; // 워케이션 엔티티 전체
         private Member member; //회원 데이터 전체
+        private WorcationDto.Response worcationDto;
+
 
         /**
          * Entity → DTO 변환 메서드
@@ -113,7 +116,7 @@ public class ApplicationDto {
         private LocalDate startDate;
         private LocalDate endDate;
 
-        // ✅ 날짜 범위 계산 메서드
+        // 날짜 범위 계산 메서드
         public List<LocalDate> getDateRange() {
             List<LocalDate> dates = new ArrayList<>();
             LocalDate current = startDate;
