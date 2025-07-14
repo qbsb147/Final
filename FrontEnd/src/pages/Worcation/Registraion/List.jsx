@@ -24,10 +24,14 @@ const WorcationList = () => {
         const allList = await worcationService.getMyWorcationList(loginUser.user_no);
 
         // 각 워케이션에 메인사진 정보 추가
-        const processedList = allList.map((worcation) => ({
-          ...worcation,
-          mainPhoto: worcation.photos && worcation.photos.length > 0 ? worcation.photos[0].image_url : null,
-        }));
+        const processedList = allList.map((worcation) => {
+          let sortedPhotos = worcation.photos ? [...worcation.photos] : [];
+          sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+          return {
+            ...worcation,
+            mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+          };
+        });
 
         setRegisteredList(processedList.filter((w) => w.status === 'Y'));
         setUnregisteredList(processedList.filter((w) => w.status === 'N'));
@@ -144,6 +148,7 @@ const NameBox = styled.div`
   align-items: end;
   padding-bottom: ${({ theme }) => theme.spacing.s2};
   justify-content: space-between;
+  margin-bottom: 20px;
 `;
 
 const Container = styled.div`

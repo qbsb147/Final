@@ -16,7 +16,16 @@ const WorcationPartnersPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await worcationService.list();
-      setWorcations(data);
+      // 각 워케이션에 mainPhoto(S3 URL) 필드 추가
+      const processedList = data.map((w) => {
+        let sortedPhotos = w.photos ? [...w.photos] : [];
+        sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+        return {
+          ...w,
+          mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+        };
+      });
+      setWorcations(processedList);
     };
     fetchData();
   }, []);

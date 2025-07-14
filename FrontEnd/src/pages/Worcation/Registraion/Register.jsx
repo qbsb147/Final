@@ -293,14 +293,17 @@ const Register = () => {
       }
 
       const allValues = getAll();
-
-      // 이미 업로드된 이미지 URL 사용 (PhotoForm에서 즉시 업로드됨)
       const officePhotoUrls = extractPhotoUrls(allValues.photos.officePhotos || []);
       const stayPhotoUrls = extractPhotoUrls(allValues.photos.stayPhotos || []);
 
+      // status: 'Y' 강제 세팅 (수정모드일 때)
       const payload = makePayload(
         {
           ...allValues,
+          application: {
+            ...allValues.application,
+            status: isEditMode ? 'Y' : allValues.application.status,
+          },
           photos: {
             ...allValues.photos,
             officePhotos: officePhotoUrls,
@@ -310,9 +313,8 @@ const Register = () => {
         loginUser
       );
 
-      // 수정 모드인지 확인 (미등록 목록에서는 등록 모드로 처리)
-      const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
-      const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
+      const confirmMessage = isEditMode ? '등록하시겠습니까?' : '등록하시겠습니까?';
+      const successMessage = isEditMode ? '등록되었습니다.' : '등록되었습니다.';
 
       const res = await showConfirmSwal(confirmMessage);
       if (res.isConfirmed) {
@@ -341,9 +343,7 @@ const Register = () => {
           <MenuBar>
             <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
             <ContentContainer>
-              <BtnGroup>
-                <ActionButton type="button">미리 보기</ActionButton>
-              </BtnGroup>
+              <BtnGroup>{!isEditMode && <ActionButton type="button">미리 보기</ActionButton>}</BtnGroup>
               <RenderForm>{renderForm()}</RenderForm>
             </ContentContainer>
           </MenuBar>
@@ -352,7 +352,7 @@ const Register = () => {
               임시 저장
             </ActionButton>
             <ActionButton type="button" onClick={handleSubmit}>
-              {isEditMode ? '수정' : '등록'}
+              등록
             </ActionButton>
           </BtnGroup>
         </RegisterForm>
