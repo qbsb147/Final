@@ -33,13 +33,21 @@ const Register = () => {
   const featureFormRef = useRef();
   const getAll = useWorcationStore((state) => state.getAll);
   const setAllData = useWorcationStore((state) => state.setAllData);
+  const resetStore = useWorcationStore((state) => state.resetAll);
   const loginUser = useAuthStore((state) => state.loginUser);
+
+  const isEditMode = !!(worcation || worcation_no);
 
   useEffect(() => {
     const initializeStore = async () => {
       setIsLoading(true);
       try {
-        if (worcation) {
+        // 새로운 등록 모드인 경우 store 초기화
+        if (!isEditMode) {
+          resetStore();
+          // 강제로 초기화 후 약간의 지연을 두어 상태가 완전히 반영되도록 함
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } else if (worcation) {
           // store에 기존 데이터 설정
           setAllData({
             application: {
@@ -127,7 +135,16 @@ const Register = () => {
     };
 
     initializeStore();
-  }, [worcation, worcation_no]); // 의존성 추가하여 데이터 변경 시 재실행
+  }, [worcation, worcation_no, isEditMode]); // 의존성 배열에서 resetStore, setAllData 제거
+
+  // 컴포넌트 언마운트 시 store 초기화 (새로운 등록 모드인 경우에만)
+  useEffect(() => {
+    return () => {
+      if (!isEditMode) {
+        resetStore();
+      }
+    };
+  }, [isEditMode, resetStore]);
 
   const renderForm = () => {
     switch (selectedMenu) {
@@ -200,26 +217,21 @@ const Register = () => {
     });
   }
 
-  // 파일 업로드 처리 함수
-  async function uploadPhotos(photos) {
-    const uploadedUrls = [];
+  // 이미 업로드된 사진 URL 추출 함수
+  function extractPhotoUrls(photos) {
+    const urls = [];
 
     for (const photo of photos) {
-      if (photo && photo.file && !photo.uploaded) {
-        try {
-          const imageUrl = await worcationService.uploadImage(photo.file);
-          uploadedUrls.push(imageUrl);
-        } catch (error) {
-          console.error('파일 업로드 실패:', error);
-          throw new Error('파일 업로드에 실패했습니다.');
-        }
-      } else if (photo && photo.uploaded) {
+      if (photo && photo.uploaded && photo.url) {
         // 이미 업로드된 파일은 URL 그대로 사용
-        uploadedUrls.push(photo.url || photo);
+        urls.push(photo.url);
+      } else if (photo && typeof photo === 'string') {
+        // 문자열로 된 URL인 경우
+        urls.push(photo);
       }
     }
 
-    return uploadedUrls;
+    return urls;
   }
 
   async function showConfirmSwal(title) {
@@ -239,14 +251,17 @@ const Register = () => {
     }
 
     try {
-      // 임시저장 시에는 사진 정보를 빈 배열로 전달 (File 객체는 서버에서 처리 불가)
+      // 임시저장 시에도 업로드된 이미지 URL 사용
+      const officePhotoUrls = extractPhotoUrls(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = extractPhotoUrls(allValues.photos.stayPhotos || []);
+
       const payload = makePayload(
         {
           ...allValues,
           photos: {
-            mainPhoto: '',
-            officePhotos: [],
-            stayPhotos: [],
+            ...allValues.photos,
+            officePhotos: officePhotoUrls,
+            stayPhotos: stayPhotoUrls,
           },
         },
         loginUser
@@ -269,18 +284,19 @@ const Register = () => {
     }
 
     try {
-      // 자동 진위확인 수행
-      const isBusinessValid = await applicationFormRef.current.autoCheckBusiness();
-      if (!isBusinessValid) {
-        Swal.fire('사업자 정보 확인 실패', '사업자 정보를 다시 확인해주세요.', 'error');
-        return;
+      if (!isEditMode) {
+        const isBusinessValid = await applicationFormRef.current.autoCheckBusiness();
+        if (!isBusinessValid) {
+          Swal.fire('사업자 정보 확인 실패', '사업자 정보를 다시 확인해주세요.', 'error');
+          return;
+        }
       }
 
       const allValues = getAll();
 
-      // 최종 등록 시에만 사진 업로드 처리
-      const officePhotoUrls = await uploadPhotos(allValues.photos.officePhotos || []);
-      const stayPhotoUrls = await uploadPhotos(allValues.photos.stayPhotos || []);
+      // 이미 업로드된 이미지 URL 사용 (PhotoForm에서 즉시 업로드됨)
+      const officePhotoUrls = extractPhotoUrls(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = extractPhotoUrls(allValues.photos.stayPhotos || []);
 
       const payload = makePayload(
         {
@@ -295,8 +311,6 @@ const Register = () => {
       );
 
       // 수정 모드인지 확인 (미등록 목록에서는 등록 모드로 처리)
-      const isEditMode =
-        (worcation || worcation_no) && (worcation?.status === 'Y' || allValues.application.status === 'Y');
       const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
       const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
 
@@ -338,7 +352,7 @@ const Register = () => {
               임시 저장
             </ActionButton>
             <ActionButton type="button" onClick={handleSubmit}>
-              등록
+              {isEditMode ? '수정' : '등록'}
             </ActionButton>
           </BtnGroup>
         </RegisterForm>

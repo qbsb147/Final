@@ -162,6 +162,7 @@ public class WorcationDto {
     public static class PhotoResponse {
         private Long photo_no;
         private String change_name;
+        private String image_url;
 
         public static PhotoResponse fromEntity(com.minePing.BackEnd.entity.Photo photo) {
             if (photo == null)
@@ -169,6 +170,7 @@ public class WorcationDto {
             return PhotoResponse.builder()
                     .photo_no(photo.getPhotoNo())
                     .change_name(photo.getChangeName())
+                    .image_url(photo.getImageUrl())
                     .build();
         }
     }
