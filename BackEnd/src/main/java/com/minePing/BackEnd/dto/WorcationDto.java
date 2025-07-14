@@ -219,6 +219,7 @@ public class WorcationDto {
         private List<AmenityResponse> amenities;
         private List<PhotoResponse> photos;
 
+
         public static Response fromEntity(
                 Worcation w,
                 WorcationDetail d,

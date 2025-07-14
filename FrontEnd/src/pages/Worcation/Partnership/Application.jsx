@@ -13,7 +13,7 @@ const Application = () => {
   useEffect(() => {
     if (!loginUser?.user_id) return;
 
-    if (loginUser.role !== 'MASTER' || loginUser !== 'MANAGER') {
+    if (loginUser.role !== 'MASTER' && loginUser.role !== 'MANAGER') {
       navigate('/error');
       return;
     }

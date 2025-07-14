@@ -115,7 +115,7 @@ function App() {
             <Route path="/my/body" element={<BodyInfo />} /> {/* 신체 정보 */}
             <Route path="my/reservation" element={<Reservation />} /> {/* 예약자 확인*/}
             {/* 워케이션 상세 및 등록 리스트 */}
-            <Route path="/worcation/register-list" element={<WorcationRegister />} />
+            <Route path="/worcation/register-list" element={<WorcationRegister />} /> {/*워케이션 등록 리시트 */}
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
             <Route path="/worcation/temp/:worcationNo" element={<WorcationDetail />} />
             {/* 식단 */}
