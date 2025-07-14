@@ -109,7 +109,6 @@ const WorcationApply = () => {
     };
 
     if (isFull()) {
-      alert('선택한 날짜 중 예약 마감된 날짜가 포함되어 있습니다.');
       return;
     }
 
@@ -125,7 +124,7 @@ const WorcationApply = () => {
       navigate('/my/worcation-history');
     } catch (err) {
       console.error('신청 실패:', err);
-      alert('신청 중 오류가 발생했습니다.');
+      alert('선택한 날짜 중 예약 마감된 날짜가 포함되어 있습니다.');
     }
   };
 

@@ -21,17 +21,17 @@ public class WorcationRepositoryImpl implements WorcationRepositoryV1 {
     @Override
     public Page<WorcationApplication> findByWorcationNosAndDate(List<Long> worcationNos, LocalDate today, Pageable pageable) {
         String jpql = """
-            SELECT wa
-            FROM WorcationApplication wa
-            JOIN FETCH wa.member m
-            JOIN FETCH m.companyProfile cp
-            JOIN FETCH cp.company c
-            JOIN FETCH wa.worcation w
-            WHERE w.worcationNo IN :worcationNos
-              AND wa.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y
-              AND ((wa.startDate <= :today AND wa.endDate >= :today) OR wa.startDate > :today)
-            ORDER BY m.name ASC
-        """;
+        SELECT wa
+        FROM WorcationApplication wa
+        JOIN wa.member m
+        JOIN m.companyProfile cp
+        JOIN cp.company c
+        JOIN wa.worcation w
+        WHERE w.worcationNo IN :worcationNos
+          AND wa.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y
+          AND ((wa.startDate <= :today AND wa.endDate >= :today) OR wa.startDate > :today)
+        ORDER BY m.name ASC
+    """;
 
         TypedQuery<WorcationApplication> query = em.createQuery(jpql, WorcationApplication.class);
         query.setParameter("worcationNos", worcationNos);
@@ -41,13 +41,13 @@ public class WorcationRepositoryImpl implements WorcationRepositoryV1 {
         List<WorcationApplication> content = query.getResultList();
 
         String countJpql = """
-            SELECT COUNT(wa)
-            FROM WorcationApplication wa
-            JOIN wa.worcation w
-            WHERE w.worcationNo IN :worcationNos
-              AND wa.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y
-              AND ((wa.startDate <= :today AND wa.endDate >= :today) OR wa.startDate > :today)
-        """;
+        SELECT COUNT(wa)
+        FROM WorcationApplication wa
+        JOIN wa.worcation w
+        WHERE w.worcationNo IN :worcationNos
+          AND wa.approve = com.minePing.BackEnd.enums.CommonEnums.Approve.Y
+          AND ((wa.startDate <= :today AND wa.endDate >= :today) OR wa.startDate > :today)
+    """;
 
         Long total = em.createQuery(countJpql, Long.class)
                 .setParameter("worcationNos", worcationNos)

@@ -61,8 +61,10 @@ export const worcationService = {
     return response.data;
   },
 
-  WorcationReservation: async (user_no) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(user_no));
+  WorcationReservation: async (user_no, page = 0, size = 15) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(user_no), {
+      params: { page, size },
+    });
     return response.data;
   },
   getMyList: async (user_no) => {
