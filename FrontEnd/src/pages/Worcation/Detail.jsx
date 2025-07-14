@@ -84,7 +84,8 @@ const WorcationDetail = () => {
   console.log(worcation);
   if (!worcation) return null;
   const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
-  const images = [worcation.main_change_photo, ...(photos ? photos.map((p) => p.change_name) : [])].filter(Boolean);
+  const sortedPhotos = [...(photos || [])].sort((a, b) => a.photo_no - b.photo_no);
+  const images = [worcation.main_change_photo, ...sortedPhotos.map((p) => p.image_url)].filter(Boolean);
 
   //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
@@ -220,7 +221,6 @@ const WorcationDetail = () => {
             <Slider {...settings}>
               {images.map((src, idx) => (
                 <picture key={idx}>
-                  <source srcSet={src + '.webp'} type="image/webp" />
                   <SliderImage src={src} alt={`slide-${idx}`} loading="lazy" />
                 </picture>
               ))}
