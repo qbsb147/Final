@@ -41,7 +41,6 @@ const WorcationAppliesList = () => {
         <CalenderContainoer />
         <Title>워케이션 신청자</Title>
         <Container>
-          {/* 검색 바가 있으면 넣으세요 */}
           <MemberSearchBar onSearch={setSearchKeyword} />
           <WorcationTable searchKeyword={searchKeyword} currentPage={currentPage} setCurrentPage={setCurrentPage} />
         </Container>

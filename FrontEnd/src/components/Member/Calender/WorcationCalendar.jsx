@@ -7,6 +7,8 @@ import { format, parse, startOfWeek, getDay, isWithinInterval, startOfDay, endOf
 import ko from 'date-fns/locale/ko';
 import { companyEmployee } from '../../../api/company';
 import useAuthStore from '../../../store/authStore';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../../styles/SwalStyles';
 
 const locales = { ko };
 const localizer = dateFnsLocalizer({
@@ -30,55 +32,68 @@ const WorcationCalendar = () => {
   const [events, setEvents] = useState([]);
   const { loginUser } = useAuthStore();
 
-  const fetchEvents = async () => {
-    try {
-      const data = await companyEmployee.CalendarEmployee(loginUser.company_no);
+  useEffect(() => {
+    const fetchEvents = async (companyNo) => {
+      try {
+        const data = await companyEmployee.CalendarEmployee(companyNo);
 
-      const dateMap = {};
+        const dateMap = {};
 
-      data.forEach((item) => {
-        const start = new Date(item.start_date);
-        const end = new Date(item.end_date);
+        data.forEach((item) => {
+          const start = new Date(item.start_date);
+          const end = new Date(item.end_date);
 
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-          const dateKey = formatDateToLocalString(d);
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            const dateKey = formatDateToLocalString(d);
 
-          if (!dateMap[dateKey]) dateMap[dateKey] = [];
+            if (!dateMap[dateKey]) dateMap[dateKey] = [];
 
-          dateMap[dateKey].push({
-            name: item.user_name,
-            location: item.worcation_place,
-          });
-        }
-      });
+            dateMap[dateKey].push({
+              name: item.user_name,
+              location: item.worcation_place,
+            });
+          }
+        });
 
-      const formatted = Object.entries(dateMap).map(([dateKey, users]) => {
-        const [year, month, day] = dateKey.split('-');
-        const date = new Date(year, month - 1, day);
+        const formatted = Object.entries(dateMap).map(([dateKey, users]) => {
+          const [year, month, day] = dateKey.split('-');
+          const date = new Date(year, month - 1, day);
 
-        return {
-          title: `워케이션 인원: ${users.length}명`,
-          start: date,
-          end: date,
-          allDay: true,
-          resource: users,
-          // backgroundColor 제거
-        };
-      });
+          return {
+            title: `워케이션 인원: ${users.length}명`,
+            start: date,
+            end: date,
+            allDay: true,
+            resource: users,
+          };
+        });
 
-      setEvents(formatted);
-    } catch (error) {
-      console.error('워케이션 일정 불러오기 실패:', error);
+        setEvents(formatted);
+      } catch (error) {
+        console.error('워케이션 일정 불러오기 실패:', error);
+      }
+    };
+
+    if (loginUser?.company_no) {
+      fetchEvents(loginUser.company_no);
     }
-  };
+  }, [loginUser]);
 
   const handleSelectEvent = (event) => {
     if (event.resource.length > 1) {
-      const details = event.resource.map((user) => `이름: ${user.name} - 장소: ${user.location}`).join('\n');
-      alert(details);
+      const details = event.resource.map((user) => `이름: ${user.name} - 장소: ${user.location}`).join('<br>');
+      Swal.fire({
+        title: '워케이션 신청자 목록',
+        html: details,
+        icon: 'info',
+      });
     } else {
       const user = event.resource[0];
-      alert(`이름: ${user.name} - 장소: ${user.location}`);
+      Swal.fire({
+        title: '워케이션 신청자',
+        html: `이름: ${user.name} <br/> 장소: ${user.location}`,
+        icon: 'info',
+      });
     }
   };
 
@@ -93,41 +108,44 @@ const WorcationCalendar = () => {
     );
 
     if (selectedEvents.length === 0) {
-      alert('선택한 날짜에 워케이션 신청자가 없습니다.');
+      Swal.fire({
+        title: '알림',
+        text: '선택한 날짜에 워케이션 신청자가 없습니다.',
+        icon: 'warning',
+      });
       return;
     }
 
     const users = selectedEvents.flatMap((ev) => ev.resource);
     const uniqueUsers = Array.from(new Map(users.map((u) => [u.name, u])).values());
-    const details = uniqueUsers.map((user) => `이름: ${user.name} - 장소: ${user.location}`).join('\n');
-    alert(details);
+    const details = uniqueUsers.map((user) => `이름: ${user.name} - 장소: ${user.location}`).join('<br>');
+    Swal.fire({
+      title: '워케이션 신청자 목록',
+      html: details,
+      icon: 'info',
+    });
   };
 
-  const eventPropGetter = () => {
-    return {
-      style: {
-        backgroundColor: 'transparent',
-        borderRadius: '5px',
-        opacity: 0.9,
-        color: 'black',
-        border: 'none',
-        fontSize: 10, // 글자 크기를 좀 더 작게 조절
-        overflow: 'visible', // 글자가 잘리지 않도록 변경
-        whiteSpace: 'normal', // 줄바꿈 허용
-        textOverflow: 'clip', // 생략 부호 없이 그대로 표시
-        cursor: 'pointer',
-        paddingLeft: 4,
-        paddingRight: 4,
-      },
-    };
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  const eventPropGetter = () => ({
+    style: {
+      backgroundColor: 'transparent',
+      borderRadius: '5px',
+      opacity: 0.9,
+      color: 'black',
+      border: 'none',
+      fontSize: 10,
+      overflow: 'visible',
+      whiteSpace: 'normal',
+      textOverflow: 'clip',
+      cursor: 'pointer',
+      paddingLeft: 4,
+      paddingRight: 4,
+    },
+  });
 
   return (
     <div style={{ height: '100%', width: '100%', margin: '0 auto' }}>
+      <SwalStyles />
       <DnDCalendar
         localizer={localizer}
         events={events}

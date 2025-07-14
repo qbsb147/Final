@@ -31,8 +31,8 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
       {
         header: '등급',
         accessor: 'role',
-        Cell: ({ rowIndex }) => {
-          const currentMember = filteredMembers[rowIndex];
+        Cell: ({ row }) => {
+          const currentMember = row;
           const currentRole = currentMember.role;
           const userName = currentMember.name;
 
