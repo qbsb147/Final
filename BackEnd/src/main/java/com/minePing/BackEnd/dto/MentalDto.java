@@ -27,4 +27,45 @@ public class MentalDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class StressRequest{
+        private Integer stress1;
+        private Integer stress2;
+        private Integer stress3;
+        private Integer stress4;
+        private Integer stress5;
+        private Integer stress6;
+        private Integer stress7;
+        private Integer stress8;
+        private Integer stress9;
+        private Integer stress10;
+        private Integer stress11;
+        private Integer stress12;
+        private Integer stress13;
+        private Integer stress14;
+        private Integer stress15;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class BurnoutRequest{
+        private Integer burnout1;
+        private Integer burnout2;
+        private Integer burnout3;
+        private Integer burnout4;
+        private Integer burnout5;
+        private Integer burnout6;
+        private Integer burnout7;
+        private Integer burnout8;
+        private Integer burnout9;
+        private Integer burnout10;
+    }
 }

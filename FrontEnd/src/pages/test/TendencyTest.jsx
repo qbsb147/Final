@@ -1,17 +1,15 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import Input from '../../styles/Input';
 import { tendency } from '../../components/test/questions';
-import useUserStore from '../../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import MbtiSelect from '../../components/test/mbtiSelect.jsx';
+import { mentalService } from '../../api/mentals.js';
+import { toast } from 'react-toastify';
 
 const TendencyTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
-  const { postTendency } = useUserStore.getState();
 
   const handleChange = (id, value) => {
     setAnswers((prev) => {
@@ -20,7 +18,7 @@ const TendencyTest = () => {
         [id]: value,
       };
       if (updated.mbti_ei && updated.mbti_ns && updated.mbti_tf && updated.mbti_pj) {
-        updated.mbti = (updated.mbti_ei + updated.mbti_ns + updated.mbti_tf + updated.mbti_pj).toLowerCase();
+        updated.mbti = updated.mbti_ei + updated.mbti_ns + updated.mbti_tf + updated.mbti_pj;
       }
       return updated;
     });
@@ -38,16 +36,22 @@ const TendencyTest = () => {
     }
 
     const payload = {
-      MBTI: answers.mbti,
-      PREFERRED_COLOR: answers['tendency2'],
-      PREFERRED_LOCATION: answers['tendency3'],
-      SPACE_MOOD: answers['tendency4'],
-      IMPORTANT_FACTOR: answers['tendency5'],
-      LEISURE_ACTIVITY: answers['tendency6'],
-      ACCOMMODATION_TYPE: answers['tendency7'],
+      mbti: answers.mbti,
+      preferred_color: answers['tendency2'],
+      preferred_location: answers['tendency3'],
+      space_mood: answers['tendency4'],
+      important_factor: answers['tendency5'],
+      leisure_activity: answers['tendency6'],
+      accommodation_type: answers['tendency7'],
     };
 
-    postTendency(payload, navigate);
+    try {
+      await mentalService.postPreference(payload);
+
+      navigate('/trial');
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   return (

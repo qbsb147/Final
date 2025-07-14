@@ -2,13 +2,13 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '../../store/userStore';
 import { burnout } from '../../components/test/questions';
+import { mentalService } from '../../api/mentals';
+import { toast } from 'react-toastify';
 
 const BurnoutTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
-  const { postBurnout } = useUserStore.getState();
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -24,7 +24,16 @@ const BurnoutTest = () => {
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
     } else {
-      postBurnout(answers, navigate);
+      try {
+        console.log(answers);
+        await mentalService.postBurnout({
+          burnout: answers,
+        });
+
+        navigate('/trial');
+      } catch (error) {
+        toast.error(error);
+      }
     }
   };
 

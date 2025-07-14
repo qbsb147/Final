@@ -72,10 +72,15 @@ public class MemberPreference {
         member.assignMemberPreference(this);
     }
 
+    public void changeNo(Long preferenceNo){
+        this.preferenceNo = preferenceNo;
+    }
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
         this.updateDate = LocalDate.now();
     }
+
 
 }

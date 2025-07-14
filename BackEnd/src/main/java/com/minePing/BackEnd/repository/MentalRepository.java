@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface MentalRepository extends JpaRepository<Mental, Long>,MentalRepositoryV1{
 
-    @Query("SELECT m FROM Mental m WHERE m.member.userNo = :user_no")
-    List<Mental> getMental(@Param("user_no") Long user_no);
+    @Query("SELECT m FROM Mental m WHERE m.member.userId = :user_Id")
+    List<Mental> getMental(@Param("user_no") String user_Id);
 
 }
