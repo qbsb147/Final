@@ -17,6 +17,7 @@ const getNightCount = (start, end) => {
 
 const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] }) => {
   const setDates = useSearchStore((state) => state.setDates);
+  const setKeyword = useSearchStore((state) => state.setKeyword);
   const navigate = useNavigate();
   // 날짜 상태
   const [selectedDates, setSelectedDates] = useState([new Date(2025, 6, 1), new Date(2025, 6, 2)]);
@@ -30,6 +31,11 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
   useEffect(() => {
     setInputKeyword(externalKeyword ?? '');
   }, [externalKeyword]);
+
+  // inputKeyword가 바뀔 때마다 store에 저장
+  useEffect(() => {
+    setKeyword(inputKeyword);
+  }, [inputKeyword, setKeyword]);
 
   // '확인' 버튼을 누를 때만 날짜 적용 및 zustand에 반영
   const handleCalendarConfirm = (dates) => {
@@ -45,6 +51,11 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
   // 검색 버튼 클릭 시
   const handleSearch = () => {
     if (onSearch) onSearch(inputKeyword);
+    // 검색어를 store에 저장하고 전체 리스트 페이지로 이동
+    if (inputKeyword.trim() !== '') {
+      setKeyword(inputKeyword);
+      navigate('/worcation');
+    }
   };
 
   // selectedDates가 바뀌면 tempDates도 동기화(외부에서 날짜 초기화 시)
@@ -57,6 +68,9 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
     setInputKeyword(word);
     if (onSearch) onSearch(word);
     setShowCalendar(false);
+    // 추천 검색어를 store에 저장하고 전체 리스트 페이지로 이동
+    setKeyword(word);
+    navigate('/worcation');
   };
 
   useEffect(() => {

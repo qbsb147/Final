@@ -36,10 +36,15 @@ const MainPage = () => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
   }, [worcations, setPopularKeywords]);
 
-  // 필터링된 워케이션
-  const filteredWorcations = worcations.filter(
-    (w) => (w.worcation_name && w.worcation_name.includes(keyword)) || (w.address && w.address.includes(keyword))
-  );
+  // 검색어가 있으면 전체 리스트 페이지로 이동
+  useEffect(() => {
+    if (keyword.trim() !== '') {
+      navigate('/worcation');
+    }
+  }, [keyword, navigate]);
+
+  // 필터링된 워케이션 (검색어가 없을 때만)
+  const filteredWorcations = keyword.trim() === '' ? worcations : [];
   const sortedWorcations = filteredWorcations
     .map((w) => {
       // approve가 'Y'인 신청만 카운트
@@ -59,35 +64,35 @@ const MainPage = () => {
   return (
     <Container>
       {loginUser?.company_no && (
-  <>
-    <SectionTitle>제휴업체</SectionTitle>
-    <PartnerGrid>
-      {filteredWorcations
-        .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
-        .map((matchedWorcation) => (
-          <PartnerCard key={matchedWorcation.worcation_no}>
-            <picture>
-              <source srcSet={matchedWorcation.main_change_photo + '.webp'} type="image/webp" />
-              <PartnerImage
-                src={matchedWorcation.main_change_photo}
-                alt={matchedWorcation.worcation_name}
-                onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
-                loading="lazy"
-              />
-            </picture>
-            <ImageLabel>
-              <ImageLabelT>
-                {matchedWorcation.worcation_address
-                  ? matchedWorcation.worcation_address.split(' ')[0]
-                  : '주소없음'}
-              </ImageLabelT>
-              {matchedWorcation.worcation_name}
-            </ImageLabel>
-          </PartnerCard>
-        ))}
-    </PartnerGrid>
-  </>
-)}
+        <>
+          <SectionTitle>제휴업체</SectionTitle>
+          <PartnerGrid>
+            {filteredWorcations
+              .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
+              .map((matchedWorcation) => (
+                <PartnerCard key={matchedWorcation.worcation_no}>
+                  <picture>
+                    <source srcSet={matchedWorcation.main_change_photo + '.webp'} type="image/webp" />
+                    <PartnerImage
+                      src={matchedWorcation.main_change_photo}
+                      alt={matchedWorcation.worcation_name}
+                      onClick={() => navigate(`/worcation/${matchedWorcation.worcation_no}`)}
+                      loading="lazy"
+                    />
+                  </picture>
+                  <ImageLabel>
+                    <ImageLabelT>
+                      {matchedWorcation.worcation_address
+                        ? matchedWorcation.worcation_address.split(' ')[0]
+                        : '주소없음'}
+                    </ImageLabelT>
+                    {matchedWorcation.worcation_name}
+                  </ImageLabel>
+                </PartnerCard>
+              ))}
+          </PartnerGrid>
+        </>
+      )}
 
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
