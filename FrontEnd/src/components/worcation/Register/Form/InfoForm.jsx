@@ -14,12 +14,33 @@ const InfoForm = forwardRef((_, ref) => {
   const setInfo = useWorcationStore((state) => state.setInfo);
   const { register, control, getValues, isValid } = useValidation(info);
 
+  // useImperativeHandle(ref, () => ({
+  //   getValues,
+  //   isValid,
+  // }));
+
+  // // 폼 언마운트 시 zustand에 저장
+  // useEffect(() => {
+  //   return () => {
+  //     setInfo(getValues());
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if (info.policy === undefined) {
+  //     setInfo((prev) => ({ ...prev, policy: '' }));
+  //   }
+  // }, []);
+
+  // const handleChange = (e) => {
+  //   setInfo((prev) => ({ ...prev, policy: e.target.value }));
+  // };
   useImperativeHandle(ref, () => ({
     getValues,
     isValid,
   }));
 
-  // 폼 언마운트 시 zustand에 저장
+  // 언마운트 시 zustand에 저장
   useEffect(() => {
     return () => {
       setInfo(getValues());
@@ -118,9 +139,10 @@ const InfoForm = forwardRef((_, ref) => {
                     value={field.value || ''}
                     onChange={(e) => {
                       field.onChange(e);
-                      setInfo({ policy: e.target.value });
+                      setInfo({ ...info, policy: e.target.value });
                     }}
-                    rows={3}
+                    rows={5}
+                    placeholder="이용 정책을 입력하세요"
                   />
                 )}
               />

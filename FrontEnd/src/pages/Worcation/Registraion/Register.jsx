@@ -57,6 +57,7 @@ const Register = () => {
               maxPeople: worcation.max_people || '',
               price: worcation.non_partner_price || '',
               tel: worcation.worcation_tel || '',
+              policy: worcation.policy,
             },
             description: {
               detailIntro: worcation.content || '',
@@ -176,6 +177,7 @@ const Register = () => {
       charge_amount: allValues.application.chargeAmount,
       content: allValues.description.detailIntro,
       navigate: allValues.location.navigate,
+      policy: allValues.info.policy,
       available_time: allValues.policy.availableTime,
       refund_policy: allValues.policy.refundPolicy,
       open_date: allValues.application.open_date
