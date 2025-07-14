@@ -18,8 +18,6 @@ public interface MemberService {
 
     MemberDto.InfoResponse getUserInfoByUserId();
     MemberInfoResponse getUserByUserId();
-    MemberDto.LoginResponse getMemberBySocialId(String socialId);
-    Member createOauth(String socialId, String email, String name, SocialType socialType);
 
     void checkPassword(String password);
     void updateUser(MemberDto.Update updateDto);

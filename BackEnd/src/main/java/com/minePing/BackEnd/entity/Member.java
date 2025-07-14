@@ -119,14 +119,6 @@ public class Member {
         this.companyProfile = companyProfile;
     }
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Company company;
-
-    public void assignCompany(Company company) {
-        this.company = company;
-    }
-
-
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
@@ -159,13 +151,21 @@ public class Member {
         this.companyProfile.changeCompany(changeCompany);
         this.companyProfile.updateThis(updateDto);
     }
+    public void updateEmployee(MemberDto.Update updateDto){
+        this.name = updateDto.getName();
+        this.address = updateDto.getAddress();
+        this.email = updateDto.getEmail();
+        this.phone = updateDto.getPhone();
+        this.companyProfile.updateThis(updateDto);
+    }
 
     public void updateMaster(MemberDto.Update updateDto){
         this.name = updateDto.getName();
         this.address = updateDto.getAddress();
         this.email = updateDto.getEmail();
         this.phone = updateDto.getPhone();
-        this.company.updateThis(updateDto);
+        this.companyProfile.updateThis(updateDto);
+        this.companyProfile.getCompany().updateThis(updateDto);
     }
 
     public Member changeStatus(CommonEnums.Status status) {

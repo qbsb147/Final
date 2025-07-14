@@ -20,7 +20,8 @@ public enum ErrorCode {
     REQUEST_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "요청 시간 초과되었습니다."),
 
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 존재하는 값입니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED , "토큰 만료시간이 지났습니다.");
 
     private final HttpStatus status;
     private final String message;

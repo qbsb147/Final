@@ -158,11 +158,17 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
 
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
 
         Company company = masterJoinDto.toCompanyEntity();
-        company.changeMember(member);
-        companyRepository.save(company);
+        Company savedCompany = companyRepository.save(company);
+
+        CompanyProfile companyProfile = masterJoinDto.toCompanyProfileEntity();
+
+        companyProfile.changeMember(savedMember);
+        companyProfile.changeCompany(savedCompany);
+
+        companyProfileRepository.save(companyProfile);
 
         List<String> departments = masterJoinDto.getCompanyJoinDto().getDepartments();
 
@@ -238,18 +244,22 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 
         if (updateRoleDto.getRole() == CommonEnums.Role.MASTER) {
-            Company company = newMaster.getCompany();
+            Company company = newMaster.getCompanyProfile().getCompany();
             if (company == null) throw new RuntimeException("소속된 회사가 없습니다.");
 
-            Member currentMaster = company.getMember();
+//            Member currentMaster = getMember();
+            Member currentMaster = memberRepository.findMaster(company.getCompanyNo(), Role.MASTER)
+                    .orElseThrow(() -> new UserNotFoundException());
 
             if (currentMaster != null && !currentMaster.getUserNo().equals(newMaster.getUserNo())) {
                 // 기존 대표는 매니저로 역할 변경
                 currentMaster.updateRole(CommonEnums.Role.MANAGER);
                 memberRepository.save(currentMaster);
 
+/*
                 // 회사의 대표 멤버 변경
                 company.changeMember(newMaster);
+*/
                 companyRepository.save(company);
             }
 
@@ -324,25 +334,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public LoginResponse getMemberBySocialId(String socialId) {
-        Member member = memberRepository.findByUserIdAndStatus(socialId, CommonEnums.Status.Y)
-                .orElseThrow(() -> new UserAuthenticationException("카카오 로그인 회원 정보가 없습니다."));
-        return LoginResponse.toDto(member);
-    }
-
-    @Override
-    public Member createOauth(String socialId, String email, String name, SocialType socialType) {
-        Member member = Member.builder()
-                .email(email)
-                .name(name)
-                .userPwd("")
-                .phone(null)
-                .build();
-        memberRepository.save(member);
-        return member;
-    }
-
-    @Override
     @Transactional
     public void updateUser(Update updateDto) {
         String userId = jwtTokenProvider.getUserIdFromToken();
@@ -368,16 +359,19 @@ public class MemberServiceImpl implements MemberService {
 
                 Member member = memberRepository.findByUserIdWithCompanyProfile(userId, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
-                Company changeCompany  = companyRepository.findByCompanyNoAndStatus(
-                        updateDto.getCompany_profile_update().getCompany_no(),
-                        CommonEnums.Status.Y
-                );
+                Company changeCompany;
 
-                if(!updateDto.getCompany_profile_update().getCompany_no().equals(changeCompany.getCompanyNo())){
+                if(!updateDto.getCompany_profile_update().getCompany_no().equals(member.getCompanyProfile().getCompany().getCompanyNo())){
+                    changeCompany  = companyRepository.findByCompanyNoAndStatus(
+                            updateDto.getCompany_profile_update().getCompany_no(),
+                            CommonEnums.Status.Y
+                    );
                     member.getCompanyProfile().updateStatus(CommonEnums.Approve.W);
                     member.updateRole(Role.EMPLOYEE);
+                    member.updateEmployee(updateDto, changeCompany);
                 }
-                member.updateEmployee(updateDto, changeCompany);
+
+                member.updateEmployee(updateDto);
             }
             case MASTER ->{
                 if(updateDto.getCompany_update() == null){
@@ -393,13 +387,13 @@ public class MemberServiceImpl implements MemberService {
                         .map(DepartmentDto.Request::getDepartment_no)
                         .collect(Collectors.toSet());
 
-                List<Department> deletionDepartments = member.getCompany().getDepartments()
+                List<Department> deletionDepartments = member.getCompanyProfile().getCompany().getDepartments()
                         .stream()
                         .filter(department -> !departmentNos.contains(department.getDepartmentNo()))
                         .map(department -> department.changeCompany(null))
                         .toList();
 
-                member.getCompany().getDepartments().removeAll(deletionDepartments);
+                member.getCompanyProfile().getCompany().getDepartments().removeAll(deletionDepartments);
 
                 departmentRepository.deleteAll(deletionDepartments);
 
@@ -408,7 +402,7 @@ public class MemberServiceImpl implements MemberService {
                         .filter(departmentDto -> departmentDto.getDepartment_no() == null)
                         .map(departmentDto -> Department.builder()
                                 .departmentName(departmentDto.getDepartment_name())
-                                .company(member.getCompany())
+                                .company(member.getCompanyProfile().getCompany())
                             .build()
                         )
                         .toList();
@@ -416,7 +410,7 @@ public class MemberServiceImpl implements MemberService {
                 departmentRepository.saveAll(departments);
 
                 member.updateMaster(updateDto);
-
+                System.out.println("member.getCompanyProfile().getCompany().getCompanyName() = " + member.getCompanyProfile().getCompany().getCompanyName());
             }
             default -> throw new IllegalStateException("Unexpected value: " + role);
         }

@@ -2,6 +2,7 @@ package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.dto.CompanyDto.Search;
 import com.minePing.BackEnd.entity.Company;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +20,9 @@ public interface CompanyRepository extends JpaRepository<Company, Long>, Company
     Optional<List<Company>> findByCompanyName(@Param("companyName") String company_name, @Param("status") CommonEnums.Status status);
 
 */
-    @Query("select c.companyNo from Company c where c.member.userNo = :userNo and c.status = :status")
+    @Query("select cp.company.companyNo from CompanyProfile cp where cp.member.userNo = :userNo and cp.company.status = :status")
     Optional<Long> getCompanyNoByUserNo(@Param("userNo") Long user_no, CommonEnums.Status status);
 
     Company findByCompanyNoAndStatus(Long companyNo, CommonEnums.Status status);
 
-    @Modifying
-    @Query("UPDATE Company c SET c.member.userNo = :newChiefUserNo WHERE c.companyNo = :companyNo")
-    int updateChiefUser(@Param("companyNo") Long companyNo, @Param("newChiefUserNo") Long newChiefUserNo);
 }
