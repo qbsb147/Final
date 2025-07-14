@@ -22,6 +22,7 @@ const WorcationHistory = () => {
   const getReservedWorcation = async () => {
     try {
       const reserved = await applicationService.reserved(loginUser.user_no);
+
       const used = await applicationService.used(loginUser.user_no);
       setReservedList(reserved);
       setUsedList(used);
@@ -38,7 +39,6 @@ const WorcationHistory = () => {
       console.log(e);
     }
   };
-
   const handleDelete = async (application_no) => {
     try {
       const confirm = await Swal.fire({
@@ -70,15 +70,22 @@ const WorcationHistory = () => {
             <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.worcation_address}</PlaceLocation>
                 <PlaceName>{item.worcation_name}</PlaceName>
+                <DateText>
+                  기간: {item.start_date?.join('-')} ~ {item.end_date?.join('-')}
+                </DateText>
               </InfoBlock>
               <ThemeBlock tabIndex="0">
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.space_mood}</ThemeText>
                 <BtnBox>
-                  <Btn onClick={() => handleDetail}>상세보기</Btn>
-                  <Btn onClick={() => handleDelete(item.applicationNo)}>예약취소</Btn>
+                  <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
+                  <Btn
+                    onClick={() => {
+                      console.log('삭제 시도 항목:', item);
+                      handleDelete(item.application_no);
+                    }}
+                  >
+                    예약취소
+                  </Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
@@ -97,14 +104,11 @@ const WorcationHistory = () => {
             <PlaceImage src={item.main_change_photo} alt={item.worcation_name} />
             <CardContent>
               <InfoBlock>
-                <PlaceLocation>{item.worcation_address}</PlaceLocation>
                 <PlaceName>{item.worcation_name}</PlaceName>
               </InfoBlock>
               <ThemeBlock tabIndex="0">
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.space_mood}</ThemeText>
                 <BtnBox>
-                  <Btn onClick={() => navigate(`/worcation/detail/${item.worcation_no}`)}>상세보기</Btn>
+                  <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
                 </BtnBox>
               </ThemeBlock>
             </CardContent>
@@ -206,6 +210,11 @@ const InfoBlock = styled.div`
 `;
 
 const PlaceLocation = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.gray[600]};
+`;
+
+const DateText = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.gray[600]};
 `;

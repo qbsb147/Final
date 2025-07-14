@@ -209,10 +209,16 @@ const WorcationDetail = () => {
     <PageContainer>
       <Wrapper>
         <MainImageWrapper>
-          <TopButtons>
-            <ButtonBorder onClick={() => navigate(`/partnership/apply/`)}>제휴 신청</ButtonBorder>
-            <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>
-          </TopButtons>
+          {loginUser && (
+            <TopButtons>
+              {loginUser.role !== 'EMPLOYEE' && loginUser.role !== 'WORCATION' && (
+                <ButtonBorder onClick={() => navigate(`/partnership/apply/`)}>제휴 신청</ButtonBorder>
+              )}
+              {loginUser.role !== 'WORCATION' && (
+                <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>
+              )}
+            </TopButtons>
+          )}
         </MainImageWrapper>
 
         <Title>{worcation.worcation_name}</Title>
