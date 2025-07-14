@@ -75,6 +75,7 @@ const SearchInput = styled.input`
   border: none;
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-family: ${({ theme }) => theme.fontFamily.secondary};
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 const LeftSide = styled.div`

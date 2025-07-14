@@ -63,7 +63,7 @@ public class WorcationServiceImpl implements WorcationService {
 //    private final AmazonS3 amazonS3;
     private final WorcationRepository worcationRepository;
     private final MemberRepository memberRepository;
-//    private final PhotoRepository photoRepository;
+    private final PhotoRepository photoRepository;
     public static final String UPLOAD_DIR = "src/main/resources/static/upload/";
 
     //최종 등록
@@ -118,6 +118,9 @@ public class WorcationServiceImpl implements WorcationService {
                 features.changeActivities(request.getActivities());
                 features.changeAccommodationType(request.getAccommodation_type());
             }
+            // 이미지 URL을 photo 테이블에 저장
+            savePhotos(worcation, request.getPhoto_urls());
+            
             // save 불필요(더티체킹)
             return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
         } else {
@@ -177,7 +180,42 @@ public class WorcationServiceImpl implements WorcationService {
 
         worcationRepository.save(worcation);
 
+        // 이미지 URL을 photo 테이블에 저장
+        savePhotos(worcation, request.getPhoto_urls());
+
         return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
+    }
+
+    private void savePhotos(Worcation worcation, List<String> photoUrls) {
+        if (photoUrls == null || photoUrls.isEmpty()) {
+            return;
+        }
+
+        // 기존 사진 삭제
+        photoRepository.deleteByWorcation(worcation);
+
+        // 새로운 사진 저장
+        for (String photoUrl : photoUrls) {
+            if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+                Photo photo = Photo.builder()
+                    .worcation(worcation)
+                    .changeName(extractFileNameFromUrl(photoUrl))
+                    .imageUrl(photoUrl)
+                    .build();
+                photoRepository.save(photo);
+            }
+        }
+    }
+
+    private String extractFileNameFromUrl(String imageUrl) {
+        try {
+            // CloudFront URL에서 파일명 추출
+            // 예: https://cloudfront-domain.com/images/filename.jpg
+            String[] parts = imageUrl.split("/");
+            return parts[parts.length - 1];
+        } catch (Exception e) {
+            return UUID.randomUUID().toString() + ".jpg";
+        }
     }
 
     @Override
@@ -296,6 +334,9 @@ public class WorcationServiceImpl implements WorcationService {
             features.changeActivities(request.getActivities());
             features.changeAccommodationType(request.getAccommodation_type());
         }
+        // 이미지 URL을 photo 테이블에 저장
+        savePhotos(worcation, request.getPhoto_urls());
+        
         // save 불필요 (더티체킹)
         return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                 List.of());

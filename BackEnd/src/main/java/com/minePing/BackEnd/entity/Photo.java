@@ -22,4 +22,7 @@ public class Photo {
 
     @Column(name = "change_name", length = 100, nullable = false)
     private String changeName;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 }

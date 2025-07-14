@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { worcationService } from '../../api/worcations';
 import useAuthStore from '../../store/authStore';
+import useWorcationStore from '../../store/useWorcationStore';
+import defaultWorcationImage from '../../assets/default-worcation.png';
 
 const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
   const loginUser = useAuthStore((state) => state.loginUser);
+  const resetStore = useWorcationStore((state) => state.resetAll);
+  const [imageErrors, setImageErrors] = useState({});
 
   const handleDelete = async (worcation_no) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
@@ -18,27 +22,45 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
     }
   };
 
+  const handleEdit = (worcation) => {
+    // 수정 모드로 이동하기 전에 store 초기화
+    resetStore();
+    // 약간의 지연을 두어 store 초기화가 완료된 후 페이지 이동
+    setTimeout(() => {
+      navigate(`/worcation/register/${worcation.worcation_no}`);
+    }, 100);
+  };
+
+  const handleImageError = (worcationNo) => {
+    setImageErrors((prev) => ({
+      ...prev,
+      [worcationNo]: true,
+    }));
+  };
+
+  const getImageSrc = (item) => {
+    const worcationNo = item.worcation_no;
+
+    // 이미지 에러가 발생했거나 mainPhoto가 없으면 기본 이미지 URL 반환
+    if (imageErrors[worcationNo] || !item.mainPhoto) {
+      return defaultWorcationImage;
+    }
+
+    return item.mainPhoto;
+  };
+
   return (
     <CardList>
       {data && data.length > 0 ? (
         data.map((item) => (
           <PlaceCard key={item.worcation_no}>
             <picture>
-              {item.main_change_photo ? (
-                <>
-                  <source srcSet={item.main_change_photo + '.webp'} type="image/webp" />
-                  <PlaceImage
-                    src={item.main_change_photo}
-                    alt={item.worcation_name}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.src = '/default-image.png';
-                    }}
-                  />
-                </>
-              ) : (
-                <PlaceImage src="/default-image.png" alt="no image" loading="lazy" />
-              )}
+              <PlaceImage
+                src={getImageSrc(item)}
+                alt={item.worcation_name || '워케이션 이미지'}
+                loading="lazy"
+                onError={() => handleImageError(item.worcation_no)}
+              />
             </picture>
             <CardContent>
               <InfoBlock>
@@ -53,15 +75,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
                 <ThemeText>{item.worcation_thema || '미지정'}</ThemeText>
                 {mode === 'host' && item.member_id === loginUser.user_no ? (
                   <ButtonGroup>
-                    <ButtonDetail
-                      onClick={() =>
-                        navigate(`/worcation/edit/${item.worcation_no}`, {
-                          state: { worcation: item },
-                        })
-                      }
-                    >
-                      수정
-                    </ButtonDetail>
+                    <ButtonDetail onClick={() => handleEdit(item)}>수정</ButtonDetail>
                     <ButtonDetail onClick={() => handleDelete(item.worcation_no)}>삭제</ButtonDetail>
                   </ButtonGroup>
                 ) : (

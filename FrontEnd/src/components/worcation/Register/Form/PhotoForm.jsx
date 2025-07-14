@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import AddButton from '../../../common/AddButton';
 import ImageUploader from '../../../common/ImageUploader';
 import useWorcationStore from '../../../../store/useWorcationStore';
+import { worcationService } from '../../../../api/worcations';
 
 const PhotoForm = forwardRef((props, ref) => {
   const photos = useWorcationStore((state) => state.photos);
@@ -27,15 +28,21 @@ const PhotoForm = forwardRef((props, ref) => {
 
       // 오피스 사진 preview URL 생성
       officePhotos.forEach((photo, index) => {
-        if (photo?.file && !previewUrls.office[index]) {
+        if (photo?.file && (photo.file instanceof File || photo.file instanceof Blob) && !previewUrls.office[index]) {
           newPreviewUrls.office[index] = URL.createObjectURL(photo.file);
+        } else if (photo?.url && typeof photo.url === 'string' && !previewUrls.office[index]) {
+          // 기존 업로드된 이미지 URL 처리
+          newPreviewUrls.office[index] = photo.url;
         }
       });
 
       // 숙소 사진 preview URL 생성
       stayPhotos.forEach((photo, index) => {
-        if (photo?.file && !previewUrls.stay[index]) {
+        if (photo?.file && (photo.file instanceof File || photo.file instanceof Blob) && !previewUrls.stay[index]) {
           newPreviewUrls.stay[index] = URL.createObjectURL(photo.file);
+        } else if (photo?.url && typeof photo.url === 'string' && !previewUrls.stay[index]) {
+          // 기존 업로드된 이미지 URL 처리
+          newPreviewUrls.stay[index] = photo.url;
         }
       });
 
@@ -82,8 +89,20 @@ const PhotoForm = forwardRef((props, ref) => {
 
   const handleOfficeChange = async (file, index) => {
     try {
+      // 기존 이미지가 있으면 S3에서 삭제 (실패해도 계속 진행)
+      const existingPhoto = officePhotos[index];
+      if (existingPhoto && existingPhoto.url && typeof existingPhoto.url === 'string') {
+        try {
+          await worcationService.deleteImage(existingPhoto.url);
+          console.log('기존 이미지 삭제 성공:', existingPhoto.url);
+        } catch (deleteError) {
+          console.warn('기존 이미지 삭제 실패 (계속 진행):', deleteError.message);
+          // 삭제 실패해도 계속 진행
+        }
+      }
+
       // 기존 preview URL 정리
-      if (previewUrls.office[index]) {
+      if (previewUrls.office[index] && previewUrls.office[index].startsWith('blob:')) {
         URL.revokeObjectURL(previewUrls.office[index]);
       }
 
@@ -94,11 +113,15 @@ const PhotoForm = forwardRef((props, ref) => {
         office: { ...prev.office, [index]: newPreviewUrl },
       }));
 
-      // File 객체만 스토어에 저장 (previewUrl 제외)
+      // 즉시 S3에 업로드 (기존 이미지 덮어쓰기)
+      const imageUrl = await worcationService.uploadImage(file);
+
+      // 업로드된 URL과 함께 스토어에 저장
       const newList = [...officePhotos];
       newList[index] = {
         file: file,
-        uploaded: false,
+        url: imageUrl,
+        uploaded: true,
       };
       setPhotos({
         ...photos,
@@ -112,8 +135,19 @@ const PhotoForm = forwardRef((props, ref) => {
 
   const handleStayChange = async (file, index) => {
     try {
+      // 기존 이미지가 있으면 S3에서 삭제
+      const existingPhoto = stayPhotos[index];
+      if (existingPhoto && existingPhoto.url && typeof existingPhoto.url === 'string') {
+        try {
+          await worcationService.deleteImage(existingPhoto.url);
+        } catch (deleteError) {
+          console.warn('기존 이미지 삭제 실패:', deleteError);
+          // 삭제 실패해도 계속 진행
+        }
+      }
+
       // 기존 preview URL 정리
-      if (previewUrls.stay[index]) {
+      if (previewUrls.stay[index] && previewUrls.stay[index].startsWith('blob:')) {
         URL.revokeObjectURL(previewUrls.stay[index]);
       }
 
@@ -124,11 +158,15 @@ const PhotoForm = forwardRef((props, ref) => {
         stay: { ...prev.stay, [index]: newPreviewUrl },
       }));
 
-      // File 객체만 스토어에 저장 (previewUrl 제외)
+      // 즉시 S3에 업로드 (기존 이미지 덮어쓰기)
+      const imageUrl = await worcationService.uploadImage(file);
+
+      // 업로드된 URL과 함께 스토어에 저장
       const newList = [...stayPhotos];
       newList[index] = {
         file: file,
-        uploaded: false,
+        url: imageUrl,
+        uploaded: true,
       };
       setPhotos({
         ...photos,
@@ -140,46 +178,78 @@ const PhotoForm = forwardRef((props, ref) => {
     }
   };
 
-  const handleOfficeDelete = (index) => {
-    // preview URL 정리
-    if (previewUrls.office[index]) {
-      URL.revokeObjectURL(previewUrls.office[index]);
+  const handleOfficeDelete = async (index) => {
+    try {
+      // 기존 이미지가 있으면 S3에서 삭제
+      const existingPhoto = officePhotos[index];
+      if (existingPhoto && existingPhoto.url && typeof existingPhoto.url === 'string') {
+        try {
+          await worcationService.deleteImage(existingPhoto.url);
+        } catch (deleteError) {
+          console.warn('기존 이미지 삭제 실패:', deleteError);
+          // 삭제 실패해도 계속 진행
+        }
+      }
+
+      // preview URL 정리
+      if (previewUrls.office[index] && previewUrls.office[index].startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrls.office[index]);
+      }
+
+      // preview URL 상태에서 제거
+      setPreviewUrls((prev) => {
+        const newOffice = { ...prev.office };
+        delete newOffice[index];
+        return { ...prev, office: newOffice };
+      });
+
+      const newList = [...officePhotos];
+      newList.splice(index, 1);
+      setPhotos({
+        ...photos,
+        officePhotos: newList,
+      });
+    } catch (error) {
+      console.error('오피스 이미지 삭제 실패:', error);
+      alert('오피스 이미지 삭제 실패');
     }
-
-    // preview URL 상태에서 제거
-    setPreviewUrls((prev) => {
-      const newOffice = { ...prev.office };
-      delete newOffice[index];
-      return { ...prev, office: newOffice };
-    });
-
-    const newList = [...officePhotos];
-    newList.splice(index, 1);
-    setPhotos({
-      ...photos,
-      officePhotos: newList,
-    });
   };
 
-  const handleStayDelete = (index) => {
-    // preview URL 정리
-    if (previewUrls.stay[index]) {
-      URL.revokeObjectURL(previewUrls.stay[index]);
+  const handleStayDelete = async (index) => {
+    try {
+      // 기존 이미지가 있으면 S3에서 삭제
+      const existingPhoto = stayPhotos[index];
+      if (existingPhoto && existingPhoto.url && typeof existingPhoto.url === 'string') {
+        try {
+          await worcationService.deleteImage(existingPhoto.url);
+        } catch (deleteError) {
+          console.warn('기존 이미지 삭제 실패:', deleteError);
+          // 삭제 실패해도 계속 진행
+        }
+      }
+
+      // preview URL 정리
+      if (previewUrls.stay[index] && previewUrls.stay[index].startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrls.stay[index]);
+      }
+
+      // preview URL 상태에서 제거
+      setPreviewUrls((prev) => {
+        const newStay = { ...prev.stay };
+        delete newStay[index];
+        return { ...prev, stay: newStay };
+      });
+
+      const newList = [...stayPhotos];
+      newList.splice(index, 1);
+      setPhotos({
+        ...photos,
+        stayPhotos: newList,
+      });
+    } catch (error) {
+      console.error('숙소 이미지 삭제 실패:', error);
+      alert('숙소 이미지 삭제 실패');
     }
-
-    // preview URL 상태에서 제거
-    setPreviewUrls((prev) => {
-      const newStay = { ...prev.stay };
-      delete newStay[index];
-      return { ...prev, stay: newStay };
-    });
-
-    const newList = [...stayPhotos];
-    newList.splice(index, 1);
-    setPhotos({
-      ...photos,
-      stayPhotos: newList,
-    });
   };
 
   return (

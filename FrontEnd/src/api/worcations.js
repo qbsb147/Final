@@ -71,7 +71,16 @@ export const worcationService = {
   },
   uploadImage: async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+
+    // 고유한 파일명 생성 (덮어쓰기 방지)
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = file.name.split('.').pop();
+    const uniqueFileName = `worcation_${timestamp}_${randomString}.${fileExtension}`;
+
+    // 새로운 파일명으로 Blob 생성
+    const renamedFile = new File([file], uniqueFileName, { type: file.type });
+    formData.append('file', renamedFile);
 
     // fileApi 사용 (일관성 유지)
     const response = await fileApi.post('/files/upload', formData, {
@@ -81,5 +90,17 @@ export const worcationService = {
     });
 
     return response.data.imageUrl; // 서버에서 반환한 imageUrl 필드
+  },
+
+  deleteImage: async (imageUrl) => {
+    try {
+      const response = await fileApi.delete('/files/delete', {
+        params: { imageUrl },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('이미지 삭제 실패:', error);
+      throw new Error('이미지 삭제에 실패했습니다.');
+    }
   },
 };
