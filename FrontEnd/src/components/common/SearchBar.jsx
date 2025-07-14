@@ -83,6 +83,7 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
         onClick={(e) => {
           if (!e.target.closest('button')) setShowCalendar((prev) => !prev);
         }}
+        isActive={showCalendar}
       >
         <LeftSide>
           <BtnImg src={SearchBtn} />
@@ -167,6 +168,17 @@ const BarWrap = styled.div`
   max-width: 1280px;
   margin: 0 auto;
   gap: 10;
+  transition: all 0.2s ease;
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+
+  ${({ isActive }) =>
+    isActive &&
+    `
+    border: 1px solid ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(-72px);
+    
+  `}
 `;
 
 const BtnImg = styled.img`
@@ -221,12 +233,15 @@ const BottomRow = styled.div`
   padding: 10px;
   z-index: 100;
   position: absolute;
-  top: 60%;
+  top: 41%;
   left: 0;
   width: 61%;
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
+
 const BottomLeft = styled.div`
-  width: 22%;
+  flex: 1;
   display: flex;
   flex-direction: column;
 `;
@@ -238,7 +253,7 @@ const ButtomLeftUl = styled.ul`
   justify-content: center;
 `;
 const BottomCenter = styled.div`
-  width: 80%;
+  width: 100%;
   display: flex;
   justify-content: center;
 `;
