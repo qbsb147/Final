@@ -7,7 +7,7 @@ import useAuthStore from '../../store/authStore';
 
 const Reservation = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [currentPage, setCurrentPage] = useState(0); // 페이지 상태 추가
+  const [currentPage, setCurrentPage] = useState(0);
 
   return (
     <ReservationListWrap>

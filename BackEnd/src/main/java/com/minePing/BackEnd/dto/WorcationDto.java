@@ -8,6 +8,7 @@ import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Photo;
 import com.minePing.BackEnd.entity.Review;
 import com.minePing.BackEnd.entity.Worcation;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.entity.WorcationPartner;
@@ -319,9 +320,11 @@ public class WorcationDto {
         private String phone;
         private String company_email;
         private String worcation_date;
+        private LocalDateTime update_at;
 
         public static WorcationReservation toDto(Worcation worcation, Member member, int age, Company company,
-                                                 CompanyProfile companyProfile,String worcationDate) {
+                                                 CompanyProfile companyProfile, String worcationDate,
+                                                 WorcationApplication worcationApplication) {
             return WorcationReservation.builder()
                     .company_name(company.getCompanyName())
                     .worcation_name(worcation.getWorcationName())
@@ -331,6 +334,7 @@ public class WorcationDto {
                     .phone(member.getPhone())
                     .company_email(companyProfile.getCompanyEmail())
                     .worcation_date(worcationDate)
+                    .update_at(worcationApplication.getUpdateAt().toLocalDateTime())
                     .build();
         }
     }

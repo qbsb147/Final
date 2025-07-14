@@ -26,15 +26,26 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   );
 
   const filteredMembers = useMemo(() => {
-    if (!searchKeyword) return members;
-    return members.filter((m) => m.worcation_name.toLowerCase().includes(searchKeyword.toLowerCase()));
+    let filtered = members;
+    if (searchKeyword) {
+      filtered = members.filter((m) => m.worcation_name.toLowerCase().includes(searchKeyword.toLowerCase()));
+    }
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(...a.update_at);
+      const dateB = new Date(...b.update_at);
+      return dateB - dateA; // 최신이 앞으로
+    });
+
+    return filtered;
   }, [members, searchKeyword]);
 
   useEffect(() => {
+    if (!loginUser || !loginUser.user_no) return;
     const fetchData = async () => {
       try {
         const data = await worcationService.WorcationReservation(loginUser.user_no, currentPage, pageSize);
-
+        console.log(data);
         setMembers(data.content);
         setTotalPages(data.total_page);
       } catch (error) {
@@ -43,7 +54,7 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     };
 
     fetchData();
-  }, [loginUser?.user_no, currentPage, searchKeyword]);
+  }, [loginUser?.user_no, currentPage]);
 
   const maxPageButtons = 5;
   const currentGroup = Math.floor(currentPage / maxPageButtons);
