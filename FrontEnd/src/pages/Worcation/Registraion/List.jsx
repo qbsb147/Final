@@ -14,6 +14,7 @@ const WorcationList = () => {
   const [unregisteredList, setUnregisteredList] = useState([]);
   const navigate = useNavigate();
   const { worcation_no } = useParams();
+  const resetStore = useWorcationStore((state) => state.resetAll);
 
   useEffect(() => {
     if (!loginUser?.user_no) return;
@@ -21,8 +22,19 @@ const WorcationList = () => {
     const fetchWorcations = async () => {
       try {
         const allList = await worcationService.getMyWorcationList(loginUser.user_no);
-        setRegisteredList(allList.filter((w) => w.status === 'Y'));
-        setUnregisteredList(allList.filter((w) => w.status === 'N'));
+
+        // 각 워케이션에 메인사진 정보 추가
+        const processedList = allList.map((worcation) => {
+          let sortedPhotos = worcation.photos ? [...worcation.photos] : [];
+          sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+          return {
+            ...worcation,
+            mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+          };
+        });
+
+        setRegisteredList(processedList.filter((w) => w.status === 'Y'));
+        setUnregisteredList(processedList.filter((w) => w.status === 'N'));
       } catch (error) {
         console.error('목록 불러오기 실패:', error);
       }
@@ -103,6 +115,8 @@ const WorcationList = () => {
   }, [worcation_no]);
 
   const handleAddClick = () => {
+    // 새로운 등록을 위해 store 초기화
+    resetStore();
     navigate('/worcation/register');
   };
 
@@ -134,6 +148,7 @@ const NameBox = styled.div`
   align-items: end;
   padding-bottom: ${({ theme }) => theme.spacing.s2};
   justify-content: space-between;
+  margin-bottom: 20px;
 `;
 
 const Container = styled.div`

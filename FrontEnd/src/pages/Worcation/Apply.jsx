@@ -139,11 +139,12 @@ const WorcationApply = () => {
 
         <CalendarSection>
           <WorcationCalendar events={events} fullDates={fullDates} selectable={false} onSelectSlot={() => {}} />
+          {/* fullDates로 꽉찬 날짜 표시 */}
           <InfoBox>
             <Label>워케이션 신청자</Label>
             <ReadOnlyInput value={loginUser?.user_name ?? ''} readOnly />
             <Label>금액</Label>
-            <ReadOnlyInput value={worcationInfo?.non_partner_price?.toLocaleString() ?? ''} readOnly />
+            <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
         </CalendarSection>
 
@@ -285,6 +286,9 @@ const DateInput = styled.input`
   padding: 2%;
   border: 2px solid ${({ theme }) => theme.colors.primary};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
+  &::-webkit-calendar-picker-indicator {
+    filter: brightness(0);
+  }
 `;
 
 const Tilde = styled.span`

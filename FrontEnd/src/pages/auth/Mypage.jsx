@@ -863,7 +863,12 @@ const Mypage = () => {
                 완료
               </button>
             ) : (
-              <button style={btn.buttonWbShadow} onClick={handleUpdate}>
+              <button
+                style={btn.buttonWbShadow}
+                onClick={() => {
+                  setDoUpdate(true), setEmailAuthStarted(false);
+                }}
+              >
                 수정
               </button>
             )}

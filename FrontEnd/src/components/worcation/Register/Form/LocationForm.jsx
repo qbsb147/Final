@@ -48,7 +48,7 @@ const LocationForm = forwardRef((props, ref) => {
   };
 
   const handleGuideChange = (e) => {
-    setLocation({ ...location, locationDescription: e.target.value });
+    setLocation({ ...location, navigate: e.target.value });
   };
   return (
     <Body>
@@ -69,7 +69,7 @@ const LocationForm = forwardRef((props, ref) => {
             <TD>
               <CustomTextArea
                 rows={13}
-                value={location.locationDescription || ''}
+                value={location.navigate}
                 onChange={handleGuideChange}
                 placeholder="위치에 대한 상세한 길 안내를 입력해주세요."
               ></CustomTextArea>

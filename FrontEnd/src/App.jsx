@@ -99,6 +99,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
             <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
+            <Route path="/worcation/list" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 (검색용) */}
             <Route path="/worcation/partners" element={<WorcationPartnersPage />} />
             {/* 워케이션 제휴 리스트 */}
             <Route path="/worcation/ai" element={<WorcationAIPage />} />

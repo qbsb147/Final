@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
@@ -7,6 +7,7 @@ import EmployeeApproveTable from '../../components/Member/table/EmployeeApproveT
 import useAuthStore from '../../store/authStore';
 
 const MemberApplies = () => {
+  const [searchKeyword, setSearchKeyword] = useState('');
   const { loginUser } = useAuthStore();
   const navigate = useNavigate();
   const alertedRef = useRef(false);
@@ -34,8 +35,8 @@ const MemberApplies = () => {
       <MainContent>
         <Title>직원 승인 목록</Title>
         <Container>
-          <MemberSearchBar />
-          <EmployeeApproveTable />
+          <MemberSearchBar onSearch={setSearchKeyword} />
+          <EmployeeApproveTable searchKeyword={searchKeyword} />
         </Container>
       </MainContent>
     </MemberListWrap>

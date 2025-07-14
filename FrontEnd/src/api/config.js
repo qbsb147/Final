@@ -65,6 +65,8 @@ export const API_ENDPOINTS = {
     GETMYLIST: (user_no) => `/worcations/my-worcations?userNo=${user_no}`,
     //이미지 업로드
     UPLOADIMAGE: () => '/files/upload',
+    //이미지 삭제
+    DELETEIMAGE: () => '/files/delete',
   },
 
   PARTNER: {
