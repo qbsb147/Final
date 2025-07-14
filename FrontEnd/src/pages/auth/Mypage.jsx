@@ -593,28 +593,32 @@ const Mypage = () => {
                 워케이션 업체
               </RadioGroup>
             </InputGroup>
-            <InputGroup>
-              <InputName>사내 이메일</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="text"
-                name="company_email"
-                value={userInfo.company_email || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputName>사내 전화번호</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="text"
-                name="company_phone"
-                value={userInfo.company_phone || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
-              />
-            </InputGroup>
+            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+              <InputGroup>
+                <InputName>사내 이메일</InputName>
+                <InputText
+                  style={Input.InputGray}
+                  type="text"
+                  name="company_email"
+                  value={userInfo.company_email || ''}
+                  onChange={handleInputChange}
+                  readOnly={!doUpdate}
+                />
+              </InputGroup>
+            )}
+            {(loginUser?.role === 'MANAGER' || loginUser?.role === 'EMPLOYEE') && (
+              <InputGroup>
+                <InputName>사내 전화번호</InputName>
+                <InputText
+                  style={Input.InputGray}
+                  type="text"
+                  name="company_phone"
+                  value={userInfo.company_phone || ''}
+                  onChange={handleInputChange}
+                  readOnly={!doUpdate}
+                />
+              </InputGroup>
+            )}
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
@@ -896,6 +900,7 @@ const RadioGroup = styled.div`
 const InputText = styled.input`
   width: 250px;
   height: 35px;
+  padding: 10px;
 `;
 
 const Box = styled.div``;
