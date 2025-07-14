@@ -160,7 +160,13 @@ const Mypage = () => {
   if (!loginUser) {
     return <div style={{ textAlign: 'center' }}>로딩중...</div>;
   }
-
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setDoUpdate(true);
+    setEmailAuthStarted(false);
+    const isPasswordValid = await validateCurrentPassword();
+    if (!isPasswordValid) return;
+  };
   const handleCompanySelect = (company) => {
     if (userInfo.company_no && userInfo.company_no !== company.company_no) {
       Swal.fire({
@@ -218,10 +224,6 @@ const Mypage = () => {
       toast.warn('이메일 검증이 되지 않았습니다.');
       return;
     }
-
-    // 현재 비밀번호 검증
-    const isPasswordValid = await validateCurrentPassword();
-    if (!isPasswordValid) return;
 
     try {
       // MASTER 역할인 경우 departments를 배열 형태로 변환
@@ -559,7 +561,7 @@ const Mypage = () => {
                   value="W"
                   checked={userInfo.gender === 'W'}
                   onChange={handleInputChange}
-                  disabled={!doUpdate}
+                  disabled={true}
                 />{' '}
                 여성
               </RadioGroup>
@@ -593,28 +595,32 @@ const Mypage = () => {
                 워케이션 업체
               </RadioGroup>
             </InputGroup>
-            <InputGroup>
-              <InputName>사내 이메일</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="text"
-                name="company_email"
-                value={userInfo.company_email || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputName>사내 전화번호</InputName>
-              <InputText
-                style={Input.InputGray}
-                type="text"
-                name="company_phone"
-                value={userInfo.company_phone || ''}
-                onChange={handleInputChange}
-                readOnly={!doUpdate}
-              />
-            </InputGroup>
+            {loginUser.role === 'MASTER' && (
+              <>
+                <InputGroup>
+                  <InputName>사내 이메일</InputName>
+                  <InputText
+                    style={Input.InputGray}
+                    type="text"
+                    name="company_email"
+                    value={userInfo.company_email || ''}
+                    onChange={handleInputChange}
+                    readOnly={!doUpdate}
+                  />
+                </InputGroup>
+                <InputGroup>
+                  <InputName>사내 전화번호</InputName>
+                  <InputText
+                    style={Input.InputGray}
+                    type="text"
+                    name="company_phone"
+                    value={userInfo.company_phone || ''}
+                    onChange={handleInputChange}
+                    readOnly={!doUpdate}
+                  />
+                </InputGroup>
+              </>
+            )}
           </Box>
           {/* 세 번째 박스: 회사 정보 */}
           <Box>
@@ -857,12 +863,7 @@ const Mypage = () => {
                 완료
               </button>
             ) : (
-              <button
-                style={btn.buttonWbShadow}
-                onClick={() => {
-                  setDoUpdate(true), setEmailAuthStarted(false);
-                }}
-              >
+              <button style={btn.buttonWbShadow} onClick={handleUpdate}>
                 수정
               </button>
             )}

@@ -12,6 +12,7 @@ const Input = {
     border: '1px solid #6B7280',
     borderRadius: '10px',
     color: 'black',
+    padding: '0 0 0 10px',
   },
   InputOrange: {
     boxSizing: 'border-box',
