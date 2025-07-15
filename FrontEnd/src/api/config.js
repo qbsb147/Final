@@ -91,6 +91,8 @@ export const API_ENDPOINTS = {
     LIST: '/applications',
     GET_FULL_DATES: ({ worcationNo, startDate, endDate }) =>
       `/applications/reserved-worcation?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
+    GET_REMAINING_DATES: ({ worcationNo, startDate, endDate }) =>
+      `/applications/remaining?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
   },
   REVIEW: {
     ADD: '/reviews',

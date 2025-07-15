@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import WorcationCalendar from '../../components/common/WocationCalendar';
+import WorcationCalendar from '../../components/common/ApplyCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -19,6 +19,8 @@ const WorcationApply = () => {
   const [events, setEvents] = useState([]);
   const [fullDates, setFullDates] = useState({});
   const [userInfo, setUserInfo] = useState(null);
+  const [datePeopleMap, setDatePeopleMap] = useState({});
+  const [selectedDates, setSelectedDates] = useState([new Date(), new Date()]);
   const { loginUser } = useAuthStore();
 
   // 마감된 날짜 조회
@@ -34,14 +36,31 @@ const WorcationApply = () => {
 
       try {
         const result = await applicationService.getFullDates(worcationNo, today, endStr);
-        setFullDates(result);
+        // result = [{ date: '2025-07-15', remaining: 0 }, ...]
+
+        // 1. 마감된 날짜 객체 저장
+        const fullMap = {};
+        result.forEach((item) => {
+          if (item.remaining === 0) fullMap[item.date] = true;
+        });
+        setFullDates(fullMap);
+
+        // 2. 남은 인원 이벤트로 달력에 표시
+        const remainEvents = result.map((item) => ({
+          title: item.remaining === 0 ? '마감' : `남은 ${item.remaining}명`,
+          start: new Date(item.date),
+          end: new Date(item.date),
+          allDay: true,
+          resource: { remaining: item.remaining },
+        }));
+
+        setEvents((prev) => [...prev, ...remainEvents]); // 예약된 일정과 함께 렌더링
       } catch (err) {
         console.error('꽉 찬 날짜 조회 실패', err);
       }
     };
     fetchFullDates();
   }, [passedWorcation]);
-
   // 유저 정보 불러오기
   useEffect(() => {
     if (!loginUser?.user_no) return;
@@ -78,12 +97,56 @@ const WorcationApply = () => {
           start: new Date(app.startDate),
           end: new Date(app.endDate),
         }));
-        setEvents(mapped);
+        setEvents((prev) => [...prev, ...mapped]);
       } catch (err) {
         console.error('예약 정보 불러오기 실패:', err);
       }
     };
     fetchReservations();
+  }, [passedWorcation]);
+
+  // 날짜별 예약 인원/최대 인원 조회
+  useEffect(() => {
+    const fetchDatePeople = async () => {
+      const worcationNo = passedWorcation?.worcation_no;
+      if (!worcationNo) return;
+
+      const today = new Date().toISOString().split('T')[0];
+      const future = new Date();
+      future.setMonth(future.getMonth() + 3);
+      const endStr = future.toISOString().split('T')[0];
+
+      try {
+        const result = await applicationService.getRemainingByWorcation(worcationNo, today, endStr);
+        const map = {};
+        result.forEach(item => {
+          let dateStr = item.date;
+          if (typeof dateStr !== 'string') {
+            dateStr = new Date(dateStr).toISOString().slice(0, 10);
+          }
+          const [y, m, d] = dateStr.split('-');
+          const key = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+          map[key] = {
+            reserved: item.max_people - item.remaining,
+            max: item.max_people,
+          };
+        });
+        setDatePeopleMap(map);
+        // events 배열 생성
+        const eventsArr = Object.entries(map).map(([date, { reserved, max }]) => ({
+          title: `${reserved} / ${max}`,
+          start: new Date(date),
+          end: new Date(date),
+          allDay: true,
+          resource: { reserved, max }
+        }));
+        setEvents(eventsArr);
+        console.log('datePeopleMap set:', map);
+      } catch (err) {
+        console.error('날짜별 인원 정보 조회 실패', err);
+      }
+    };
+    fetchDatePeople();
   }, [passedWorcation]);
 
   const handleSubmit = async () => {
@@ -109,7 +172,6 @@ const WorcationApply = () => {
     };
 
     if (isFull()) {
-      alert('선택한 날짜 중 예약 마감된 날짜가 포함되어 있습니다.');
       return;
     }
 
@@ -125,7 +187,7 @@ const WorcationApply = () => {
       navigate('/my/worcation-history');
     } catch (err) {
       console.error('신청 실패:', err);
-      alert('신청 중 오류가 발생했습니다.');
+      alert('선택한 날짜 중 예약 마감된 날짜가 포함되어 있습니다.');
     }
   };
 
@@ -138,8 +200,17 @@ const WorcationApply = () => {
         </Header>
 
         <CalendarSection>
-          <WorcationCalendar events={events} fullDates={fullDates} selectable={false} onSelectSlot={() => {}} />
-          {/* fullDates로 꽉찬 날짜 표시 */}
+          <CalendarWrapper>
+            <WorcationCalendar
+              events={events}
+              fullDates={fullDates}
+              selectable={false}
+              onSelectSlot={() => {}}
+              datePeopleMap={datePeopleMap}
+              selectedDates={selectedDates}
+              setSelectedDates={setSelectedDates}
+            />
+          </CalendarWrapper>
           <InfoBox>
             <Label>워케이션 신청자</Label>
             <ReadOnlyInput value={loginUser?.user_name ?? ''} readOnly />
@@ -147,7 +218,6 @@ const WorcationApply = () => {
             <ReadOnlyInput value={worcationInfo?.price?.toLocaleString() ?? ''} readOnly />
           </InfoBox>
         </CalendarSection>
-
         <DateSection>
           <DateRangeWrapper>
             <DateBlock>
@@ -227,6 +297,13 @@ const CalendarSection = styled.div`
   display: flex;
   justify-content: space-around;
   height: 50%;
+`;
+const CalendarWrapper = styled.div`
+  width: 70%;
+  height: 700px; // 원하는 높이로 조절
+  .rbc-calendar {
+    height: 100% !important;
+  }
 `;
 
 const InfoBox = styled.div`

@@ -75,6 +75,16 @@ public class ApplicationController {
         return ResponseEntity.ok(fullDates);
     }
 
+    @GetMapping("/remaining")
+    public ResponseEntity<List<ApplicationDto.RemainingDto>> getRemainingByWorcation(
+            @RequestParam Long worcationNo,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        List<ApplicationDto.RemainingDto> result = applicationService.getRemainingByWorcation(worcationNo, startDate, endDate);
+        return ResponseEntity.ok(result);
+    }
+
 
     /**
      *

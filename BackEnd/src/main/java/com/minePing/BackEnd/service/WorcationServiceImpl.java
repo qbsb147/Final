@@ -375,6 +375,7 @@ public class WorcationServiceImpl implements WorcationService {
         Page<WorcationApplication> pageResult =
                 worcationRepository.findByWorcationNosAndDate(worcationNos, today, pageable);
 
+
         List<WorcationReservation> dtoList = pageResult.getContent().stream()
                 .map(wa -> {
                     Member member = wa.getMember();
@@ -385,7 +386,7 @@ public class WorcationServiceImpl implements WorcationService {
                     int age = Period.between(member.getBirthday(), today).getYears();
                     String dateRange = wa.getStartDate() + " ~ " + wa.getEndDate();
 
-                    return WorcationReservation.toDto(worcation, member, age, company, profile, dateRange);
+                    return WorcationReservation.toDto(worcation, member, age, company, profile, dateRange,wa);
                 })
                 .toList();
 
