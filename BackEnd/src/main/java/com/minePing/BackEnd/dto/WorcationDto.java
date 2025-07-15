@@ -59,7 +59,7 @@ public class WorcationDto {
         private String activities;
         private WorcationEnums.AccommodationType accommodation_type;
 
-            private List<Long> amenities;
+        private List<Long> amenities;
         private List<String> photo_urls;
     }
 
