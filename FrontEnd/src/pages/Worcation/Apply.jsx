@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import WorcationCalendar from '../../components/common/ApplyCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
 import { useLocation, useNavigate } from 'react-router-dom';
