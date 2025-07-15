@@ -7,6 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
+import ApplySampleCalendar from '../../components/common/ApplySampleCalendar';
 
 const WorcationApply = () => {
   const location = useLocation();
@@ -201,7 +202,7 @@ const WorcationApply = () => {
 
         <CalendarSection>
           <CalendarWrapper>
-            <WorcationCalendar
+            {/* <WorcationCalendar
               events={events}
               fullDates={fullDates}
               selectable={false}
@@ -209,7 +210,13 @@ const WorcationApply = () => {
               datePeopleMap={datePeopleMap}
               selectedDates={selectedDates}
               setSelectedDates={setSelectedDates}
-            />
+            /> */}
+            <ApplySampleCalendar
+  fullDates={fullDates}
+  datePeopleMap={datePeopleMap}
+  selectedDates={selectedDates}
+  setSelectedDates={setSelectedDates}
+/>
           </CalendarWrapper>
           <InfoBox>
             <Label>워케이션 신청자</Label>
@@ -344,7 +351,7 @@ const DateRangeWrapper = styled.div`
   height: 100%;
   display: flex;
   gap: ${({ theme }) => theme.spacing.s4};
-  margin-top: ${({ theme }) => theme.spacing.s2};
+  margin-top: ${({ theme }) => theme.spacing.s12};
   align-items: center;
 `;
 
