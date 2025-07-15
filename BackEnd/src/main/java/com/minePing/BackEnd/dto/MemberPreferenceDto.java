@@ -5,6 +5,8 @@ import lombok.*;
 import jakarta.validation.constraints.*;
 import com.minePing.BackEnd.entity.MemberPreference;
 
+import java.time.LocalDate;
+
 public class MemberPreferenceDto {
 
     @Getter
@@ -69,6 +71,22 @@ public class MemberPreferenceDto {
                     .accommodation_type(entity.getAccommodationType())
                     .build();
         }
+    }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Result {
+        private String result_content;
+        private LocalDate update_date;
+
+        public static Result toDto(MemberPreference memberPreference) {
+            return Result.builder()
+                    .result_content(memberPreference.getResultContent())
+                    .update_date(memberPreference.getUpdateDate())
+                    .build();
+        }
     }
 }

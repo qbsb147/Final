@@ -1,7 +1,11 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
+import com.minePing.BackEnd.enums.MentalEnums;
 import lombok.*;
+
+import java.time.LocalDate;
 
 public class MentalDto {
 
@@ -11,19 +15,15 @@ public class MentalDto {
     @NoArgsConstructor
     @Builder
     public static class Response {
-        private Long user_no;                  // Member의 userNo
         private Integer score;
-        private String psychological_state;    // Enum → String
         private String result_content;
-        private String separation;            // Enum → String
+        private LocalDate update_date;
 
-        public static Response fromEntity(Mental entity) {
+        public static Response toDto(Mental mental) {
             return Response.builder()
-                    .user_no(entity.getMember().getUserNo())
-                    .score(entity.getScore())
-                    .psychological_state(entity.getPsychologicalState().name())
-                    .result_content(entity.getResultContent())
-                    .separation(entity.getSeparation() != null ? entity.getSeparation().name() : null)
+                    .score(mental.getScore())
+                    .result_content(mental.getResultContent())
+                    .update_date(mental.getUpdateDate())
                     .build();
         }
     }
@@ -68,12 +68,45 @@ public class MentalDto {
         private Integer burnout9;
         private Integer burnout10;
     }
+
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
     public static class MentalsResponse{
+        private Response stress;
+        private Response burnout;
+        private MemberPreferenceDto.Result preference;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Main{
+        private Integer score;
+        private MentalEnums.PsychologicalState psychological_state;
+        private LocalDate update_date;
+
+        public static Main toDto(Mental mental) {
+            return Main.builder()
+                    .score(mental.getScore())
+                    .psychological_state(mental.getPsychologicalState())
+                    .update_date(mental.getUpdateDate())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MainResponse{
+        private Main stress;
+        private Main burnout;
     }
 }
 

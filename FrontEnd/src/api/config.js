@@ -103,8 +103,13 @@ export const API_ENDPOINTS = {
   //심리정보 불러오기
   MENTALS: {
     BASE: '/mental',
+    MAIN: '/mental/main',
     STRESS: '/mental/stress',
     BURNOUT: '/mental/burnout',
     PREFERENCE: '/mental/preference',
+  },
+  MEALS: {
+    BASE: '/meal',
+    CHECK: '/meal/check',
   },
 };

@@ -6,10 +6,12 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import MbtiSelect from '../../components/test/mbtiSelect.jsx';
 import { mentalService } from '../../api/mentals.js';
 import { toast } from 'react-toastify';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const TendencyTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
   const handleChange = (id, value) => {
     setAnswers((prev) => {
@@ -45,14 +47,24 @@ const TendencyTest = () => {
       accommodation_type: answers['tendency7'],
     };
 
+    setLoading(true); // 로딩 시작
     try {
       await mentalService.postPreference(payload);
-
       navigate('/trial');
     } catch (error) {
       toast.error(error);
+    } finally {
+      setLoading(false); // 로딩 종료
     }
   };
+
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
 
   return (
     <Content onSubmit={handleSubmit}>
@@ -204,6 +216,25 @@ const Select = styled.select`
   border-radius: 4px;
   border: 1px solid #d3d3d3;
   background: #fff;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
 `;
 
 export default TendencyTest;

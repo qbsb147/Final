@@ -27,14 +27,6 @@ export const mentalService = {
       throw new Error('서버 통신 불량');
     }
   },
-  getMentals: async () => {
-    try {
-      const response = await axiosInstance.get(API_ENDPOINTS.MENTALS.BASE);
-      return response.data;
-    } catch (error) {
-      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
-    }
-  },
   postPreference: async (preference) => {
     try {
       await axiosInstance.post(API_ENDPOINTS.MENTALS.PREFERENCE, preference);
@@ -45,6 +37,24 @@ export const mentalService = {
       }
 
       throw new Error('서버 통신 불량');
+    }
+  },
+
+  getMentals: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MENTALS.BASE);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+
+  getMainMental: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MENTALS.MAIN);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 };

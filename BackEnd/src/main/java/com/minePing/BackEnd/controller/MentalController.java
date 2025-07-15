@@ -15,35 +15,41 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/mental")
+@RequestMapping("/api/v1/mental")
 @RequiredArgsConstructor
 public class MentalController {
 
     private final MentalService mentalService;
     private final MemberPreferenceService preferenceService;
 
-    @GetMapping("")
-    public ResponseEntity<List<MentalDto.Response>> getMental(){
-        List<MentalDto.Response> response = mentalService.getMental();
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/stress")
+    @PostMapping("stress")
     public ResponseEntity<Void> saveStress(@RequestBody MentalDto.StressRequest stressDto){
         mentalService.saveStress(stressDto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/burnout")
+    @PostMapping("burnout")
     public ResponseEntity<Void> saveBurnout(@RequestBody MentalDto.BurnoutRequest burnoutDto){
         mentalService.saveBurnout(burnoutDto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/preference")
+    @PostMapping("preference")
     public ResponseEntity<Void> savePreference(@RequestBody MemberPreferenceDto.Request requestDto){
         preferenceService.savePreference(requestDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<MentalDto.MentalsResponse> getMentals(){
+        MentalDto.MentalsResponse response = mentalService.findMentals();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("main")
+    public ResponseEntity<MentalDto.MainResponse> getMainMental(){
+        MentalDto.MainResponse response = mentalService.findMainMental();
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -6,14 +6,15 @@ import { toast } from 'react-toastify';
 import { mentalService } from '../../api/mentals';
 
 const Trial = () => {
-  const [stress, setStress] = useState({});
-  const [burnout, setBurnout] = useState({});
-  const [preference, setPreference] = useState({});
+  const [stress, setStress] = useState('');
+  const [burnout, setBurnout] = useState('');
+  const [preference, setPreference] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { stress, burnout, preference } = await mentalService.getMentals();
+
         setStress(stress);
         setBurnout(burnout);
         setPreference(preference);
@@ -21,7 +22,7 @@ const Trial = () => {
         toast.error(error);
       }
     };
-    fetchData;
+    fetchData();
   }, []);
   return (
     <>
@@ -36,10 +37,18 @@ const Trial = () => {
           </NameBox>
           <Textbox>
             {stress ? (
-              <ResultContent>
-                <Result>{stress.result_content}</Result>
-                <Score>{stress.score}점</Score>
-              </ResultContent>
+              <>
+                {new Date(stress.update_date) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+                  <WhiteButtonLink to="/trial/stress">
+                    <div>스트레스 검사한지 한달이 지났습니다.</div>재검사를 실시하세요.
+                  </WhiteButtonLink>
+                ) : (
+                  <ResultContent>
+                    <Result>{stress.result_content}</Result>
+                    <Score>{stress.score}점</Score>
+                  </ResultContent>
+                )}
+              </>
             ) : (
               <WhiteButtonLink to="/trial/stress">테스트하러 가기</WhiteButtonLink>
             )}
@@ -57,10 +66,18 @@ const Trial = () => {
           </NameBox>
           <Textbox>
             {burnout ? (
-              <ResultContent>
-                <Result>{burnout.result_content}</Result>
-                <Score>{burnout.score}점</Score>
-              </ResultContent>
+              <>
+                {new Date(burnout.update_date) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+                  <WhiteButtonLink to="/trial/burnout">
+                    <div>번아웃 검사한지 한달이 지났습니다.</div>재검사를 실시하세요.
+                  </WhiteButtonLink>
+                ) : (
+                  <ResultContent>
+                    <Result>{burnout.result_content}</Result>
+                    <Score>{burnout.score}점</Score>
+                  </ResultContent>
+                )}
+              </>
             ) : (
               <WhiteButtonLink to="/trial/burnout">테스트하러 가기</WhiteButtonLink>
             )}
@@ -77,9 +94,17 @@ const Trial = () => {
           </NameBox>
           <Textbox>
             {preference ? (
-              <ResultContent>
-                <Result>{preference.result_content}</Result>
-              </ResultContent>
+              <>
+                {new Date(preference.update_date) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+                  <WhiteButtonLink to="/trial/tendency">
+                    <div>성향 검사한지 한달이 지났습니다.</div>재검사를 실시하세요.
+                  </WhiteButtonLink>
+                ) : (
+                  <ResultContent>
+                    <Result>{preference.result_content}</Result>
+                  </ResultContent>
+                )}
+              </>
             ) : (
               <WhiteButtonLink to="/trial/tendency">테스트하러 가기</WhiteButtonLink>
             )}

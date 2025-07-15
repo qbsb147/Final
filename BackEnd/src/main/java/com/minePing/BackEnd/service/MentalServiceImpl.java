@@ -1,37 +1,28 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.auth.JwtTokenProvider;
-import com.minePing.BackEnd.dto.MemberDto;
+import com.minePing.BackEnd.dto.MemberPreferenceDto;
 import com.minePing.BackEnd.dto.MentalDto;
-import com.minePing.BackEnd.dto.MentalDto.Response;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.exception.UserNotFoundException;
+import com.minePing.BackEnd.repository.MemberPreferenceRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.MentalRepository;
-import jakarta.transaction.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.ChatOptions;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MentalServiceImpl implements MentalService {
 
@@ -39,6 +30,7 @@ public class MentalServiceImpl implements MentalService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatModel chatModel;
     private final MemberRepository memberRepository;
+    private final MemberPreferenceRepository memberPreferenceRepository;
 
     @Value("classpath:/prompts/survey-stress.st")
     private Resource surveyStress;
@@ -48,15 +40,7 @@ public class MentalServiceImpl implements MentalService {
 
 
     @Override
-    public List<Response> getMental() {
-        String user_id = jwtTokenProvider.getUserIdFromToken();
-        List<Mental> mentalList= mentalRepository.getMental(user_id);
-        return mentalList.stream()
-            .map(MentalDto.Response::fromEntity)
-            .collect(Collectors.toList());
-    }
-
-    @Override
+    @Transactional
     public void saveStress(MentalDto.StressRequest stressDto) {
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
@@ -89,6 +73,7 @@ public class MentalServiceImpl implements MentalService {
     }
 
     @Override
+    @Transactional
     public void saveBurnout(MentalDto.BurnoutRequest burnoutDto) {
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
@@ -113,5 +98,43 @@ public class MentalServiceImpl implements MentalService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
         mental.changeMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
         mentalRepository.save(mental);
+    }
+
+    @Override
+    public MentalDto.MentalsResponse findMentals() {
+        String user_id = jwtTokenProvider.getUserIdFromToken();
+        Mental stress = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.STRESS);
+        Mental burnout = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.BURNOUT);
+        MemberPreference memberPreference = memberPreferenceRepository.findByMember_UserId(user_id)
+                .orElse(null);
+
+        MentalDto.MentalsResponse mentalsResponse = new MentalDto.MentalsResponse();
+
+        MentalDto.Response stressDto = MentalDto.Response.toDto(stress);
+        MentalDto.Response burnoutDto = MentalDto.Response.toDto(burnout);
+        MemberPreferenceDto.Result preferenceDto;
+        if(memberPreference!=null) {
+            preferenceDto = MemberPreferenceDto.Result.toDto(memberPreference);
+            mentalsResponse.setPreference(preferenceDto);
+        }
+        mentalsResponse.setStress(stressDto);
+        mentalsResponse.setBurnout(burnoutDto);
+        return mentalsResponse;
+    }
+
+    @Override
+    public MentalDto.MainResponse findMainMental() {
+        String user_id = jwtTokenProvider.getUserIdFromToken();
+        Mental stress = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.STRESS);
+        Mental burnout = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.BURNOUT);
+
+        MentalDto.MainResponse mainResponse = new MentalDto.MainResponse();
+
+        MentalDto.Main stressDto = MentalDto.Main.toDto(stress);
+        MentalDto.Main burnoutDto = MentalDto.Main.toDto(burnout);
+
+        mainResponse.setStress(stressDto);
+        mainResponse.setBurnout(burnoutDto);
+        return mainResponse;
     }
 }
