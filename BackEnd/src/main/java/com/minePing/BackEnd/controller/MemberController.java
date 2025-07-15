@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Slf4j
 @RestController
@@ -62,24 +63,28 @@ public class MemberController {
     }
 
     @GetMapping("userInfo")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InfoResponse> getMyInfo() {
         InfoResponse userInfo = memberService.getUserInfoByUserId();
         return ResponseEntity.ok(userInfo);
     }
 
     @GetMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUser() {
         MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> update(@RequestBody MemberDto.Update updateDto){
         memberService.updateUser(updateDto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> delete(){
         memberService.delete();
         return ResponseEntity.ok().build();
@@ -93,6 +98,7 @@ public class MemberController {
     }
 
     @PatchMapping("{userNo}")
+    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
     public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
         try {
             memberService.updateRole(userNo,updateRoleDto);
