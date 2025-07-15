@@ -257,7 +257,7 @@ export const burnout = [
   },
   {
     id: 'burnout9',
-    question: '어려운 일이 과도하게 누적돼 극복할 수 없다고 생각한 경우는얼마나 있었나?',
+    question: '어려운 일이 과도하게 누적돼 극복할 수 없다고 생각한 경우는 얼마나 있었나?',
     options: [
       { value: '1', label: '전혀없었다.' },
       { value: '2', label: '거의없었다.' },

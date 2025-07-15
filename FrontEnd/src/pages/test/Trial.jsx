@@ -1,10 +1,28 @@
 import Button from '../../styles/Button';
 import styled from 'styled-components';
 import { WhiteButtonLink } from '../../styles/Link.styles';
-import useUserStore from '../../store/userStore';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { mentalService } from '../../api/mentals';
 
 const Trial = () => {
-  const { stress, burnout, tendency } = useUserStore();
+  const [stress, setStress] = useState({});
+  const [burnout, setBurnout] = useState({});
+  const [preference, setPreference] = useState({});
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { stress, burnout, preference } = await mentalService.getMentals();
+        setStress(stress);
+        setBurnout(burnout);
+        setPreference(preference);
+      } catch (error) {
+        toast.error(error);
+      }
+    };
+    fetchData;
+  }, []);
   return (
     <>
       <Content>
@@ -58,9 +76,9 @@ const Trial = () => {
             </ExplanationBox>
           </NameBox>
           <Textbox>
-            {tendency ? (
+            {preference ? (
               <ResultContent>
-                <Result>{tendency.result_content}</Result>
+                <Result>{preference.result_content}</Result>
               </ResultContent>
             ) : (
               <WhiteButtonLink to="/trial/tendency">테스트하러 가기</WhiteButtonLink>

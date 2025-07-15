@@ -68,4 +68,14 @@ public class MentalDto {
         private Integer burnout9;
         private Integer burnout10;
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MentalsResponse{
+    }
 }
+
+
+

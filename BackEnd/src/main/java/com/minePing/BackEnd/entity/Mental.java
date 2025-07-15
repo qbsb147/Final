@@ -46,4 +46,9 @@ public class Mental {
     protected void onUpdate() {
         this.updateDate = LocalDate.now();
     }
+
+    public void changeMemberAndSeparation(Member member, MentalEnums.Separation separation) {
+        this.member = member;
+        this.separation = separation;
+    }
 }

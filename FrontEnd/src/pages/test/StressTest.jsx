@@ -23,10 +23,7 @@ const StressTest = () => {
       alert('모든 질문에 답변을 해주세요!');
     } else {
       try {
-        console.log('answers', answers);
-        await mentalService.postStress({
-          stress: answers,
-        });
+        await mentalService.postStress(answers);
 
         navigate('/trial');
       } catch (error) {

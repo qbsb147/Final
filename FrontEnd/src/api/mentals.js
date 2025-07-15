@@ -27,9 +27,13 @@ export const mentalService = {
       throw new Error('서버 통신 불량');
     }
   },
-  getMental: async () => {
-    const response = await axiosInstance.get(API_ENDPOINTS.MENTALS);
-    return response;
+  getMentals: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.MENTALS.BASE);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
   },
   postPreference: async (preference) => {
     try {

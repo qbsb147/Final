@@ -50,11 +50,6 @@ Answer within 170 characters in Korean (512 bytes or less)
 Translated with DeepL.com (free version)
                 """;
 
-        ChatOptions openAIChatOptions = ChatOptions.builder()
-                .model("gpt-3.5-turbo")
-                .temperature(1.0)
-                .build();
-
         PromptTemplate promptTemplate = new PromptTemplate(template);
         Prompt prompt = promptTemplate.create(Map.of(
                 "preferred_color", requestDto.getPreferred_color(),

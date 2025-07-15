@@ -26,9 +26,7 @@ const BurnoutTest = () => {
     } else {
       try {
         console.log(answers);
-        await mentalService.postBurnout({
-          burnout: answers,
-        });
+        await mentalService.postBurnout(answers);
 
         navigate('/trial');
       } catch (error) {

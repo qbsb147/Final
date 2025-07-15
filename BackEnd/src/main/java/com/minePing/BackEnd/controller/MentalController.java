@@ -6,8 +6,9 @@ import com.minePing.BackEnd.service.MentalService;
 import com.minePing.BackEnd.service.MemberPreferenceService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -44,4 +45,5 @@ public class MentalController {
         preferenceService.savePreference(requestDto);
         return ResponseEntity.ok().build();
     }
+
 }
