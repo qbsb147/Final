@@ -37,4 +37,10 @@ export const applicationService = {
     worcation_no;
     return res.data;
   },
+  getRemainingByWorcation: async (worcation_no, startDate, endDate) => {
+    const res = await api.get(
+      API_ENDPOINTS.APPLICATION.GET_REMAINING_DATES({ worcationNo: worcation_no, startDate, endDate })
+    );
+    return res.data;
+  },
 };

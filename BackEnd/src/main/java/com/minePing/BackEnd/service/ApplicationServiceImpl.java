@@ -1,6 +1,7 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.ApplicationDto;
+import com.minePing.BackEnd.dto.ApplicationDto.RemainingDto;
 import com.minePing.BackEnd.dto.ApplicationDto.ReservedResponseDto;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Member;
@@ -15,6 +16,7 @@ import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.WorcationDetailRepository;
 import com.minePing.BackEnd.repository.WorcationFeaturesRepository;
 import com.minePing.BackEnd.repository.WorcationRepository;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -189,6 +195,37 @@ public class ApplicationServiceImpl implements ApplicationService {
 
            return fullDates;
        }
+
+    @Override
+    public List<RemainingDto> getRemainingByWorcation(Long worcationNo, String startDateStr, String endDateStr) {
+        LocalDate startDate = LocalDate.parse(startDateStr);
+        LocalDate endDate = LocalDate.parse(endDateStr);
+
+        List<WorcationApplication> applications =
+                applicationRepository.findByWorcationNoAndDateRange(worcationNo, startDate, endDate);
+
+        Map<LocalDate, Integer> countMap = new HashMap<>();
+        for (WorcationApplication app : applications) {
+            LocalDate cur = app.getStartDate();
+            while (!cur.isAfter(app.getEndDate())) {
+                countMap.put(cur, countMap.getOrDefault(cur, 0) + 1);
+                cur = cur.plusDays(1);
+            }
+        }
+
+        int maxPeople = applications.stream()
+                .findFirst()
+                .map(app -> app.getWorcation().getMaxPeople())
+                .orElse(0);
+
+        List<RemainingDto> result = new ArrayList<>();
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            int used = countMap.getOrDefault(date, 0);
+            result.add(new ApplicationDto.RemainingDto(date, maxPeople - used, maxPeople));
+        }
+
+        return result;
+    }
 
 
 

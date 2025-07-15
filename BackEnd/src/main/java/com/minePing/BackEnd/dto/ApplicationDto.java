@@ -5,6 +5,8 @@ import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.html.parser.Entity;
@@ -104,6 +106,16 @@ public class ApplicationDto {
                     .endDate(entity.getEndDate())
                     .build();
         }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RemainingDto {
+        private LocalDate date;
+        private int remaining;
+        private int maxPeople; // 추가
     }
 
 
