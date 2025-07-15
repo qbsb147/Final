@@ -2,6 +2,7 @@ package com.minePing.BackEnd.dto;
 
 import com.minePing.BackEnd.enums.PreferenceEnums;
 import lombok.*;
+import jakarta.validation.constraints.*;
 import com.minePing.BackEnd.entity.MemberPreference;
 
 public class MemberPreferenceDto {
@@ -12,13 +13,22 @@ public class MemberPreferenceDto {
     @NoArgsConstructor
     @Builder
     public static class Request {
+        @NotNull(message = "mbti 정보가 없습니다.")
         private PreferenceEnums.Mbti mbti;
+        @NotNull(message = "좋아하는 색상 정보가 없습니다.")
         private PreferenceEnums.PreferredColor preferred_color;
+        @NotNull(message = "선호하는 지역 정보가 없습니다.")
         private PreferenceEnums.PreferredLocation preferred_location;
+        @NotNull(message = "공간 분위기 정보가 없습니다.")
         private PreferenceEnums.SpaceMood space_mood;
+        @NotNull(message = "중요한 것 정보가 없습니다.")
         private PreferenceEnums.ImportantFactor important_factor;
+        @NotNull(message = "여가 활동 정보가 없습니다.")
         private PreferenceEnums.LeisureActivity leisure_activity;
+        @NotNull(message = "숙소 유형 정보가 없습니다.")
         private PreferenceEnums.AccommodationType accommodation_type;
+
+        private String result_content;
 
         public MemberPreference toEntity() {
             return MemberPreference.builder()
@@ -29,7 +39,7 @@ public class MemberPreferenceDto {
                     .importantFactor(this.important_factor)
                     .leisureActivity(this.leisure_activity)
                     .accommodationType(this.accommodation_type)
-                    .resultContent("어쩔티비")
+                    .resultContent(this.result_content)
                     .build();
         }
     }

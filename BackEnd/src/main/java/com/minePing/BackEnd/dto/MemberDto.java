@@ -1,6 +1,5 @@
 package com.minePing.BackEnd.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
 import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
@@ -12,7 +11,6 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j

@@ -298,11 +298,11 @@ export const tendency = [
     id: 'tendency2',
     question: '가장 끌리는 색상 계열은 무엇인가요?',
     options: [
-      { value: 'green_brown', label: '녹색, 브라운' },
+      { value: 'forest', label: '녹색, 브라운' },
       { value: 'blue_sky', label: '파란색, 하늘색' },
-      { value: 'yellow_orange', label: '노란색, 주황색' },
-      { value: 'achromatic', label: '무채색' },
-      { value: 'purple', label: '보라색' },
+      { value: 'sunset', label: '노란색, 주황색' },
+      { value: 'monochrome', label: '무채색' },
+      { value: 'mystical', label: '보라색' },
     ],
   },
   {

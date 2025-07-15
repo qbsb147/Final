@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { mentalService } from '../api/mentals';
-import { memberPreferenceService } from '../api/memberPreference';
 
 const useUserStore = create((set) => ({
   user: {
@@ -78,14 +77,11 @@ const useUserStore = create((set) => ({
   },
 
   postTendency: async (answers, navigate) => {
-    const user_no = useUserStore.getState().user.user_no;
     try {
-      const tendency = await memberPreferenceService.postTendency({
-        tendency: answers,
-        user_no: user_no,
-      });
-
-      set({ tendency });
+      // const tendency = await memberPreferenceService.postTendency({
+      //   tendency: answers,
+      //   user_no: user_no,
+      // });
 
       navigate('/trial');
     } catch (error) {

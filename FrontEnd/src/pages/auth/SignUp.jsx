@@ -18,10 +18,10 @@ import Cookies from 'js-cookie';
 import MasterProfileStep from '../../components/auth/MaterProfile';
 
 const SignUp = () => {
-  const [formStep, setFormStep] = useState(2);
+  const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'M',
-    role: 'MASTER',
+    role: 'EMPLOYEE',
   });
   const [formData2, setFormData2] = useState({});
   const [formData3, setFormData3] = useState({});

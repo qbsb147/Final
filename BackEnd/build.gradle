@@ -22,6 +22,9 @@ configurations {
 repositories {
 	mavenCentral()
 }
+ext {
+	set('springAiVersion', "1.0.0")
+}
 
 dependencies {
 	// 🔹 Spring Boot 주요 의존성
@@ -72,8 +75,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-}
 
+	//spring ai
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
+	implementation 'org.springframework.ai:spring-ai-pdf-document-reader'
+	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+}
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
+}
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['-parameters']
 
