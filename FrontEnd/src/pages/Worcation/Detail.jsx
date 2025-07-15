@@ -8,6 +8,8 @@ import Slider from 'react-slick';
 import { worcationService } from '../../api/worcations.js';
 import useAuthStore from '../../store/authStore.js';
 
+const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
+
 const WorcationDetail = () => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const navigate = useNavigate();
@@ -85,7 +87,31 @@ const WorcationDetail = () => {
   if (!worcation) return null;
   const [officeTime, accomTime] = worcation?.available_time?.split('/') || ['', ''];
   const sortedPhotos = [...(photos || [])].sort((a, b) => a.photo_no - b.photo_no);
-  const images = [worcation.main_change_photo, ...sortedPhotos.map((p) => p.image_url)].filter(Boolean);
+  const hasFolder = (str) => str && (str.includes('/') || str.startsWith('images/'));
+  const images = [
+    worcation.main_change_photo
+      ? worcation.main_change_photo.startsWith('http')
+        ? worcation.main_change_photo
+        : hasFolder(worcation.main_change_photo)
+          ? CLOUDFRONT_DOMAIN + worcation.main_change_photo
+          : CLOUDFRONT_DOMAIN + 'images/' + worcation.main_change_photo
+      : null,
+    ...sortedPhotos.map((p) =>
+      p.image_url
+        ? p.image_url.startsWith('http')
+          ? p.image_url
+          : hasFolder(p.image_url)
+            ? CLOUDFRONT_DOMAIN + p.image_url
+            : CLOUDFRONT_DOMAIN + 'images/' + p.image_url
+        : p.change_name
+          ? p.change_name.startsWith('http')
+            ? p.change_name
+            : hasFolder(p.change_name)
+              ? CLOUDFRONT_DOMAIN + p.change_name
+              : CLOUDFRONT_DOMAIN + 'images/' + p.change_name
+          : null
+    ),
+  ].filter(Boolean);
 
   //숙소 유형에 따른 정보 출력
   const renderBlocks = () => {
@@ -224,13 +250,21 @@ const WorcationDetail = () => {
         <Title>{worcation.worcation_name}</Title>
         <PhotoGallery>
           <PhotoSliderWrapper>
-            <Slider {...settings}>
-              {images.map((src, idx) => (
-                <picture key={idx}>
-                  <SliderImage src={src} alt={`slide-${idx}`} loading="lazy" />
+            {images.length > 1 ? (
+              <Slider {...settings}>
+                {images.map((src, idx) => (
+                  <picture key={idx}>
+                    <SliderImage src={src} alt={`slide-${idx}`} loading="lazy" />
+                  </picture>
+                ))}
+              </Slider>
+            ) : (
+              images.length === 1 && (
+                <picture>
+                  <SliderImage src={images[0]} alt="slide-0" loading="lazy" />
                 </picture>
-              ))}
-            </Slider>
+              )
+            )}
           </PhotoSliderWrapper>
         </PhotoGallery>
         <PriceWrapper>
@@ -371,9 +405,12 @@ const PhotoSliderWrapper = styled.div`
 
 const SliderImage = styled.img`
   width: 100%;
+  max-width: 600px;
   height: 400px;
   object-fit: cover;
   border-radius: ${({ theme }) => theme.borderRadius.lg};
+  display: block;
+  margin: 0 auto;
 `;
 
 const PhotoGallery = styled.div`

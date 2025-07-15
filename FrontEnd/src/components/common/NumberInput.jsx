@@ -1,15 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const NumberInput = ({ value, onChange, format }) => {
+const NumberInput = ({ value, onChange, format, maxLength, ...rest }) => {
   const handleChange = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    onChange(value);
+    let val = e.target.value.replace(/[^0-9]/g, '');
+    if (maxLength) {
+      val = val.slice(0, maxLength);
+    }
+    onChange(val);
   };
 
   const displayValue = format ? Number(value).toLocaleString('ko-KR') : value;
 
-  return <StyledInput type="text" value={displayValue} onChange={handleChange} placeholder="숫자를 입력해주세요" />;
+  return (
+    <StyledInput
+      type="text"
+      value={displayValue}
+      onChange={handleChange}
+      placeholder="숫자를 입력해주세요"
+      maxLength={maxLength}
+      {...rest}
+    />
+  );
 };
 
 export default NumberInput;
