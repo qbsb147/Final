@@ -8,6 +8,7 @@ import com.minePing.BackEnd.entity.CompanyProfile;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.repository.PhotoRepository;
+import com.minePing.BackEnd.repository.AmenityRepository;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZoneId;
@@ -64,6 +65,7 @@ public class WorcationServiceImpl implements WorcationService {
     private final WorcationRepository worcationRepository;
     private final MemberRepository memberRepository;
     private final PhotoRepository photoRepository;
+    private final AmenityRepository amenityRepository;
     public static final String UPLOAD_DIR = "src/main/resources/static/upload/";
 
     //최종 등록
@@ -120,6 +122,9 @@ public class WorcationServiceImpl implements WorcationService {
             }
             // 이미지 URL을 photo 테이블에 저장
             savePhotos(worcation, request.getPhoto_urls());
+            
+            // amenities 저장
+            saveAmenities(worcation, request.getAmenities());
             
             // save 불필요(더티체킹)
             return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
@@ -183,6 +188,9 @@ public class WorcationServiceImpl implements WorcationService {
         // 이미지 URL을 photo 테이블에 저장
         savePhotos(worcation, request.getPhoto_urls());
 
+        // amenities 저장
+        saveAmenities(worcation, request.getAmenities());
+
         return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
     }
 
@@ -199,7 +207,7 @@ public class WorcationServiceImpl implements WorcationService {
             if (photoUrl != null && !photoUrl.trim().isEmpty()) {
                 Photo photo = Photo.builder()
                     .worcation(worcation)
-                    .changeName(extractFileNameFromUrl(photoUrl))
+                    .changeName(photoUrl)
                     .imageUrl(photoUrl)
                     .build();
                 photoRepository.save(photo);
@@ -337,6 +345,9 @@ public class WorcationServiceImpl implements WorcationService {
         // 이미지 URL을 photo 테이블에 저장
         savePhotos(worcation, request.getPhoto_urls());
         
+        // amenities 저장
+        saveAmenities(worcation, request.getAmenities());
+        
         // save 불필요 (더티체킹)
         return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                 List.of());
@@ -441,5 +452,21 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
+    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
+        // 기존 연관관계 삭제
+        worcation.getWorcationAmenities().clear();
+
+        if (amenityIds != null) {
+            for (Long amenityId : amenityIds) {
+                Amenity amenity = amenityRepository.findById(amenityId)
+                    .orElseThrow(() -> new RuntimeException("Amenity not found: " + amenityId));
+                WorcationAmenity wa = WorcationAmenity.builder()
+                    .worcation(worcation)
+                    .amenity(amenity)
+                    .build();
+                worcation.getWorcationAmenities().add(wa);
+            }
+        }
+    }
 
 }

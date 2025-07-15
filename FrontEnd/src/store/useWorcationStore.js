@@ -14,6 +14,8 @@ const initialState = {
     business_id: '',
     licensee: '',
     open_date: '',
+    businessValidated: false, // 사업자등록번호 인증 상태
+    validationCache: {}, // 인증 결과 캐시
   },
   // 2. 기본 정보
   info: {
@@ -97,6 +99,9 @@ const useWorcationStore = create(
         set((state) => ({
           ...state,
           ...data,
+          amenities: Array.isArray(data.amenities)
+            ? [...new Set(data.amenities.map((a) => (typeof a === 'object' ? a.amenity_no : a)))]
+            : [],
         })),
 
       // 유효성 검사 예시

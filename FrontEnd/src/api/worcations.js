@@ -71,10 +71,10 @@ export const worcationService = {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
     return response.data;
   },
-  uploadImage: async (file) => {
+  uploadImage: async (file, folder = 'images') => {
     const formData = new FormData();
 
-    // 고유한 파일명 생성 (덮어쓰기 방지)
+    // 고유한 파일명 생성
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileExtension = file.name.split('.').pop();
@@ -83,15 +83,14 @@ export const worcationService = {
     // 새로운 파일명으로 Blob 생성
     const renamedFile = new File([file], uniqueFileName, { type: file.type });
     formData.append('file', renamedFile);
+    formData.append('folder', folder);
 
-    // fileApi 사용 (일관성 유지)
     const response = await fileApi.post('/files/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-
-    return response.data.imageUrl; // 서버에서 반환한 imageUrl 필드
+    return response.data.imageUrl; // 업로드된 파일 URL 반환 (images/파일명)
   },
 
   deleteImage: async (imageUrl) => {
