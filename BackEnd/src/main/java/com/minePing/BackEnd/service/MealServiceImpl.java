@@ -49,7 +49,7 @@ public class MealServiceImpl implements MealService {
         Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-        Health health =healthRepository.findByMemberAndUpdateDateAfter(member, oneMonthAgo);
+        Health health =healthRepository.findByMember(member);
         if (health != null) {
             body = true;
         }

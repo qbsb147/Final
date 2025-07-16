@@ -56,8 +56,18 @@ const MemberTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
             }
 
             try {
-              await companyEmployee.updateRole(currentMember.user_no, newRoleKey);
-
+              const jwt = await companyEmployee.updateRole(currentMember.user_no, newRoleKey);
+              if (jwt) {
+                localStorage.setItem('token', jwt);
+                await Swal.fire({
+                  icon: 'success',
+                  title: '변경 완료',
+                  text: `"${userName}"님의 등급이 변경되었습니다.`,
+                  timer: 1500,
+                  showConfirmButton: false,
+                });
+                window.location.reload();
+              }
               setMembers((prev) =>
                 prev.map((m) => (m.user_no === currentMember.user_no ? { ...m, role: newRoleKey } : m))
               );
