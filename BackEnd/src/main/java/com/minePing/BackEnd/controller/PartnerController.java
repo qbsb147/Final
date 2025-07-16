@@ -32,7 +32,7 @@ public class PartnerController {
         return ResponseEntity.ok("신청 완료");
     }
 
-    @GetMapping("/requset")
+    @GetMapping("/request")
     @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<List<PartnerDto.Response>> getPartnerRequests(@RequestParam Long userNo) {
         List<PartnerDto.Response> list = partnerService.getRequestsByUser(userNo);

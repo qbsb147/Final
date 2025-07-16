@@ -98,13 +98,11 @@ const Header = () => {
         if (role === 'WORCATION') {
           items.push(
             { title: '예약자 명단', path: 'my/reservation' },
-            { title: '제휴 승인 목록', path: '/worcation/partnership/approvedList' },
-            { title: '제휴 요청 목록', path: '/worcation/partnership/requests' }
+            { title: '제휴 승인 목록', path: '/partnership/approveList' },
+            { title: '제휴 요청 목록', path: '/partnership/requests' }
           );
         } else {
-          items.push(
-            { title: '워케이션 신청내역', path: '/my/worcation-history' }
-          );
+          items.push({ title: '워케이션 신청내역', path: '/my/worcation-history' });
         }
         items.push({ title: '로그아웃', path: '/logout' });
 
@@ -114,28 +112,27 @@ const Header = () => {
           path: '/my/info',
           items,
         };
-      } else 
-      return menu;
+      } else return menu;
     }
     return menu;
   });
 
   const filteredMenus = menus
-    .map(menu => {
+    .map((menu) => {
       if (menu.title === '워케이션') {
         return {
           ...menu,
-          items: menu.items.filter(item => {
+          items: menu.items.filter((item) => {
             if (item.title === '워케이션 등록') {
               return role === 'WORCATION';
             }
             return true;
-          })
+          }),
         };
       }
       return menu;
     })
-    .filter(menu => {
+    .filter((menu) => {
       // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
       if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
       if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
