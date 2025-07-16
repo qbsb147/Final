@@ -62,6 +62,8 @@ const Header = () => {
   const logout = useAuthStore((state) => state.logout);
   const isLoggedIn = Boolean(loginUser);
 
+  
+
   const menus = menuData.map((menu) => {
     if (menu.title === '로그인') {
       if (isLoggedIn) {

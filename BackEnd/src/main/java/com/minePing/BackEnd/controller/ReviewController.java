@@ -31,7 +31,7 @@ public class ReviewController {
 
     // 리뷰 수정
     @PatchMapping("/{reviewNo}")
-    @PreAuthorize("@reviewService.isOwner(#id, authentication.principal.userNo)")
+    @PreAuthorize("@reviewService.isOwner(#reviewNo, authentication.principal.userNo)")
     public ResponseEntity<ReviewResponse> update(@PathVariable Long reviewNo, @RequestBody ReviewRequest request) {
         return ResponseEntity.ok(reviewService.update(reviewNo, request));
     }
@@ -39,7 +39,6 @@ public class ReviewController {
     // 리뷰 삭제
     @DeleteMapping("/{reviewNo}")
     @PreAuthorize("@reviewService.isOwner(#id, authentication.principal.userNo)")
-
     public ResponseEntity<Void> delete(@PathVariable Long reviewNo) {
         reviewService.delete(reviewNo);
         return ResponseEntity.noContent().build();
