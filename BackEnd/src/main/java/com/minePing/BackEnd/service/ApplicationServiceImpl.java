@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.ApplicationDto.RemainingDto;
 import com.minePing.BackEnd.dto.ApplicationDto.ReservedResponseDto;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
@@ -42,7 +43,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final WorcationRepository worcationRepository;
     private final WorcationDetailRepository detailRepository;
     private final WorcationFeaturesRepository featuresRepository;
-
 
 
     @Override
@@ -227,6 +227,14 @@ public class ApplicationServiceImpl implements ApplicationService {
         return result;
     }
 
+    @Override
+    public boolean isOwner(Long applicationNo, Long userNo) {
+        WorcationApplication application = applicationRepository.findById(applicationNo)
+        .orElse(null);
+
+        if(application == null) return false;
+        return application.getMember().getUserNo().equals(userNo);
+    }
 
 
 }

@@ -59,5 +59,10 @@ public interface WorcationService {
 
     String uploadWithoutWorcation(MultipartFile file);
 
+    // 워케이션 소유자(작성자) 확인
+    boolean isOwner(Long worcationId, Long userNo);
+    // userNo(작성자) 기준 소유자 확인 (예: 예약자 목록 등)
+    boolean isOwnerByUserNo(Long UserNo, Long LoginUserNo);
+
 
 }

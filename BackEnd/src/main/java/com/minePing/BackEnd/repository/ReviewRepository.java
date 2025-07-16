@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 import com.minePing.BackEnd.entity.Review;
 
@@ -40,4 +41,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
            "WHERE wa.worcation.worcationNo = :worcationNo " +
            "ORDER BY r.createAt DESC")
     List<Review> findByWorcationNoOrderByCreateAtDesc(@Param("worcationNo") Long worcationNo);
+
+    @Query("SELECT r FROM Review r WHERE r.reviewNo = :reviewNo")
+    Optional<Review> findByReviewNo(@Param("reviewNo") Long reviewNo);
 }
