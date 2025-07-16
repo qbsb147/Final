@@ -26,5 +26,5 @@ public interface ApplicationService {
 
     List<ApplicationDto.RemainingDto> getRemainingByWorcation(Long worcationNo, String startDate, String endDate);
 
-    boolean isOwner(Long applicationNo, Long userNo);
+
 }

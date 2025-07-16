@@ -25,5 +25,5 @@ public interface ReviewService {
      */
     void delete(Long reviewNo);
 
-    boolean isOwner(Long reviewNo, Long userNo);
+
 }

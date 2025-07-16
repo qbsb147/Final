@@ -227,14 +227,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         return result;
     }
 
-    @Override
-    public boolean isOwner(Long applicationNo, Long userNo) {
-        WorcationApplication application = applicationRepository.findById(applicationNo)
-        .orElse(null);
 
-        if(application == null) return false;
-        return application.getMember().getUserNo().equals(userNo);
-    }
 
 
 }
