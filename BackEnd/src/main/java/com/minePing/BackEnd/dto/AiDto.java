@@ -94,18 +94,20 @@ public class AiDto {
     @AllArgsConstructor
     @Builder
     public static class AIWorcationDto {
-        // 번아웃 정보
+
+        // 🔹 번아웃 정보
         private String burnoutPsychologicalState;
         private String burnoutResultContent;
         private MentalEnums.Separation burnoutSeparation;
         private Integer burnoutScore;
 
-        // 스트레스 정보
+        // 🔹 스트레스 정보
         private String stressPsychologicalState;
         private String stressResultContent;
         private MentalEnums.Separation stressSeparation;
         private Integer stressScore;
 
+        // 🔹 성향 정보
         private Long userNo;
         private PreferenceEnums.Mbti mbti;
         private PreferenceEnums.PreferredColor preferredColor;
@@ -116,110 +118,44 @@ public class AiDto {
         private PreferenceEnums.AccommodationType accommodationType;
         private String result_content;
 
-
-        private Member member;
-
-        private Long worcation_no;
-        private String worcation_name;
-        private WorcationEnums.Category worcation_category;
-        private String main_change_photo;
-        private String worcation_thema;
-        private Integer max_people;
-        private String partner_price;
-        private Integer non_partner_price;
-        private String worcation_address;
-        private LocalDateTime update_at;
-        private LocalDateTime create_at;
-        private CommonEnums.Status status;
-
-        private Long area_id;
-
-        // Detail
-        private String licensee;
-        private String business_id;
-        private String worcation_tel;
-        private Integer charge_amount;
-        private String content;
-        private String navigate;
-        private String available_time;
-        private String refund_policy;
-        private LocalDate open_date;
-
-        private WorcationEnums.LocationType WlocationType;
-        private WorcationEnums.DominantColor WdominantColor;
-        private WorcationEnums.SpaceMood WspaceMood;
-        private WorcationEnums.BestFor WbestFor;
-        private String activities;
-        private WorcationEnums.AccommodationType WaccommodationType;
-
+        // 🔹 워케이션 리스트 (추천 대상이 되는 워케이션들의 정보 모음)
         private List<Map<String, Object>> worcationList;
 
-        public static AIWorcationDto toDto(Mental burnout,
-                                           Mental stress,
-                                           MemberPreference memberPreference,
-                                           Worcation w,
-                                           WorcationDetail d,
-                                           WorcationFeatures f) {
+
+        public static AIWorcationDto toDto(
+                Mental burnout,
+                Mental stress,
+                MemberPreference preference,
+                List<Map<String, Object>> worcationList
+        ) {
             return AIWorcationDto.builder()
-                    // 번아웃 정보 세팅
+                    // 번아웃
                     .burnoutPsychologicalState(burnout.getPsychologicalState().name())
                     .burnoutSeparation(burnout.getSeparation())
                     .burnoutResultContent(burnout.getResultContent())
                     .burnoutScore(burnout.getScore())
 
-                    // 스트레스 정보 세팅
+                    // 스트레스
                     .stressPsychologicalState(stress.getPsychologicalState().name())
                     .stressSeparation(stress.getSeparation())
                     .stressResultContent(stress.getResultContent())
                     .stressScore(stress.getScore())
 
-                    // 성향 정보
-                    .mbti(memberPreference.getMbti())
-                    .preferredColor(memberPreference.getPreferencedColor())
-                    .preferredLocation(memberPreference.getPreferencedLocation())
-                    .spaceMood(memberPreference.getSpaceMood())
-                    .importantFactor(memberPreference.getImportantFactor())
-                    .leisureActivity(memberPreference.getLeisureActivity())
-                    .accommodationType(memberPreference.getAccommodationType())
-                    .result_content(memberPreference.getResultContent())
-                    .userNo(memberPreference.getMember().getUserNo())
+                    // 성향
+                    .userNo(preference.getMember().getUserNo())
+                    .mbti(preference.getMbti())
+                    .preferredColor(preference.getPreferencedColor())
+                    .preferredLocation(preference.getPreferencedLocation())
+                    .spaceMood(preference.getSpaceMood())
+                    .importantFactor(preference.getImportantFactor())
+                    .leisureActivity(preference.getLeisureActivity())
+                    .accommodationType(preference.getAccommodationType())
+                    .result_content(preference.getResultContent())
 
-                    // 워케이션 기본정보
-                    .worcation_no(w.getWorcationNo())
-                    .worcation_name(w.getWorcationName())
-                    .worcation_category(w.getWorcationCategory())
-                    .main_change_photo(w.getMainChangePhoto())
-                    .worcation_thema(w.getWorcationThema())
-                    .max_people(w.getMaxPeople())
-                    .partner_price(w.getPartnerPrice())
-                    .non_partner_price(w.getNonPartnerPrice())
-                    .worcation_address(w.getWorcationAddress())
-                    .update_at(w.getUpdateAt())
-                    .create_at(w.getCreateAt())
-                    .status(w.getStatus())
-                    .area_id(w.getSiggAreas() != null ? w.getSiggAreas().getId().longValue() : null)
-
-                    // 상세정보
-                    .licensee(d != null ? d.getLicensee() : null)
-                    .business_id(d != null ? d.getBusinessId() : null)
-                    .worcation_tel(d != null ? d.getWorcationTel() : null)
-                    .charge_amount(d != null ? d.getChargeAmount() : null)
-                    .content(d != null ? d.getContent() : null)
-                    .navigate(d != null ? d.getNavigate() : null)
-                    .available_time(d != null ? d.getAvailableTime() : null)
-                    .refund_policy(d != null ? d.getRefundPolicy() : null)
-                    .open_date(d != null ? d.getOpenDate() : null)
-
-                    // 워케이션 특징
-                    .WlocationType(f != null ? f.getLocationType() : null)
-                    .WdominantColor(f != null ? f.getDominantColor() : null)
-                    .WspaceMood(f != null ? f.getSpaceMood() : null)
-                    .WbestFor(f != null ? f.getBestFor() : null)
-                    .activities(f != null ? f.getActivities() : null)
-                    .WaccommodationType(f != null ? f.getAccommodationType() : null)
+                    // 워케이션 리스트
+                    .worcationList(worcationList)
                     .build();
         }
-
     }
 
 }
