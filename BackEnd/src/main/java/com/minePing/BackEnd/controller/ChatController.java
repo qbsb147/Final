@@ -158,7 +158,7 @@ public class ChatController {
         return response;
     }
 
-    @PostMapping("/worcation_ai/{userNo}")
+    @PostMapping("/worcation/{userNo}")
     public Map<String, Object> recommendWorcation(@PathVariable Long userNo) {
         Map<String, Object> response = new HashMap<>();
 

@@ -202,10 +202,9 @@ const TestBtn = styled.button`
   padding: ${({ theme }) => theme.spacing.s1};
   border: 1px solid black;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-  margin-top: 10px;
   background: ${({ bg }) => bg || 'white'};
   font-size: 1rem;
-  width: 80%;
+  width: 90%;
 `;
 
 const TextT = styled.p`

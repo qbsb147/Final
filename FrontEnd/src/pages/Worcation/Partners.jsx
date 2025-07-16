@@ -5,16 +5,23 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonBorder } from '../../styles/Button.styles';
 import useSearchStore from '../../store/useSearchStore';
+import useAuthStore from '../../store/authStore';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
+  const [aiWorcations, setAiWorcations] = useState([]);
   const [viewMode, setViewMode] = useState('partner');
   const keyword = useSearchStore((state) => state.keyword);
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const [loading, setLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const data = await worcationService.list();
       // 각 워케이션에 mainPhoto(S3 URL) 필드 추가
       const processedList = data.map((w) => {
@@ -26,9 +33,23 @@ const WorcationPartnersPage = () => {
         };
       });
       setWorcations(processedList);
+      setLoading(false);
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchAiData = async () => {
+      if (!loginUser) return;
+      setAiLoading(true);
+      const aiRes = await worcationService.getGPT(loginUser.user_no);
+      const worcationNo = aiRes.recommendations.map((r) => r.worcation_no);
+      const aiData = await worcationService.getDetail(worcationNo);
+      setAiWorcations(Array.isArray(aiData) ? aiData : [aiData]);
+      setAiLoading(false);
+    };
+    fetchAiData();
+  }, [loginUser]);
 
   const getFilteredWorcations = () => {
     let filtered = worcations;
@@ -36,7 +57,7 @@ const WorcationPartnersPage = () => {
       filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }
     if (viewMode === 'ai') {
-      // AI 추천 필터링 로직이 있다면 여기에 적용
+      filtered = aiWorcations;
     }
     if (keyword.trim() !== '') {
       filtered = filtered.filter(
@@ -59,6 +80,14 @@ const WorcationPartnersPage = () => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
   }, [worcations, setPopularKeywords]);
 
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
+
   return (
     <Container>
       <ButtonWrapper>
@@ -73,7 +102,13 @@ const WorcationPartnersPage = () => {
       <SectionTitle>
         {{ all: '전체 리스트 보기', partner: '제휴 업체 보기', ai: 'AI 추천 제휴 업체' }[viewMode]}
       </SectionTitle>
-      <WorcationCardList data={getFilteredWorcations()} navigate={navigate} />
+      {viewMode === 'ai' && aiLoading ? (
+        <LoadingOverlay>
+          <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+        </LoadingOverlay>
+      ) : (
+        <WorcationCardList data={getFilteredWorcations()} navigate={navigate} />
+      )}
     </Container>
   );
 };
@@ -100,4 +135,25 @@ const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: bold;
   margin: 30px;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;

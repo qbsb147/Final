@@ -50,7 +50,6 @@ public class WorcationController {
     public ResponseEntity<WorcationDto.Response> create(
             @RequestBody @Valid WorcationDto.Request request) {
         WorcationDto.Response dto = worcationService.create(request);
-        System.out.println("생성로직");
         return ResponseEntity.created(
                 URI.create("/api/worcations/" + dto.getWorcation_no())).body(dto);
     }
@@ -58,7 +57,6 @@ public class WorcationController {
     @PostMapping("/tmp")
     public ResponseEntity<Void> tempSave(@RequestBody WorcationDto.Request request) {
         worcationService.tmpSave(request); // 임시저장 로직
-        System.out.println("임시 저장 로직");
         return ResponseEntity.ok().build();
     }
 

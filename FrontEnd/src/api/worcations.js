@@ -104,4 +104,12 @@ export const worcationService = {
       throw new Error('이미지 삭제에 실패했습니다.');
     }
   },
+  getGPT: async (user_no) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.GPT(user_no));
+    return response.data;
+  },
+  getAI: async (worcation_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.GPTDETAIL(worcation_no));
+    return response.data;
+  },
 };
