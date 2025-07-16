@@ -34,7 +34,7 @@ public class CompanyProfileDto {
         @Email(message = "올바른 이메일 형식이 아닙니다.")
         private String company_email;
 
-        @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
+        @Pattern(regexp = "^$|^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
         private String company_phone;
     }
 
@@ -55,7 +55,7 @@ public class CompanyProfileDto {
         @Email(message = "올바른 이메일 형식이 아닙니다.")
         private String company_email;
 
-        @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
+        @Pattern(regexp = "^$|^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
         private String company_phone;
     }
 

@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.MemberPreferenceDto;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.MemberPreferenceRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
@@ -67,12 +68,13 @@ Translated with DeepL.com (free version)
                 .content();
         requestDto.setResult_content(result_content);
 
-        MemberPreference memberPreference = memberPreferenceRepository.findByMember_UserId(userId)
+        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        MemberPreference memberPreference = memberPreferenceRepository.findByMember(member)
                         .orElse(requestDto.toEntity());
 
         if(memberPreference.getMember() == null) {
-            Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
-                    .orElseThrow(()-> new UserNotFoundException());
             memberPreference.changeMember(member);
         }else{
             memberPreference.updateThis(requestDto);

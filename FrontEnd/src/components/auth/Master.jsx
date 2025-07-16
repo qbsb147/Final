@@ -6,16 +6,18 @@ import { formatPhoneNumber } from '../../hooks/useAuth';
 
 const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
   const [showInput, setShowInput] = useState(false);
-  const [departments, setDepartments] = useState(formData2.departments ? 
-    formData2.departments.reduce((acc, dept, index) => {
-      acc[index + 1] = dept;
-      return acc;
-    }, {}) : {});
+  const [departments, setDepartments] = useState(
+    formData2.departments
+      ? formData2.departments.reduce((acc, dept, index) => {
+          acc[index + 1] = dept;
+          return acc;
+        }, {})
+      : {}
+  );
   const [isPostcodeReady, setIsPostcodeReady] = useState(false);
 
   // departments가 변경될 때만 formData2 업데이트 (초기 로드 시 제외)
   useEffect(() => {
-    // departments가 비어있지 않고, formData2.departments와 다를 때만 업데이트
     const department_names = Object.values(departments);
     if (department_names.length > 0) {
       const currentDepartments = formData2.departments || [];
@@ -25,7 +27,6 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
     }
   }, [departments]);
 
-  // 초기 로드 시에만 formData2.departments를 departments로 설정
   useEffect(() => {
     if (formData2.departments && formData2.departments.length > 0 && Object.keys(departments).length === 0) {
       const departmentsObj = formData2.departments.reduce((acc, dept, index) => {
@@ -71,7 +72,6 @@ const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
 
   const handleDeptBtnClick = () => {
     if (showInput) {
-      // departments 객체를 department_name 배열로 변환하여 서버에 전송
       const departmentNames = Object.values(departments);
       setFormData2((prev) => ({ ...prev, departments: departmentNames }));
     }
