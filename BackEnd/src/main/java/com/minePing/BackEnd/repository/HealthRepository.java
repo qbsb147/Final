@@ -17,4 +17,6 @@ public interface HealthRepository extends JpaRepository<Health, Long>, HealthRep
     Optional<Health> findByMember_UserId(String userId);
 
     Health findByMemberAndUpdateDateAfter(Member member, LocalDate updateDateAfter);
+
+    Optional<Health> findTopByMember_UserNoOrderByUpdateDateDesc(Long memberUserNo);
 }
