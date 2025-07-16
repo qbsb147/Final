@@ -15,23 +15,26 @@ import useWorcationStore from '../../../../store/useWorcationStore';
 const ApplicationForm = forwardRef((props, ref) => {
   const { application, setApplication, info: _info, setInfo } = useWorcationStore();
   const [selected, setSelected] = useState(application?.companyType || 'Office');
-  const [validationCache, setValidationCache] = useState({}); // 진위확인 결과 캐시
 
   const { register, control, getValues, errors, isValid, setValue } = useValidation(application);
 
   // 진위확인 결과 캐시에서 확인
   const getCachedValidation = (business_id, licensee, open_date) => {
     const key = `${business_id}-${licensee}-${open_date}`;
-    return validationCache[key];
+    return application.validationCache?.[key];
   };
 
   // 진위확인 결과를 캐시에 저장
   const setCachedValidation = (business_id, licensee, open_date, result) => {
     const key = `${business_id}-${licensee}-${open_date}`;
-    setValidationCache((prev) => ({
-      ...prev,
+    const newValidationCache = {
+      ...application.validationCache,
       [key]: result,
-    }));
+    };
+    setApplication({
+      validationCache: newValidationCache,
+      businessValidated: result.valid,
+    });
   };
 
   // 캐시된 결과가 있는지 확인하고 있으면 바로 사용
@@ -39,7 +42,7 @@ const ApplicationForm = forwardRef((props, ref) => {
     const cached = getCachedValidation(business_id, licensee, open_date);
     if (cached) {
       if (cached.valid) {
-        alert('이미 확인된 사업자 정보입니다.');
+        // alert('이미 확인된 사업자 정보입니다.');
         return true;
       } else {
         alert(`사업자 정보가 일치하지 않습니다: ${cached.message}`);
@@ -90,6 +93,7 @@ const ApplicationForm = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     isValid,
     getValues,
+    getCompanyType: () => selected, // 현재 선택된 업체 유형 반환
     // 자동 진위확인 함수 추가
     autoCheckBusiness: async () => {
       const allValues = getValues();
@@ -251,6 +255,7 @@ const ApplicationForm = forwardRef((props, ref) => {
               <ButtonYellow type="button" onClick={checkBusiness}>
                 진위확인
               </ButtonYellow>
+              {application.businessValidated && <ValidationStatus>✓ 인증완료</ValidationStatus>}
             </TD>
           </TR>
         </TBody>
@@ -318,4 +323,14 @@ const TD = styled.td`
 const ErrorMessage = styled.span`
   color: ${({ theme }) => theme.colors.error};
   font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const ValidationStatus = styled.span`
+  color: ${({ theme }) => theme.colors.success || '#28a745'};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

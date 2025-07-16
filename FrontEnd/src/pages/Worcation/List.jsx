@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { ButtonBorder } from '../../styles/Button.styles';
+import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
 import WorcationCardList from '../../components/worcation/WorcationCardList';
 import useSearchStore from '../../store/useSearchStore';
@@ -48,6 +48,9 @@ const WorcationList = () => {
 
   const getFilteredWorcations = () => {
     let filtered = worcations;
+    if (viewMode === 'all') {
+      filtered = filtered.filter((w) => w.status === 'Y');
+    }
     if (viewMode === 'partner') {
       filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }

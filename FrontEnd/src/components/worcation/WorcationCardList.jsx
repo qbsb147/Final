@@ -6,7 +6,7 @@ import useAuthStore from '../../store/authStore';
 import useWorcationStore from '../../store/useWorcationStore';
 import defaultWorcationImage from '../../assets/default-worcation.png';
 
-const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
+const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const resetStore = useWorcationStore((state) => state.resetAll);
   const [imageErrors, setImageErrors] = useState({});
@@ -15,7 +15,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
       try {
         await worcationService.delete(worcation_no);
-        console.log('삭제 성공 : ', worcation_no);
+        if (onDelete) onDelete();
       } catch (error) {
         console.error('삭제 실패:', error);
       }
@@ -38,6 +38,9 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
     }));
   };
 
+  const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
+
+  const hasFolder = (str) => str && (str.includes('/') || str.startsWith('images/'));
   const getImageSrc = (item) => {
     const worcationNo = item.worcation_no;
 
@@ -46,7 +49,13 @@ const WorcationCardList = ({ data, navigate, mode = 'view' }) => {
       return defaultWorcationImage;
     }
 
-    return item.mainPhoto;
+    // mainPhoto가 http로 시작하지 않으면 CloudFront 도메인만 붙이기
+    if (item.mainPhoto.startsWith('http')) {
+      return item.mainPhoto;
+    }
+    return hasFolder(item.mainPhoto)
+      ? CLOUDFRONT_DOMAIN + item.mainPhoto
+      : CLOUDFRONT_DOMAIN + 'images/' + item.mainPhoto;
   };
 
   return (

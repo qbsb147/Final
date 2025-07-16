@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
         constraintHandlers.put("company_profile.uk_company_phone", "이미 등록된 회사 전화번호입니다.");
         constraintHandlers.put("company_profile.uk_company_email", "이미 등록된 회사 이메일입니다.");
         constraintHandlers.put("health.uk_user_no", "이미 회원 건강 정보가 등록되어있습니다.");
-        constraintHandlers.put("member_preference.member.uk_user_no", "이미 회원 성향 정보가 등록되어있습니다.");
+        constraintHandlers.put("member_preference.uk_user_no", "이미 회원 성향 정보가 등록되어있습니다.");
         constraintHandlers.put("member.uk_user_id", "이미 등록된 유저 아이디입니다.");
         constraintHandlers.put("member.uk_email", "이미 등록된 유저 이메일입니다.");
         constraintHandlers.put("member.uk_phone", "이미 등록된 유저 전화번호입니다.");
@@ -121,12 +121,5 @@ public class GlobalExceptionHandler {
         log.error("잘못된 상태 예외: {}", ex.getMessage(), ex);
         ErrorResponse error = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException ex, HttpServletRequest request) {
-        log.error("잘못된 상태 예외: {}", ex.getMessage(), ex);
-        ErrorResponse error = ErrorResponse.of(ErrorCode.EXPIRED_JWT, ex.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

@@ -101,13 +101,15 @@ export const API_ENDPOINTS = {
   },
   LOGIN: '/member/login',
   //심리정보 불러오기
-  MENTALS: (user_no) => `/mentals/${user_no}`,
-  // 스프링 구현하면 지울 내용//
-  MEMBER_PREFERENCE: '/member_preference',
-  // 스프링 구현하면 지울 내용//
-  // 스프링 구현하면 쓰일 내용//
-  // MEMBER_PREFERENCE: (uesr_no) => `/member_preference/${uesr_no}`,
-  // 스프링 구현하면 쓰일 내용//
-
-  MEMBER_PREFERENCE_GET: (preference_no) => `/member_preference?preference_no=${preference_no}`,
+  MENTALS: {
+    BASE: '/mental',
+    MAIN: '/mental/main',
+    STRESS: '/mental/stress',
+    BURNOUT: '/mental/burnout',
+    PREFERENCE: '/mental/preference',
+  },
+  MEALS: {
+    BASE: '/meal',
+    CHECK: '/meal/check',
+  },
 };

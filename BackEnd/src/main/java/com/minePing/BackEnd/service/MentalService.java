@@ -5,8 +5,9 @@ import com.minePing.BackEnd.dto.MentalDto;
 import java.util.List;
 
 public interface MentalService {
-
-    List<MentalDto.Response> getMental(Long user_id);
-
+    void saveStress(MentalDto.StressRequest stressDto);
+    void saveBurnout(MentalDto.BurnoutRequest burnoutDto);
+    MentalDto.MentalsResponse findMentals();
+    MentalDto.MainResponse findMainMental();
 
 }

@@ -5,6 +5,8 @@ import ImageUploader from '../../../common/ImageUploader';
 import useWorcationStore from '../../../../store/useWorcationStore';
 import { worcationService } from '../../../../api/worcations';
 
+const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
+
 const PhotoForm = forwardRef((props, ref) => {
   const photos = useWorcationStore((state) => state.photos);
   const setPhotos = useWorcationStore((state) => state.setPhotos);
@@ -15,7 +17,27 @@ const PhotoForm = forwardRef((props, ref) => {
     stay: {},
   });
 
-  useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
+  useImperativeHandle(ref, () => ({
+    validatePhotos: (companyType) => {
+      // store에서 사진 배열 가져오기
+      const photos = useWorcationStore.getState().photos;
+      if (companyType === 'Office') {
+        return Array.isArray(photos.officePhotos) && photos.officePhotos.length > 0;
+      }
+      if (companyType === 'Accommodation') {
+        return Array.isArray(photos.stayPhotos) && photos.stayPhotos.length > 0;
+      }
+      if (companyType === 'OfficeAndStay') {
+        return (
+          Array.isArray(photos.officePhotos) &&
+          photos.officePhotos.length > 0 &&
+          Array.isArray(photos.stayPhotos) &&
+          photos.stayPhotos.length > 0
+        );
+      }
+      return false;
+    },
+  }));
 
   // store의 값을 그대로 사용 (초기화 제거)
   const officePhotos = photos?.officePhotos || [];
@@ -114,7 +136,8 @@ const PhotoForm = forwardRef((props, ref) => {
       }));
 
       // 즉시 S3에 업로드 (기존 이미지 덮어쓰기)
-      const imageUrl = await worcationService.uploadImage(file);
+      const imageUrl = await worcationService.uploadImage(file, 'images');
+      console.log('업로드된 이미지 URL:', imageUrl);
 
       // 업로드된 URL과 함께 스토어에 저장
       const newList = [...officePhotos];
@@ -159,7 +182,7 @@ const PhotoForm = forwardRef((props, ref) => {
       }));
 
       // 즉시 S3에 업로드 (기존 이미지 덮어쓰기)
-      const imageUrl = await worcationService.uploadImage(file);
+      const imageUrl = await worcationService.uploadImage(file, 'images');
 
       // 업로드된 URL과 함께 스토어에 저장
       const newList = [...stayPhotos];
@@ -252,6 +275,26 @@ const PhotoForm = forwardRef((props, ref) => {
     }
   };
 
+  const hasFolder = (str) => str && (str.includes('/') || str.startsWith('images/'));
+  const getPreviewUrl = (photo, idx, type = 'stay') => {
+    if (previewUrls[type][idx]) return previewUrls[type][idx];
+    if (photo?.url) {
+      if (photo.url.startsWith('http')) return photo.url;
+      return hasFolder(photo.url) ? CLOUDFRONT_DOMAIN + photo.url : CLOUDFRONT_DOMAIN + 'images/' + photo.url;
+    }
+    if (photo?.change_name) {
+      if (photo.change_name.startsWith('http')) return photo.change_name;
+      return hasFolder(photo.change_name)
+        ? CLOUDFRONT_DOMAIN + photo.change_name
+        : CLOUDFRONT_DOMAIN + 'images/' + photo.change_name;
+    }
+    if (typeof photo === 'string') {
+      if (photo.startsWith('http')) return photo;
+      return hasFolder(photo) ? CLOUDFRONT_DOMAIN + photo : CLOUDFRONT_DOMAIN + 'images/' + photo;
+    }
+    return '';
+  };
+
   return (
     <Body>
       <Title>사진을 추가해주세요.(각 최대 4개)</Title>
@@ -266,7 +309,7 @@ const PhotoForm = forwardRef((props, ref) => {
                   label={i === 0 ? '메인 사진' : '추가 사진'}
                   onChange={(file) => handleOfficeChange(file, i)}
                   onDelete={() => handleOfficeDelete(i)}
-                  previewUrl={previewUrls.office[i] || photo?.url || photo}
+                  previewUrl={getPreviewUrl(photo, i, 'office')}
                 />
               ))}
               {officePhotos.length < 4 && (
@@ -286,7 +329,7 @@ const PhotoForm = forwardRef((props, ref) => {
                   label={i === 0 ? '메인 사진' : '추가 사진'}
                   onChange={(file) => handleStayChange(file, i)}
                   onDelete={() => handleStayDelete(i)}
-                  previewUrl={previewUrls.stay[i] || photo?.url || photo}
+                  previewUrl={getPreviewUrl(photo, i, 'stay')}
                 />
               ))}
               {stayPhotos.length < 4 && (

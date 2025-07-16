@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import WorcationCalendar from '../../components/common/ApplyCalendar';
+import WorcationCalendar from '../../components/common/ApplySampleCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
+import ApplySampleCalendar from '../../components/common/ApplySampleCalendar';
 
 const WorcationApply = () => {
   const location = useLocation();
@@ -119,7 +120,7 @@ const WorcationApply = () => {
       try {
         const result = await applicationService.getRemainingByWorcation(worcationNo, today, endStr);
         const map = {};
-        result.forEach(item => {
+        result.forEach((item) => {
           let dateStr = item.date;
           if (typeof dateStr !== 'string') {
             dateStr = new Date(dateStr).toISOString().slice(0, 10);
@@ -138,7 +139,7 @@ const WorcationApply = () => {
           start: new Date(date),
           end: new Date(date),
           allDay: true,
-          resource: { reserved, max }
+          resource: { reserved, max },
         }));
         setEvents(eventsArr);
         console.log('datePeopleMap set:', map);
@@ -201,11 +202,17 @@ const WorcationApply = () => {
 
         <CalendarSection>
           <CalendarWrapper>
-            <WorcationCalendar
+            {/* <WorcationCalendar
               events={events}
               fullDates={fullDates}
               selectable={false}
               onSelectSlot={() => {}}
+              datePeopleMap={datePeopleMap}
+              selectedDates={selectedDates}
+              setSelectedDates={setSelectedDates}
+            /> */}
+            <ApplySampleCalendar
+              fullDates={fullDates}
               datePeopleMap={datePeopleMap}
               selectedDates={selectedDates}
               setSelectedDates={setSelectedDates}
@@ -344,7 +351,7 @@ const DateRangeWrapper = styled.div`
   height: 100%;
   display: flex;
   gap: ${({ theme }) => theme.spacing.s4};
-  margin-top: ${({ theme }) => theme.spacing.s2};
+  margin-top: ${({ theme }) => theme.spacing.s12};
   align-items: center;
 `;
 

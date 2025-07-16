@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.minePing.BackEnd.dto.MemberPreferenceDto;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.PreferenceEnums;
 import jakarta.persistence.*;
@@ -72,10 +73,23 @@ public class MemberPreference {
         member.assignMemberPreference(this);
     }
 
+    public MemberPreference updateThis(MemberPreferenceDto.Request requestDto){
+        this.mbti = requestDto.getMbti();
+        this.preferencedColor = requestDto.getPreferred_color();
+        this.preferencedLocation = requestDto.getPreferred_location();
+        this.spaceMood = requestDto.getSpace_mood();
+        this.importantFactor = requestDto.getImportant_factor();
+        this.leisureActivity = requestDto.getLeisure_activity();
+        this.accommodationType = requestDto.getAccommodation_type();
+        this.resultContent = requestDto.getResult_content();
+        return this;
+    }
+
     @PrePersist
     @PreUpdate
     protected void onUpdate() {
         this.updateDate = LocalDate.now();
     }
+
 
 }

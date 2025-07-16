@@ -2,12 +2,9 @@ package com.minePing.BackEnd.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minePing.BackEnd.dto.AccessTokenDto;
-import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MailVerificationRequestDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
-import com.minePing.BackEnd.service.KakaoService;
 import com.minePing.BackEnd.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Slf4j
 @RestController
@@ -26,7 +24,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final KakaoService kakaoService;
     private final ObjectMapper objectMapper;
 
     @GetMapping("/signUp/init")
@@ -66,24 +63,28 @@ public class MemberController {
     }
 
     @GetMapping("userInfo")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InfoResponse> getMyInfo() {
         InfoResponse userInfo = memberService.getUserInfoByUserId();
         return ResponseEntity.ok(userInfo);
     }
 
     @GetMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUser() {
         MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> update(@RequestBody MemberDto.Update updateDto){
         memberService.updateUser(updateDto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> delete(){
         memberService.delete();
         return ResponseEntity.ok().build();
@@ -97,6 +98,7 @@ public class MemberController {
     }
 
     @PatchMapping("{userNo}")
+    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
     public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
         try {
             memberService.updateRole(userNo,updateRoleDto);
