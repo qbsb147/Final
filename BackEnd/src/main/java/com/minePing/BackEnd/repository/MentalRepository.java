@@ -2,15 +2,21 @@ package com.minePing.BackEnd.repository;
 
 
 
+import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Mental;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
+import com.minePing.BackEnd.enums.MentalEnums;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MentalRepository extends JpaRepository<Mental, Long>,MentalRepositoryV1{
 
-    @Query("SELECT m FROM Mental m WHERE m.member.userNo = :user_no")
-    List<Mental> getMental(@Param("user_no") Long user_no);
+    Mental findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(String memberUserId, MentalEnums.Separation separation);
 
+    List<Mental> findByMember_UserIdAndUpdateDateAfter(String memberUserId, LocalDate updateDateAfter);
 }

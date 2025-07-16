@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import WorcationCalendar from '../../components/common/ApplySampleCalendar';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -119,7 +120,7 @@ const WorcationApply = () => {
       try {
         const result = await applicationService.getRemainingByWorcation(worcationNo, today, endStr);
         const map = {};
-        result.forEach(item => {
+        result.forEach((item) => {
           let dateStr = item.date;
           if (typeof dateStr !== 'string') {
             dateStr = new Date(dateStr).toISOString().slice(0, 10);
@@ -138,7 +139,7 @@ const WorcationApply = () => {
           start: new Date(date),
           end: new Date(date),
           allDay: true,
-          resource: { reserved, max }
+          resource: { reserved, max },
         }));
         setEvents(eventsArr);
         console.log('datePeopleMap set:', map);
@@ -211,11 +212,11 @@ const WorcationApply = () => {
               setSelectedDates={setSelectedDates}
             /> */}
             <ApplySampleCalendar
-  fullDates={fullDates}
-  datePeopleMap={datePeopleMap}
-  selectedDates={selectedDates}
-  setSelectedDates={setSelectedDates}
-/>
+              fullDates={fullDates}
+              datePeopleMap={datePeopleMap}
+              selectedDates={selectedDates}
+              setSelectedDates={setSelectedDates}
+            />
           </CalendarWrapper>
           <InfoBox>
             <Label>워케이션 신청자</Label>

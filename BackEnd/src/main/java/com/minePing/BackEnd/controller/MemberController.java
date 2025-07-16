@@ -2,12 +2,9 @@ package com.minePing.BackEnd.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minePing.BackEnd.dto.AccessTokenDto;
-import com.minePing.BackEnd.dto.KakaoProfileDto;
 import com.minePing.BackEnd.dto.MailVerificationRequestDto;
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
-import com.minePing.BackEnd.service.KakaoService;
 import com.minePing.BackEnd.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class MemberController {
 
     private final MemberService memberService;
-    private final KakaoService kakaoService;
     private final ObjectMapper objectMapper;
 
     @GetMapping("/signUp/init")

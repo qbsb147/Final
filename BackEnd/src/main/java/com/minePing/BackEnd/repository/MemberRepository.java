@@ -3,6 +3,7 @@ package com.minePing.BackEnd.repository;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -50,4 +51,5 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m join fetch m.companyProfile cp where cp.company.companyNo = :companyNo and m.role = :role ")
     Optional<Member> findMaster(@Param("companyNo")Long companyNo, @Param("role") CommonEnums.Role role);
+
 }
