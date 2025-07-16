@@ -449,8 +449,8 @@ public class MemberServiceImpl implements MemberService {
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
-            message.setSubject("이메일 인증코드");
-            message.setText("인증코드 : "+code);
+            message.setSubject("mineping 이메일 인증");
+            message.setText("이메일 인증코드 : "+code);
             mailSender.send(message);
         } catch (Exception e) {
             // Redis나 메일 서비스가 사용 불가능한 경우 로그만 남기고 계속 진행

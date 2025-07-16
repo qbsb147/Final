@@ -159,16 +159,21 @@ const PhotoForm = forwardRef((props, ref) => {
   const handleStayChange = async (file, index) => {
     try {
       // 기존 이미지가 있으면 S3에서 삭제
-      const existingPhoto = stayPhotos[index];
-      if (existingPhoto && existingPhoto.url && typeof existingPhoto.url === 'string') {
+      const existingPhoto = officePhotos[index];
+      if (
+        existingPhoto &&
+        existingPhoto.uploaded === true &&
+        typeof existingPhoto.url === 'string' &&
+        existingPhoto.url.trim() !== ''
+      ) {
         try {
           await worcationService.deleteImage(existingPhoto.url);
+          console.log('기존 이미지 삭제 성공:', existingPhoto.url);
         } catch (deleteError) {
-          console.warn('기존 이미지 삭제 실패:', deleteError);
-          // 삭제 실패해도 계속 진행
+          console.warn('기존 이미지 삭제 실패 (계속 진행):', deleteError.message);
+          // alert는 제거하거나, 조건적으로만 사용하세요
         }
       }
-
       // 기존 preview URL 정리
       if (previewUrls.stay[index] && previewUrls.stay[index].startsWith('blob:')) {
         URL.revokeObjectURL(previewUrls.stay[index]);
