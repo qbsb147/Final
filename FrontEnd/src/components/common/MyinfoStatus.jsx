@@ -43,13 +43,25 @@ const MyinfoStatus = ({ navigate }) => {
     }
   }
 
-  const getRank = (score) => {
-    if (score === null || score === undefined) return 'No Rank';
-    if (score >= 90) return '스트레스와 번아웃이 낮은 건강한 상태입니다!';
-    if (score >= 80) return '스트레스 또는 번아웃이 중간 이상입니다. 잠시 멈추고 자신을 돌아보세요.';
-    if (score >= 70) return '환경을 바꾸는 것이 도움이 될 수 있어요. 워케이션으로 재충전해보세요.';
-    if (score >= 60) return '스트레스와 번아웃이 모두 매우 높은 상태입니다. 충분한 휴식이 필요합니다.';
-    return '스트레스와 번아웃이 낮은 건강한 상태입니다!';
+  const getRank = (score, updateDate) => {
+    if (score === null || score === undefined) return '테스트가 필요합니다.';
+
+    // 날짜가 30일 이상 지났는지 체크
+    if (updateDate) {
+      const updated = new Date(updateDate);
+      const now = new Date();
+      const diffDays = (now - updated) / (1000 * 60 * 60 * 24);
+      if (diffDays > 30) {
+        return '테스트를 다시 진행해주세요.';
+      }
+    }
+
+    if (score <= 30) return '심리적 위험 신호!\n즉시 충분한 휴식과 전문가 상담이 필요합니다.';
+    if (score <= 59) return '스트레스와 번아웃이 모두 매우 높은 상태입니다.\n충분한 휴식이 필요합니다.';
+    if (score <= 69) return '환경을 바꾸는 것이 도움이 될 수 있어요.\n워케이션으로 재충전해보세요.';
+    if (score <= 79) return '스트레스 또는 번아웃이 중간 이상입니다.\n잠시 멈추고 자신을 돌아보세요.';
+    if (score <= 89) return '스트레스와 번아웃이 낮은 건강한 상태입니다!';
+    return '스트레스와 번아웃이 매우 낮은 최상의 상태입니다!';
   };
 
   let rankScore = null;
@@ -61,7 +73,26 @@ const MyinfoStatus = ({ navigate }) => {
     rankScore = burnout.score;
   }
 
-  const rank = getRank(rankScore);
+  const isOld = (date) => {
+    if (!date) return true;
+    const updated = new Date(date);
+    const now = new Date();
+    const diffDays = (now - updated) / (1000 * 60 * 60 * 24);
+    return diffDays > 30;
+  };
+
+  let expiredList = [];
+  if (!stress || isOld(stress.update_date)) expiredList.push('스트레스');
+  if (!burnout || isOld(burnout.update_date)) expiredList.push('번아웃');
+
+  let rank;
+  if (expiredList.length === 2) {
+    rank = `⚠️테스트 기한 만료⚠️\n테스트를 다시 진행해주세요.`;
+  } else if (expiredList.length === 1) {
+    rank = `⚠️${expiredList[0]} 테스트 기한 만료⚠️\n 테스트를 다시 진행해주세요.`;
+  } else {
+    rank = getRank(rankScore, (stress && stress.update_date) || (burnout && burnout.update_date));
+  }
 
   return (
     <InfoBox>
@@ -70,33 +101,44 @@ const MyinfoStatus = ({ navigate }) => {
         <InfoStatus>
           <Title>나의 스트레스 상태</Title>
           <TextT>
-            {loginUser && new Date(stress.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+            {loginUser && stress ? (
               <>
                 <IoMdCheckboxOutline /> {stress.score}/100
                 <CiSquareAlert /> {convertKoreaState(stress.psychological_state)}
               </>
             ) : (
-              <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/stress')}>
+              <TestBtn bg="#FFEB8C" onClick={() => navigate && navigate('/trial/stress')}>
                 테스트 하기
               </TestBtn>
             )}
           </TextT>
           <Title>나의 번아웃 상태</Title>
           <TextT>
-            {loginUser && new Date(burnout.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+            {loginUser && burnout ? (
               <>
                 <IoMdCheckboxOutline /> {burnout.score}/100
                 <CiSquareAlert /> {convertKoreaState(burnout.psychological_state)}
               </>
             ) : (
-              <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/burnout')}>
+              <TestBtn bg="#FFEB8C" onClick={() => navigate && navigate('/trial/burnout')}>
                 테스트 하기
               </TestBtn>
             )}
           </TextT>
         </InfoStatus>
         <RightBox>
-          <RightInfoBox>{rank}</RightInfoBox>
+          <RightInfoBox>
+            {rank.split('\n').map((line, idx) => (
+              <React.Fragment key={idx}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+
+            {/* 버튼 조건부 렌더링 */}
+            {expiredList.includes('스트레스') && stress && <TestBtn bg="#fff">스트레스 테스트 다시 하기</TestBtn>}
+            {expiredList.includes('번아웃') && burnout && <TestBtn bg="#fff">번아웃 테스트 다시 하기</TestBtn>}
+          </RightInfoBox>
         </RightBox>
       </ContentRow>
       {!loginUser && (
@@ -144,17 +186,26 @@ const InfoStatus = styled.div`
   padding-left: ${({ theme }) => theme.spacing.s2};
   font-family: ${({ theme }) => theme.fontFamily.primary};
   width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
 `;
 
 const Title = styled.p`
-  margin: ${({ theme }) => theme.spacing.s2} ${({ theme }) => theme.spacing.s1};
+  margin: ${({ theme }) => theme.spacing.s1} ${({ theme }) => theme.spacing.s1};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   width: 100%;
 `;
 
 const TestBtn = styled.button`
   color: ${({ theme }) => theme.colors.black};
-  padding: ${({ theme }) => theme.spacing.s2} ${({ theme }) => theme.spacing.s3};
+  padding: ${({ theme }) => theme.spacing.s1};
+  border: 1px solid black;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  background: ${({ bg }) => bg || 'white'};
+  font-size: 1rem;
+  width: 80%;
 `;
 
 const TextT = styled.p`
@@ -193,7 +244,6 @@ const RightBox = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-right: ${({ theme }) => theme.spacing.s2};
 `;
 
 const RightInfoBox = styled.div`
@@ -204,8 +254,10 @@ const RightInfoBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
+  font-size: 1rem;
   color: black;
+  padding: 4px;
+  flex-direction: column;
 `;
 
 export default MyinfoStatus;
