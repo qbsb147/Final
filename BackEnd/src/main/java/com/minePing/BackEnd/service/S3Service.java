@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.InputStream;
+import java.net.URL;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -112,6 +114,26 @@ public class S3Service {
             return parts[parts.length - 1];
         } catch (Exception e) {
             return null;
+        }
+    }
+
+
+    public String uploadFromUrl(String imageUrl, String keyName) {
+        try (InputStream inputStream = new URL(imageUrl).openStream()) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("image/png"); // 또는 image/jpeg 등 필요시 확장자에 따라 분기 가능
+
+            amazonS3.putObject(new PutObjectRequest(
+                    bucketName,
+                    keyName,
+                    inputStream,
+                    metadata
+            ));
+
+            return String.format("https://%s/%s", cloudFrontDomain, keyName);
+
+        } catch (Exception e) {
+            throw new RuntimeException("AI 이미지 URL 업로드 실패: " + e.getMessage(), e);
         }
     }
 } 

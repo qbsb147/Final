@@ -18,6 +18,7 @@ import org.springframework.data.repository.query.Param;
 public interface MentalRepository extends JpaRepository<Mental, Long>,MentalRepositoryV1{
 
     Mental[] findByMemberAndUpdateDateAfter(Member member, LocalDate updateDateAfter);
+    Optional<Mental> findTopByMember_UserNoAndSeparationOrderByUpdateDateDesc(Long userNo, MentalEnums.Separation separation);
 
     Mental findByMemberAndSeparation(Member member, Separation separation);
 }

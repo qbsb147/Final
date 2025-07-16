@@ -1,8 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Subtitle, SmallText, Text } from '../../styles/Typography.js';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
-const Card = ({ eat }) => {
+const Card = ({ eat, loading }) => {
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={50} color="#517921" />
+      </LoadingOverlay>
+    );
+  }
+
   return (
     <Box>
       <Content>
@@ -24,6 +33,27 @@ const Card = ({ eat }) => {
 };
 
 export default Card;
+
+const LoadingOverlay = styled.div`
+  width: 900px;
+  height: 222px;
+  background: ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.borderRadius['2xl']};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 const MenuText = styled(SmallText)`
   width: 70%;
   text-align: left;
@@ -57,7 +87,7 @@ const Content = styled.div`
 const Image = styled.img`
   width: 222px;
   height: 222px;
-  border-radius: 0 ${({ theme }) => theme.borderRadius['2xl']} ${({ theme }) => theme.borderRadius['2xl']} -;
+  border-radius: 0 ${({ theme }) => theme.borderRadius['2xl']} ${({ theme }) => theme.borderRadius['2xl']};
   position: absolute;
   right: 0px;
   top: 0px;

@@ -191,6 +191,7 @@ public class MemberDto {
         private SocialType social_type;
         private CommonEnums.Role role;
         private CommonEnums.Approve employee_approve;
+        private CommonEnums.Gender gender;
 
         public static InfoResponse toMemberDto(Member member) {
             return InfoResponse.builder()
@@ -199,6 +200,7 @@ public class MemberDto {
                     .user_name(member.getName())
                     .role(member.getRole())
                     .social_type(member.getSocialType())
+                    .gender(member.getGender())
                     .build();
         }
     }

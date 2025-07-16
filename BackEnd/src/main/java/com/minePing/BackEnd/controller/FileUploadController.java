@@ -22,7 +22,6 @@ public class FileUploadController {
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             String imageUrl = s3Service.uploadFile(file);
-            이이
             Map<String, String> response = new HashMap<>();
             response.put("imageUrl", imageUrl);
             response.put("message", "파일 업로드 성공");

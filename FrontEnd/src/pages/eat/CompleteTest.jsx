@@ -1,16 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Today from '../../components/eat/Today.jsx';
 import styled from 'styled-components';
 import Card from '../../components/eat/Card.jsx';
 import userStore from '../../store/userStore.js';
 import { recommended_intake } from '../../components/eat/recommendedIntake.js';
 import { MiniContent, MiniTitle } from '../../styles/Typography.js';
+import useAuthStore from '../../store/authStore.js';
+import memberService from '../../api/members';
+import { format } from 'date-fns';
 
 const CompleteTest = () => {
-  const { eats } = userStore();
-  const [gender, setGender] = useState('woman');
-
+  const { eats, setEats, eatsDate } = userStore();
+  const { loginUser } = useAuthStore();
+  const gender = loginUser.gender;
   const recommended = recommended_intake[gender];
+  const [loading, setLoading] = React.useState(false);
+
+  const [called, setCalled] = React.useState(false);
+  console.log(eats, setEats, eatsDate);
+
+  useEffect(() => {
+    if (!loginUser?.user_no) return;
+
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+
+    // 콘솔 출력으로 상태 확인
+    console.log('Current eatsDate:', eatsDate, 'Today:', todayStr);
+    console.log('Current eats length:', eats.length);
+
+    if (called) {
+      console.log('이미 호출 완료됨. fetch 중단');
+      return;
+    }
+
+    // 오늘 날짜와 저장된 eatsDate가 같고, eats가 있으면 fetch 안 함
+    if (eatsDate === todayStr && eats.length > 0) {
+      console.log('오늘 데이터 이미 있음. fetch 중단');
+      setCalled(true); // ✅ 최초 렌더링 시 바로 끝내기
+      return;
+    }
+
+    async function fetchDiet() {
+      setLoading(true);
+      try {
+        const data = await memberService.getDietRecommendation(loginUser.user_no);
+        const eatsFromServer =
+          data?.dietImageResults?.map((item, index) => ({
+            time: index + 1,
+            title: `${item.meal} 식단 추천`,
+            image: item.imageUrl,
+            menu: item.menu,
+            explain: item.reason,
+          })) || [];
+
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        console.log('fetchDiet setEats 호출 전:', eatsFromServer, todayStr);
+        setEats(eatsFromServer, todayStr);
+        setCalled(true); // ✅ 여기서 확정적으로 호출 완료 처리
+      } catch (error) {
+        console.error('식단 추천 불러오기 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDiet();
+  }, [loginUser.user_no, eatsDate, eats.length, called]);
 
   return (
     <div>
@@ -50,9 +105,13 @@ const CompleteTest = () => {
           </Under>
         </Column1>
         <Column2>
-          {eats.map((eat) => (
-            <Card key={eat.time} eat={eat} />
-          ))}
+          {loading ? (
+            <Card loading={true} />
+          ) : eats.length > 0 ? (
+            eats.map((eat) => <Card key={eat.time} eat={eat} loading={false} />)
+          ) : (
+            <p>추천 식단이 없습니다.</p>
+          )}
         </Column2>
       </Background>
     </div>

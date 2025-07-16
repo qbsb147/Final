@@ -31,6 +31,8 @@ public class AiDto {
     @AllArgsConstructor
     @Builder
     public static class AiEat {
+
+        // 건강 정보
         private Float weight;
         private Float height;
         private Float bmi;
@@ -44,12 +46,19 @@ public class AiDto {
         private String healthCondition;
         private String physicalActivity;
 
-        private Integer score;
-        private String psychologicalState;
-        private MentalEnums.Separation separation;
-        private String resultContent;
+        // 번아웃
+        private Integer burnoutScore;
+        private String burnoutState;
+        private MentalEnums.Separation burnoutSeparation;
+        private String burnoutSummary;
 
-        public static AiEat toDo(Health health, Mental mental) {
+        // 스트레스
+        private Integer stressScore;
+        private String stressState;
+        private MentalEnums.Separation stressSeparation;
+        private String stressSummary;
+
+        public static AiEat toDo(Health health, Mental burnout, Mental stress) {
             return AiEat.builder()
                     .weight(health.getWeight())
                     .height(health.getHeight())
@@ -63,10 +72,17 @@ public class AiDto {
                     .alcoholConsumption(health.getAlcoholConsumption().name())
                     .healthCondition(health.getHealthCondition())
                     .physicalActivity(health.getPhysicalActivity().name())
-                    .score(mental.getScore())
-                    .psychologicalState(mental.getPsychologicalState().name())
-                    .separation(mental.getSeparation())
-                    .resultContent(mental.getResultContent())
+
+                    .burnoutScore(burnout.getScore())
+                    .burnoutState(burnout.getPsychologicalState().name())
+                    .burnoutSeparation(burnout.getSeparation())
+                    .burnoutSummary(burnout.getResultContent())
+
+                    .stressScore(stress.getScore())
+                    .stressState(stress.getPsychologicalState().name())
+                    .stressSeparation(stress.getSeparation())
+                    .stressSummary(stress.getResultContent())
+
                     .build();
         }
     }
@@ -78,10 +94,17 @@ public class AiDto {
     @AllArgsConstructor
     @Builder
     public static class AIWorcationDto {
-        private String psychologicalState;
-        private String resultContent;
-        private MentalEnums.Separation separation;
-        private Integer score;
+        // 번아웃 정보
+        private String burnoutPsychologicalState;
+        private String burnoutResultContent;
+        private MentalEnums.Separation burnoutSeparation;
+        private Integer burnoutScore;
+
+        // 스트레스 정보
+        private String stressPsychologicalState;
+        private String stressResultContent;
+        private MentalEnums.Separation stressSeparation;
+        private Integer stressScore;
 
         private Long userNo;
         private PreferenceEnums.Mbti mbti;
@@ -131,16 +154,26 @@ public class AiDto {
 
         private List<Map<String, Object>> worcationList;
 
-        public static AIWorcationDto toDto(Mental mental,
+        public static AIWorcationDto toDto(Mental burnout,
+                                           Mental stress,
                                            MemberPreference memberPreference,
                                            Worcation w,
                                            WorcationDetail d,
                                            WorcationFeatures f) {
             return AIWorcationDto.builder()
-                    .psychologicalState(mental.getPsychologicalState().name())
-                    .separation(mental.getSeparation())
-                    .resultContent(mental.getResultContent())
-                    .score(mental.getScore())
+                    // 번아웃 정보 세팅
+                    .burnoutPsychologicalState(burnout.getPsychologicalState().name())
+                    .burnoutSeparation(burnout.getSeparation())
+                    .burnoutResultContent(burnout.getResultContent())
+                    .burnoutScore(burnout.getScore())
+
+                    // 스트레스 정보 세팅
+                    .stressPsychologicalState(stress.getPsychologicalState().name())
+                    .stressSeparation(stress.getSeparation())
+                    .stressResultContent(stress.getResultContent())
+                    .stressScore(stress.getScore())
+
+                    // 성향 정보
                     .mbti(memberPreference.getMbti())
                     .preferredColor(memberPreference.getPreferencedColor())
                     .preferredLocation(memberPreference.getPreferencedLocation())
@@ -148,8 +181,10 @@ public class AiDto {
                     .importantFactor(memberPreference.getImportantFactor())
                     .leisureActivity(memberPreference.getLeisureActivity())
                     .accommodationType(memberPreference.getAccommodationType())
-                    .resultContent(memberPreference.getResultContent())
+                    .result_content(memberPreference.getResultContent())
                     .userNo(memberPreference.getMember().getUserNo())
+
+                    // 워케이션 기본정보
                     .worcation_no(w.getWorcationNo())
                     .worcation_name(w.getWorcationName())
                     .worcation_category(w.getWorcationCategory())
@@ -163,6 +198,8 @@ public class AiDto {
                     .create_at(w.getCreateAt())
                     .status(w.getStatus())
                     .area_id(w.getSiggAreas() != null ? w.getSiggAreas().getId().longValue() : null)
+
+                    // 상세정보
                     .licensee(d != null ? d.getLicensee() : null)
                     .business_id(d != null ? d.getBusinessId() : null)
                     .worcation_tel(d != null ? d.getWorcationTel() : null)
@@ -172,6 +209,8 @@ public class AiDto {
                     .available_time(d != null ? d.getAvailableTime() : null)
                     .refund_policy(d != null ? d.getRefundPolicy() : null)
                     .open_date(d != null ? d.getOpenDate() : null)
+
+                    // 워케이션 특징
                     .WlocationType(f != null ? f.getLocationType() : null)
                     .WdominantColor(f != null ? f.getDominantColor() : null)
                     .WspaceMood(f != null ? f.getSpaceMood() : null)

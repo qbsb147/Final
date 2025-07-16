@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
     INIT: '/member/signUp/init',
     SEND_CODE: '/member/send_code',
     VERIFY_CODE: '/member/verify_code',
+    EAT: (userNo) => `/ai/diet-recommend/${userNo}`,
   },
   HEALTH: {
     BASE: '/health',
