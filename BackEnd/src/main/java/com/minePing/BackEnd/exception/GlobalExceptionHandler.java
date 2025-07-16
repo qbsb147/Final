@@ -9,6 +9,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -47,6 +48,13 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage() != null ? ex.getMessage() : ex.getErrorCode().getMessage();
         ErrorResponse error = ErrorResponse.of(ex.getErrorCode(), message, request.getRequestURI());
         return ResponseEntity.status(ex.getErrorCode().getStatus()).body(error);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex, HttpServletRequest request) {
+        log.error("권한 부족 예외 발생 : {}", ex.getMessage(), ex);
+        ErrorResponse error = ErrorResponse.of(HttpStatus.FORBIDDEN.value(), "접근 권한이 없습니다.", request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(RuntimeException.class)

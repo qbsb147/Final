@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ReusableTable from './ReusableTable';
 import { partnerService } from '../../../api/partner';
-
-const PartnerApprovedListTable = ({ user_no }) => {
+import useAuthStore from '../../../store/authStore';
+const PartnerApprovedListTable = () => {
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const user_no = loginUser?.user_no;
   const [data, setData] = useState([]);
 
   // 백엔드에서 데이터 불러오기
@@ -26,9 +28,12 @@ const PartnerApprovedListTable = ({ user_no }) => {
     }
   };
 
+
   useEffect(() => {
+    if (!user_no) return;
     fetchData();
-  }, []);
+  }, [user_no]);
+
   const columns = [
     { header: '번호', accessor: 'No' },
     { header: '기업명', accessor: 'CompanyName' },

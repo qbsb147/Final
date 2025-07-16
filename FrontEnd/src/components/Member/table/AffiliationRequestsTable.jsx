@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import ReusableTable from './ReusableTable';
 import { partnerService } from '../../../api/partner';
+import useAuthStore from '../../../store/authStore';
 
-const WorkcationTable = ({ user_no }) => {
+const WorkcationTable = () => {
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const user_no = loginUser?.user_no;
   const [data, setData] = useState([]);
 
   // 백엔드에서 데이터 불러오기
@@ -27,8 +30,9 @@ const WorkcationTable = ({ user_no }) => {
   };
 
   useEffect(() => {
+    if (!user_no) return;
     fetchData();
-  }, []);
+  }, [user_no]);
 
   const columns = [
     { header: '번호', accessor: 'partner_no' },

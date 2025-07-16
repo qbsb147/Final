@@ -452,22 +452,7 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
-        // 기존 연관관계 삭제
-        worcation.getWorcationAmenities().clear();
 
-        if (amenityIds != null) {
-            for (Long amenityId : amenityIds) {
-                Amenity amenity = amenityRepository.findById(amenityId)
-                    .orElseThrow(() -> new RuntimeException("Amenity not found: " + amenityId));
-                WorcationAmenity wa = WorcationAmenity.builder()
-                    .worcation(worcation)
-                    .amenity(amenity)
-                    .build();
-                worcation.getWorcationAmenities().add(wa);
-            }
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -499,5 +484,42 @@ public class WorcationServiceImpl implements WorcationService {
                 })
                 .collect(Collectors.toList());
     }
+    //여러개 조회
+    @Override
+    public List<WorcationDto.Response> findByIds(List<Long> ids) {
+        return worcationRepository.findAllById(ids)
+            .stream()
+            .map(w -> WorcationDto.Response.fromEntity(
+                w,
+                w.getWorcationDetail(),
+                w.getWorcationFeatures(),
+                new ArrayList<>(w.getWorcationPartners()),
+                w.getWorcationApplications().stream()
+                    .map(WorcationApplication::getReview)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()),
+                w.getWorcationAmenities().stream()
+                    .map(WorcationAmenity::getAmenity)
+                    .collect(Collectors.toList()),
+                new ArrayList<>(w.getPhotos())
+            ))
+            .collect(Collectors.toList());
+    }
 
+    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
+        if (amenityIds == null) return;
+        // 기존 연관된 amenity 모두 삭제
+        worcation.getWorcationAmenities().clear();
+        // 새로 amenity 추가
+        for (Long amenityId : amenityIds) {
+            Amenity amenity = amenityRepository.findById(amenityId).orElse(null);
+            if (amenity != null) {
+                WorcationAmenity wa = WorcationAmenity.builder()
+                    .worcation(worcation)
+                    .amenity(amenity)
+                    .build();
+                worcation.getWorcationAmenities().add(wa);
+            }
+        }
+    }
 }

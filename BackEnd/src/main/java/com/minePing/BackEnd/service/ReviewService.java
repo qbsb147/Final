@@ -24,4 +24,6 @@ public interface ReviewService {
      * 특정 댓글을 삭제
      */
     void delete(Long reviewNo);
+
+
 }

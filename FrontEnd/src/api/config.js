@@ -67,6 +67,9 @@ export const API_ENDPOINTS = {
     UPLOADIMAGE: () => '/files/upload',
     //이미지 삭제
     DELETEIMAGE: () => '/files/delete',
+    //GPT 추천
+    GPT: (user_no) => `/ai/worcation/${user_no}`,
+    GPTDETAIL: (worcation_no) => `ai/worcation/${worcation_no}`,
   },
 
   PARTNER: {

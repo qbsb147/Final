@@ -6,6 +6,7 @@ import com.minePing.BackEnd.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class ReviewController {
 
     // 리뷰 등록
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewResponse> create(@RequestBody ReviewRequest request) {
         return ResponseEntity.ok(reviewService.create(request));
     }
@@ -29,12 +31,14 @@ public class ReviewController {
 
     // 리뷰 수정
     @PatchMapping("/{reviewNo}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ReviewResponse> update(@PathVariable Long reviewNo, @RequestBody ReviewRequest request) {
         return ResponseEntity.ok(reviewService.update(reviewNo, request));
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{reviewNo}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> delete(@PathVariable Long reviewNo) {
         reviewService.delete(reviewNo);
         return ResponseEntity.noContent().build();
