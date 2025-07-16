@@ -47,14 +47,14 @@ const WorcationAiPage = () => {
       filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }
     if (viewMode === 'ai') {
-      filtered = aiWorcations;
+      filtered = aiWorcations || [];
     }
     if (keyword.trim() !== '') {
       filtered = filtered.filter(
         (w) => (w.worcation_name && w.worcation_name.includes(keyword)) || (w.address && w.address.includes(keyword))
       );
     }
-    return filtered;
+    return Array.isArray(filtered) ? filtered : [];
   };
 
   const handleToggleView = (mode) => {
