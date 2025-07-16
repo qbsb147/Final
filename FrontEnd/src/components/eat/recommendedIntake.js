@@ -1,5 +1,5 @@
 export const recommended_intake = {
-  man: {
+  M: {
     standard: '성인 남성 기준',
     calories: '2000kcal',
     carbohydrates: '310g',
@@ -7,7 +7,7 @@ export const recommended_intake = {
     fat: '60g',
     sodium: '2,000mg 이하',
   },
-  woman: {
+  W: {
     standard: '성인 여성 기준',
     calories: '1800kcal',
     carbohydrates: '280g',

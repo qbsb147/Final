@@ -190,5 +190,14 @@ const memberService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
+
+  getDietRecommendation: async (userNo) => {
+    try {
+      const { data } = await axiosInstance.post(API_ENDPOINTS.MEMBER.EAT(userNo), null, { timeout: 1000000 });
+      return data;
+    } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
 };
 export default memberService;
