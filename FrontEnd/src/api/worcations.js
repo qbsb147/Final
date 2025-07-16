@@ -109,7 +109,7 @@ export const worcationService = {
     return response.data;
   },
   getAI: async (worcation_no) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.GPTDETAIL(worcation_no));
+    const response = await api.get(`/worcations/ids?ids=${worcation_no}`);
     return response.data;
   },
 };

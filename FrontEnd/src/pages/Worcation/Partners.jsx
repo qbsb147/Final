@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { worcationService } from '../../api/worcations';
+import { useAiStore } from '../../store/aiStore';
 import WorcationCardList from '../../components/worcation/WorcationCardList';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -10,12 +11,11 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
-  const [aiWorcations, setAiWorcations] = useState([]);
+  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
   const [viewMode, setViewMode] = useState('partner');
   const keyword = useSearchStore((state) => state.keyword);
   const loginUser = useAuthStore((state) => state.loginUser);
   const [loading, setLoading] = useState(true);
-  const [aiLoading, setAiLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,23 +33,14 @@ const WorcationPartnersPage = () => {
         };
       });
       setWorcations(processedList);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 100);
     };
     fetchData();
   }, []);
 
   useEffect(() => {
-    const fetchAiData = async () => {
-      if (!loginUser) return;
-      setAiLoading(true);
-      const aiRes = await worcationService.getGPT(loginUser.user_no);
-      const worcationNo = aiRes.recommendations.map((r) => r.worcation_no);
-      const aiData = await worcationService.getDetail(worcationNo);
-      setAiWorcations(Array.isArray(aiData) ? aiData : [aiData]);
-      setAiLoading(false);
-    };
-    fetchAiData();
-  }, [loginUser]);
+    if (loginUser) fetchAiWorcations(loginUser.user_no, worcationService);
+  }, [loginUser, fetchAiWorcations]);
 
   const getFilteredWorcations = () => {
     let filtered = worcations;

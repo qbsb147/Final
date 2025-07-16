@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { ButtonBorder } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
+import { useAiStore } from '../../store/aiStore';
 import WorcationCardList from '../../components/worcation/WorcationCardList';
 import useSearchStore from '../../store/useSearchStore';
 import useAuthStore from '../../store/authStore';
@@ -14,10 +15,9 @@ const WorcationList = () => {
   const [worcations, setWorcations] = useState([]);
   const keyword = useSearchStore((state) => state.keyword);
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
-  const [aiWorcations, setAiWorcations] = useState([]);
+  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
   const loginUser = useAuthStore((state) => state.loginUser);
   const [loading, setLoading] = useState(true);
-  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +33,7 @@ const WorcationList = () => {
         };
       });
       setWorcations(processedList);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 100);
     };
     fetchData();
   }, []);
@@ -43,17 +43,8 @@ const WorcationList = () => {
   }, [worcations, setPopularKeywords]);
 
   useEffect(() => {
-    const fetchAiData = async () => {
-      if (!loginUser) return;
-      setAiLoading(true);
-      const aiRes = await worcationService.getGPT(loginUser.user_no);
-      const worcationNo = aiRes.recommendations.map((r) => r.worcation_no);
-      const aiData = await worcationService.getDetail(worcationNo);
-      setAiWorcations(Array.isArray(aiData) ? aiData : [aiData]);
-      setAiLoading(false);
-    };
-    fetchAiData();
-  }, [loginUser]);
+    if (loginUser) fetchAiWorcations(loginUser.user_no, worcationService);
+  }, [loginUser, fetchAiWorcations]);
 
   const handleToggleView = (mode) => {
     if (mode === 'partner') {

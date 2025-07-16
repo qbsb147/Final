@@ -7,17 +7,17 @@ import WorcationCardList from '../components/worcation/WorcationCardList';
 import useSearchStore from '../store/useSearchStore';
 import useAuthStore from '../store/authStore';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { useAiStore } from '../store/aiStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
-  const [AiWorcations, setAiWorcations] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [aiLoading, setAiLoading] = useState(false);
   const keyword = useSearchStore((state) => state.keyword);
   const navigate = useNavigate();
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   const loginUser = useAuthStore((state) => state.loginUser);
+  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,16 +26,9 @@ const MainPage = () => {
       const appData = await worcationService.applicationList();
       setWorcations(data);
       setApplications(appData);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 100);
       if (loginUser) {
-        setAiLoading(true);
-        const aiRes = await worcationService.getGPT(loginUser.user_no);
-        const worcationNo = aiRes.recommendations.map((r) => r.worcation_no);
-        const aiData = await worcationService.getDetail(worcationNo);
-        setAiWorcations(Array.isArray(aiData) ? aiData : [aiData]);
-        setAiLoading(false);
-      } else {
-        setAiWorcations([]);
+        fetchAiWorcations(loginUser.user_no, worcationService);
       }
     };
     fetchData();
@@ -111,7 +104,7 @@ const MainPage = () => {
         </>
       )}
 
-      {(loginUser || AiWorcations.length > 0) && (
+      {(loginUser || aiWorcations.length > 0) && (
         <>
           <SectionTitle>AI 추천</SectionTitle>
           <CardList>
@@ -120,7 +113,7 @@ const MainPage = () => {
                 <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
               </LoadingOverlay>
             ) : (
-              <WorcationCardList data={AiWorcations.slice(0, 3)} navigate={navigate} />
+              <WorcationCardList data={aiWorcations.slice(0, 3)} navigate={navigate} />
             )}
           </CardList>
         </>

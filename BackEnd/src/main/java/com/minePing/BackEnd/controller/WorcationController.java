@@ -71,6 +71,14 @@ public class WorcationController {
     }
 
     /**
+     * 여러개 목록 조회
+     */
+    @GetMapping("/ids")
+    public List<WorcationDto.Response> getWorcationsByIds(@RequestParam("ids") List<Long> ids) {
+        return worcationService.findByIds(ids);
+    }
+
+    /**
      * 전체 목록 조회
      */
     @GetMapping
@@ -78,7 +86,8 @@ public class WorcationController {
         List<WorcationDto.Response> list = worcationService.getAll();
         return ResponseEntity.ok(list);
     }
-        /**
+
+    /**
      * 내 목록 조회
      */
     @GetMapping("list/all/{id}")

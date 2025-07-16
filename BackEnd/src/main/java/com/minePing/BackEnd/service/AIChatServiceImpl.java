@@ -274,6 +274,7 @@ import java.util.Map;
 import javax.swing.text.html.parser.Entity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -296,53 +297,26 @@ public class AIChatServiceImpl implements AIChatService {
     }
 
     @Override
-    public AIWorcationDto getAiWorcationByUser(Long userNo) {
+    public List<AIWorcationDto> getAiWorcationByUser(Long userNo) {
         Mental mental = mentalRepository.findTopByMember_UserNoOrderByUpdateDateDesc(userNo)
                 .orElseThrow(() -> new RuntimeException("Mental 정보가 없습니다."));
         MemberPreference preference = preferenceRepository.findTopByMember_UserNoOrderByUpdateDateDesc(userNo)
                 .orElseThrow(() -> new RuntimeException("성향 정보가 없습니다."));
 
-        List<Worcation> worcations = worcationRepository.findAllBasic();  // 단순 조회
-        System.out.println(worcations);
+        List<Worcation> worcations = worcationRepository.findAllBasic();
 
         if (worcations.isEmpty()) {
             throw new RuntimeException("워케이션 정보가 없습니다.");
         }
 
-        Worcation first = worcations.get(0);
 
-        // 💡 필요하면 LAZY 관계를 직접 접근해서 초기화
-        WorcationDetail d = first.getWorcationDetail();
-        WorcationFeatures f = first.getWorcationFeatures();
-
-        AIWorcationDto dto = AIWorcationDto.toDto(mental, preference, first, d, f);
-
-        // 전체 worcation 리스트 요약 전달
-        List<Map<String, Object>> worcationList = worcations.stream().map(w -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("worcation_no", w.getWorcationNo());
-            map.put("worcation_name", w.getWorcationName());
-            map.put("worcation_category", w.getWorcationCategory());
-            map.put("worcation_thema", w.getWorcationThema());
-            map.put("max_people", w.getMaxPeople());
-
-            WorcationFeatures wf = w.getWorcationFeatures();
-            if (wf != null) {
-                map.put("WlocationType", wf.getLocationType());
-                map.put("WdominantColor", wf.getDominantColor());
-                map.put("WspaceMood", wf.getSpaceMood());
-                map.put("WbestFor", wf.getBestFor());
-                map.put("activities", wf.getActivities());
-                map.put("WaccommodationType", wf.getAccommodationType());
-            }
-
-            return map;
-        }).toList();
-
-        dto.setWorcationList(worcationList);
-        System.out.println(dto);
-
-        return dto;
+        return worcations.stream()
+            .map(w -> {
+                WorcationDetail d = w.getWorcationDetail();
+                WorcationFeatures f = w.getWorcationFeatures();
+                return AIWorcationDto.toDto(mental, preference, w, d, f);
+            })
+            .collect(Collectors.toList());
     }
 
 
