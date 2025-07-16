@@ -469,4 +469,35 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<WorcationDto.Response> findAllByNos(List<Long> ids) {
+        List<Worcation> worcations = worcationRepository.findAllByWorcationNoIn(ids);
+
+
+        // 중복 제거 (중복될 경우 toSet() → toList() 가능)
+        return worcations.stream()
+                .distinct()
+                .map(w -> {
+                    WorcationDetail d = w.getWorcationDetail();
+                    WorcationFeatures f = w.getWorcationFeatures();
+
+                    List<Amenity> amenities = w.getWorcationAmenities().stream()
+                            .map(WorcationAmenity::getAmenity)
+                            .collect(Collectors.toList());
+
+                    List<Photo> photos = new ArrayList<>(w.getPhotos());
+
+                    List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
+
+                    List<Review> reviews = w.getWorcationApplications().stream()
+                            .map(WorcationApplication::getReview)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                })
+                .collect(Collectors.toList());
+    }
+
 }

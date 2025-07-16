@@ -26,6 +26,10 @@ ext {
 	set('springAiVersion', "1.0.0")
 }
 
+ext {
+	set('springAiVersion', "1.0.0")
+}
+
 dependencies {
 	// 🔹 Spring Boot 주요 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA (Hibernate 기반) 사용을 위한 스타터
@@ -75,6 +79,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//AI
+	implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
+	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
+}
+
 
 	//spring ai
 	implementation 'org.springframework.boot:spring-boot-starter-web'
