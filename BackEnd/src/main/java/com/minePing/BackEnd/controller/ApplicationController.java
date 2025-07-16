@@ -19,7 +19,6 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    //  전체 신청 목록 조회 (관리자만)
     @GetMapping
     public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getAllApplications() {
         List<ApplicationDto.ApplicationResponseDto> list = applicationService.getAllApplications();

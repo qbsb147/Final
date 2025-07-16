@@ -208,12 +208,10 @@ const Header = () => {
                       .filter((item) => {
                         if (
                           !isLoggedIn &&
-                          (
-                            item.title === '내 정보' ||
+                          (item.title === '내 정보' ||
                             item.title === '신체 정보' ||
                             item.title === '워케이션 신청내역' ||
-                            item.title === '예약자 명단'
-                          )
+                            item.title === '예약자 명단')
                         ) {
                           return false;
                         }

@@ -53,7 +53,6 @@ public class WorcationController {
     public ResponseEntity<WorcationDto.Response> create(
             @RequestBody @Valid WorcationDto.Request request) {
         WorcationDto.Response dto = worcationService.create(request);
-        System.out.println("생성로직");
         return ResponseEntity.created(
                 URI.create("/api/worcations/" + dto.getWorcation_no())).body(dto);
     }
@@ -65,7 +64,6 @@ public class WorcationController {
     @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<Void> tempSave(@RequestBody WorcationDto.Request request) {
         worcationService.tmpSave(request); // 임시저장 로직
-        System.out.println("임시 저장 로직");
         return ResponseEntity.ok().build();
     }
 
@@ -80,7 +78,15 @@ public class WorcationController {
     }
 
     /**
-     * 전체 목록 조회 (공개)
+     * 여러개 목록 조회
+     */
+    @GetMapping("/ids")
+    public List<WorcationDto.Response> getWorcationsByIds(@RequestParam("ids") List<Long> ids) {
+        return worcationService.findByIds(ids);
+    }
+
+    /**
+     * 전체 목록 조회
      */
     @GetMapping
     public ResponseEntity<List<WorcationDto.Response>> getAll() {
@@ -89,10 +95,9 @@ public class WorcationController {
     }
 
     /**
-     * 내 워케이션 전체 목록 (본인만)
+     * 내 목록 조회
      */
     @GetMapping("list/all/{id}")
-    @PreAuthorize("isAuthenticated()") // 본인만
     public ResponseEntity<List<Response>> getLISTALL(@PathVariable("id") Long id) {
         List<WorcationDto.Response> dto = worcationService.getMyListALl(id);
         return ResponseEntity.ok(dto);

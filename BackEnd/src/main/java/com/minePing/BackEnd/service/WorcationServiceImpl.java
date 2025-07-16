@@ -484,5 +484,26 @@ public class WorcationServiceImpl implements WorcationService {
                 })
                 .collect(Collectors.toList());
     }
+    //여러개 조회
+    @Override
+    public List<WorcationDto.Response> findByIds(List<Long> ids) {
+        return worcationRepository.findAllById(ids)
+            .stream()
+            .map(w -> WorcationDto.Response.fromEntity(
+                w,
+                w.getWorcationDetail(),
+                w.getWorcationFeatures(),
+                new ArrayList<>(w.getWorcationPartners()),
+                w.getWorcationApplications().stream()
+                    .map(WorcationApplication::getReview)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()),
+                w.getWorcationAmenities().stream()
+                    .map(WorcationAmenity::getAmenity)
+                    .collect(Collectors.toList()),
+                new ArrayList<>(w.getPhotos())
+            ))
+            .collect(Collectors.toList());
+    }
 
 }

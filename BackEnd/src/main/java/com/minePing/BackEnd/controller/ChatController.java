@@ -158,14 +158,24 @@ public class ChatController {
         return response;
     }
 
-    @PostMapping("/worcation_ai/{userNo}")
-    public Map<String, Object> recommendWorcation(@PathVariable Long userNo) {
+    @PostMapping("/worcation/{ids}")
+    public Map<String, Object> recommendWorcation(@PathVariable("ids") Long userNo) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            AiDto.AIWorcationDto dto = aiChatService.getAiWorcationByUser(userNo);
+            List<AiDto.AIWorcationDto> dtoList = aiChatService.getAiWorcationByUser(userNo);
 
-            // 1. 프롬프트 구성
+            // 워케이션 리스트 요약을 문자열로 만들어서 프롬프트에 포함
+            StringBuilder worcationListStr = new StringBuilder();
+            for (AiDto.AIWorcationDto w : dtoList) {
+                worcationListStr.append(String.format(
+                    "워케이션 번호: %s, 상호명: %s, 업체 유형: %s, ...\n",
+                    w.getWorcation_no(), w.getWorcation_name(), w.getWorcation_category()
+                    // 필요한 필드 추가
+                ));
+            }
+
+            // 프롬프트에 worcationListStr.toString()을 포함
             String promptText = String.format("""
         너는 워케이션 장소를 추천해주는 전문가야.
         아래는 한 사람의 심리 및 성향 정보이고, 이어지는 정보는 등록된 워케이션 리스트야.
@@ -184,17 +194,8 @@ public class ChatController {
         분리 유형: %s
         심리 결과 요약: %s
 
-        워케이션 번호: %s
-        상호명: %s
-        업체 유형: %s
-        업체 테마: %s
-        수용 인원: %s
-        위치 유형: %s
-        전반적인 색감: %s
-        공간 분위기: %s
-        추천 목적: %s
-        여가 활동: %s
-        숙소 형태: %s
+        워케이션 리스트:
+        %s
 
         아래 형식의 JSON 배열로만 결과를 줘. 코드블럭 없이 순수 JSON으로 줘야 해.
         그리고 예시에서 worcation_no에 번호를 넣어줄때 내가준 워케이션 번호를 넣어줘야해
@@ -210,30 +211,20 @@ public class ChatController {
 
         다른 텍스트는 절대 포함하지 마. JSON 배열만 응답해.
         """,
-                    dto.getMbti(),
-                    dto.getPreferredColor(),
-                    dto.getPreferredLocation(),
-                    dto.getSpaceMood(),
-                    dto.getImportantFactor(),
-                    dto.getLeisureActivity(),
-                    dto.getAccommodationType(),
+                    dtoList.get(0).getMbti(),
+                    dtoList.get(0).getPreferredColor(),
+                    dtoList.get(0).getPreferredLocation(),
+                    dtoList.get(0).getSpaceMood(),
+                    dtoList.get(0).getImportantFactor(),
+                    dtoList.get(0).getLeisureActivity(),
+                    dtoList.get(0).getAccommodationType(),
 
-                    dto.getScore(),
-                    dto.getPsychologicalState(),
-                    dto.getSeparation(),
-                    dto.getResultContent(),
+                    dtoList.get(0).getScore(),
+                    dtoList.get(0).getPsychologicalState(),
+                    dtoList.get(0).getSeparation(),
+                    dtoList.get(0).getResultContent(),
 
-                    dto.getWorcation_no(),
-                    dto.getWorcation_name(),
-                    dto.getWorcation_category(),
-                    dto.getWorcation_thema(),
-                    dto.getMax_people(),
-                    dto.getWlocationType(),
-                    dto.getWdominantColor(),
-                    dto.getWspaceMood(),
-                    dto.getWbestFor(),
-                    dto.getActivities(),
-                    dto.getWaccommodationType()
+                    worcationListStr.toString()
             );
 
             // 2. 프롬프트 실행
