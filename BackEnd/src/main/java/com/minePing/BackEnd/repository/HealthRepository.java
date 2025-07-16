@@ -15,6 +15,10 @@ public interface HealthRepository extends JpaRepository<Health, Long>, HealthRep
     List<Health> findByMember_UserNo(Long userNo);
     Optional<Health> findByMember_UserId(String userId);
 
+    Optional<Health> findTopByMember_UserNoOrderByUpdateDateDesc(Long userNo);
+
+
     @Query("select h from Health h join fetch h.member m where m.userId = :memberUserId and h.updateDate > :updateDateAfter")
     Health findByMember_UserIdAndUpdateDateAfter(String memberUserId, LocalDate updateDateAfter);
+
 }
