@@ -14,7 +14,7 @@ public interface MemberService {
     void createWorcationMember(MemberDto.WorcationJoin worcationJoinDto);
     String login(MemberDto.Login loginDto);
 
-    void updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto);
+    String updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto);
 
     MemberDto.InfoResponse getUserInfoByUserId();
     MemberInfoResponse getUserByUserId();
