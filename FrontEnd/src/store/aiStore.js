@@ -7,13 +7,15 @@ export const useAiStore = create((set) => ({
     set({ aiLoading: true });
     const aiRes = await worcationService.getGPT(userNo);
     const recommendations = aiRes && Array.isArray(aiRes.recommendations) ? aiRes.recommendations : [];
-    const worcationNos = recommendations.map((r) => r.worcation_no).filter(Boolean);
-    if (worcationNos.length === 0) {
+    const worcationNos = recommendations.map((r) => r.worcation_no || r.wocation_no || r.woration_no).filter(Boolean);
+    const ids = worcationNos.join(',');
+
+    if (!ids || ids.length === 0) {
       set({ aiWorcations: [], aiLoading: false });
       return;
     }
-    const ids = worcationNos.join(',');
-    const aiData = await worcationService.getAI(ids, { timeout: 1000000 });
+
+    const aiData = await worcationService.getAI(ids);
     set({ aiWorcations: Array.isArray(aiData) ? aiData : aiData ? [aiData] : [], aiLoading: false });
   },
 }));
