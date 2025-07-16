@@ -55,13 +55,6 @@ public class ReviewServiceImp implements ReviewService {
         reviewRepository.deleteById(reviewNo);
     }
 
-    @Override
-    public boolean isOwner(Long reviewNo, Long userNo) {
-        Review review = reviewRepository.findByReviewNo(reviewNo).orElse(null);
-        if (review == null) return false;
-        WorcationApplication application = review.getWorcationApplication();
-        if (application == null || application.getMember() == null) return false;
-        return application.getMember().getUserNo().equals(userNo);
-    }
+
     
 }

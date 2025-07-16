@@ -42,6 +42,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
            "ORDER BY r.createAt DESC")
     List<Review> findByWorcationNoOrderByCreateAtDesc(@Param("worcationNo") Long worcationNo);
 
-    @Query("SELECT r FROM Review r WHERE r.reviewNo = :reviewNo")
-    Optional<Review> findByReviewNo(@Param("reviewNo") Long reviewNo);
 }

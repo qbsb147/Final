@@ -49,7 +49,7 @@ public class WorcationController {
      * (워케이션 권한이 있는 사용자만 생성 가능)
      */
     @PostMapping
-    @PreAuthorize("hasRole('WORCATION')")
+    @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<WorcationDto.Response> create(
             @RequestBody @Valid WorcationDto.Request request) {
         WorcationDto.Response dto = worcationService.create(request);
@@ -62,7 +62,7 @@ public class WorcationController {
      * 임시 저장 (워케이션 권한이 있는 사용자만 가능)
      */
     @PostMapping("/tmp")
-    @PreAuthorize("hasRole('WORCATION')")
+    @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<Void> tempSave(@RequestBody WorcationDto.Request request) {
         worcationService.tmpSave(request); // 임시저장 로직
         System.out.println("임시 저장 로직");
@@ -92,7 +92,7 @@ public class WorcationController {
      * 내 워케이션 전체 목록 (본인만)
      */
     @GetMapping("list/all/{id}")
-    @PreAuthorize("#id == authentication.principal.userNo") // 본인만
+    @PreAuthorize("isAuthenticated()") // 본인만
     public ResponseEntity<List<Response>> getLISTALL(@PathVariable("id") Long id) {
         List<WorcationDto.Response> dto = worcationService.getMyListALl(id);
         return ResponseEntity.ok(dto);
@@ -102,7 +102,7 @@ public class WorcationController {
      * 수정 (작성자/소유자만)
      */
     @PatchMapping("/{id}")
-    @PreAuthorize("@worcationService.isOwner(#id, authentication.principal.userNo)") // 소유자만
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<WorcationDto.Response> update(
             @PathVariable("id") Long id,
             @RequestBody @Valid WorcationDto.Request request) {
@@ -115,7 +115,7 @@ public class WorcationController {
      * 삭제 (작성자/소유자만)
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("@worcationService.isOwner(#id, authentication.principal.userNo)") // 소유자만
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         worcationService.delete(id);
         return ResponseEntity.noContent().build();
@@ -125,7 +125,7 @@ public class WorcationController {
      * 본인이 작성한 워케이션 확인 (본인만)
      */
     @GetMapping("/my-worcations/{userNo}")
-    @PreAuthorize("#userNo == authentication.principal.userNo") // 본인만
+    @PreAuthorize("isAuthenticated()") // 본인만
     public ResponseEntity<Map<String, List<WorcationDto.SimpleResponse>>> getMyWorcations(@PathVariable Long userNo) {
         Map<String, List<WorcationDto.SimpleResponse>> result = worcationService.getMyWorcations(userNo);
         return ResponseEntity.ok(result);
@@ -135,7 +135,7 @@ public class WorcationController {
      * 워케이션 등록목록 (본인만)
      */
     @GetMapping("/my/{userNo}")
-    @PreAuthorize("#userNo == authentication.principal.userNo AND hasRole('WORCATION')") // 본인만
+    @PreAuthorize("isAuthenticated() AND hasRole('ROLE_WORCATION')") // 본인만
     public ResponseEntity<List<WorcationDto.WorcationListName>> getWorcationListName(@PathVariable Long userNo) {
         return ResponseEntity.ok(worcationService.getWorcationListName(userNo));
     }
@@ -144,7 +144,7 @@ public class WorcationController {
      * 예약자 목록 (워케이션 소유자만)
      */
     @GetMapping("/reservaionList/{userNo}")
-    @PreAuthorize("@worcationService.isOwnerByUserNo(#userNo, authentication.principal.userNo)") // 소유자만
+    @PreAuthorize("isAuthenticated()") // 소유자만
     public ResponseEntity<PageResponse<WorcationReservation>> getWorcationReservation(
             @PathVariable Long userNo,
             @PageableDefault(size = 15, sort = "userName") Pageable pageable) {

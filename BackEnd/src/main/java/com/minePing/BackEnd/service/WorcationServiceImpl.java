@@ -452,36 +452,7 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-    @Override
-    public boolean isOwner(Long worcationId, Long userNo) {
-        // 워케이션 PK로 조회 후 작성자와 비교
-        return worcationRepository.findById(worcationId)
-                .map(w -> w.getMember() != null && w.getMember().getUserNo().equals(userNo))
-                .orElse(false);
-    }
 
-    @Override
-    public boolean isOwnerByUserNo(Long UserNo, Long LoginUserNo) {
-        // 예약자 목록 등에서 userNo(작성자)와 principalUserNo(로그인 사용자) 비교
-        return Objects.equals(UserNo, LoginUserNo);
-    }
-
-    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
-        // 기존 연관관계 삭제
-        worcation.getWorcationAmenities().clear();
-
-        if (amenityIds != null) {
-            for (Long amenityId : amenityIds) {
-                Amenity amenity = amenityRepository.findById(amenityId)
-                    .orElseThrow(() -> new RuntimeException("Amenity not found: " + amenityId));
-                WorcationAmenity wa = WorcationAmenity.builder()
-                    .worcation(worcation)
-                    .amenity(amenity)
-                    .build();
-                worcation.getWorcationAmenities().add(wa);
-            }
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)
