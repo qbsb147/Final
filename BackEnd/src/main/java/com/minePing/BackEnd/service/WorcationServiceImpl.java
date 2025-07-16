@@ -485,4 +485,20 @@ public class WorcationServiceImpl implements WorcationService {
                 .collect(Collectors.toList());
     }
 
+    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
+        if (amenityIds == null) return;
+        // 기존 연관된 amenity 모두 삭제
+        worcation.getWorcationAmenities().clear();
+        // 새로 amenity 추가
+        for (Long amenityId : amenityIds) {
+            Amenity amenity = amenityRepository.findById(amenityId).orElse(null);
+            if (amenity != null) {
+                WorcationAmenity wa = WorcationAmenity.builder()
+                    .worcation(worcation)
+                    .amenity(amenity)
+                    .build();
+                worcation.getWorcationAmenities().add(wa);
+            }
+        }
+    }
 }

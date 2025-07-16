@@ -6,16 +6,11 @@ import useAuthStore from '../../../store/authStore';
 
 const ApprovedList = () => {
   const { loginUser } = useAuthStore();
-  const navigate = useNavigate();
+  if (!loginUser) {
+    // 로딩 중이거나 로그인 안 된 상태
+    return null; // 또는 로딩 스피너/메시지
+  }
 
-  useEffect(() => {
-    if (!loginUser?.user_id) return;
-
-    if (loginUser.role !== 'MASTER' || loginUser !== 'MANAGER') {
-      navigate('/error');
-      return;
-    }
-  });
   return (
     <ListWrap>
       <MainContent>

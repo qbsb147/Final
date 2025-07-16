@@ -7,11 +7,11 @@ export const partnerService = {
     return response.data;
   },
   getAllRequests: async (user_no) => {
-    const response = await api.get(API_ENDPOINTS.PARTNER.GETALLREQUESTS, user_no);
+    const response = await api.get(API_ENDPOINTS.PARTNER.GETALLREQUESTS(user_no));
     return response.data;
   },
   getApprovalRequests: async (user_no) => {
-    const response = await api.get(API_ENDPOINTS.PARTNER.GETALLREQUESTS, user_no);
+    const response = await api.get(API_ENDPOINTS.PARTNER.GETAPPROVALREQUESTS(user_no));
     return response.data;
   },
   approve: async (partner_no) => {
