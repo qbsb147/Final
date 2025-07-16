@@ -51,4 +51,8 @@ public class Mental {
         this.member = member;
         this.separation = separation;
     }
+    public void changeThis(Mental prevMental) {
+        this.score = prevMental.getScore();
+        this.resultContent = prevMental.getResultContent();
+    }
 }

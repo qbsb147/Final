@@ -452,22 +452,7 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
-        // 기존 연관관계 삭제
-        worcation.getWorcationAmenities().clear();
 
-        if (amenityIds != null) {
-            for (Long amenityId : amenityIds) {
-                Amenity amenity = amenityRepository.findById(amenityId)
-                    .orElseThrow(() -> new RuntimeException("Amenity not found: " + amenityId));
-                WorcationAmenity wa = WorcationAmenity.builder()
-                    .worcation(worcation)
-                    .amenity(amenity)
-                    .build();
-                worcation.getWorcationAmenities().add(wa);
-            }
-        }
-    }
 
     @Override
     @Transactional(readOnly = true)

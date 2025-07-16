@@ -2,6 +2,7 @@ package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Health;
 
+import com.minePing.BackEnd.entity.Member;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,10 +16,7 @@ public interface HealthRepository extends JpaRepository<Health, Long>, HealthRep
     List<Health> findByMember_UserNo(Long userNo);
     Optional<Health> findByMember_UserId(String userId);
 
-    Optional<Health> findTopByMember_UserNoOrderByUpdateDateDesc(Long userNo);
+    Health findByMemberAndUpdateDateAfter(Member member, LocalDate updateDateAfter);
 
-
-    @Query("select h from Health h join fetch h.member m where m.userId = :memberUserId and h.updateDate > :updateDateAfter")
-    Health findByMember_UserIdAndUpdateDateAfter(String memberUserId, LocalDate updateDateAfter);
-
+    Optional<Health> findTopByMember_UserNoOrderByUpdateDateDesc(Long memberUserNo);
 }
