@@ -7,6 +7,7 @@ import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.MemberPreferenceRepository;
@@ -68,8 +69,16 @@ public class MentalServiceImpl implements MentalService {
         String userId = jwtTokenProvider.getUserIdFromToken();
         Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserNotFoundException(userId));
+
         mental.changeMemberAndSeparation(member, MentalEnums.Separation.STRESS);
-        mentalRepository.save(mental);
+
+        Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
+
+        if(prevMental != null) {
+            prevMental.changeThis(mental);
+        }else {
+            mentalRepository.save(mental);
+        }
     }
 
     @Override
@@ -97,36 +106,55 @@ public class MentalServiceImpl implements MentalService {
         Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         mental.changeMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
-        mentalRepository.save(mental);
+
+        Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+
+        if(prevMental != null) {
+            prevMental.changeThis(mental);
+        }else {
+            mentalRepository.save(mental);
+        }
     }
 
     @Override
     public MentalDto.MentalsResponse findMentals() {
         String user_id = jwtTokenProvider.getUserIdFromToken();
-        Mental stress = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.STRESS);
-        Mental burnout = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.BURNOUT);
-        MemberPreference memberPreference = memberPreferenceRepository.findByMember_UserId(user_id)
+        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+                .orElseThrow(() -> new UserNotFoundException());
+        Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
+        Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        MemberPreference memberPreference = memberPreferenceRepository.findByMember(member)
                 .orElse(null);
 
         MentalDto.MentalsResponse mentalsResponse = new MentalDto.MentalsResponse();
 
-        MentalDto.Response stressDto = MentalDto.Response.toDto(stress);
-        MentalDto.Response burnoutDto = MentalDto.Response.toDto(burnout);
+        MentalDto.Response stressDto;
+        MentalDto.Response burnoutDto;
         MemberPreferenceDto.Result preferenceDto;
+
+        if(stress != null) {
+            stressDto = MentalDto.Response.toDto(stress);
+            mentalsResponse.setStress(stressDto);
+        }
+        if(burnout != null) {
+            burnoutDto = MentalDto.Response.toDto(burnout);
+            mentalsResponse.setBurnout(burnoutDto);
+        }
         if(memberPreference!=null) {
             preferenceDto = MemberPreferenceDto.Result.toDto(memberPreference);
             mentalsResponse.setPreference(preferenceDto);
         }
-        mentalsResponse.setStress(stressDto);
-        mentalsResponse.setBurnout(burnoutDto);
+
         return mentalsResponse;
     }
 
     @Override
     public MentalDto.MainResponse findMainMental() {
         String user_id = jwtTokenProvider.getUserIdFromToken();
-        Mental stress = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.STRESS);
-        Mental burnout = mentalRepository.findTopByMember_UserIdAndSeparationOrderByMentalNoDesc(user_id, MentalEnums.Separation.BURNOUT);
+        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+                .orElseThrow(() -> new UserNotFoundException());
+        Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
+        Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
 
         MentalDto.MainResponse mainResponse = new MentalDto.MainResponse();
 

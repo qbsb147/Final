@@ -44,6 +44,7 @@ public class MemberController {
         String json = objectMapper.writerWithDefaultPrettyPrinter()
                         .writeValueAsString(masterJoinDto);
         log.debug("json = \n{}",json);
+        System.out.println("masterJoinDto = " + masterJoinDto.getMasterProfileJoinDto().getCompany_phone());
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
