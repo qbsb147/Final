@@ -3,17 +3,17 @@ package com.minePing.BackEnd.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minePing.BackEnd.dto.AiDto;
+import com.minePing.BackEnd.service.S3Service;
 import com.minePing.BackEnd.dto.AiDto.AIWorcationDto;
+import java.util.UUID;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.service.AIChatService;
-import com.minePing.BackEnd.service.S3Service;
 import com.minePing.BackEnd.service.WorcationService;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;
@@ -143,15 +143,14 @@ public class ChatController {
             if (chatResult.startsWith("[")) {
                 meals = objectMapper.readValue(chatResult, new TypeReference<>() {
                 });
-            } else if (chatResult.startsWith("{")) {
-                Map<String, List<Map<String, String>>> map = objectMapper.readValue(
-                        chatResult, new TypeReference<>() {
-                        });
+            }else if (chatResult.startsWith("{")) {
+                Map<String, List<Map<String, String>>> map = objectMapper.readValue( chatResult, new TypeReference<>() {
+                });
                 meals = map.get("meals");
                 if (meals == null) {
                     throw new RuntimeException("JSON에 'meals' 키가 없습니다.");
                 }
-            } else {
+            }else {
                 throw new RuntimeException("알 수 없는 JSON 형식입니다.");
             }
 
@@ -163,6 +162,7 @@ public class ChatController {
                 String englishMenu = chatClient.prompt(translatePromptText).call().content();
                 meal.put("menu_en", englishMenu);
 
+                // 이미지 생성
                 ImageOptions options = ImageOptionsBuilder.builder()
                         .model("dall-e-3")
                         .width(1024)
@@ -172,10 +172,8 @@ public class ChatController {
                 ImagePrompt imagePrompt = new ImagePrompt(englishMenu, options);
                 ImageResponse imageResponse = imageModel.call(imagePrompt);
                 String aiImageUrl = imageResponse.getResult().getOutput().getUrl();
-
                 // S3 업로드용 키 생성
                 String keyName = "images/" + UUID.randomUUID() + ".png";
-
                 // AI 이미지 URL을 S3에 업로드 후 CloudFront URL 반환
                 String s3ImageUrl = s3Service.uploadFromUrl(aiImageUrl, keyName);
 
@@ -198,25 +196,25 @@ public class ChatController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            List<AiDto.AIWorcationDto> dtoList = aiChatService.getAiWorcationByUser(userNo);
+            // ✅ DTO 1개: 사용자 심리/성향 + 워케이션 리스트 포함
+            AiDto.AIWorcationDto dto = aiChatService.getAiWorcationByUser(userNo);
 
-            // 워케이션 리스트 요약을 문자열로 만들어서 프롬프트에 포함
+            // ✅ 워케이션 리스트 요약 구성
             StringBuilder worcationListStr = new StringBuilder();
-            for (AiDto.AIWorcationDto w : dtoList) {
+            for (Map<String, Object> w : dto.getWorcationList()) {
                 worcationListStr.append(String.format(
-                    "워케이션 번호: %s, 상호명: %s, 업체 유형: %s, ...\n",
-                    w.getWorcation_no(), w.getWorcation_name(), w.getWorcation_category()
-                    // 필요한 필드 추가
+                        "워케이션 번호: %s, 상호명: %s, 업체 유형: %s, ...\n",
+                        w.get("worcation_no"), w.get("worcation_name"), w.get("worcation_category")
+                        // 필요하면 추가 필드 작성
                 ));
             }
 
-            // 프롬프트에 worcationListStr.toString()을 포함
+            // ✅ 프롬프트 작성
             String promptText = String.format("""
-
             너는 워케이션 장소를 추천해주는 전문가야.
             아래는 한 사람의 심리 및 성향 정보이고, 이어지는 정보는 등록된 워케이션 리스트야.
             이 사람에게 가장 적합한 워케이션 장소를 추천해줘
-    
+
             MBTI: %s
             좋아하는 색상: %s
             선호하는 지역: %s
@@ -224,31 +222,21 @@ public class ChatController {
             중요한 것: %s
             여가 활동: %s
             숙소 유형: %s
-        
+
             [번아웃]
             심리 점수: %s
             심리 상태: %s
             분리 유형: %s
             심리 결과 요약: %s
-        
+
             [스트레스]
             심리 점수: %s
             심리 상태: %s
             분리 유형: %s
             심리 결과 요약: %s
-        
-            워케이션 번호: %s
-            상호명: %s
-            업체 유형: %s
-            업체 테마: %s
-            수용 인원: %s
-            위치 유형: %s
-            전반적인 색감: %s
-            공간 분위기: %s
-            추천 목적: %s
-            여가 활동: %s
-            숙소 형태: %s
-        
+
+            %s
+
             아래 형식의 JSON 배열로만 결과를 줘. 코드블럭 없이 순수 JSON으로 줘야 해.
             그리고 예시에서 worcation_no에 번호를 넣어줄때 내가준 워케이션 번호를 넣어줘야해
             예시:
@@ -260,7 +248,7 @@ public class ChatController {
                 worcation_no: 3
               }
             ]
-        
+
             다른 텍스트는 절대 포함하지 마. JSON 배열만 응답해.
             """,
                     dto.getMbti(),
@@ -271,37 +259,24 @@ public class ChatController {
                     dto.getLeisureActivity(),
                     dto.getAccommodationType(),
 
-                    // 번아웃 정보
                     dto.getBurnoutScore(),
                     dto.getBurnoutPsychologicalState(),
                     dto.getBurnoutSeparation(),
                     dto.getBurnoutResultContent(),
 
-                    // 스트레스 정보
                     dto.getStressScore(),
                     dto.getStressPsychologicalState(),
                     dto.getStressSeparation(),
                     dto.getStressResultContent(),
 
-                    dto.getWorcation_no(),
-                    dto.getWorcation_name(),
-                    dto.getWorcation_category(),
-                    dto.getWorcation_thema(),
-                    dto.getMax_people(),
-                    dto.getWlocationType(),
-                    dto.getWdominantColor(),
-                    dto.getWspaceMood(),
-                    dto.getWbestFor(),
-                    dto.getActivities(),
-                    dto.getWaccommodationType()
-
+                    worcationListStr.toString()
             );
 
-            // 2. 프롬프트 실행
+            // ✅ Gemini 또는 LLM 호출
             ChatClient chatClient = ChatClient.builder(chatModel).build();
             String chatResult = chatClient.prompt(promptText).call().content();
 
-            // 3. 백틱 제거
+            // ✅ 코드블럭 제거
             if (chatResult.startsWith("```") && chatResult.contains("\n")) {
                 int firstNewline = chatResult.indexOf('\n');
                 int lastBacktick = chatResult.lastIndexOf("```");
@@ -310,23 +285,19 @@ public class ChatController {
                 }
             }
 
-            // 4. JSON 파싱
+            // ✅ JSON 파싱
             List<Map<String, Object>> recommendations;
-
             if (chatResult.startsWith("[")) {
                 recommendations = objectMapper.readValue(chatResult, new TypeReference<>() {});
             } else {
                 throw new RuntimeException("AI 응답이 JSON 배열 형식이 아닙니다.");
             }
-            response.put("recommendations", recommendations);
 
+            response.put("recommendations", recommendations);
         } catch (Exception e) {
             response.put("status", "error");
             response.put("message", e.getMessage());
         }
-
         return response;
     }
 }
-
-

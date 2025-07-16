@@ -13,7 +13,7 @@ export const useAiStore = create((set) => ({
       return;
     }
     const ids = worcationNos.join(',');
-    const aiData = await worcationService.getAI(ids);
-    set({ aiWorcations: Array.isArray(aiData) ? aiData : (aiData ? [aiData] : []), aiLoading: false });
+    const aiData = await worcationService.getAI(ids, { timeout: 1000000 });
+    set({ aiWorcations: Array.isArray(aiData) ? aiData : aiData ? [aiData] : [], aiLoading: false });
   },
 }));

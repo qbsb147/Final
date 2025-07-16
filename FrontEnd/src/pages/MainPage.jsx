@@ -79,6 +79,7 @@ const MainPage = () => {
           <PartnerGrid>
             {filteredWorcations
               .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
+              .slice(0, 3)
               .map((matchedWorcation) => (
                 <PartnerCard key={matchedWorcation.worcation_no}>
                   <picture>
