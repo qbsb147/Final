@@ -61,7 +61,10 @@ const Header = () => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const logout = useAuthStore((state) => state.logout);
   const isLoggedIn = Boolean(loginUser);
+  const role = loginUser?.role;
 
+  /*
+  // 기존 코드: 로그인 메뉴 가공 및 menus 사용
   const menus = menuData.map((menu) => {
     if (menu.title === '로그인') {
       if (isLoggedIn) {
@@ -82,6 +85,60 @@ const Header = () => {
     }
     return menu;
   });
+  */
+
+  // 신규 코드: 로그인 메뉴 가공 후 role별로 filteredMenus로 가공
+  const menus = menuData.map((menu) => {
+    if (menu.title === '로그인') {
+      if (isLoggedIn) {
+        let items = [
+          { title: '내 정보', path: '/my/info' },
+          { title: '신체 정보', path: '/my/body' },
+        ];
+        if (role === 'WORCATION') {
+          items.push(
+            { title: '예약자 명단', path: 'my/reservation' },
+            { title: '제휴 승인 목록', path: '/partnership/approveList' },
+            { title: '제휴 요청 목록', path: '/partnership/requests' }
+          );
+        } else {
+          items.push({ title: '워케이션 신청내역', path: '/my/worcation-history' });
+        }
+        items.push({ title: '로그아웃', path: '/logout' });
+
+        return {
+          ...menu,
+          title: loginUser.user_name + '님' || '내 정보',
+          path: '/my/info',
+          items,
+        };
+      } else return menu;
+    }
+    return menu;
+  });
+
+  const filteredMenus = menus
+    .map((menu) => {
+      if (menu.title === '워케이션') {
+        return {
+          ...menu,
+          items: menu.items.filter((item) => {
+            if (item.title === '워케이션 등록') {
+              return role === 'WORCATION';
+            }
+            return true;
+          }),
+        };
+      }
+      return menu;
+    })
+    .filter((menu) => {
+      // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
+      if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
+      if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
+      if (menu.title === '워케이션' && menu.items && menu.items.length === 0) return false;
+      return true;
+    });
 
   const handleLogout = () => {
     logout();
@@ -102,7 +159,13 @@ const Header = () => {
           </LogoWrap>
           <NavWrap>
             <Nav>
+              {/*
               {menus.map((menu, idx) => (
+                <NavItem key={idx} className="nav-item">
+                  ...
+                ))}
+              */}
+              {filteredMenus.map((menu, idx) => (
                 <NavItem key={idx} className="nav-item">
                   {menu.title === '로그인' && !isLoggedIn ? (
                     <StyleLinkColumn to="/login">
@@ -126,22 +189,26 @@ const Header = () => {
       {isDropdownVisible && (
         <DropdownWrap>
           <DropdownContent>
+            {/*
             {menus
+              .filter((menu) => menu.items && menu.items.length > 0)
+              .map((menu, idx) => (
+                ...
+              ))}
+            */}
+            {filteredMenus
               .filter((menu) => menu.items && menu.items.length > 0)
               .map((menu, idx) => (
                 <DropdownColumn key={idx}>
                   <ul>
                     {menu.items
-                      // 로그인 메뉴의 경우, 비로그인 시 특정 항목 숨김
                       .filter((item) => {
                         if (
                           !isLoggedIn &&
-                          (
-                            item.title === '내 정보' ||
+                          (item.title === '내 정보' ||
                             item.title === '신체 정보' ||
                             item.title === '워케이션 신청내역' ||
-                            item.title === '예약자 명단'
-                          )
+                            item.title === '예약자 명단')
                         ) {
                           return false;
                         }

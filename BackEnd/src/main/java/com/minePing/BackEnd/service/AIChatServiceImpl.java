@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.swing.text.html.parser.Entity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -48,20 +49,22 @@ public class AIChatServiceImpl implements AIChatService {
     }
 
     @Override
+
     public AIWorcationDto getAiWorcationByUser(Long userNo) {
         Mental burnout = mentalRepository.findTopByMember_UserNoAndSeparationOrderByUpdateDateDesc(userNo, MentalEnums.Separation.BURNOUT)
                 .orElseThrow(() -> new RuntimeException("번아웃 정보가 없습니다."));
         Mental stress = mentalRepository.findTopByMember_UserNoAndSeparationOrderByUpdateDateDesc(userNo, MentalEnums.Separation.STRESS)
                 .orElseThrow(() -> new RuntimeException("스트레스 정보가 없습니다."));
+
         MemberPreference preference = preferenceRepository.findTopByMember_UserNoOrderByUpdateDateDesc(userNo)
                 .orElseThrow(() -> new RuntimeException("성향 정보가 없습니다."));
 
-        List<Worcation> worcations = worcationRepository.findAllBasic();  // 단순 조회
-        System.out.println(worcations);
+        List<Worcation> worcations = worcationRepository.findAllBasic();
 
         if (worcations.isEmpty()) {
             throw new RuntimeException("워케이션 정보가 없습니다.");
         }
+
 
         Worcation first = worcations.get(0);
 
@@ -96,7 +99,14 @@ public class AIChatServiceImpl implements AIChatService {
         dto.setWorcationList(worcationList);
         System.out.println(dto);
 
-        return dto;
+
+        return worcations.stream()
+            .map(w -> {
+                WorcationDetail d = w.getWorcationDetail();
+                WorcationFeatures f = w.getWorcationFeatures();
+                return AIWorcationDto.toDto(mental, preference, w, d, f);
+            })
+            .collect(Collectors.toList());
     }
 
 

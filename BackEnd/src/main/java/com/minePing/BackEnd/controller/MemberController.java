@@ -99,7 +99,7 @@ public class MemberController {
     }
 
     @PatchMapping("{userNo}")
-    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MASTER') OR hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
         try {
             memberService.updateRole(userNo,updateRoleDto);

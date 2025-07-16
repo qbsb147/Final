@@ -91,6 +91,9 @@ public class MentalDto {
         private LocalDate update_date;
 
         public static Main toDto(Mental mental) {
+            if (mental == null) {
+                return null;
+            }
             return Main.builder()
                     .score(mental.getScore())
                     .psychological_state(mental.getPsychologicalState())

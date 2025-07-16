@@ -6,31 +6,33 @@ import { worcationService } from '../api/worcations';
 import WorcationCardList from '../components/worcation/WorcationCardList';
 import useSearchStore from '../store/useSearchStore';
 import useAuthStore from '../store/authStore';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { useAiStore } from '../store/aiStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
-  const [showAISection, setShowAISection] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const keyword = useSearchStore((state) => state.keyword);
   const navigate = useNavigate();
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   const loginUser = useAuthStore((state) => state.loginUser);
+  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
 
-  const handleShowAI = () => {
-    setShowBanner(false);
-    setShowAISection(true);
-    //Ai 출력 로직
-  };
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const data = await worcationService.list();
       const appData = await worcationService.applicationList();
       setWorcations(data);
       setApplications(appData);
+      setTimeout(() => setLoading(false), 100);
+      if (loginUser) {
+        fetchAiWorcations(loginUser.user_no, worcationService);
+      }
     };
     fetchData();
-  }, []);
+  }, [loginUser]);
 
   useEffect(() => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
@@ -60,6 +62,14 @@ const MainPage = () => {
     .filter((w) => w.approvedApplicationCount > 0)
     // 내림차순 정렬
     .sort((a, b) => b.approvedApplicationCount - a.approvedApplicationCount);
+
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
 
   return (
     <Container>
@@ -94,25 +104,25 @@ const MainPage = () => {
         </>
       )}
 
+      {(loginUser || aiWorcations.length > 0) && (
+        <>
+          <SectionTitle>AI 추천</SectionTitle>
+          <CardList>
+            {aiLoading ? (
+              <LoadingOverlay>
+                <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+              </LoadingOverlay>
+            ) : (
+              <WorcationCardList data={aiWorcations.slice(0, 3)} navigate={navigate} />
+            )}
+          </CardList>
+        </>
+      )}
+
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
       </SectionTitle>
       <WorcationCardList data={sortedWorcations.slice(0, 10)} navigate={navigate} />
-
-      {showBanner && (
-        <BottomBanner>
-          <ButtonYb onClick={handleShowAI}>AI로 여행지 추천 받기</ButtonYb>
-        </BottomBanner>
-      )}
-      {showAISection && (
-        <>
-          <SectionTitle>AI 추천</SectionTitle>
-          <CardList>
-            <WorcationCardList data={filteredWorcations} navigate={navigate} />
-            {/* AI 필터 추가 해야함 */}
-          </CardList>
-        </>
-      )}
     </Container>
   );
 };
@@ -254,4 +264,25 @@ const BottomBanner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;

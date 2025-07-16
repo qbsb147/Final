@@ -145,9 +145,7 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
 const BackWrap = styled.div`
   display: flex;
   justify-content: center;
-  background-color: ${({ theme }) => theme.colors.gray[100]};
   width: 100%;
-  padding: 100px 0;
   margin-top: 140px;
   margin-bottom: 40px;
   position: relative;

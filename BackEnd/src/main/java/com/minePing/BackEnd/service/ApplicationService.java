@@ -25,4 +25,6 @@ public interface ApplicationService {
     List<LocalDate> getFullDates(Long worcationNo, String startDate, String endDate);
 
     List<ApplicationDto.RemainingDto> getRemainingByWorcation(Long worcationNo, String startDate, String endDate);
+
+
 }

@@ -26,27 +26,27 @@ public class PartnerController {
     private final PartnerService partnerService;
 
     @PostMapping
-    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MASTER') OR hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> createApplication(@RequestBody PartnerDto requestDto) {
         partnerService.saveApplication(requestDto);
         return ResponseEntity.ok("신청 완료");
     }
 
-    @GetMapping("/requset")
-    @PreAuthorize("hasRole('WORCATION')")
+    @GetMapping("/request")
+    @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<List<PartnerDto.Response>> getPartnerRequests(@RequestParam Long userNo) {
         List<PartnerDto.Response> list = partnerService.getRequestsByUser(userNo);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/approval")
-    @PreAuthorize("hasRole('WORCATION')")
+    @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<List<PartnerDto.Response>> getApprovalRequests(@RequestParam Long userNo) {
         List<PartnerDto.Response> list = partnerService.getApprovalRequestsByUser(userNo);
         return ResponseEntity.ok(list);
     }
     @PutMapping("/{partnerNo}/approve")
-    @PreAuthorize("hasRole('WORCATION')")
+    @PreAuthorize("hasRole('ROLE_WORCATION')")
     public ResponseEntity<PartnerDto.Response> updateApproveStatus(
             @PathVariable Long partnerNo,
             @RequestBody PartnerApproveRequestDto dto

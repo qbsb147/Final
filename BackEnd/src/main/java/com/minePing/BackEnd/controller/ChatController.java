@@ -193,15 +193,26 @@ public class ChatController {
         return response;
     }
 
-    @PostMapping("/worcation_ai/{userNo}")
-    public Map<String, Object> recommendWorcation(@PathVariable Long userNo) {
+    @PostMapping("/worcation/{ids}")
+    public Map<String, Object> recommendWorcation(@PathVariable("ids") Long userNo) {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            AiDto.AIWorcationDto dto = aiChatService.getAiWorcationByUser(userNo);
+            List<AiDto.AIWorcationDto> dtoList = aiChatService.getAiWorcationByUser(userNo);
 
-            // 1. 프롬프트 구성
+            // 워케이션 리스트 요약을 문자열로 만들어서 프롬프트에 포함
+            StringBuilder worcationListStr = new StringBuilder();
+            for (AiDto.AIWorcationDto w : dtoList) {
+                worcationListStr.append(String.format(
+                    "워케이션 번호: %s, 상호명: %s, 업체 유형: %s, ...\n",
+                    w.getWorcation_no(), w.getWorcation_name(), w.getWorcation_category()
+                    // 필요한 필드 추가
+                ));
+            }
+
+            // 프롬프트에 worcationListStr.toString()을 포함
             String promptText = String.format("""
+
             너는 워케이션 장소를 추천해주는 전문가야.
             아래는 한 사람의 심리 및 성향 정보이고, 이어지는 정보는 등록된 워케이션 리스트야.
             이 사람에게 가장 적합한 워케이션 장소를 추천해줘
@@ -283,6 +294,7 @@ public class ChatController {
                     dto.getWbestFor(),
                     dto.getActivities(),
                     dto.getWaccommodationType()
+
             );
 
             // 2. 프롬프트 실행
