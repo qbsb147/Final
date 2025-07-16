@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("api/v1/applications")
@@ -18,15 +19,17 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    //  전체 신청 목록 조회
+    //  전체 신청 목록 조회 (관리자만)
     @GetMapping
+    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
     public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getAllApplications() {
         List<ApplicationDto.ApplicationResponseDto> list = applicationService.getAllApplications();
         return ResponseEntity.ok(list);
     }
 
-    //  단일 신청 조회
+    //  단일 신청 조회 (본인 또는 관리자)
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @applicationService.isOwner(#id, authentication.principal.userNo)")
     public ResponseEntity<ApplicationDto.ApplicationResponseDto> getApplication(@PathVariable Long id) {
         return ResponseEntity.ok(applicationService.getApplication(id));
     }
@@ -40,8 +43,9 @@ public class ApplicationController {
         return ResponseEntity.ok(responseDto);
     }
 
-    //  신청 삭제
+    //  신청 삭제 (본인 또는 관리자)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @applicationService.isOwner(#id, authentication.principal.userNo)")
     public ResponseEntity<Void> deleteApplication(@PathVariable Long id) {
         applicationService.deleteApplication(id);
         return ResponseEntity.noContent().build();
@@ -75,13 +79,25 @@ public class ApplicationController {
         return ResponseEntity.ok(fullDates);
     }
 
+    @GetMapping("/remaining")
+    public ResponseEntity<List<ApplicationDto.RemainingDto>> getRemainingByWorcation(
+            @RequestParam Long worcationNo,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        List<ApplicationDto.RemainingDto> result = applicationService.getRemainingByWorcation(worcationNo, startDate, endDate);
+        return ResponseEntity.ok(result);
+    }
+
 
     /**
      *
      * 예약 확인
      */
 
+    // 예약 확인 (본인만)
     @GetMapping("/reserved")
+    @PreAuthorize("#userNo == authentication.principal.userNo")
     public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved(@RequestParam Long userNo) {
         List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReservedByUser(userNo);
         return ResponseEntity.ok(list);
@@ -90,8 +106,10 @@ public class ApplicationController {
     /**
      *
      * 지난 예약 정보 확인(날짜 기반)
-     */ 
+     */
+    // 지난 예약 정보 확인 (본인만)
     @GetMapping("/used")
+    @PreAuthorize("#userNo == authentication.principal.userNo")
     public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed(@RequestParam Long userNo) {
         List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsedByUser(userNo);
         return ResponseEntity.ok(list);

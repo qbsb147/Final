@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
         constraintHandlers.put("company_profile.uk_company_phone", "이미 등록된 회사 전화번호입니다.");
         constraintHandlers.put("company_profile.uk_company_email", "이미 등록된 회사 이메일입니다.");
         constraintHandlers.put("health.uk_user_no", "이미 회원 건강 정보가 등록되어있습니다.");
-        constraintHandlers.put("member_preference.member.uk_user_no", "이미 회원 성향 정보가 등록되어있습니다.");
+        constraintHandlers.put("member_preference.uk_user_no", "이미 회원 성향 정보가 등록되어있습니다.");
         constraintHandlers.put("member.uk_user_id", "이미 등록된 유저 아이디입니다.");
         constraintHandlers.put("member.uk_email", "이미 등록된 유저 이메일입니다.");
         constraintHandlers.put("member.uk_phone", "이미 등록된 유저 전화번호입니다.");
@@ -95,7 +96,7 @@ public class GlobalExceptionHandler {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
 
             }
-            ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "데이터 무결성 제약 조건에 위배됩니다.", request.getRequestURI());
+            ErrorResponse error = ErrorResponse.of(ErrorCode.DUPLICATE_RESOURCE, "중복된 데이터가 존재합니다.", request.getRequestURI());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
 

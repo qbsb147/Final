@@ -19,7 +19,7 @@ public class CompanyProfileDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class Join {
+    public static class EmployeeJoin {
 
         @NotNull(message = "회사 선택은 필수입니다.")
         private Long company_no;
@@ -38,6 +38,26 @@ public class CompanyProfileDto {
         private String company_phone;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MasterJoin {
+
+        @NotBlank(message = "부서 설정은 필수입니다.")
+        private String department_name;
+
+        @NotBlank(message = "직급 설정은 필수입니다.")
+        private String position;
+
+        @NotBlank(message = "회사 전용 이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String company_email;
+
+        @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
+        private String company_phone;
+    }
 
     @Getter
     @Setter

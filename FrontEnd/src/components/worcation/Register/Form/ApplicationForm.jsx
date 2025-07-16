@@ -9,26 +9,50 @@ import { Controller } from 'react-hook-form';
 import { formatBusinessNumber } from '../../../../hooks/useAuth';
 import { businessApi } from '../../../../api/businessApi.js';
 import useWorcationStore from '../../../../store/useWorcationStore';
+
 // import { toast } from 'react-toastify';
 
 const ApplicationForm = forwardRef((props, ref) => {
-  const [selected, setSelected] = useState('Office');
-  const application = useWorcationStore((state) => state.application);
-  const setApplication = useWorcationStore((state) => state.setApplication);
-  const { register, control, getValues, errors, isSubmitting, isValid } = useValidation(application);
+  const { application, setApplication, info: _info, setInfo } = useWorcationStore();
+  const [selected, setSelected] = useState(application?.companyType || 'Office');
 
-  useImperativeHandle(ref, () => ({
-    getValues,
-    isValid,
-  }));
+  const { register, control, getValues, errors, isValid, setValue } = useValidation(application);
 
-  // 폼 언마운트 시 zustand에 저장
-  useEffect(() => {
-    return () => {
-      setApplication(getValues());
+  // 진위확인 결과 캐시에서 확인
+  const getCachedValidation = (business_id, licensee, open_date) => {
+    const key = `${business_id}-${licensee}-${open_date}`;
+    return application.validationCache?.[key];
+  };
+
+  // 진위확인 결과를 캐시에 저장
+  const setCachedValidation = (business_id, licensee, open_date, result) => {
+    const key = `${business_id}-${licensee}-${open_date}`;
+    const newValidationCache = {
+      ...application.validationCache,
+      [key]: result,
     };
-  }, []);
+    setApplication({
+      validationCache: newValidationCache,
+      businessValidated: result.valid,
+    });
+  };
 
+  // 캐시된 결과가 있는지 확인하고 있으면 바로 사용
+  const checkCachedValidation = (business_id, licensee, open_date) => {
+    const cached = getCachedValidation(business_id, licensee, open_date);
+    if (cached) {
+      if (cached.valid) {
+        // alert('이미 확인된 사업자 정보입니다.');
+        return true;
+      } else {
+        alert(`사업자 정보가 일치하지 않습니다: ${cached.message}`);
+        return false;
+      }
+    }
+    return null; // 캐시에 없음
+  };
+
+  // 수동 진위확인 함수 (기존 기능 유지)
   const checkBusiness = async () => {
     const allValues = getValues();
     const { business_id, licensee, open_date } = allValues;
@@ -37,21 +61,107 @@ const ApplicationForm = forwardRef((props, ref) => {
       alert('입력값을 모두 올바르게 입력해주세요.');
       return;
     }
-    // 실제 데이터가 없으므로 무조건 통과처리 --------------
-    // try {
-    const data = await businessApi({ business_id, licensee, open_date });
-    if (handleBusinessValidationResult(data)) return;
-    // } catch (err) {
-    // const msg = err.response?.data?.message || err.message || err;
-    // toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-    // return;
-    // }
-    // 실제 데이터가 없으므로 무조건 통과처리 --------------
+
+    // 캐시된 결과 확인
+    const cachedResult = checkCachedValidation(business_id, licensee, open_date);
+    if (cachedResult !== null) {
+      return; // 캐시된 결과 사용
+    }
+
+    try {
+      const data = await businessApi({ business_id, licensee, open_date });
+
+      // 결과를 캐시에 저장
+      if (handleBusinessValidationResult(data)) {
+        setCachedValidation(business_id, licensee, open_date, { valid: true });
+      } else {
+        setCachedValidation(business_id, licensee, open_date, {
+          valid: false,
+          message: '사업자 정보가 일치하지 않습니다.',
+        });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || err;
+      alert('사업자 진위 확인에 실패했습니다. : ' + msg);
+      setCachedValidation(business_id, licensee, open_date, {
+        valid: false,
+        message: msg,
+      });
+    }
   };
+
+  useImperativeHandle(ref, () => ({
+    isValid,
+    getValues,
+    getCompanyType: () => selected, // 현재 선택된 업체 유형 반환
+    // 자동 진위확인 함수 추가
+    autoCheckBusiness: async () => {
+      const allValues = getValues();
+      const { business_id, licensee, open_date } = allValues;
+
+      if (!business_id || !licensee || !open_date) {
+        throw new Error('사업자번호, 상호명, 개업일을 모두 입력해주세요.');
+      }
+
+      // 캐시된 결과 확인
+      const cachedResult = checkCachedValidation(business_id, licensee, open_date);
+      if (cachedResult !== null) {
+        return cachedResult; // 캐시된 결과 반환
+      }
+
+      // API 호출하여 진위확인 수행
+      try {
+        const data = await businessApi({ business_id, licensee, open_date });
+        const isValid = handleBusinessValidationResult(data);
+
+        // 결과를 캐시에 저장
+        setCachedValidation(business_id, licensee, open_date, {
+          valid: isValid,
+          message: isValid ? '사업자 정보가 확인되었습니다.' : '사업자 정보가 일치하지 않습니다.',
+        });
+
+        return isValid;
+      } catch (err) {
+        const msg = err.response?.data?.message || err.message || err;
+        setCachedValidation(business_id, licensee, open_date, {
+          valid: false,
+          message: msg,
+        });
+        throw new Error(`사업자 진위 확인에 실패했습니다: ${msg}`);
+      }
+    },
+  }));
+
+  // 마운트 시 zustand에도 기본값 세팅
+  useEffect(() => {
+    if (!application.companyType) {
+      setApplication({ companyType: 'Office' });
+    }
+  }, [application.companyType, setApplication]);
+
+  useEffect(() => {
+    setSelected(application.companyType || 'Office');
+  }, [application.companyType]);
+
+  // store의 값이 변경될 때 form 값 동기화 (무한 루프 방지)
+  useEffect(() => {
+    if (application && Object.keys(application).length > 0) {
+      // 한 번만 실행되도록 조건 추가
+      const currentValues = getValues();
+      if (!currentValues.worcation_name && application.worcation_name) {
+        setValue('worcation_name', application.worcation_name || '');
+        setValue('business_id', application.business_id || '');
+        setValue('licensee', application.licensee || '');
+        setValue('open_date', application.open_date || null);
+        setValue('companyType', application.companyType || 'Office');
+      }
+    }
+  }, []); // 마운트 시에만 실행
 
   const handleTypeChange = (value) => {
     setSelected(value);
     setApplication({ companyType: value });
+    setInfo((prev) => ({ ...prev, category: value }));
   };
 
   const radioOptions = [
@@ -142,9 +252,10 @@ const ApplicationForm = forwardRef((props, ref) => {
               {errors.business_id && <ErrorMessage>{errors.business_id.message}</ErrorMessage>}
             </TD>
             <TD>
-              <ButtonYellow type="button" onClick={checkBusiness} disabled={isSubmitting}>
-                {isSubmitting ? '확인 중...' : '진위확인'}
+              <ButtonYellow type="button" onClick={checkBusiness}>
+                진위확인
               </ButtonYellow>
+              {application.businessValidated && <ValidationStatus>✓ 인증완료</ValidationStatus>}
             </TD>
           </TR>
         </TBody>
@@ -212,4 +323,14 @@ const TD = styled.td`
 const ErrorMessage = styled.span`
   color: ${({ theme }) => theme.colors.error};
   font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const ValidationStatus = styled.span`
+  color: ${({ theme }) => theme.colors.success || '#28a745'};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

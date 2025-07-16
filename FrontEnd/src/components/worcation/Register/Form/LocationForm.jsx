@@ -12,6 +12,14 @@ const LocationForm = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
+  // store의 location 값이 변경될 때마다 동기화 (무한 루프 방지)
+  useEffect(() => {
+    // store에 이미 값이 있으면 그대로 사용, 없으면 빈 문자열로 초기화
+    if (location.address === undefined) {
+      setLocation({ address: '', locationDescription: '' });
+    }
+  }, []); // 마운트 시에만 실행
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -40,7 +48,7 @@ const LocationForm = forwardRef((props, ref) => {
   };
 
   const handleGuideChange = (e) => {
-    setLocation({ ...location, locationDescription: e.target.value });
+    setLocation({ ...location, navigate: e.target.value });
   };
   return (
     <Body>
@@ -61,7 +69,7 @@ const LocationForm = forwardRef((props, ref) => {
             <TD>
               <CustomTextArea
                 rows={13}
-                value={location.locationDescription || ''}
+                value={location.navigate}
                 onChange={handleGuideChange}
                 placeholder="위치에 대한 상세한 길 안내를 입력해주세요."
               ></CustomTextArea>

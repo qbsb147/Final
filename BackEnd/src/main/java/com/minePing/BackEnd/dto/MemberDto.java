@@ -1,6 +1,5 @@
 package com.minePing.BackEnd.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
 import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
@@ -12,7 +11,6 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,11 +36,11 @@ public class MemberDto {
         private String user_id;
 
         @NotBlank(message = "비밀번호는 필수입니다.")
-//        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
-//        @Pattern(
-//                regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-//                message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
-//        )
+        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+        @Pattern(
+                regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
+                message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
+        )
         private String user_pwd;
 
         @NotBlank(message = "이름은 필수입니다.")
@@ -81,7 +79,7 @@ public class MemberDto {
         @Valid
         private MemberJoinDto memberJoinDto;
         @Valid
-        private CompanyProfileDto.Join companyProfileJoinDto;
+        private CompanyProfileDto.EmployeeJoin companyProfileJoinDto;
 
         public CompanyProfile toCompanyProfileEntity() {
             return CompanyProfile.builder()
@@ -104,6 +102,8 @@ public class MemberDto {
         private MemberJoinDto memberJoinDto;
         @Valid
         private CompanyDto.Join companyJoinDto;
+        @Valid
+        private CompanyProfileDto.MasterJoin masterProfileJoinDto;
 
         public Company toCompanyEntity() {
             return Company.builder()
@@ -114,6 +114,16 @@ public class MemberDto {
                     .licensee(this.companyJoinDto.getLicensee())
                     .companyTel(this.companyJoinDto.getCompany_tel())
                     .openDate(this.companyJoinDto.getOpen_date())
+                    .build();
+        }
+
+        public CompanyProfile toCompanyProfileEntity() {
+            return CompanyProfile.builder()
+                    .departmentName(this.masterProfileJoinDto.getDepartment_name())
+                    .position(this.masterProfileJoinDto.getPosition())
+                    .companyEmail(this.masterProfileJoinDto.getCompany_email())
+                    .companyPhone(this.masterProfileJoinDto.getCompany_phone())
+                    .approve(CommonEnums.Approve.Y)
                     .build();
         }
     }
@@ -228,11 +238,11 @@ public class MemberDto {
                     .gender(member.getGender())
                     .phone(member.getPhone())
                     .company_info(CompanyInfoResponse.builder()
-                            .company_name(member.getCompany().getCompanyName())
-                            .company_address(member.getCompany().getCompanyAddress())
-                            .business_email(member.getCompany().getBusinessEmail())
-                            .company_tel(member.getCompany().getCompanyTel())
-                            .departments(member.getCompany().getDepartments().stream()
+                            .company_name(member.getCompanyProfile().getCompany().getCompanyName())
+                            .company_address(member.getCompanyProfile().getCompany().getCompanyAddress())
+                            .business_email(member.getCompanyProfile().getCompany().getBusinessEmail())
+                            .company_tel(member.getCompanyProfile().getCompany().getCompanyTel())
+                            .departments(member.getCompanyProfile().getCompany().getDepartments().stream()
                                     .map(department -> DepartmentDto.Response.builder()
                                             .department_no(department.getDepartmentNo())
                                             .department_name(department.getDepartmentName())
@@ -240,6 +250,13 @@ public class MemberDto {
                                     ).collect(Collectors.toList())
                             )
                             .build())
+                    .company_profile_info(CompanyProfileInfoResponse.builder()
+                            .company_phone(member.getCompanyProfile().getCompanyPhone())
+                            .company_email(member.getCompanyProfile().getCompanyEmail())
+                            .position(member.getCompanyProfile().getPosition())
+                            .department_name(member.getCompanyProfile().getDepartmentName())
+                            .build()
+                    )
                     .build();
         }
 

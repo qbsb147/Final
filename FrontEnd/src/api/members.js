@@ -24,14 +24,16 @@ const memberService = {
       const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.INIT);
       return response.data;
     } catch (error) {
+      console.log('error', error);
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
 
   //회원가입
-  register: async (formData1, formData2) => {
+  register: async (formData1, formData2, formData3) => {
     const { userPwdCheck: _, ...sendData1 } = formData1;
     const sendData2 = { ...formData2 };
+    const sendData3 = { ...formData3 };
     const role = formData1.role;
 
     // MemberDto 객체 구성
@@ -74,16 +76,24 @@ const memberService = {
         open_date: sendData2.open_date,
       };
 
+      // 3단계에서 입력한 마스터 프로필 정보 추가
+      const masterProfileJoinDto = {
+        department_name: sendData3.department_name,
+        position: sendData3.position_name,
+        company_email: sendData3.company_email,
+        company_phone: sendData3.company_phone,
+      };
+
       payload = {
         member_join_dto: memberJoinDto,
         company_join_dto: companyJoinDto,
+        master_profile_join_dto: masterProfileJoinDto,
       };
     } else if (role === 'WORCATION') {
       payload = {
         member_join_dto: memberJoinDto,
       };
     }
-    console.log('payload', payload);
 
     try {
       const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);

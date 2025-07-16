@@ -6,6 +6,8 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import ko from 'date-fns/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import Swal from 'sweetalert2';
+import SwalStyles from '../../styles/SwalStyles';
 
 const locales = {
   ko: ko,
@@ -39,7 +41,12 @@ const WorcationCalendar = ({ events, fullDates = {}, onSelectSlot }) => {
   const handleSelectSlot = (slotInfo) => {
     const dateStr = format(slotInfo.start, 'yyyy-MM-dd');
     if (fullDates[dateStr]) {
-      alert('해당 날짜는 예약 마감되었습니다.');
+      Swal.fire({
+        icon: 'warning',
+        title: '마감된 날짜입니다',
+        text: '해당 날짜는 더 이상 신청이 불가능합니다.',
+        confirmButtonColor: '#3085d6',
+      });
       return;
     }
     onSelectSlot(slotInfo);
@@ -47,6 +54,7 @@ const WorcationCalendar = ({ events, fullDates = {}, onSelectSlot }) => {
 
   return (
     <div>
+      <SwalStyles />
       <Calendar
         localizer={localizer}
         events={events}

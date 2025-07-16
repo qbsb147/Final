@@ -53,4 +53,20 @@ public class FileUploadController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String, String>> deleteFile(@RequestParam("imageUrl") String imageUrl) {
+        try {
+            s3Service.deleteFile(imageUrl);
+            
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "파일 삭제 성공");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 } 

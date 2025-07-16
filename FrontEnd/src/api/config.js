@@ -1,13 +1,16 @@
-const { VITE_API_URL, VITE_API_TIMEOUT = 5000, VITE_API_VERSION = 'v1' } = import.meta.env;
+const { VITE_API_URL, VITE_BASE_URL, VITE_API_TIMEOUT = 5000, VITE_API_VERSION = 'v1' } = import.meta.env;
 
 export const API_CONFIG = {
   BASE_URL: `${VITE_API_URL}/${VITE_API_VERSION}`, //localhost:8080/api/v1
-  // BASE_URL: `${VITE_API_URL}`,
   TIMEOUT: VITE_API_TIMEOUT,
   HEADERS: {
     'Content-Type': 'application/json', //내가 서버로 보내는 데이터는 json이야
     Accept: 'application/json', //json으로 응답해줘.
   },
+};
+
+export const IMG_CONFIG = {
+  IMG_URL: `${VITE_BASE_URL}`, //localhost:8080
 };
 
 export const API_ENDPOINTS = {
@@ -42,24 +45,28 @@ export const API_ENDPOINTS = {
   WORCATION: {
     LIST: '/worcations',
     DETAIL: (worcation_no) => `/worcations/${worcation_no}`,
+    LISTALL: (user_no) => `/worcations/list/all/${user_no}`,
+    SAVETMP: `worcations/tmp`,
     //임시저장
     SAVE: '/worcations',
+    // SAMPLESAVE: '/worcations/sample',
     //업체 정보 수정
-    UPDATE: (worcation_no) => `/worcatoins/${worcation_no}`,
+    UPDATE: (worcation_no) => `/worcations/${worcation_no}`,
     DELETE: (worcation_no) => `/worcations/${worcation_no}`,
 
     //사업자 정보
     VALIDATE: () => '/worcation/validate',
 
     //내워케이션이름 가져오기
-    WORCATIONNAME: (userNo) => `/worcations/my/${userNo}`,
+    WORCATIONNAME: (user_no) => `/worcations/my/${user_no}`,
 
-    WORCATIONRESERVATION: (userNo) => `/worcations/reservaionList/${userNo}`,
+    WORCATIONRESERVATION: (user_no) => `/worcations/reservaionList/${user_no}`,
 
-    GETMYLIST: (user_no) => `/worcations/my/${user_no}`,
-
+    GETMYLIST: (user_no) => `/worcations/my-worcations?userNo=${user_no}`,
     //이미지 업로드
-    UPLOADIMAGE: () => '/worcations/upload',
+    UPLOADIMAGE: () => '/files/upload',
+    //이미지 삭제
+    DELETEIMAGE: () => '/files/delete',
   },
 
   PARTNER: {
@@ -84,6 +91,8 @@ export const API_ENDPOINTS = {
     LIST: '/applications',
     GET_FULL_DATES: ({ worcationNo, startDate, endDate }) =>
       `/applications/reserved-worcation?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
+    GET_REMAINING_DATES: ({ worcationNo, startDate, endDate }) =>
+      `/applications/remaining?worcationNo=${worcationNo}&startDate=${startDate}&endDate=${endDate}`,
   },
   REVIEW: {
     ADD: '/reviews',
@@ -92,13 +101,15 @@ export const API_ENDPOINTS = {
   },
   LOGIN: '/member/login',
   //심리정보 불러오기
-  MENTALS: (user_no) => `/mentals/${user_no}`,
-  // 스프링 구현하면 지울 내용//
-  MEMBER_PREFERENCE: '/member_preference',
-  // 스프링 구현하면 지울 내용//
-  // 스프링 구현하면 쓰일 내용//
-  // MEMBER_PREFERENCE: (uesr_no) => `/member_preference/${uesr_no}`,
-  // 스프링 구현하면 쓰일 내용//
-
-  MEMBER_PREFERENCE_GET: (preference_no) => `/member_preference?preference_no=${preference_no}`,
+  MENTALS: {
+    BASE: '/mental',
+    MAIN: '/mental/main',
+    STRESS: '/mental/stress',
+    BURNOUT: '/mental/burnout',
+    PREFERENCE: '/mental/preference',
+  },
+  MEALS: {
+    BASE: '/meal',
+    CHECK: '/meal/check',
+  },
 };

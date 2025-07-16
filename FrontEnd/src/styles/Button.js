@@ -87,6 +87,7 @@ const btn = {
     justifyContent: 'center',
     cursor: 'pointer',
     filter: 'drop-shadow(4px 4px 4px rgba(0,0,0,0.25))',
+    color: 'black',
   },
   buttonWbShadow: {
     background: '#ffffff',
@@ -102,6 +103,7 @@ const btn = {
     justifyContent: 'center',
     cursor: 'pointer',
     filter: 'drop-shadow(4px 4px 4px rgba(0,0,0,0.25))',
+    color: 'black',
   },
   buttonWhite2: {
     boxSizing: 'border-box',

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { worcationService } from '../../api/worcations';
 import ReusableTable from '../Member/table/ReusableTable';
 import styled from 'styled-components';
-import useAuthStore from '../../store/userStore';
+import useAuthStore from '../../store/authStore';
 
 const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   const [members, setMembers] = useState([]);
@@ -20,23 +20,32 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
       { header: '성별', accessor: 'gender' },
       { header: '전화번호', accessor: 'phone' },
       { header: '이메일', accessor: 'company_email' },
-      { header: '예약일자', accessor: 'date' },
+      { header: '예약일자', accessor: 'worcation_date' },
     ],
     []
   );
 
   const filteredMembers = useMemo(() => {
-    if (!searchKeyword) return members;
-    return members.filter((m) => m.user_name.toLowerCase().includes(searchKeyword.toLowerCase()));
+    let filtered = members;
+    if (searchKeyword) {
+      filtered = members.filter((m) => m.worcation_name.toLowerCase().includes(searchKeyword.toLowerCase()));
+    }
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(...a.update_at);
+      const dateB = new Date(...b.update_at);
+      return dateB - dateA; // 최신이 앞으로
+    });
+
+    return filtered;
   }, [members, searchKeyword]);
 
   useEffect(() => {
+    if (!loginUser || !loginUser.user_no) return;
     const fetchData = async () => {
-      if (!loginUser) return;
-
       try {
-        const data = await worcationService.WorcationReservation(loginUser.company_no, currentPage, pageSize);
-
+        const data = await worcationService.WorcationReservation(loginUser.user_no, currentPage, pageSize);
+        console.log(data);
         setMembers(data.content);
         setTotalPages(data.total_page);
       } catch (error) {
@@ -45,7 +54,7 @@ const ReservationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     };
 
     fetchData();
-  }, [loginUser, currentPage, searchKeyword]);
+  }, [loginUser?.user_no, currentPage]);
 
   const maxPageButtons = 5;
   const currentGroup = Math.floor(currentPage / maxPageButtons);

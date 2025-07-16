@@ -1,14 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Title, Subtitle } from '../../styles/Typography';
-import userStore from '../../store/userStore';
 import { Link } from 'react-router-dom';
 
-const NonCompleteTest = () => {
-  const { body, stress, burnout, tendency } = userStore();
+const NonCompleteTest = ({ body, stress, burnout, preference }) => {
   return (
     <div>
-      {' '}
       <Title>AI 추천 식단 정보를 보기 위해서는 다음 결과지가 필요해요!</Title>
       <Choice>
         <Element>
@@ -22,12 +19,13 @@ const NonCompleteTest = () => {
               <Link to="/my/body">
                 <Image src="src/assets/body.png" alt="body"></Image>
                 <Subtitle>나의 신체 정보를 등록</Subtitle>
+                <p>등록 기간이 한 달 지나면 다시 등록해야해요!</p>
               </Link>
             </>
           )}
         </Element>
         <Element>
-          {stress && burnout && tendency ? (
+          {stress && burnout && preference ? (
             <>
               <Image src="src/assets/brain.png" alt="brain"></Image>
               <Subtitle>심리 테스트를 마쳤어요</Subtitle>
@@ -37,6 +35,7 @@ const NonCompleteTest = () => {
               <Link to="/trial">
                 <Image src="src/assets/brain.png" alt="brain"></Image>
                 <Subtitle>심리 테스트 하기</Subtitle>
+                <p>등록 기간이 한 달 지나면 다시 등록해야해요!</p>
               </Link>
             </>
           )}

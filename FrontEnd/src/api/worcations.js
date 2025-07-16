@@ -1,9 +1,13 @@
-import api from './axios';
-import { API_CONFIG, API_ENDPOINTS } from './config';
+import api, { fileApi } from './axios';
+import { API_CONFIG, API_ENDPOINTS, IMG_CONFIG } from './config';
 
 export const worcationService = {
   list: async () => {
     const response = await api.get(API_ENDPOINTS.WORCATION.LIST);
+    return response.data;
+  },
+  getMyWorcationList: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.LISTALL(user_no));
     return response.data;
   },
 
@@ -19,12 +23,17 @@ export const worcationService = {
     const response = await api.post(API_ENDPOINTS.WORCATION.SAVE, data);
     return response.data;
   },
+  saveTmpWorcation: async (payload) => {
+    const response = await api.post(API_ENDPOINTS.WORCATION.SAVETMP, payload);
+    return response.data;
+  },
+
   update: async (worcation_no, data) => {
     const response = await api.patch(API_ENDPOINTS.WORCATION.UPDATE(worcation_no), data);
     return response.data;
   },
-  delete: async () => {
-    const response = await api.delete(API_ENDPOINTS.WORCATION.DELETE);
+  delete: async (worcation_no) => {
+    const response = await api.delete(API_ENDPOINTS.WORCATION.DELETE(worcation_no));
     return response.data;
   },
 
@@ -47,29 +56,52 @@ export const worcationService = {
     return response.data;
   },
 
-  WorcationName: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(userNo));
+  WorcationName: async (user_no) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONNAME(user_no));
     return response.data;
   },
 
-  WorcationReservation: async (userNo) => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(userNo));
+  WorcationReservation: async (user_no, page = 0, size = 15) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.WORCATIONRESERVATION(user_no), {
+      params: { page, size },
+    });
     return response.data;
   },
   getMyList: async (user_no) => {
     const response = await api.get(API_ENDPOINTS.WORCATION.GETMYLIST(user_no));
-
     return response.data;
   },
-  uploadImage: async (file) => {
+  uploadImage: async (file, folder = 'images') => {
     const formData = new FormData();
-    formData.append('file', file);
 
-    const response = await api.post(API_ENDPOINTS.WORCATION.UPLOADIMAGE, formData, {
+    // 고유한 파일명 생성
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = file.name.split('.').pop();
+    const uniqueFileName = `worcation_${timestamp}_${randomString}.${fileExtension}`;
+
+    // 새로운 파일명으로 Blob 생성
+    const renamedFile = new File([file], uniqueFileName, { type: file.type });
+    formData.append('file', renamedFile);
+    formData.append('folder', folder);
+
+    const response = await fileApi.post('/files/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data; // 서버에서 반환한 URL
+    return response.data.imageUrl; // 업로드된 파일 URL 반환 (images/파일명)
+  },
+
+  deleteImage: async (imageUrl) => {
+    try {
+      const response = await fileApi.delete('/files/delete', {
+        params: { imageUrl },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('이미지 삭제 실패:', error);
+      throw new Error('이미지 삭제에 실패했습니다.');
+    }
   },
 };

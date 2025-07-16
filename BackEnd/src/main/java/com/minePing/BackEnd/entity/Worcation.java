@@ -5,8 +5,8 @@ import com.minePing.BackEnd.enums.WorcationEnums;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor
@@ -66,19 +66,19 @@ public class Worcation {
 
     @OneToMany(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<WorcationAmenity> worcationAmenities = new ArrayList<>();
+    private Set<WorcationAmenity> worcationAmenities = new HashSet<>();
 
     @OneToMany(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Photo> photos = new ArrayList<>();
+    private Set<Photo> photos = new HashSet<>();
 
     @OneToMany(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<WorcationApplication> worcationApplications = new ArrayList<>();
+    private Set<WorcationApplication> worcationApplications = new HashSet<>();
 
     @OneToMany(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<WorcationPartner> worcationPartners = new ArrayList<>();
+    private Set<WorcationPartner> worcationPartners = new HashSet<>();
 
     @OneToOne(mappedBy = "worcation", cascade = CascadeType.ALL, orphanRemoval = true)
     private WorcationDetail worcationDetail;
@@ -114,6 +114,7 @@ public class Worcation {
     public void changePartnerPrice(String price) { this.partnerPrice = price; }
     public void changeNonPartnerPrice(Integer price) { this.nonPartnerPrice = price; }
     public void changeAddress(String address) { this.worcationAddress = address; }
+    public void changeStatus(CommonEnums.Status status) {this.status = status;}
     public void assignDetail(WorcationDetail detail) {
         this.worcationDetail = detail;
     }
@@ -123,5 +124,7 @@ public class Worcation {
     public Worcation changeMember(Member member) {
         this.member = member;
         return this;
+    }
+    public class Response {
     }
 }

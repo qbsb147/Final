@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Menu from '../../../components/worcation/Register/Menu.jsx';
 import ApplicationForm from '../../../components/worcation/Register/Form/ApplicationForm.jsx';
@@ -13,11 +13,18 @@ import { BtnWhiteYellowBorder } from '../../../styles/Button.styles.js';
 import Swal from 'sweetalert2';
 import SwalStyles from '../../../styles/SwalStyles.js';
 import useWorcationStore from '../../../store/useWorcationStore.js';
-import api from '../../../api/axios.js';
-// import { useNavigate } from 'react-router-dom';
+import { worcationService } from '../../../api/worcations.js';
+import useAuthStore from '../../../store/authStore.js';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const location = useLocation();
+  const { worcation_no } = useParams();
+  const worcation = location.state?.worcation;
+  const navigate = useNavigate();
+
   const [selectedMenu, setSelectedMenu] = useState('Application');
+  const [isLoading, setIsLoading] = useState(false);
   const applicationFormRef = useRef();
   const infoFormRef = useRef();
   const descriptionFormRef = useRef();
@@ -27,113 +34,432 @@ const Register = () => {
   const policyFormRef = useRef();
   const featureFormRef = useRef();
   const getAll = useWorcationStore((state) => state.getAll);
-  // const isNonNull = useWorcationStore((state) => state.isNonNull);
-  // const isValidate = useWorcationStore((state) => state.isValidate);
-  // const navigate = useNavigate();
+  const setAllData = useWorcationStore((state) => state.setAllData);
+  const resetStore = useWorcationStore((state) => state.resetAll);
+  const loginUser = useAuthStore((state) => state.loginUser);
 
-  const renderForm = () => {
-    switch (selectedMenu) {
-      case 'Application':
-        return <ApplicationForm ref={applicationFormRef} />;
-      case 'Info':
-        return <InfoForm ref={infoFormRef} />;
-      case 'Description':
-        return <DescriptionForm ref={descriptionFormRef} />;
-      case 'Photo':
-        return <PhotoForm ref={photoFormRef} />;
-      case 'Amenities':
-        return <AmenitiesForm ref={amenitiesFormRef} />;
-      case 'Location':
-        return <LocationForm ref={locationFormRef} />;
-      case 'Policy':
-        return <PolicyForm ref={policyFormRef} />;
-      case 'Feature':
-        return <FeatureForm ref={featureFormRef} />;
-      default:
-        return <ApplicationForm ref={applicationFormRef} />;
+  const isEditMode = !!(worcation || worcation_no);
+
+  // 워케이션의 status에 따라 버튼 텍스트 결정
+  const getButtonTexts = () => {
+    if (!isEditMode) {
+      return { saveText: '임시 저장', submitText: '등록' };
     }
+    const allValues = getAll();
+    const status = allValues.application?.status;
+    if (status === 'Y') {
+      return { saveText: '임시 저장', submitText: '수정' };
+    } else {
+      return { saveText: '임시 저장', submitText: '등록' };
+    }
+  };
+
+  useEffect(() => {
+    const initializeStore = async () => {
+      setIsLoading(true);
+      try {
+        // 새로운 등록 모드인 경우 store 초기화
+        if (!isEditMode) {
+          resetStore();
+          // 강제로 초기화 후 약간의 지연을 두어 상태가 완전히 반영되도록 함
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        } else if (worcation) {
+          // store에 기존 데이터 설정
+          setAllData({
+            application: {
+              worcation_name: worcation.worcation_name || '',
+              business_id: worcation.business_id || '',
+              licensee: worcation.licensee || '',
+              open_date: worcation.open_date || null,
+              companyType: worcation.worcation_category || 'Office',
+              partner_price: worcation.partner_price || '',
+              charge_amount: worcation.charge_amount || '',
+              status: worcation.status || 'N',
+            },
+            info: {
+              theme: worcation.worcation_thema || '',
+              maxPeople: worcation.max_people || '',
+              price: worcation.non_partner_price || '',
+              tel: worcation.worcation_tel || '',
+              policy: worcation.policy,
+            },
+            description: {
+              detailIntro: worcation.content || '',
+            },
+            location: {
+              address: worcation.worcation_address || '',
+              navigate: worcation.navigate || '',
+            },
+            policy: {
+              availableTime: worcation.available_time || '',
+              refundPolicy: worcation.refund_policy || '',
+            },
+            feature: {
+              locationType: worcation.location_type || '',
+              dominantColor: worcation.dominant_color || '',
+              spaceMood: worcation.space_mood || '',
+              bestFor: worcation.best_for || '',
+              activities: worcation.activities ? worcation.activities.split(',') : [],
+              accommodationType: worcation.accommodation_type || '',
+            },
+            amenities: Array.isArray(worcation.amenities) ? worcation.amenities.map((a) => a.amenity_no) : [],
+            photos: {
+              officePhotos: Array.isArray(worcation.photos) ? worcation.photos.map((p) => p.change_name) : [],
+              stayPhotos: [],
+            },
+          });
+        } else if (worcation_no) {
+          const data = await worcationService.getDetail(worcation_no);
+          setAllData({
+            application: {
+              worcation_name: data.worcation_name || '',
+              business_id: data.business_id || '',
+              licensee: data.licensee || '',
+              open_date: data.open_date || null,
+              companyType: data.worcation_category || 'Office',
+              partner_price: data.partner_price || '',
+              charge_amount: data.charge_amount || '',
+              status: data.status || 'N',
+            },
+            info: {
+              theme: data.worcation_thema || '',
+              maxPeople: data.max_people || '',
+              price: data.non_partner_price || '',
+              tel: data.worcation_tel || '',
+            },
+            description: {
+              detailIntro: data.content || '',
+            },
+            location: {
+              address: data.worcation_address || '',
+              navigate: data.navigate || '',
+            },
+            policy: {
+              availableTime: data.available_time || '',
+              refundPolicy: data.refund_policy || '',
+            },
+            feature: {
+              locationType: data.location_type || '',
+              dominantColor: data.dominant_color || '',
+              spaceMood: data.space_mood || '',
+              bestFor: data.best_for || '',
+              activities: data.activities ? data.activities.split(',') : [],
+              accommodationType: data.accommodation_type || '',
+            },
+            amenities: Array.isArray(data.amenities) ? data.amenities.map((a) => a.amenity_no) : [],
+            photos: {
+              officePhotos: Array.isArray(data.photos) ? data.photos.map((p) => p.change_name) : [],
+              stayPhotos: [],
+            },
+          });
+        }
+      } catch (error) {
+        console.error('워케이션 데이터 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeStore();
+  }, [worcation, worcation_no, isEditMode]); // 의존성 배열에서 resetStore, setAllData 제거
+
+  // 컴포넌트 언마운트 시 store 초기화 (새로운 등록 모드인 경우에만)
+  useEffect(() => {
+    return () => {
+      if (!isEditMode) {
+        resetStore();
+      }
+    };
+  }, [isEditMode, resetStore]);
+
+  useEffect(() => {
+    console.log('Register 렌더링 시점의 모든 데이터:', getAll());
+  }, []);
+
+  // 스타일: 선택된 메뉴만 보이게
+  const getDisplay = (menu) => (selectedMenu === menu ? 'block' : 'none');
+
+  function removeEmpty(obj) {
+    return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== '' && v !== null && v !== undefined));
+  }
+
+  function makePayload(allValues, loginUser) {
+    return removeEmpty({
+      worcation_name: allValues.application.worcation_name,
+      worcation_category: allValues.application.companyType,
+      main_change_photo: allValues.photos.mainPhoto,
+      worcation_thema: allValues.info.theme,
+      max_people: allValues.info.maxPeople,
+      partner_price: allValues.application.partnerPrice,
+      non_partner_price: allValues.info.price,
+      worcation_address: allValues.location.address,
+      member_id: loginUser?.user_no,
+      area_id: allValues.location.areaId,
+      status: allValues.application.status,
+
+      // Detail
+      licensee: allValues.application.licensee,
+      business_id: allValues.application.business_id,
+      worcation_tel: allValues.info.tel,
+      charge_amount: allValues.application.chargeAmount,
+      content: allValues.description.detailIntro,
+      navigate: allValues.location.navigate,
+      policy: allValues.info.policy,
+      available_time: allValues.policy.availableTime,
+      refund_policy: allValues.policy.refundPolicy,
+      open_date: allValues.application.open_date
+        ? new Date(allValues.application.open_date).toISOString().slice(0, 10)
+        : undefined,
+
+      // Features
+      location_type: allValues.feature.locationType,
+      dominant_color: allValues.feature.dominantColor,
+      space_mood: allValues.feature.spaceMood,
+      best_for: allValues.feature.bestFor,
+      activities: Array.isArray(allValues.feature.activities)
+        ? allValues.feature.activities.join(',')
+        : allValues.feature.activities,
+      accommodation_type: allValues.feature.accommodationType,
+
+      // List
+      amenities: allValues.amenities,
+      photo_urls: allValues.photos.officePhotos,
+    });
+  }
+
+  // 이미 업로드된 사진 URL 추출 함수
+  function extractPhotoUrls(photos) {
+    const urls = [];
+
+    for (const photo of photos) {
+      if (photo && photo.uploaded && photo.url) {
+        // 이미 업로드된 파일은 URL 그대로 사용
+        urls.push(photo.url);
+      } else if (photo && typeof photo === 'string') {
+        // 문자열로 된 URL인 경우
+        urls.push(photo);
+      }
+    }
+
+    return urls;
+  }
+
+  async function showConfirmSwal(title) {
+    return await Swal.fire({
+      title,
+      showCancelButton: true,
+      confirmButtonText: '저장',
+      cancelButtonText: '취소',
+    });
+  }
+
+  const validateForms = () => {
+    // 1. ApplicationForm 유효성 검사
+    if (!applicationFormRef.current?.isValid) {
+      alert('기본 정보(사업자/상호/개업일 등)를 올바르게 입력해주세요.');
+      setSelectedMenu('Application');
+      return false;
+    }
+    // 2. InfoForm 유효성 검사
+    if (!infoFormRef.current?.isValid()) {
+      alert('기본 정보(테마/인원/연락처 등)를 올바르게 입력해주세요.');
+      setSelectedMenu('Info');
+      return false;
+    }
+    // 3. PhotoForm 유효성 검사 (업체 유형에 따라)
+    const companyType = applicationFormRef.current?.getCompanyType?.();
+    if (!photoFormRef.current?.validatePhotos(companyType)) {
+      if (companyType === 'Office') {
+        alert('오피스 사진을 1장 이상 등록해주세요.');
+      } else if (companyType === 'Accommodation') {
+        alert('숙소 사진을 1장 이상 등록해주세요.');
+      } else if (companyType === 'OfficeAndStay') {
+        alert('오피스, 숙소 사진을 각각 1장 이상 등록해주세요.');
+      }
+      setSelectedMenu('Photo');
+      return false;
+    }
+    return true;
   };
 
   const handleSave = async () => {
-    // if (!isValidate()) {
-    //   alert('입력값을 모두 올바르게 입력해주세요.');
-    //   return;
-    // }
     const allValues = getAll();
-    console.log(allValues); // 모든 폼 데이터가 한 객체로 출력됨
-
-    const tmp = await Swal.fire({
-      title: '임시 저장하시겠습니까?',
-      showCancelButton: true,
-      confirmButtonText: '저장',
-      cancelButtonText: '취소',
-    });
-    if (tmp.isConfirmed) {
-      try {
-        //서버 전송 로직
-        await api.saveTmpWorcation(allValues);
-        Swal.fire('임시 저장되었습니다.', '', 'success');
-        // navigate('/worcation/list');
-      } catch (error) {
-        console.log(error);
-        Swal.fire('저장에 실패하였습니다.', '', 'error');
-        return;
-      }
-    } else {
+    if (!allValues.application.business_id || !allValues.application.licensee) {
+      alert('사업자번호와 상호명을 입력해주세요.');
       return;
     }
-  };
-  const handleSubmit = async () => {
-    // if (!isValidate()) {
-    //   alert('입력값을 모두 올바르게 입력해주세요.');
-    //   return;
-    // }
-    const allValues = getAll();
 
-    const res = await Swal.fire({
-      title: '등록하시겠습니까?',
-      showCancelButton: true,
-      confirmButtonText: '저장',
-      cancelButtonText: '취소',
-    });
-    if (res.isConfirmed) {
-      try {
-        //서버 전송 로직
-        await api.saveWorcation(allValues);
-        Swal.fire('등록되었습니다.', '', 'success');
-        // navigate('/worcation/list');
-      } catch (error) {
-        console.log(error);
-        Swal.fire('등록에 실패하였습니다.', '', 'error');
+    try {
+      // 임시저장 시에도 업로드된 이미지 URL 사용
+      const officePhotoUrls = extractPhotoUrls(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = extractPhotoUrls(allValues.photos.stayPhotos || []);
+
+      const payload = makePayload(
+        {
+          ...allValues,
+          photos: {
+            ...allValues.photos,
+            officePhotos: officePhotoUrls,
+            stayPhotos: stayPhotoUrls,
+          },
+        },
+        loginUser
+      );
+
+      const tmp = await showConfirmSwal('임시 저장하시겠습니까?');
+      if (tmp.isConfirmed) {
+        if (isEditMode) {
+          // 수정 모드: UPDATE API 호출 (임시저장도 동일한 API 사용)
+          const targetWorcationNo = worcation?.worcation_no || worcation_no;
+          await worcationService.update(targetWorcationNo, payload);
+        } else {
+          // 새로 등록 모드: 임시저장 API 호출
+          await worcationService.saveTmpWorcation(payload);
+        }
+        Swal.fire('임시 저장되었습니다.', '', 'success').then(() => {
+          navigate('/worcation/register-list');
+        });
+      }
+
+      // 등록/수정 버튼 클릭 시
+      console.log('등록 payload:', payload);
+      console.log('officePhotos:', getAll().photos.officePhotos);
+    } catch (error) {
+      Swal.fire('저장에 실패하였습니다.', error.message, 'error');
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForms()) return;
+
+    const allValues = getAll();
+    // 1. 진위확인 여부 체크
+    if (!allValues.application.businessValidated) {
+      // 진위확인 안 된 경우 자동으로 진위확인 시도
+      if (applicationFormRef.current?.autoCheckBusiness) {
+        try {
+          const result = await applicationFormRef.current.autoCheckBusiness();
+          if (!result) {
+            alert('사업자 정보(기본 정보)를 올바르게 인증해주세요1.');
+            return;
+          }
+        } catch (e) {
+          alert(e.message || '사업자 정보(기본 정보)를 올바르게 인증해주세요2.');
+          return;
+        }
+      } else {
+        alert('사업자 정보(기본 정보)를 올바르게 인증해주세요3.');
         return;
       }
-    } else {
-      return;
+    }
+    // 이하 기존 로직
+    try {
+      if (!isEditMode) {
+        const isBusinessValid = await applicationFormRef.current.autoCheckBusiness();
+        if (!isBusinessValid) {
+          Swal.fire('사업자 정보 확인 실패', '사업자 정보를 다시 확인해주세요.', 'error');
+          return;
+        }
+      }
+
+      const allValues = getAll();
+      const officePhotoUrls = extractPhotoUrls(allValues.photos.officePhotos || []);
+      const stayPhotoUrls = extractPhotoUrls(allValues.photos.stayPhotos || []);
+
+      // status: 'Y' 강제 세팅 (수정모드일 때)
+      const payload = makePayload(
+        {
+          ...allValues,
+          application: {
+            ...allValues.application,
+            status: isEditMode ? 'Y' : allValues.application.status,
+          },
+          photos: {
+            ...allValues.photos,
+            officePhotos: officePhotoUrls,
+            stayPhotos: stayPhotoUrls,
+          },
+        },
+        loginUser
+      );
+
+      const confirmMessage = isEditMode ? '수정하시겠습니까?' : '등록하시겠습니까?';
+      const successMessage = isEditMode ? '수정되었습니다.' : '등록되었습니다.';
+
+      const res = await showConfirmSwal(confirmMessage);
+      if (res.isConfirmed) {
+        if (isEditMode) {
+          // 수정 모드: PATCH API 호출
+          const targetWorcationNo = worcation?.worcation_no || worcation_no;
+          await worcationService.update(targetWorcationNo, payload);
+        } else {
+          // 새로 등록 모드: POST API 호출
+          await worcationService.save(payload);
+        }
+        Swal.fire(successMessage, '', 'success').then(() => {
+          navigate('/worcation/register-list');
+        });
+      }
+
+      // 등록/수정 버튼 클릭 시
+      console.log('등록 payload:', payload);
+      console.log('officePhotos:', getAll().photos.officePhotos);
+    } catch (error) {
+      Swal.fire('처리에 실패하였습니다.', error.message, 'error');
     }
   };
 
   return (
     <RegisterContainer>
       <SwalStyles />
-      <RegisterForm>
-        <MenuBar>
-          <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
-          <ContentContainer>
-            <BtnGroup>
-              <ActionButton type="button">미리 보기</ActionButton>
-            </BtnGroup>
-            <RenderForm>{renderForm()}</RenderForm>
-          </ContentContainer>
-        </MenuBar>
-        <BtnGroup>
-          <ActionButton type="button" onClick={handleSave}>
-            임시 저장
-          </ActionButton>
-          <ActionButton type="button" onClick={handleSubmit}>
-            등록
-          </ActionButton>
-        </BtnGroup>
-      </RegisterForm>
+      {isLoading ? (
+        <div>데이터를 불러오는 중...</div>
+      ) : (
+        <RegisterForm>
+          <MenuBar>
+            <Menu onMenuSelect={setSelectedMenu} selectedMenu={selectedMenu} />
+            <ContentContainer>
+              <BtnGroup>{!isEditMode && <ActionButton type="button">미리 보기</ActionButton>}</BtnGroup>
+              <RenderForm>
+                <div style={{ display: getDisplay('Application') }}>
+                  <ApplicationForm ref={applicationFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Info') }}>
+                  <InfoForm ref={infoFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Description') }}>
+                  <DescriptionForm ref={descriptionFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Photo') }}>
+                  <PhotoForm ref={photoFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Amenities') }}>
+                  <AmenitiesForm ref={amenitiesFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Location') }}>
+                  <LocationForm ref={locationFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Policy') }}>
+                  <PolicyForm ref={policyFormRef} />
+                </div>
+                <div style={{ display: getDisplay('Feature') }}>
+                  <FeatureForm ref={featureFormRef} />
+                </div>
+              </RenderForm>
+            </ContentContainer>
+          </MenuBar>
+          <BtnGroup>
+            {(!isEditMode || getAll().application?.status === 'N') && (
+              <ActionButton type="button" onClick={handleSave}>
+                {getButtonTexts().saveText}
+              </ActionButton>
+            )}
+            <ActionButton type="button" onClick={handleSubmit}>
+              {getButtonTexts().submitText}
+            </ActionButton>
+          </BtnGroup>
+        </RegisterForm>
+      )}
     </RegisterContainer>
   );
 };

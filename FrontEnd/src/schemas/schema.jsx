@@ -80,6 +80,17 @@ export const useMasterForm = yup.object().shape({
     .required('기업 전화번호를 입력해주세요.'),
 });
 
+export const useMasterProfileForm = yup.object().shape({
+  department_name: yup.string().required('부서를 선택해주세요.'),
+  position_name: yup.string().required('직급을 입력해주세요.'),
+  company_email: yup.string().email('유효한 이메일 형식이 아닙니다.').required('회사 이메일을 입력해주세요.'),
+  company_phone: yup
+    .string()
+    .nullable()
+    .notRequired()
+    .matches(/^\d{2,3}-\d{3,4}-\d{4}$/, { message: '전화번호 형식이 올바르지 않습니다.', excludeEmptyString: true }),
+});
+
 // Login validation schema
 export const loginSchema = yup.object().shape({
   user_id: yup

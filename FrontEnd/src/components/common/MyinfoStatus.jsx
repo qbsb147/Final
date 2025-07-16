@@ -8,20 +8,21 @@ import { mentalService } from '../../api/mentals';
 
 const MyinfoStatus = ({ navigate }) => {
   const loginUser = useAuthStore((status) => status.loginUser);
-  const [mental, setMental] = useState(null);
+  const [stress, setStresss] = useState('');
+  const [burnout, setBurnout] = useState('');
 
   useEffect(() => {
     if (loginUser) {
       const fetchData = async () => {
-        const mentalData = await mentalService.getMental(loginUser.user_no);
-        setMental(mentalData.data);
+        const { stress, burnout } = await mentalService.getMainMental();
+        console.log('stress', stress);
+        console.log('burnout', burnout);
+        setStresss(stress);
+        setBurnout(burnout);
       };
       fetchData();
     }
   }, [loginUser]);
-
-  const stress = mental && Array.isArray(mental) ? mental.find((m) => m.separation === 'STRESS') : null;
-  const burnout = mental && Array.isArray(mental) ? mental.find((m) => m.separation === 'BURNOUT') : null;
 
   function convertKoreaState(state) {
     switch (state) {
@@ -42,37 +43,62 @@ const MyinfoStatus = ({ navigate }) => {
     }
   }
 
+  const getRank = (score) => {
+    if (score === null || score === undefined) return 'No Rank';
+    if (score >= 90) return '스트레스와 번아웃이 낮은 건강한 상태입니다!';
+    if (score >= 80) return '스트레스 또는 번아웃이 중간 이상입니다. 잠시 멈추고 자신을 돌아보세요.';
+    if (score >= 70) return '환경을 바꾸는 것이 도움이 될 수 있어요. 워케이션으로 재충전해보세요.';
+    if (score >= 60) return '스트레스와 번아웃이 모두 매우 높은 상태입니다. 충분한 휴식이 필요합니다.';
+    return '스트레스와 번아웃이 낮은 건강한 상태입니다!';
+  };
+
+  let rankScore = null;
+  if (stress && burnout) {
+    rankScore = Math.round((stress.score + burnout.score) / 2);
+  } else if (stress) {
+    rankScore = stress.score;
+  } else if (burnout) {
+    rankScore = burnout.score;
+  }
+
+  const rank = getRank(rankScore);
+
   return (
     <InfoBox>
-      <InfoStatus>
-        <HeadTitle>나의 심리 정보</HeadTitle>
-        <Title>나의 스트레스 상태</Title>
-        <TextT>
-          {loginUser && stress ? (
-            <>
-              <IoMdCheckboxOutline /> {stress.score}/100
-              <CiSquareAlert /> {convertKoreaState(stress.psychological_state)}
-            </>
-          ) : (
-            <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/stress')}>
-              테스트 하기
-            </TestBtn>
-          )}
-        </TextT>
-        <Title>나의 번아웃 상태</Title>
-        <TextT>
-          {loginUser && burnout ? (
-            <>
-              <IoMdCheckboxOutline /> {burnout.score}/100
-              <CiSquareAlert /> {convertKoreaState(burnout.psychological_state)}
-            </>
-          ) : (
-            <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/burnout')}>
-              테스트 하기
-            </TestBtn>
-          )}
-        </TextT>
-      </InfoStatus>
+      <HeadTitle>나의 심리 정보</HeadTitle>
+      <ContentRow>
+        <InfoStatus>
+          <Title>나의 스트레스 상태</Title>
+          <TextT>
+            {loginUser && new Date(stress.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+              <>
+                <IoMdCheckboxOutline /> {stress.score}/100
+                <CiSquareAlert /> {convertKoreaState(stress.psychological_state)}
+              </>
+            ) : (
+              <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/stress')}>
+                테스트 하기
+              </TestBtn>
+            )}
+          </TextT>
+          <Title>나의 번아웃 상태</Title>
+          <TextT>
+            {loginUser && new Date(burnout.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
+              <>
+                <IoMdCheckboxOutline /> {burnout.score}/100
+                <CiSquareAlert /> {convertKoreaState(burnout.psychological_state)}
+              </>
+            ) : (
+              <TestBtn style={btn.buttonYb} onClick={() => navigate && navigate('/trial/burnout')}>
+                테스트 하기
+              </TestBtn>
+            )}
+          </TextT>
+        </InfoStatus>
+        <RightBox>
+          <RightInfoBox>{rank}</RightInfoBox>
+        </RightBox>
+      </ContentRow>
       {!loginUser && (
         <Overlay>
           <LoginBtn style={btn.buttonYb} onClick={() => navigate && navigate('/login')}>
@@ -83,6 +109,7 @@ const MyinfoStatus = ({ navigate }) => {
     </InfoBox>
   );
 };
+
 const InfoBox = styled.div`
   width: 60%;
   min-height: 200px;
@@ -93,24 +120,38 @@ const InfoBox = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  gap: 0;
+`;
+
+const HeadTitle = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  z-index: 2;
+`;
+
+const ContentRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 `;
 
 const InfoStatus = styled.div`
   text-align: left;
   padding-left: ${({ theme }) => theme.spacing.s2};
   font-family: ${({ theme }) => theme.fontFamily.primary};
-`;
-const HeadTitle = styled.p`
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  display: flex;
-  justify-content: center;
+  width: 40%;
 `;
 
 const Title = styled.p`
   margin: ${({ theme }) => theme.spacing.s2} ${({ theme }) => theme.spacing.s1};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
+  width: 100%;
 `;
+
 const TestBtn = styled.button`
   color: ${({ theme }) => theme.colors.black};
   padding: ${({ theme }) => theme.spacing.s2} ${({ theme }) => theme.spacing.s3};
@@ -144,4 +185,27 @@ const LoginBtn = styled.div`
   width: 50%;
   height: 20%;
 `;
+
+const RightBox = styled.div`
+  flex: 1;
+  min-width: 200px;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-right: ${({ theme }) => theme.spacing.s2};
+`;
+
+const RightInfoBox = styled.div`
+  width: 100%;
+  height: 100%;
+  background: ${({ theme }) => theme.colors.primary};
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: black;
+`;
+
 export default MyinfoStatus;

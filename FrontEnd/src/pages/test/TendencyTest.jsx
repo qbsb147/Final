@@ -1,17 +1,17 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import Input from '../../styles/Input';
 import { tendency } from '../../components/test/questions';
-import useUserStore from '../../store/userStore';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import MbtiSelect from '../../components/test/mbtiSelect.jsx';
+import { mentalService } from '../../api/mentals.js';
+import { toast } from 'react-toastify';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const TendencyTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
-  const { postTendency } = useUserStore.getState();
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
   const handleChange = (id, value) => {
     setAnswers((prev) => {
@@ -20,7 +20,7 @@ const TendencyTest = () => {
         [id]: value,
       };
       if (updated.mbti_ei && updated.mbti_ns && updated.mbti_tf && updated.mbti_pj) {
-        updated.mbti = (updated.mbti_ei + updated.mbti_ns + updated.mbti_tf + updated.mbti_pj).toLowerCase();
+        updated.mbti = updated.mbti_ei + updated.mbti_ns + updated.mbti_tf + updated.mbti_pj;
       }
       return updated;
     });
@@ -38,17 +38,33 @@ const TendencyTest = () => {
     }
 
     const payload = {
-      MBTI: answers.mbti,
-      PREFERRED_COLOR: answers['tendency2'],
-      PREFERRED_LOCATION: answers['tendency3'],
-      SPACE_MOOD: answers['tendency4'],
-      IMPORTANT_FACTOR: answers['tendency5'],
-      LEISURE_ACTIVITY: answers['tendency6'],
-      ACCOMMODATION_TYPE: answers['tendency7'],
+      mbti: answers.mbti,
+      preferred_color: answers['tendency2'],
+      preferred_location: answers['tendency3'],
+      space_mood: answers['tendency4'],
+      important_factor: answers['tendency5'],
+      leisure_activity: answers['tendency6'],
+      accommodation_type: answers['tendency7'],
     };
 
-    postTendency(payload, navigate);
+    setLoading(true); // 로딩 시작
+    try {
+      await mentalService.postPreference(payload);
+      navigate('/trial');
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false); // 로딩 종료
+    }
   };
+
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
 
   return (
     <Content onSubmit={handleSubmit}>
@@ -200,6 +216,25 @@ const Select = styled.select`
   border-radius: 4px;
   border: 1px solid #d3d3d3;
   background: #fff;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
 `;
 
 export default TendencyTest;

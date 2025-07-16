@@ -10,6 +10,8 @@ const AmenitiesForm = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
 
+  // 초기화 로직 제거 - 스토어에서 직접 값을 가져옴
+
   const handleAmenityChange = (value) => {
     if (selectedAmenities.includes(value)) {
       setSelectedAmenities(selectedAmenities.filter((item) => item !== value));

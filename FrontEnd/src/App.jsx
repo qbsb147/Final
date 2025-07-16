@@ -99,6 +99,7 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<MainPage />} /> {/* 메인 페이지 */}
             <Route path="/worcation" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 */}
+            <Route path="/worcation/list" element={<WorcationMainList />} /> {/* 워케이션 전체 리스트 (검색용) */}
             <Route path="/worcation/partners" element={<WorcationPartnersPage />} />
             {/* 워케이션 제휴 리스트 */}
             <Route path="/worcation/ai" element={<WorcationAIPage />} />
@@ -114,8 +115,9 @@ function App() {
             <Route path="/my/body" element={<BodyInfo />} /> {/* 신체 정보 */}
             <Route path="my/reservation" element={<Reservation />} /> {/* 예약자 확인*/}
             {/* 워케이션 상세 및 등록 리스트 */}
-            <Route path="/worcation/register-list" element={<WorcationRegister />} />
+            <Route path="/worcation/register-list" element={<WorcationRegister />} /> {/*워케이션 등록 리시트 */}
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
+            <Route path="/worcation/temp/:worcationNo" element={<WorcationDetail />} />
             {/* 식단 */}
             <Route path="/eat" element={<Eat />} /> {/* 식단 정보 */}
             {/* 심리 테스트 */}
@@ -133,6 +135,8 @@ function App() {
           {/* 🟡 Layout3: Footer 없음 */}
           <Route element={<Layout3 />}>
             <Route path="/worcation/register" element={<Register />} /> {/* 업체 등록 */}
+            <Route path="/worcation/edit/:worcation_no" element={<Register />} /> {/* 업체 수정 */}
+            <Route path="/worcation/register/:worcation_no" element={<Register />} /> {/* 업체 스장 */}
             <Route path="/worcation/apply" element={<WorcationApply />} /> {/* 워케이션 신청 */}
             {/* 권한 설정한 페이지 */}
             <Route

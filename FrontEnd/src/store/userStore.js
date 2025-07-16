@@ -1,22 +1,7 @@
 import { create } from 'zustand';
 import { mentalService } from '../api/mentals';
-import { memberPreferenceService } from '../api/memberPreference';
 
 const useUserStore = create((set) => ({
-  user: {
-    user_no: 1,
-    user_id: 'qwer1234',
-    company_no: '1',
-    name: '최예찬',
-    email: 'qbsb147',
-    gender: 'M',
-    birthday: '1996-09-20',
-    address: '서울특별시 은평구',
-    phone: '010-6640-8235',
-    role: 'manager',
-    create_at: '2015-07-30',
-    update_at: '2020-08-25',
-  },
   body: null,
   stress: null,
   burnout: null,
@@ -78,30 +63,16 @@ const useUserStore = create((set) => ({
   },
 
   postTendency: async (answers, navigate) => {
-    const user_no = useUserStore.getState().user.user_no;
     try {
-      const tendency = await memberPreferenceService.postTendency({
-        tendency: answers,
-        user_no: user_no,
-      });
-
-      set({ tendency });
+      // const tendency = await memberPreferenceService.postTendency({
+      //   tendency: answers,
+      //   user_no: user_no,
+      // });
 
       navigate('/trial');
     } catch (error) {
       console.error('제출 에러 : ', error);
     }
-  },
-  login: () => {
-    set({
-      user: {},
-    });
-  },
-  setUser: (user) => set({ user }),
-  logout: () => {
-    set({
-      user: null,
-    });
   },
 }));
 

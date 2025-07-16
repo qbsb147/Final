@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
-import { Link, useNavigate } from 'react-router-dom';
+import { ButtonBorder } from '../../styles/Button.styles';
+import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
 import WorcationCardList from '../../components/worcation/WorcationCardList';
 import useSearchStore from '../../store/useSearchStore';
@@ -16,7 +16,16 @@ const WorcationList = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await worcationService.list();
-      setWorcations(data);
+      // 각 워케이션에 mainPhoto(S3 URL) 필드 추가
+      const processedList = data.map((w) => {
+        let sortedPhotos = w.photos ? [...w.photos] : [];
+        sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+        return {
+          ...w,
+          mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+        };
+      });
+      setWorcations(processedList);
     };
     fetchData();
   }, []);
@@ -39,6 +48,9 @@ const WorcationList = () => {
 
   const getFilteredWorcations = () => {
     let filtered = worcations;
+    if (viewMode === 'all') {
+      filtered = filtered.filter((w) => w.status === 'Y');
+    }
     if (viewMode === 'partner') {
       filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }

@@ -12,6 +12,8 @@ export const usePosition = (initialValue = '') => {
     { position_name: '상무' },
     { position_name: '전무' },
     { position_name: '부사장' },
+    { position_name: '사장' },
+    { position_name: '회장' },
   ];
 
   const [positionList, setPositionList] = useState([]);

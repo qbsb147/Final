@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.minePing.BackEnd.entity.Amenity;
 import com.minePing.BackEnd.entity.Company;
 import com.minePing.BackEnd.entity.CompanyProfile;
@@ -7,6 +8,7 @@ import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Photo;
 import com.minePing.BackEnd.entity.Review;
 import com.minePing.BackEnd.entity.Worcation;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
 import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.entity.WorcationPartner;
@@ -36,7 +38,7 @@ public class WorcationDto {
         private String worcation_address;
         private Long member_id;
         private Long area_id;
-
+        private CommonEnums.Status status;
         // Detail
         private String licensee;
         private String business_id;
@@ -46,6 +48,7 @@ public class WorcationDto {
         private String navigate;
         private String available_time;
         private String refund_policy;
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate open_date;
 
         // Features
@@ -56,7 +59,7 @@ public class WorcationDto {
         private String activities;
         private WorcationEnums.AccommodationType accommodation_type;
 
-        private List<String> amenities;
+        private List<Long> amenities;
         private List<String> photo_urls;
     }
 
@@ -160,6 +163,7 @@ public class WorcationDto {
     public static class PhotoResponse {
         private Long photo_no;
         private String change_name;
+        private String image_url;
 
         public static PhotoResponse fromEntity(com.minePing.BackEnd.entity.Photo photo) {
             if (photo == null)
@@ -167,6 +171,7 @@ public class WorcationDto {
             return PhotoResponse.builder()
                     .photo_no(photo.getPhotoNo())
                     .change_name(photo.getChangeName())
+                    .image_url(photo.getImageUrl())
                     .build();
         }
     }
@@ -216,6 +221,7 @@ public class WorcationDto {
         private List<ReviewResponse> reviews;
         private List<AmenityResponse> amenities;
         private List<PhotoResponse> photos;
+
 
         public static Response fromEntity(
                 Worcation w,
@@ -314,9 +320,11 @@ public class WorcationDto {
         private String phone;
         private String company_email;
         private String worcation_date;
+        private LocalDateTime update_at;
 
         public static WorcationReservation toDto(Worcation worcation, Member member, int age, Company company,
-                                                 CompanyProfile companyProfile,String worcationDate) {
+                                                 CompanyProfile companyProfile, String worcationDate,
+                                                 WorcationApplication worcationApplication) {
             return WorcationReservation.builder()
                     .company_name(company.getCompanyName())
                     .worcation_name(worcation.getWorcationName())
@@ -326,6 +334,7 @@ public class WorcationDto {
                     .phone(member.getPhone())
                     .company_email(companyProfile.getCompanyEmail())
                     .worcation_date(worcationDate)
+                    .update_at(worcationApplication.getUpdateAt().toLocalDateTime())
                     .build();
         }
     }

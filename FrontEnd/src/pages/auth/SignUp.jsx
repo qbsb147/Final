@@ -5,7 +5,7 @@ import logo from '../../assets/LoginLogo.png';
 import logoText from '../../assets/LoginText.png';
 import memberService from '../../api/members';
 import { validateForm } from '../../hooks/useAuth';
-import { useDefaultForm, useEmployeeForm, useMasterForm } from '../../schemas/schema';
+import { useDefaultForm, useEmployeeForm, useMasterForm, useMasterProfileForm } from '../../schemas/schema';
 import DefaultStep from '../../components/auth/Default';
 import EmployeeStep from '../../components/auth/Employee';
 import MasterStep from '../../components/auth/Master';
@@ -15,6 +15,7 @@ import { businessApi } from '../../api/businessApi';
 import { handleBusinessValidationResult } from '../../hooks/useValidation';
 import { useForm } from 'react-hook-form';
 import Cookies from 'js-cookie';
+import MasterProfileStep from '../../components/auth/MaterProfile';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);
@@ -23,12 +24,18 @@ const SignUp = () => {
     role: 'EMPLOYEE',
   });
   const [formData2, setFormData2] = useState({});
+  const [formData3, setFormData3] = useState({});
   const [selectedRole, setSelectedRole] = useState('EMPLOYEE');
   const [emailVerified, setEmailVerified] = useState(false);
   const navigate = useNavigate();
   const { control } = useForm();
   const handleNext = async () => {
-    const valid = await validateForm(useDefaultForm, formData1);
+    let valid = true;
+    if (formStep === 1) {
+      valid = await validateForm(useDefaultForm, formData1);
+    } else if (formStep === 2 && formData1.role === 'MASTER') {
+      valid = await validateForm(useMasterForm, formData2);
+    }
     if (!valid) return;
     setFormStep((prev) => prev + 1);
   };
@@ -40,22 +47,20 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. 비밀번호 일치 체크
-    if (formData1.user_pwd !== formData1.user_pwd_check) {
+    // 1. 비밀번호 일치 체크 (1단계에서만)
+    if (formStep === 1 && formData1.user_pwd !== formData1.user_pwd_check) {
       toast.error('비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    // 2. 2단계(직원/마스터) 유효성 검사
-    if (formStep === 2) {
-      let schema = null;
-      if (selectedRole === 'EMPLOYEE') schema = useEmployeeForm;
-      else if (selectedRole === 'MASTER') schema = useMasterForm;
-
-      if (schema) {
-        const isValid = await validateForm(schema, formData2);
-        if (!isValid) return;
-      }
+    // 2. 단계별 유효성 검사
+    if (formStep === 1) {
+      const valid = await validateForm(useDefaultForm, formData1);
+      if (!valid) return;
+    } else if (formStep === 2 && selectedRole === 'EMPLOYEE') {
+      // EMPLOYEE 2단계: 직원 정보 유효성 검사
+      const isValid = await validateForm(useEmployeeForm, formData2);
+      if (!isValid) return;
 
       // 2-1. 마스터일 때만 국세청 API 호출
       if (selectedRole === 'MASTER') {
@@ -72,11 +77,22 @@ const SignUp = () => {
           return;
         }
       }
+    } else if (formStep === 2 && formData1.role === 'MASTER') {
+      // MASTER 2단계: 회사 정보 유효성 검사
+      const isValid = await validateForm(useMasterForm, formData2);
+      if (!isValid) return;
+      // 2단계에서는 회원가입하지 않고 3단계로 이동
+      setFormStep(3);
+      return;
+    } else if (formStep === 3 && formData1.role === 'MASTER') {
+      // MASTER 3단계: 직원 정보 입력 단계 (formData3)
+      const isValid = await validateForm(useMasterProfileForm, formData3);
+      if (!isValid) return;
     }
 
     // 3. 회원가입 API 호출
     try {
-      await memberService.register(formData1, formData2);
+      await memberService.register(formData1, formData2, formData3);
       toast.success('회원가입에 성공했습니다!');
       navigate('/login');
     } catch (error) {
@@ -97,10 +113,11 @@ const SignUp = () => {
           {/* STEP 1 - 기본 정보 입력 */}
           {formStep === 1 && (
             <DefaultStep
+              setSelectedRole={setSelectedRole}
               formData1={formData1}
               setFormData1={setFormData1}
-              setSelectedRole={setSelectedRole}
               setFormData2={setFormData2}
+              setFormData3={setFormData3}
               control={control}
               emailVerified={emailVerified}
               setEmailVerified={setEmailVerified}
@@ -109,12 +126,28 @@ const SignUp = () => {
 
           {/* STEP 2 - 직원 */}
           {formStep === 2 && formData1.role === 'EMPLOYEE' && (
-            <EmployeeStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
+            <EmployeeStep setFormData1={setFormData1} setFormData2={setFormData2} formData2={formData2} />
           )}
 
           {/* STEP 2 - 회사 */}
           {formStep === 2 && formData1.role === 'MASTER' && (
-            <MasterStep setFormData1={setFormData1} formData2={formData2} setFormData2={setFormData2} />
+            <MasterStep
+              setFormData1={setFormData1}
+              setFormData2={setFormData2}
+              setFormData3={setFormData3}
+              formData2={formData2}
+            />
+          )}
+
+          {/* STEP 3 - 마스터 프로필(직원) 입력 */}
+          {formStep === 3 && formData1.role === 'MASTER' && (
+            <MasterProfileStep
+              setFormData1={setFormData1}
+              setFormData2={setFormData2}
+              setFormData3={setFormData3}
+              formData3={formData3}
+              formData2={formData2}
+            />
           )}
 
           {/* 버튼 영역 */}
@@ -123,7 +156,7 @@ const SignUp = () => {
               <>
                 <Btn onClick={() => window.history.back()}>취소</Btn>
                 <Btn
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     if (!emailVerified) {
                       toast.error('이메일 인증을 완료해주세요.');
                       return;
@@ -137,7 +170,21 @@ const SignUp = () => {
               </>
             )}
 
-            {formStep === 2 && (
+            {formStep === 2 && formData1.role === 'EMPLOYEE' && (
+              <>
+                <Btn onClick={handlePrev}>이전</Btn>
+                <Btn onClick={handleSubmit}>완료</Btn>
+              </>
+            )}
+
+            {formStep === 2 && formData1.role === 'MASTER' && (
+              <>
+                <Btn onClick={handlePrev}>이전</Btn>
+                <Btn onClick={handleNext}>다음</Btn>
+              </>
+            )}
+
+            {formStep === 3 && formData1.role === 'MASTER' && (
               <>
                 <Btn onClick={handlePrev}>이전</Btn>
                 <Btn onClick={handleSubmit}>완료</Btn>

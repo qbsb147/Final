@@ -33,7 +33,7 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
            "LEFT JOIN FETCH w.worcationDetail " +
            "LEFT JOIN FETCH w.worcationFeatures " +
            "WHERE wa.worcation.worcationNo = :worcationNo")
-    List<WorcationApplication> findByWorcationNo(@Param("worcationNo") Long worcationNo);
+    List<WorcationApplication> findByWorcationNoAndDateRangeByWorcationNo(@Param("worcationNo") Long worcationNo);
 
 
 

@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect } from 'react';
 import styled from 'styled-components';
 import CustomTextArea from '../../../common/TextArea';
 import useWorcationStore from '../../../../store/useWorcationStore';
@@ -9,6 +9,14 @@ const DescriptionForm = forwardRef((props, ref) => {
   const setDescription = useWorcationStore((state) => state.setDescription);
 
   useImperativeHandle(ref, () => ({})); // 필요시 getValues 등 추가 가능
+
+  // store의 description 값이 변경될 때마다 동기화 (무한 루프 방지)
+  useEffect(() => {
+    // store에 이미 값이 있으면 그대로 사용, 없으면 빈 문자열로 초기화
+    if (description.detailIntro === undefined) {
+      setDescription({ detailIntro: '' });
+    }
+  }, []); // 마운트 시에만 실행
 
   const handleChange = (e) => {
     setDescription({ detailIntro: e.target.value });
@@ -22,7 +30,7 @@ const DescriptionForm = forwardRef((props, ref) => {
             <TH>설명</TH>
             <TD>
               <CustomTextArea
-                value={description.detailIntro}
+                value={description.detailIntro || ''}
                 // onChange={(e) => setPolicy(e.target.value)}
                 onChange={handleChange}
                 rows={13}

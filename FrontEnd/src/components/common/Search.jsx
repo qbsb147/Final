@@ -1,18 +1,17 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
 import useSearchStore from '../../store/useSearchStore';
 
 const Search = () => {
-  const location = useLocation();
   const setKeyword = useSearchStore((state) => state.setKeyword);
   const popularKeywords = useSearchStore((state) => state.popularKeywords);
   const keyword = useSearchStore((state) => state.keyword);
 
-  React.useEffect(() => {
-    setKeyword('');
-  }, [location.pathname, setKeyword]);
+  // 페이지가 바뀔 때 검색어를 초기화하지 않음 (검색 결과를 유지하기 위해)
+  // React.useEffect(() => {
+  //   setKeyword('');
+  // }, [location.pathname, setKeyword]);
 
   return (
     <SearchWrap>
