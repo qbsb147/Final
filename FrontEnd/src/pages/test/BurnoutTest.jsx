@@ -2,13 +2,15 @@ import React, { useState } from 'react'; // useState 임포트 꼭 추가하세�
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
-import useUserStore from '../../store/userStore';
 import { burnout } from '../../components/test/questions';
+import { mentalService } from '../../api/mentals';
+import { toast } from 'react-toastify';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const BurnoutTest = () => {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState({}); // 선택 상태 저장
-  const { postBurnout } = useUserStore.getState();
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({
@@ -24,9 +26,26 @@ const BurnoutTest = () => {
     if (unansweredQuestions.length > 0) {
       alert('모든 질문에 답변을 해주세요!');
     } else {
-      postBurnout(answers, navigate);
+      try {
+        setLoading(true); // 로딩 시작
+        console.log(answers);
+        await mentalService.postBurnout(answers);
+        navigate('/trial');
+      } catch (error) {
+        toast.error(error);
+      } finally {
+        setLoading(false); // 로딩 종료
+      }
     }
   };
+
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
 
   return (
     <Content onSubmit={handleSubmit}>
@@ -152,6 +171,25 @@ const Content = styled.form`
   padding: 20px;
   background: ${({ theme }) => theme.colors.gray['100']};
   width: 100%;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% { transform: rotate(360deg); }
+  }
 `;
 
 export default BurnoutTest;

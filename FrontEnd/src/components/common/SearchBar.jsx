@@ -29,7 +29,9 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
 
   // 외부에서 keyword가 바뀌면 input도 같이 초기화
   useEffect(() => {
-    setInputKeyword(externalKeyword ?? '');
+    if (externalKeyword !== undefined && inputKeyword !== externalKeyword) {
+      setInputKeyword(externalKeyword);
+    }
   }, [externalKeyword]);
 
   // inputKeyword가 바뀔 때마다 store에 저장
@@ -83,7 +85,7 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
         onClick={(e) => {
           if (!e.target.closest('button')) setShowCalendar((prev) => !prev);
         }}
-        isActive={showCalendar}
+        $isActive={showCalendar}
       >
         <LeftSide>
           <BtnImg src={SearchBtn} />
@@ -171,8 +173,8 @@ const BarWrap = styled.div`
   transition: all 0.2s ease;
   border: 1px solid ${({ theme }) => theme.colors.primary};
 
-  ${({ isActive }) =>
-    isActive &&
+  ${({ $isActive }) =>
+    $isActive &&
     `
     border: 1px solid ${({ theme }) => theme.colors.primary};
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);

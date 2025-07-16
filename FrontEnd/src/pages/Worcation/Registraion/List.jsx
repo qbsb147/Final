@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ButtonDetail } from '../../../styles/Button.styles';
@@ -16,32 +16,53 @@ const WorcationList = () => {
   const { worcation_no } = useParams();
   const resetStore = useWorcationStore((state) => state.resetAll);
 
+  const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
+
+  const fetchWorcations = useCallback(async () => {
+    try {
+      const allList = await worcationService.getMyWorcationList(loginUser.user_no);
+
+      // 각 워케이션에 메인사진 정보 추가
+      const processedList = allList.map((worcation) => {
+        let sortedPhotos = worcation.photos ? [...worcation.photos] : [];
+        sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+
+        // 이미지 URL 생성 로직
+        let mainPhoto = null;
+        if (sortedPhotos.length > 0) {
+          const photo = sortedPhotos[0];
+          if (photo.image_url && photo.image_url.startsWith('http')) {
+            mainPhoto = photo.image_url;
+          } else if (photo.image_url) {
+            mainPhoto =
+              photo.image_url.includes('/') || photo.image_url.startsWith('images/')
+                ? CLOUDFRONT_DOMAIN + photo.image_url
+                : CLOUDFRONT_DOMAIN + 'images/' + photo.image_url;
+          } else if (photo.change_name) {
+            mainPhoto =
+              photo.change_name.includes('/') || photo.change_name.startsWith('images/')
+                ? CLOUDFRONT_DOMAIN + photo.change_name
+                : CLOUDFRONT_DOMAIN + 'images/' + photo.change_name;
+          }
+        }
+
+        return {
+          ...worcation,
+          mainPhoto,
+        };
+      });
+
+      setRegisteredList(processedList.filter((w) => w.status === 'Y'));
+      setUnregisteredList(processedList.filter((w) => w.status === 'N'));
+    } catch (error) {
+      console.error('목록 불러오기 실패:', error);
+    }
+  }, [loginUser?.user_no]);
+
   useEffect(() => {
     if (!loginUser?.user_no) return;
-
-    const fetchWorcations = async () => {
-      try {
-        const allList = await worcationService.getMyWorcationList(loginUser.user_no);
-
-        // 각 워케이션에 메인사진 정보 추가
-        const processedList = allList.map((worcation) => {
-          let sortedPhotos = worcation.photos ? [...worcation.photos] : [];
-          sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
-          return {
-            ...worcation,
-            mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
-          };
-        });
-
-        setRegisteredList(processedList.filter((w) => w.status === 'Y'));
-        setUnregisteredList(processedList.filter((w) => w.status === 'N'));
-      } catch (error) {
-        console.error('목록 불러오기 실패:', error);
-      }
-    };
-
     fetchWorcations();
-  }, [loginUser?.user_no]);
+  }, [loginUser?.user_no, fetchWorcations]);
 
   useEffect(() => {
     const fetchWorcationDetail = async () => {
@@ -126,7 +147,7 @@ const WorcationList = () => {
         <SectionTitle>워케이션 등록 목록</SectionTitle>
         <Btn onClick={handleAddClick}>+추가</Btn>
       </NameBox>
-      <WorcationCardList data={registeredList} navigate={navigate} mode="host" />
+      <WorcationCardList data={registeredList} navigate={navigate} mode="host" onDelete={fetchWorcations} />
 
       <NameBox>
         <SectionTitle>미등록 목록</SectionTitle>

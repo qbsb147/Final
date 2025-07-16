@@ -8,36 +8,20 @@ import { ButtonBorder } from '../../../../styles/Button.styles';
 import useWorcationStore from '../../../../store/useWorcationStore';
 import { useValidation } from '../../../../hooks/useValidation';
 import { Controller } from 'react-hook-form';
+import { formatPhoneNumber } from '../../../../hooks/useAuth';
 
 const InfoForm = forwardRef((_, ref) => {
   const info = useWorcationStore((state) => state.info);
   const setInfo = useWorcationStore((state) => state.setInfo);
-  const { register, control, getValues, isValid } = useValidation(info);
+  const { control, getValues } = useValidation(info);
 
-  // useImperativeHandle(ref, () => ({
-  //   getValues,
-  //   isValid,
-  // }));
-
-  // // 폼 언마운트 시 zustand에 저장
-  // useEffect(() => {
-  //   return () => {
-  //     setInfo(getValues());
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (info.policy === undefined) {
-  //     setInfo((prev) => ({ ...prev, policy: '' }));
-  //   }
-  // }, []);
-
-  // const handleChange = (e) => {
-  //   setInfo((prev) => ({ ...prev, policy: e.target.value }));
-  // };
   useImperativeHandle(ref, () => ({
+    isValid: () => {
+      // policy는 비어도 되고, 나머지는 필수
+      const { theme, maxPeople, price, tel } = getValues();
+      return !!theme && !!maxPeople && !!price && !!tel;
+    },
     getValues,
-    isValid,
   }));
 
   // 언마운트 시 zustand에 저장
@@ -88,6 +72,7 @@ const InfoForm = forwardRef((_, ref) => {
                 render={({ field }) => (
                   <NumberInput
                     value={field.value || ''}
+                    maxLength={3}
                     onChange={(val) => {
                       field.onChange(val);
                       setInfo({ maxPeople: val });
@@ -101,16 +86,25 @@ const InfoForm = forwardRef((_, ref) => {
           <TR>
             <TH>연락처</TH>
             <TD>
-              <InputLightGray
-                {...register('tel', {
-                  onChange: (e) => setInfo({ tel: e.target.value }),
-                })}
-                placeholder="연락처를 입력해주세요"
+              <Controller
+                name="tel"
+                control={control}
+                render={({ field }) => (
+                  <InputLightGray
+                    {...field}
+                    onChange={(e) => {
+                      const formatted = formatPhoneNumber(e.target.value);
+                      field.onChange(formatted);
+                      setInfo({ tel: formatted });
+                    }}
+                    placeholder="연락처를 입력해주세요"
+                  />
+                )}
               />
             </TD>
           </TR>
           <TR>
-            <TH>비제휴 가격</TH>
+            <TH>이용 가격</TH>
             <TD>
               <Controller
                 name="price"
@@ -118,6 +112,7 @@ const InfoForm = forwardRef((_, ref) => {
                 render={({ field }) => (
                   <NumberInput
                     value={field.value || ''}
+                    maxLength={8}
                     onChange={(val) => {
                       field.onChange(val);
                       setInfo({ price: val });
@@ -129,20 +124,20 @@ const InfoForm = forwardRef((_, ref) => {
             </TD>
           </TR>
           <TR>
-            <TH>제휴 정책</TH>
+            <TH>제휴 가격</TH>
             <TD>
               <Controller
                 name="policy"
                 control={control}
                 render={({ field }) => (
-                  <CustomTextArea
+                  <PolicyText
                     value={field.value || ''}
                     onChange={(e) => {
-                      field.onChange(e);
+                      field.onChange(e.target.value);
                       setInfo({ ...info, policy: e.target.value });
                     }}
                     rows={5}
-                    placeholder="이용 정책을 입력하세요"
+                    placeholder="비제휴 시 미입력"
                   />
                 )}
               />
@@ -197,13 +192,27 @@ const TD = styled.td`
   display: flex;
 `;
 
-const ButtonYellow = styled(ButtonBorder)`
-  height: 30px;
+const PolicyText = styled.input`
+  width: 200px;
+  padding: 12px;
+  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-radius: ${({ theme }) => theme.borderRadius.base};
+  font-family: ${({ theme }) => theme.fontFamily.secondary};
   font-size: ${({ theme }) => theme.fontSizes.base};
-  margin-left: 50px;
-`;
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.black};
+  background-color: ${({ theme }) => theme.colors.gray[100]};
+  resize: none;
+  max-height: 36px;
 
-const ErrorMessage = styled.span`
-  color: ${({ theme }) => theme.colors.error};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+    background: ${({ theme }) => theme.colors.white};
+  }
+
+  &::placeholder {
+    font-family: ${({ theme }) => theme.fontFamily.secondary};
+    font-weight: ${({ theme }) => theme.fontWeights.medium};
+  }
 `;

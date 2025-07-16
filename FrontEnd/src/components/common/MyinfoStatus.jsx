@@ -8,20 +8,21 @@ import { mentalService } from '../../api/mentals';
 
 const MyinfoStatus = ({ navigate }) => {
   const loginUser = useAuthStore((status) => status.loginUser);
-  const [mental, setMental] = useState(null);
+  const [stress, setStresss] = useState('');
+  const [burnout, setBurnout] = useState('');
 
   useEffect(() => {
     if (loginUser) {
       const fetchData = async () => {
-        const mentalData = await mentalService.getMental(loginUser.user_no);
-        setMental(mentalData.data);
+        const { stress, burnout } = await mentalService.getMainMental();
+        console.log('stress', stress);
+        console.log('burnout', burnout);
+        setStresss(stress);
+        setBurnout(burnout);
       };
       fetchData();
     }
   }, [loginUser]);
-
-  const stress = mental && Array.isArray(mental) ? mental.find((m) => m.separation === 'STRESS') : null;
-  const burnout = mental && Array.isArray(mental) ? mental.find((m) => m.separation === 'BURNOUT') : null;
 
   function convertKoreaState(state) {
     switch (state) {
@@ -69,7 +70,7 @@ const MyinfoStatus = ({ navigate }) => {
         <InfoStatus>
           <Title>나의 스트레스 상태</Title>
           <TextT>
-            {loginUser && stress ? (
+            {loginUser && new Date(stress.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
               <>
                 <IoMdCheckboxOutline /> {stress.score}/100
                 <CiSquareAlert /> {convertKoreaState(stress.psychological_state)}
@@ -82,7 +83,7 @@ const MyinfoStatus = ({ navigate }) => {
           </TextT>
           <Title>나의 번아웃 상태</Title>
           <TextT>
-            {loginUser && burnout ? (
+            {loginUser && new Date(burnout.update_date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) ? (
               <>
                 <IoMdCheckboxOutline /> {burnout.score}/100
                 <CiSquareAlert /> {convertKoreaState(burnout.psychological_state)}

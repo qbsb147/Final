@@ -18,10 +18,10 @@ import Cookies from 'js-cookie';
 import MasterProfileStep from '../../components/auth/MaterProfile';
 
 const SignUp = () => {
-  const [formStep, setFormStep] = useState(2);
+  const [formStep, setFormStep] = useState(1);
   const [formData1, setFormData1] = useState({
     gender: 'M',
-    role: 'MASTER',
+    role: 'EMPLOYEE',
   });
   const [formData2, setFormData2] = useState({});
   const [formData3, setFormData3] = useState({});
@@ -29,11 +29,28 @@ const SignUp = () => {
   const [emailVerified, setEmailVerified] = useState(false);
   const navigate = useNavigate();
   const { control } = useForm();
+  const fetchBusiness = async () => {
+    try {
+      const data = await businessApi({
+        business_id: formData2.business_id,
+        licensee: formData2.licensee,
+        open_date: formData2.open_date,
+      });
+      console.log(data);
+      if (!handleBusinessValidationResult(data)) return;
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || err;
+      toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
+      return;
+    }
+  };
+
   const handleNext = async () => {
     let valid = true;
     if (formStep === 1) {
       valid = await validateForm(useDefaultForm, formData1);
     } else if (formStep === 2 && formData1.role === 'MASTER') {
+      await fetchBusiness();
       valid = await validateForm(useMasterForm, formData2);
     }
     if (!valid) return;
@@ -46,7 +63,6 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // 1. 비밀번호 일치 체크 (1단계에서만)
     if (formStep === 1 && formData1.user_pwd !== formData1.user_pwd_check) {
       toast.error('비밀번호가 일치하지 않습니다.');
@@ -61,23 +77,8 @@ const SignUp = () => {
       // EMPLOYEE 2단계: 직원 정보 유효성 검사
       const isValid = await validateForm(useEmployeeForm, formData2);
       if (!isValid) return;
-
-      // 2-1. 마스터일 때만 국세청 API 호출
-      if (selectedRole === 'MASTER') {
-        try {
-          const data = await businessApi({
-            business_id: formData2.business_id,
-            licensee: formData2.licensee,
-            open_date: formData2.open_date,
-          });
-          if (!handleBusinessValidationResult(data)) return;
-        } catch (err) {
-          const msg = err.response?.data?.message || err.message || err;
-          toast.error('사업자 진위 확인에 실패했습니다. : ' + msg);
-          return;
-        }
-      }
     } else if (formStep === 2 && formData1.role === 'MASTER') {
+      // 2-1. 마스터일 때만 국세청 API 호출
       // MASTER 2단계: 회사 정보 유효성 검사
       const isValid = await validateForm(useMasterForm, formData2);
       if (!isValid) return;
@@ -86,6 +87,7 @@ const SignUp = () => {
       return;
     } else if (formStep === 3 && formData1.role === 'MASTER') {
       // MASTER 3단계: 직원 정보 입력 단계 (formData3)
+      console.log(formData3);
       const isValid = await validateForm(useMasterProfileForm, formData3);
       if (!isValid) return;
     }

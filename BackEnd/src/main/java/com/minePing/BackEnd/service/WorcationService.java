@@ -2,6 +2,7 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
+import com.minePing.BackEnd.entity.Worcation;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
@@ -65,4 +66,4 @@ public interface WorcationService {
     boolean isOwnerByUserNo(Long UserNo, Long LoginUserNo);
 
 
-}
+    List<WorcationDto.Response> findAllByNos(List<Long> ids);}

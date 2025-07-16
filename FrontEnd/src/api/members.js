@@ -24,6 +24,7 @@ const memberService = {
       const response = await axiosInstance.get(API_ENDPOINTS.MEMBER.INIT);
       return response.data;
     } catch (error) {
+      console.log('error', error);
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
@@ -93,7 +94,6 @@ const memberService = {
         member_join_dto: memberJoinDto,
       };
     }
-    console.log('payload', payload);
 
     try {
       const { data: result } = await axiosInstance.post(API_ENDPOINTS.MEMBER.SIGNUP(role), payload);
