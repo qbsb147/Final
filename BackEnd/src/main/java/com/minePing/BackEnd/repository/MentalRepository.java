@@ -4,6 +4,7 @@ package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Mental;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,5 +13,7 @@ public interface MentalRepository extends JpaRepository<Mental, Long>,MentalRepo
 
     @Query("SELECT m FROM Mental m WHERE m.member.userNo = :user_no")
     List<Mental> getMental(@Param("user_no") Long user_no);
+
+    Optional<Mental> findTopByMember_UserNoOrderByUpdateDateDesc(Long userNo);
 
 }

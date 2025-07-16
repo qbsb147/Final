@@ -11,4 +11,5 @@ import java.util.List;
 public interface HealthRepository extends JpaRepository<Health, Long>, HealthRepositoryV1 {
     List<Health> findByMember_UserNo(Long userNo);
     Optional<Health> findByMember_UserId(String userId);
+    Optional<Health> findTopByMember_UserNoOrderByUpdateDateDesc(Long userNo);
 }

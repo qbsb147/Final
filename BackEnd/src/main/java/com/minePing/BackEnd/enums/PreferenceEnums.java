@@ -8,7 +8,7 @@ public class PreferenceEnums {
     }
 
     public enum PreferredColor {
-        green_brown, blue_sky, yellow_orange, achromatic, purple
+        forest, blue_sky, sunset, monochrome, mystical
     }
 
     public enum PreferredLocation {
