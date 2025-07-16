@@ -238,11 +238,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
-
+    public String updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
         Member newMaster = memberRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        String userId = jwtTokenProvider.getUserIdFromToken();
 
+        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+                .orElseThrow(()->new UserNotFoundException());
+        String jwt =null;
         if (updateRoleDto.getRole() == CommonEnums.Role.MASTER) {
             Company company = newMaster.getCompanyProfile().getCompany();
             if (company == null) throw new RuntimeException("소속된 회사가 없습니다.");
@@ -254,12 +257,11 @@ public class MemberServiceImpl implements MemberService {
             if (currentMaster != null && !currentMaster.getUserNo().equals(newMaster.getUserNo())) {
                 // 기존 대표는 매니저로 역할 변경
                 currentMaster.updateRole(CommonEnums.Role.MANAGER);
+                jwt = jwtTokenProvider.createToken(userId, Role.MANAGER);
                 memberRepository.save(currentMaster);
 
-/*
                 // 회사의 대표 멤버 변경
-                company.changeMember(newMaster);
-*/
+//                newMaster.updateRole(Role.MASTER);
                 companyRepository.save(company);
             }
 
@@ -269,6 +271,7 @@ public class MemberServiceImpl implements MemberService {
             newMaster.updateRole(updateRoleDto.getRole());
             memberRepository.save(newMaster);
         }
+        return jwt;
     }
 
     @Override

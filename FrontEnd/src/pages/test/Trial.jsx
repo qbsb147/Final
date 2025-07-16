@@ -116,13 +116,13 @@ const Trial = () => {
 };
 
 const Result = styled.div`
-  width: calc(100% - 50px);
   height: 100%;
   overflow: auto;
-  padding: 15px;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: left;
 `;
 
 const Score = styled.div`
