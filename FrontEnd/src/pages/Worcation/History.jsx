@@ -126,12 +126,18 @@ const WorcationHistory = () => {
         ))}
       </CardList>
       */}
-      <WorcationCardList
-        data={convertToCardData(reservedList)}
-        navigate={navigate}
-        mode="view"
-        renderActions={renderReservedActions}
-      />
+      {convertToCardData(reservedList).length > 0 ? (
+        <WorcationCardList
+          data={convertToCardData(reservedList)}
+          navigate={navigate}
+          mode="view"
+          renderActions={renderReservedActions}
+        />
+      ) : (
+        <div style={{ margin: '40px 0', textAlign: 'center', color: '#888', fontSize: '1.2rem' }}>
+          예약 내역이 없습니다.
+        </div>
+      )}
 
       <NameBox>
         <SectionTitle>예약 내역</SectionTitle>
@@ -156,13 +162,19 @@ const WorcationHistory = () => {
         ))}
       </CardList>
       */}
-      <WorcationCardList
-        data={convertToCardData(usedList)}
-        navigate={navigate}
-        cardStyle={{ background: '#e9e9e9' }}
-        mode="view"
-        renderActions={renderUsedActions}
-      />
+      {convertToCardData(usedList).length > 0 ? (
+        <WorcationCardList
+          data={convertToCardData(usedList)}
+          navigate={navigate}
+          cardStyle={{ background: '#e9e9e9' }}
+          mode="view"
+          renderActions={renderUsedActions}
+        />
+      ) : (
+        <div style={{ margin: '40px 0', textAlign: 'center', color: '#888', fontSize: '1.2rem' }}>
+          이용후 내역이 없습니다.
+        </div>
+      )}
     </Container>
   );
 };
