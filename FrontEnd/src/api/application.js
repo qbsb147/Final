@@ -41,6 +41,7 @@ export const applicationService = {
     const res = await api.get(
       API_ENDPOINTS.APPLICATION.GET_REMAINING_DATES({ worcationNo: worcation_no, startDate, endDate })
     );
+    console.log('getRemainingByWorcation 응답:', res.data); // 응답 데이터 콘솔 출력
     return res.data;
   },
 };

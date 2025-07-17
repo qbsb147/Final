@@ -13,6 +13,7 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
 
   const pageSize = 15; // 한 페이지에 보여줄 데이터 수 (백엔드와 맞춰야 함)
 
+  // columns 에서는 Cell 제거 (버튼 렌더링은 ReusableTable에서 처리)
   const columns = useMemo(
     () => [
       { header: '부서', accessor: 'department' },
@@ -23,89 +24,78 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
       { header: '이메일', accessor: 'email' },
       { header: '신청 기간', accessor: 'period' },
       { header: '워케이션 장소', accessor: 'location' },
-      {
-        header: '승인 여부',
-        accessor: 'actions',
-        Cell: ({ rowIndex }) => {
-          const row = filteredMembers[rowIndex];
-
-          const handleApprove = async () => {
-            const result = await Swal.fire({
-              title: '승인 요청',
-              text: `${row.name}님의 워케이션을 승인하시겠습니까?`,
-              icon: 'question',
-              showCancelButton: true,
-              confirmButtonText: '승인',
-              cancelButtonText: '취소',
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-            });
-
-            if (!result.isConfirmed) return;
-
-            try {
-              await companyEmployee.UpdateWorcationCheck(row.user_no, 'Y');
-              await Swal.fire({
-                icon: 'success',
-                title: '승인 완료',
-                text: `${row.name}님의 워케이션이 승인되었습니다.`,
-                timer: 1500,
-                showConfirmButton: false,
-              });
-              setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
-            } catch (error) {
-              Swal.fire({
-                icon: 'error',
-                title: '오류',
-                text: error.message || '승인 처리 중 문제가 발생했습니다.',
-              });
-            }
-          };
-
-          const handleReject = async () => {
-            const result = await Swal.fire({
-              title: '거부 요청',
-              text: `${row.name}님의 워케이션을 거부하시겠습니까?`,
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: '거부',
-              cancelButtonText: '취소',
-              confirmButtonColor: '#d33',
-              cancelButtonColor: '#999',
-            });
-
-            if (!result.isConfirmed) return;
-
-            try {
-              await companyEmployee.UpdateWorcationCheck(row.user_no, 'N');
-              await Swal.fire({
-                icon: 'success',
-                title: '거부 완료',
-                text: `${row.name}님의 워케이션이 거부되었습니다.`,
-                timer: 1500,
-                showConfirmButton: false,
-              });
-              setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
-            } catch (error) {
-              Swal.fire({
-                icon: 'error',
-                title: '오류',
-                text: error.message || '거부 처리 중 문제가 발생했습니다.',
-              });
-            }
-          };
-
-          return (
-            <>
-              <button onClick={handleApprove}>승인</button>
-              <button onClick={handleReject}>거부</button>
-            </>
-          );
-        },
-      },
+      { header: '승인 여부', accessor: 'actions' }, // 버튼은 ReusableTable에서 렌더링
     ],
-    [members]
+    []
   );
+
+  // 승인 버튼 클릭 핸들러
+  const handleApprove = async (row) => {
+    const result = await Swal.fire({
+      title: '승인 요청',
+      text: `${row.name}님의 워케이션을 승인하시겠습니까?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '승인',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await companyEmployee.UpdateWorcationCheck(row.user_no, 'Y');
+      await Swal.fire({
+        icon: 'success',
+        title: '승인 완료',
+        text: `${row.name}님의 워케이션이 승인되었습니다.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '승인 처리 중 문제가 발생했습니다.',
+      });
+    }
+  };
+
+  // 거부 버튼 클릭 핸들러
+  const handleReject = async (row) => {
+    const result = await Swal.fire({
+      title: '거부 요청',
+      text: `${row.name}님의 워케이션을 거부하시겠습니까?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '거부',
+      cancelButtonText: '취소',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#999',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await companyEmployee.UpdateWorcationCheck(row.user_no, 'N');
+      await Swal.fire({
+        icon: 'success',
+        title: '거부 완료',
+        text: `${row.name}님의 워케이션이 거부되었습니다.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setMembers((prev) => prev.filter((m) => m.user_no !== row.user_no));
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: '오류',
+        text: error.message || '거부 처리 중 문제가 발생했습니다.',
+      });
+    }
+  };
 
   const filteredMembers = useMemo(() => {
     if (!searchKeyword) return members;
@@ -118,9 +108,6 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     const fetchData = async () => {
       try {
         const data = await companyEmployee.getWorcationApplies(loginUser.company_no, currentPage, pageSize);
-        // 백엔드에서 pagination이 지원된다면 currentPage, pageSize 전달
-        // 만약 백엔드가 지원하지 않는다면 프론트에서 잘라서 처리해야 함
-
         const formatted = data.content.map((member) => ({
           user_no: member.user_no,
           department: member.department_name,
@@ -143,7 +130,7 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
     fetchData();
   }, [loginUser, currentPage, searchKeyword]);
 
-  // 페이지네이션: 5개씩 묶어서 그룹 단위 이동 구현
+  // 페이지네이션 로직 (필요시 그대로 사용)
   const maxPageButtons = 5;
   const currentGroup = Math.floor(currentPage / maxPageButtons);
   const startPage = currentGroup * maxPageButtons;
@@ -176,7 +163,13 @@ const WorcationTable = ({ searchKeyword, currentPage, setCurrentPage }) => {
   return (
     <>
       <SwalStyles />
-      <ReusableTable columns={columns} data={filteredMembers} />
+      <ReusableTable
+        columns={columns}
+        data={filteredMembers}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        messageWhenEmpty="신청자가 없습니다."
+      />
 
       <PaginationContainer>
         <button onClick={goToPrevGroup} disabled={currentGroup === 0}>

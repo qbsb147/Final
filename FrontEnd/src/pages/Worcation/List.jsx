@@ -71,7 +71,9 @@ const WorcationList = () => {
     }
     if (keyword.trim() !== '') {
       filtered = filtered.filter(
-        (w) => (w.worcation_name && w.worcation_name.includes(keyword)) || (w.address && w.address.includes(keyword))
+        (w) =>
+          (w.worcation_name && w.worcation_name.includes(keyword)) ||
+          (w.worcation_address && w.worcation_address.includes(keyword))
       );
     }
     return Array.isArray(filtered) ? filtered : [];
