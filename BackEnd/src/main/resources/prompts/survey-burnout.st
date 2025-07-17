@@ -22,7 +22,8 @@ The content of each questionnaire is as follows
 
 
 The Mental object you receive in response should contain the following
-- "score" (Integer): The sum of the scores in the questionnaire must be between at least 10 and 50, and 'score' must have a value between at least 0 and 100.
+- "score" (Integer): The total raw score from the questionnaire ranges from 10 to 50, but this value must be normalized to a 0–100 scale using the formula:
+  normalizedScore = ((rawScore - 10) / 40) * 100
 - "psychologicalState" (enum [ Normal, Concern, Mild, Severe, Critical ]): Indicates what the psychological state is.
 - "resultContent" (String, length=512) : Write the AI's judgment in Korean. Hangul is 3 bytes per character, so it should be written within 170 characters.
 

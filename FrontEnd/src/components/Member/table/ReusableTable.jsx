@@ -68,12 +68,42 @@ const Th = styled.th`
   background-color: ${({ theme }) => theme.colors.primary};
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSizes.base};
+  min-width: 60px;
 `;
 
 const Td = styled.td`
   padding: 4px;
   font-size: ${({ theme }) => theme.fontSizes.base};
   border-bottom: 1px solid #eee;
+  &:nth-child(1) {
+    width: 80px;
+  }
+  &:nth-child(2) {
+    width: 80px;
+  }
+  &:nth-child(3) {
+    width: 100px;
+  }
+  &:nth-child(4) {
+    width: 60px;
+  }
+  &:nth-child(5) {
+    width: 80px;
+  }
+  &:nth-child(6) {
+    width: 220px;
+  }
+  &:nth-child(7) {
+    width: 250px;
+  }
+  &:nth-child(8) {
+    width: 200px;
+  }
+  &:nth-child(9) {
+    width: 120px;
+  }
+
+  white-space: nowrap; /* 줄바꿈 방지 */
 `;
 
 const ButtonWrap = styled.div`

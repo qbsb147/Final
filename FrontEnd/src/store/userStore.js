@@ -13,7 +13,7 @@ const useUserStore = create(
       setEats: (newEats, date) => set({ eats: newEats, eatsDate: date }),
     }),
     {
-      name: 'user-eats-storage', // localStorage에 저장될 키
+      name: 'user-eats-storage',
       partialize: (state) => ({
         eats: state.eats,
         eatsDate: state.eatsDate,
