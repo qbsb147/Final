@@ -6,7 +6,7 @@ import useAuthStore from '../../store/authStore';
 import useWorcationStore from '../../store/useWorcationStore';
 import defaultWorcationImage from '../../assets/default-worcation.png';
 
-const WorcationCardList = ({ data, navigate, mode = 'view', onDelete, renderActions, cardStyle }) => {
+const WorcationCardList = ({ data, navigate, mode = 'view', onDelete, renderActions, cardStyle, hideReviewCount }) => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const resetStore = useWorcationStore((state) => state.resetAll);
   const [imageErrors, setImageErrors] = useState({});
@@ -80,7 +80,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete, renderActi
                   {item.worcation_address ? item.worcation_address.split(' ').slice(0, 2).join(' ') : ''}
                 </PlaceLocation>
                 <PlaceName>{item.worcation_name}</PlaceName>
-                <PlaceReview>리뷰 ({item.reviews ? item.reviews.length : 0})</PlaceReview>
+                <PlaceReview>{!hideReviewCount && `리뷰 (${item.reviews ? item.reviews.length : 0})`}</PlaceReview>
               </InfoBlock>
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>

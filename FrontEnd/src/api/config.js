@@ -77,7 +77,7 @@ export const API_ENDPOINTS = {
     CREATE: '/partner',
     GETALLREQUESTS: (user_no) => `/partner/request?userNo=${user_no}`,
     GETAPPROVALREQUESTS: (user_no) => `partner/approval?userNo=${user_no}`,
-    UPDATE_STATUS: (partner_no) => `/partner/${partner_no}/status`,
+    UPDATE_STATUS: (partner_no) => `/partner/${partner_no}/approve`,
   },
 
   APPLICATION: {

@@ -61,9 +61,9 @@ const WorcationHistory = () => {
 
   // WorcationCardList에 맞는 데이터 변환(mainPhoto 필드 추가)
   const convertToCardData = (list) =>
-    list.map((item) => ({
+    (Array.isArray(list) ? list : []).map((item) => ({
       ...item,
-      mainPhoto: item.main_change_photo, // 이미지 필드명 맞추기
+      mainPhoto: item.mainPhoto || item.main_change_photo, // mainPhoto 우선, 없으면 main_change_photo
       worcation_address: item.worcation_address || '',
       reviews: item.reviews || [],
     }));
@@ -132,6 +132,7 @@ const WorcationHistory = () => {
           navigate={navigate}
           mode="view"
           renderActions={renderReservedActions}
+          hideReviewCount={true}
         />
       ) : (
         <div style={{ margin: '40px 0', textAlign: 'center', color: '#888', fontSize: '1.2rem' }}>
@@ -166,9 +167,10 @@ const WorcationHistory = () => {
         <WorcationCardList
           data={convertToCardData(usedList)}
           navigate={navigate}
-          cardStyle={{ background: '#e9e9e9' }}
+          cardStyle={{ background: '#e9e9e9', margin: '10px' }}
           mode="view"
           renderActions={renderUsedActions}
+          hideReviewCount={true}
         />
       ) : (
         <div style={{ margin: '40px 0', textAlign: 'center', color: '#888', fontSize: '1.2rem' }}>
@@ -190,7 +192,6 @@ const Btn = styled(ButtonDetail)`
   font-size: ${({ theme }) => theme.fontSizes.base};
   background: ${({ theme }) => theme.colors.secondary};
 `;
-
 
 const BtnBox = styled.div`
   gap: ${({ theme }) => theme.spacing.s2};

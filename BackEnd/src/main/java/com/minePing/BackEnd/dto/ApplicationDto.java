@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.dto;
 
+import com.minePing.BackEnd.dto.WorcationDto.PhotoResponse;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
@@ -37,9 +38,9 @@ public class ApplicationDto {
         private LocalDate startDate;      // 예약 시작일
         private LocalDate endDate;        // 예약 종료일
         private String reviewContent;     // 작성된 리뷰가 있는 경우 내용
-        private Worcation worcation; // 워케이션 엔티티 전체
+        private WorcationDto.Response worcation; // 워케이션 엔티티 전체
         private Member member; //회원 데이터 전체
-        private WorcationDto.Response worcationDto;
+
 
 
         /**
@@ -61,17 +62,53 @@ public class ApplicationDto {
         }
     }
 
-    public static ApplicationResponseDto fromEntity(WorcationApplication app, Worcation enrichedWorcation) {
-        return ApplicationResponseDto.builder()
-                .applicationNo(app.getApplicationNo())
-                .startDate(app.getStartDate())
-                .endDate(app.getEndDate())
-                .approve(app.getApprove())
-                .worcation(enrichedWorcation)
-                .member(app.getMember())
-                .build();
-    }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ApplicationApplyDto {
+
+        private Long applicationNo;       // 신청 번호
+        private Long userNo;              // 회원 번호
+        private String userName;          // 회원 이름 (선택)
+        private Long worcationNo;         // 워케이션 번호
+        private String worcationName;     // 워케이션 이름 또는 타이틀 (선택)
+        private CommonEnums.Approve approve; // 승인 여부 (WAITING, APPROVED 등)
+        private LocalDate startDate;      // 예약 시작일
+        private LocalDate endDate;        // 예약 종료일
+        private String reviewContent;     // 작성된 리뷰가 있는 경우 내용
+        private WorcationDto.Response worcation; // 워케이션 엔티티 전체
+        private Member member; //회원 데이터 전체
+        // 추가: 대표 이미지, 테마, 주소
+        private String main_change_photo;
+        private String worcation_thema;
+        private String worcation_address;
+
+        /**
+         * Entity → DTO 변환 메서드
+         * Mapper 없이 수동 변환
+         */
+        public static ApplicationApplyDto toDto(WorcationApplication entity, WorcationDto.Response worcationDto) {
+            Worcation worcation = entity.getWorcation();
+            return ApplicationApplyDto.builder()
+                    .applicationNo(entity.getApplicationNo())
+                    .userNo(entity.getMember().getUserNo())
+                    .userName(entity.getMember().getName())
+                    .worcationNo(worcation.getWorcationNo())
+                    .worcationName(worcation.getWorcationName())
+                    .approve(entity.getApprove())
+                    .startDate(entity.getStartDate())
+                    .endDate(entity.getEndDate())
+                    .reviewContent(entity.getReview() != null ? entity.getReview().getReviewContent() : null)
+                    .worcation(worcationDto)
+                    .main_change_photo(worcation.getMainChangePhoto())
+                    .worcation_thema(worcation.getWorcationThema())
+                    .worcation_address(worcation.getWorcationAddress())
+                    .build();
+        }
+    }
 
     /**
      * 예약 신청 요청 DTO
@@ -119,24 +156,6 @@ public class ApplicationDto {
     }
 
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class ResponseDto {
-        private LocalDate startDate;
-        private LocalDate endDate;
 
-        // 날짜 범위 계산 메서드
-        public List<LocalDate> getDateRange() {
-            List<LocalDate> dates = new ArrayList<>();
-            LocalDate current = startDate;
-            while (!current.isAfter(endDate)) {
-                dates.add(current);
-                current = current.plusDays(1);
-            }
-            return dates;
-        }
-    }
+
 }
