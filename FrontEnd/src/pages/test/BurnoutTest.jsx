@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { burnout } from '../../components/test/questions';
 import { mentalService } from '../../api/mentals';
 import { toast } from 'react-toastify';
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const BurnoutTest = () => {
   const navigate = useNavigate();
@@ -27,14 +27,13 @@ const BurnoutTest = () => {
       alert('모든 질문에 답변을 해주세요!');
     } else {
       try {
-        setLoading(true); // 로딩 시작
-        console.log(answers);
+        setLoading(true);
         await mentalService.postBurnout(answers);
         navigate('/trial');
       } catch (error) {
         toast.error(error);
       } finally {
-        setLoading(false); // 로딩 종료
+        setLoading(false);
       }
     }
   };
@@ -179,7 +178,7 @@ const LoadingOverlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -188,7 +187,9 @@ const LoadingOverlay = styled.div`
     animation: spin 1s linear infinite;
   }
   @keyframes spin {
-    100% { transform: rotate(360deg); }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
 

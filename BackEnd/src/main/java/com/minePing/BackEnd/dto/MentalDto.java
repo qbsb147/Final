@@ -2,7 +2,9 @@ package com.minePing.BackEnd.dto;
 
 import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
+import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.MentalEnums;
+import com.minePing.BackEnd.enums.MentalEnums.PsychologicalState;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -49,6 +51,33 @@ public class MentalDto {
         private Integer stress13;
         private Integer stress14;
         private Integer stress15;
+
+        public Integer getScore(){
+            return (int)Math.round(((safe(stress1) + safe(stress2) + safe(stress3)
+                    + safe(stress4) + safe(stress5) + safe(stress6)
+                    + safe(stress7) + safe(stress8) + safe(stress9)
+                    + safe(stress10) - 10)
+                    /40.0) * 100);
+        }
+        private Double safe(Integer value) {
+            return value != null ? value.doubleValue() : 0.0;
+        }
+
+        public MentalEnums.PsychologicalState getPsychologicalState(Integer score) {
+            if(score>=0 && score<=20){
+                return PsychologicalState.Normal;
+            }else if(score>=21 && score<=40){
+                return PsychologicalState.Concern;
+            }else if(score>=41 && score<=60){
+                return PsychologicalState.Mild;
+            }else if(score>=61 && score<=80){
+                return PsychologicalState.Severe;
+            }else if(score>=81 && score<=100){
+                return PsychologicalState.Critical;
+            }else{
+                throw new ArithmeticException("계산 오류가 발생했습니다.");
+            }
+        }
     }
 
     @Getter
@@ -67,6 +96,33 @@ public class MentalDto {
         private Integer burnout8;
         private Integer burnout9;
         private Integer burnout10;
+
+        public Integer getScore(){
+            return (int)Math.round(((safe(burnout1) + safe(burnout2) + safe(burnout3)
+                    + safe(burnout4) + safe(burnout5) + safe(burnout6)
+                    + safe(burnout7) + safe(burnout8) + safe(burnout9)
+                    + safe(burnout10) - 10)
+                    /40.0) * 100);
+        }
+        private Double safe(Integer value) {
+            return value != null ? value.doubleValue() : 0.0;
+        }
+
+        public MentalEnums.PsychologicalState getPsychologicalState(Integer score) {
+            if(score>=0 && score<=20){
+                return PsychologicalState.Normal;
+            }else if(score>=21 && score<=40){
+                return PsychologicalState.Concern;
+            }else if(score>=41 && score<=60){
+                return PsychologicalState.Mild;
+            }else if(score>=61 && score<=80){
+                return PsychologicalState.Severe;
+            }else if(score>=81 && score<=100){
+                return PsychologicalState.Critical;
+            }else{
+                throw new ArithmeticException("계산 오류가 발생했습니다.");
+            }
+        }
     }
 
     @Getter

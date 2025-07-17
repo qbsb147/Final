@@ -20,13 +20,12 @@ The content of each questionnaire is as follows
 'How often did you feel that difficulties had piled up and were insurmountable?' : {answer9},
 'How often did you feel that things were going your way?' : {answer10},
 
+psychologicalState is. {psychologicalState}
 
-The Mental object you receive in response should contain the following
-- "score" (Integer): The total raw score from the questionnaire ranges from 10 to 50, but this value must be normalized to a 0–100 scale using the formula:
-  normalizedScore = ((rawScore - 10) / 40) * 100
-- "psychologicalState" (enum [ Normal, Concern, Mild, Severe, Critical ]): Indicates what the psychological state is.
-- "resultContent" (String, length=512) : Write the AI's judgment in Korean. Hangul is 3 bytes per character, so it should be written within 170 characters.
+The psychologicalState is divided according to the score and is divided into levels
+[Normal, Concern, Mild, Severe, Critical]
+in order from good to bad. The resultContent should be written to reflect this.
 
-        Format: {format} only.
+The above is just a guide, and you should only respond with phrases that you are comfortable with.
 
-Translated with DeepL.com (free version)
+(String, length=512) "The AI should respond in Korean only to the user's questions and psychological state status. Since Hangul takes 3 bytes per character, it should be written within 170 characters."
