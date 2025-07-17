@@ -116,29 +116,56 @@ const Header = () => {
     }
     return menu;
   });
+  // const filteredMenus = menus
+  // .map((menu) => {
+  //   if (menu.title === '워케이션') {
+  //     return {
+  //       ...menu,
+  //       items: menu.items.filter((item) => {
+  //         if (item.title === '워케이션 등록') {
+  //           return role === 'WORCATION';
+  //         }
+  //         return true;
+  //       }),
+  //     };
+  //   }
+  //   return menu;
+  // })
+  // .filter((menu) => {
+  //   // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
+  //   if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
+  //   if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
+  //   if (menu.title === '워케이션' && menu.items && menu.items.length === 0) return false;
+  //   return true;
+  // });
 
-  const filteredMenus = menus
-    .map((menu) => {
-      if (menu.title === '워케이션') {
-        return {
-          ...menu,
-          items: menu.items.filter((item) => {
-            if (item.title === '워케이션 등록') {
-              return role === 'WORCATION';
-            }
-            return true;
-          }),
-        };
-      }
-      return menu;
-    })
-    .filter((menu) => {
-      // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
-      if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
-      if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
-      if (menu.title === '워케이션' && menu.items && menu.items.length === 0) return false;
-      return true;
-    });
+  const filteredMenus = menus.map((menu) => {
+    if (!isLoggedIn) {
+      // 로그인 전에는 모든 메뉴의 items(드롭다운)를 빈 배열로
+      return { ...menu, items: [] };
+    }
+    // 로그인 후에는 items만 권한별로 필터링, 상단 탭은 항상 보임
+    if (menu.title === '워케이션') {
+      return {
+        ...menu,
+        items: menu.items.filter((item) => {
+          if (item.title === '워케이션 등록') {
+            return role === 'WORCATION';
+          }
+          return true;
+        }),
+      };
+    }
+    if (menu.title === '직원관리') {
+      // 직원관리 드롭다운은 MASTER, MANAGER만 보임
+      return {
+        ...menu,
+        items: (role === 'MASTER' || role === 'MANAGER') ? menu.items : [],
+      };
+    }
+    // 다른 메뉴는 items 그대로
+    return menu;
+  });
 
   const handleLogout = () => {
     logout();
