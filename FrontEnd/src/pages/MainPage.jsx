@@ -22,17 +22,20 @@ const MainPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const data = await worcationService.list();
-      const appData = await worcationService.applicationList();
-      setWorcations(data);
-      setApplications(appData);
-      setTimeout(() => setLoading(false), 100);
-      if (loginUser) {
-        fetchAiWorcations(loginUser.user_no, worcationService);
+      try {
+        const data = await worcationService.list();
+        const appData = await worcationService.applicationList();
+        setWorcations(data);
+        setApplications(appData);
+        if (loginUser) {
+          await fetchAiWorcations(loginUser.user_no, worcationService);
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [loginUser]);
+  }, [loginUser, fetchAiWorcations]);
 
   useEffect(() => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
