@@ -140,7 +140,7 @@ public class WorcationController {
      * 워케이션 등록목록 (본인만)
      */
     @GetMapping("/my/{userNo}")
-    @PreAuthorize("isAuthenticated() AND hasRole('ROLE_WORCATION')") // 본인만
+    @PreAuthorize("isAuthenticated()") // 본인만
     public ResponseEntity<List<WorcationDto.WorcationListName>> getWorcationListName(@PathVariable Long userNo) {
         return ResponseEntity.ok(worcationService.getWorcationListName(userNo));
     }

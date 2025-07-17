@@ -128,33 +128,39 @@ const Header = () => {
   //   return true;
   // });
 
-  const filteredMenus = menus.map((menu) => {
-    if (!isLoggedIn) {
-      // 로그인 전에는 모든 메뉴의 items(드롭다운)를 빈 배열로
-      return { ...menu, items: [] };
-    }
-    // 로그인 후에는 items만 권한별로 필터링, 상단 탭은 항상 보임
-    if (menu.title === '워케이션') {
-      return {
-        ...menu,
-        items: menu.items.filter((item) => {
-          if (item.title === '워케이션 등록') {
-            return role === 'WORCATION';
-          }
-          return true;
-        }),
-      };
-    }
-    if (menu.title === '직원관리') {
-      // 직원관리 드롭다운은 MASTER, MANAGER만 보임
-      return {
-        ...menu,
-        items: (role === 'MASTER' || role === 'MANAGER') ? menu.items : [],
-      };
-    }
-    // 다른 메뉴는 items 그대로
-    return menu;
-  });
+  const filteredMenus = menus
+    .map((menu) => {
+      if (!isLoggedIn) {
+        // 로그인 전에는 모든 메뉴의 items(드롭다운)를 빈 배열로
+        return { ...menu, items: [] };
+      }
+      // 로그인 후에는 items만 권한별로 필터링, 상단 탭은 항상 보임
+      if (menu.title === '워케이션') {
+        return {
+          ...menu,
+          items: menu.items.filter((item) => {
+            if (item.title === '워케이션 등록') {
+              return role === 'WORCATION';
+            }
+            return true;
+          }),
+        };
+      }
+      // 로그인 후 WORCATION이면 직원관리 메뉴 자체를 아예 숨김
+      if (menu.title === '직원관리' && role === 'WORCATION') {
+        return null;
+      }
+      if (menu.title === '직원관리') {
+        // 직원관리 드롭다운은 MASTER, MANAGER만 보임
+        return {
+          ...menu,
+          items: (role === 'MASTER' || role === 'MANAGER') ? menu.items : [],
+        };
+      }
+      // 다른 메뉴는 items 그대로
+      return menu;
+    })
+    .filter(Boolean); // null(숨김) 메뉴 제거
 
   const handleLogout = () => {
     logout();

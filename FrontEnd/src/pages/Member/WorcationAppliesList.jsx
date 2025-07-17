@@ -57,7 +57,7 @@ const MemberListWrap = styled.div`
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing.s10};
   width: 100%;
-  max-width: 1280px;
+  // max-width: 1280px;
 `;
 const Title = styled.h1`
   display: flex;
@@ -84,11 +84,13 @@ const MainContent = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: ${({ theme }) => theme.spacing.s6};
   min-height: 600px;
-  height: 100vh;
+  // height: 100vh;
 `;
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};
+  overflow-x: auto; // 가로 스크롤 허용
+  min-width: 900px; // 테이블 최소 너비(필요시 조정)
 `;
