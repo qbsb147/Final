@@ -24,7 +24,6 @@ const Application = () => {
   }, [loginUser, navigate]);
 
   useEffect(() => {
-
     if (loginUser) {
       console.log('loginUser =', loginUser); // 디버깅용
       setFormData((prev) => ({
@@ -49,7 +48,6 @@ const Application = () => {
     business_id: '',
     company_email: '', // 이메일(직접 입력)
     member_no: loginUser?.user_no || '',
-
   });
 
   const handleChange = (field) => (e) => {
@@ -76,8 +74,6 @@ const Application = () => {
     }
   };
 
-
-
   return (
     <FormContainer>
       <FormWrapper>
@@ -85,7 +81,6 @@ const Application = () => {
           <FormGroup>
             <Label>기업 이름</Label>
             <InputWrapper>
-  
               <Input
                 placeholder="기업 이름"
                 style={InputStyle.InputGray}
@@ -98,7 +93,6 @@ const Application = () => {
           <FormGroup>
             <Label>사업자명</Label>
             <InputWrapper>
-   
               <Input
                 placeholder="사업자명"
                 style={InputStyle.InputGray}
@@ -111,7 +105,6 @@ const Application = () => {
           <FormGroup>
             <Label>연락처</Label>
             <InputWrapper>
-
               <Input
                 placeholder="연락처"
                 style={InputStyle.InputGray}
@@ -145,7 +138,6 @@ const Application = () => {
           <FormGroup>
             <Label>기업 인원</Label>
             <InputWrapper>
-
               <Input
                 placeholder="제휴 인원"
                 style={InputStyle.InputGray}
@@ -158,7 +150,6 @@ const Application = () => {
           <FormGroup>
             <Label>사업자번호</Label>
             <InputWrapper>
-
               <Input
                 placeholder="사업자번호"
                 style={InputStyle.InputGray}
@@ -171,7 +162,6 @@ const Application = () => {
           <FormGroup>
             <Label>이메일</Label>
             <InputWrapper>
-
               <Input
                 placeholder="이메일"
                 style={InputStyle.InputGray}
@@ -231,8 +221,7 @@ const Label = styled.label`
 
 const InputWrapper = styled.div`
   position: relative;
-  gap:5px;
-
+  gap: 5px;
 `;
 
 const Input = styled.input`
