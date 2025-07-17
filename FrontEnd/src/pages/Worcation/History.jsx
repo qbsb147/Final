@@ -6,16 +6,16 @@ import Swal from 'sweetalert2';
 import useAuthStore from '../../store/authStore';
 import { applicationService } from '../../api/application';
 import { worcationService } from '../../api/worcations';
+import WorcationCardList from '../../components/worcation/WorcationCardList';
 
 const WorcationHistory = () => {
   const navigate = useNavigate();
   const [reservedList, setReservedList] = useState([]);
   const [usedList, setUsedList] = useState([]);
   const { loginUser } = useAuthStore();
-  const worcationNo = reservedList.worcation_no;
+
   useEffect(() => {
     if (!loginUser?.user_no) return;
-
     getReservedWorcation();
   }, [loginUser?.user_no]);
 
@@ -59,11 +59,44 @@ const WorcationHistory = () => {
     }
   };
 
+  // WorcationCardList에 맞는 데이터 변환(mainPhoto 필드 추가)
+  const convertToCardData = (list) =>
+    list.map((item) => ({
+      ...item,
+      mainPhoto: item.main_change_photo, // 이미지 필드명 맞추기
+      worcation_address: item.worcation_address || '',
+      reviews: item.reviews || [],
+    }));
+
+  // 예약 카드의 버튼 렌더링 (상세/예약취소)
+  const renderReservedActions = (item) => (
+    <BtnBox>
+      <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
+      <Btn
+        onClick={() => {
+          console.log('삭제 시도 항목:', item);
+          handleDelete(item.application_no);
+        }}
+      >
+        예약취소
+      </Btn>
+    </BtnBox>
+  );
+
+  // 이용후 카드의 버튼 렌더링 (상세만)
+  const renderUsedActions = (item) => (
+    <BtnBox>
+      <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
+    </BtnBox>
+  );
+
   return (
     <Container>
       <NameBox>
         <SectionTitle>예약</SectionTitle>
       </NameBox>
+      {/* 기존 카드 리스트 주석처리 */}
+      {/*
       <CardList>
         {reservedList.map((item) => (
           <PlaceCard key={item.worcation_no}>
@@ -92,12 +125,19 @@ const WorcationHistory = () => {
           </PlaceCard>
         ))}
       </CardList>
+      */}
+      <WorcationCardList
+        data={convertToCardData(reservedList)}
+        navigate={navigate}
+        mode="view"
+        renderActions={renderReservedActions}
+      />
 
       <NameBox>
         <SectionTitle>예약 내역</SectionTitle>
         <SmallTitle>(이용후)</SmallTitle>
       </NameBox>
-
+      {/*
       <CardList>
         {usedList.map((item) => (
           <BeforePlaceCard key={item.worcation_no}>
@@ -115,6 +155,14 @@ const WorcationHistory = () => {
           </BeforePlaceCard>
         ))}
       </CardList>
+      */}
+      <WorcationCardList
+        data={convertToCardData(usedList)}
+        navigate={navigate}
+        cardStyle={{ background: '#e9e9e9' }}
+        mode="view"
+        renderActions={renderUsedActions}
+      />
     </Container>
   );
 };
@@ -130,6 +178,7 @@ const Btn = styled(ButtonDetail)`
   font-size: ${({ theme }) => theme.fontSizes.base};
   background: ${({ theme }) => theme.colors.secondary};
 `;
+
 
 const BtnBox = styled.div`
   gap: ${({ theme }) => theme.spacing.s2};
