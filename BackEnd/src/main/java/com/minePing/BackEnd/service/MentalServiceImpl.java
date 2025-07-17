@@ -9,6 +9,7 @@ import com.minePing.BackEnd.entity.Mental;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
 import com.minePing.BackEnd.enums.MentalEnums;
+import com.minePing.BackEnd.enums.MentalEnums.Separation;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.MemberPreferenceRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
@@ -43,9 +44,18 @@ public class MentalServiceImpl implements MentalService {
     @Override
     @Transactional
     public void saveStress(MentalDto.StressRequest stressDto) {
+
+        Integer score = stressDto.getScore();
+
+        MentalEnums.PsychologicalState psychologicalState = stressDto.getPsychologicalState(score);
+
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
-        Mental mental = chatClient.prompt()
+        String result_content = chatClient.prompt()
                 .user(userSpec -> userSpec.text(surveyStress)
                         .param("answer1", stressDto.getStress1())
                         .param("answer2", stressDto.getStress2())
@@ -62,15 +72,20 @@ public class MentalServiceImpl implements MentalService {
                         .param("answer13", stressDto.getStress13())
                         .param("answer14", stressDto.getStress14())
                         .param("answer15", stressDto.getStress15())
-                        .param("format","json"))
+                        .param("score", score)
+                        .param("psychologicalState", psychologicalState)
+                )
                 .call()
-                .entity(new ParameterizedTypeReference<Mental>() {});
+                .content();
 
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        Mental mental = Mental.builder()
+                .score(score)
+                .psychologicalState(psychologicalState)
+                .separation(Separation.STRESS)
+                .member(member)
+                .resultContent(result_content)
+                .build();
 
-        mental.changeMemberAndSeparation(member, MentalEnums.Separation.STRESS);
 
         Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
 
@@ -84,9 +99,18 @@ public class MentalServiceImpl implements MentalService {
     @Override
     @Transactional
     public void saveBurnout(MentalDto.BurnoutRequest burnoutDto) {
+
+        Integer score = burnoutDto.getScore();
+
+        MentalEnums.PsychologicalState psychologicalState = burnoutDto.getPsychologicalState(score);
+
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
-        Mental mental = chatClient.prompt()
+        String result_content = chatClient.prompt()
                 .user(userSpec -> userSpec.text(surveyBurnout)
                         .param("answer1", burnoutDto.getBurnout1())
                         .param("answer2", burnoutDto.getBurnout2())
@@ -98,14 +122,19 @@ public class MentalServiceImpl implements MentalService {
                         .param("answer8", burnoutDto.getBurnout8())
                         .param("answer9", burnoutDto.getBurnout9())
                         .param("answer10", burnoutDto.getBurnout10())
-                        .param("format","json"))
+                        .param("score", score)
+                        .param("psychologicalState", psychologicalState)
+                )
                 .call()
-                .entity(new ParameterizedTypeReference<Mental>() {});
+                .content();
 
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-        mental.changeMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        Mental mental = Mental.builder()
+                .score(score)
+                .psychologicalState(psychologicalState)
+                .separation(Separation.BURNOUT)
+                .member(member)
+                .resultContent(result_content)
+                .build();
 
         Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
 
