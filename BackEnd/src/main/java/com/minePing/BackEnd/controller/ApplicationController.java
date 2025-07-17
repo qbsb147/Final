@@ -98,8 +98,8 @@ public class ApplicationController {
     // 예약 확인 (본인만)
     @GetMapping("/reserved")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getReserved(@RequestParam Long userNo) {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getReservedByUser(userNo);
+    public ResponseEntity<List<ApplicationDto.ApplicationApplyDto>> getReserved(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationApplyDto> list = applicationService.getReservedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 
@@ -110,8 +110,8 @@ public class ApplicationController {
     // 지난 예약 정보 확인 (본인만)
     @GetMapping("/used")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ApplicationDto.ApplicationResponseDto>> getUsed(@RequestParam Long userNo) {
-        List<ApplicationDto.ApplicationResponseDto> list = applicationService.getUsedByUser(userNo);
+    public ResponseEntity<List<ApplicationDto.ApplicationApplyDto>> getUsed(@RequestParam Long userNo) {
+        List<ApplicationDto.ApplicationApplyDto> list = applicationService.getUsedByUser(userNo);
         return ResponseEntity.ok(list);
     }
 }

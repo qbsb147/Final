@@ -9,6 +9,10 @@ import useAuthStore from '../../../store/authStore';
 const Application = () => {
   const { loginUser } = useAuthStore();
   const navigate = useNavigate();
+  const passedWorcation = location.state?.worcation;
+  const worcationNo = passedWorcation?.worcation_no;
+  console.log('[Application.jsx] passedWorcation:', passedWorcation);
+  console.log('[Application.jsx] worcationNo:', worcationNo);
 
   useEffect(() => {
     if (!loginUser?.user_id) return;
@@ -17,17 +21,33 @@ const Application = () => {
       navigate('/error');
       return;
     }
-  });
+  }, [loginUser, navigate]);
 
+  useEffect(() => {
+    if (loginUser) {
+      console.log('loginUser =', loginUser); // 디버깅용
+      setFormData((prev) => ({
+        ...prev,
+        company_name: loginUser.company_name || '',
+        licensee: loginUser.licensee || '',
+        company_tel: loginUser.company_tel || '',
+        business_id: loginUser.business_id || '',
+        company_email: loginUser.company_email || '',
+      }));
+    }
+  }, [loginUser]);
+
+  // 인원, 연락처, 이메일은 직접 입력, memberNo/companyNo는 유저에서 자동
   const [formData, setFormData] = useState({
     company_name: '',
     licensee: '',
-    company_tel: '',
+    company_tel: '', // 연락처(직접 입력)
     start_date: '',
     end_date: '',
-    company_people: '',
+    company_people: '', // 인원(직접 입력)
     business_id: '',
-    company_email: '',
+    company_email: '', // 이메일(직접 입력)
+    member_no: loginUser?.user_no || '',
   });
 
   const handleChange = (field) => (e) => {
@@ -36,9 +56,18 @@ const Application = () => {
 
   const handleSubmit = async () => {
     try {
-      await partnerService.create(formData);
+      console.log('loginUser (제출시점) =', loginUser); // 디버깅용
+      const submitData = {
+        ...formData,
+        company_people: Number(formData.company_people),
+        member_no: Number(loginUser?.user_no) || '',
+        company_no: Number(loginUser?.company_no) || '',
+        worcationNo: Number(worcationNo), // 반드시 포함
+      };
+
+      await partnerService.create(submitData);
       alert('제휴 신청이 완료되었습니다.');
-      navigate('/home');
+      navigate('/');
     } catch (error) {
       console.error('제휴 신청 실패:', error);
       alert('제출 중 오류가 발생했습니다.');
@@ -52,12 +81,11 @@ const Application = () => {
           <FormGroup>
             <Label>기업 이름</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="기업 이름"
                 style={InputStyle.InputGray}
-                value={formData.company_name}
-                onChange={handleChange('company_name')}
+                value={formData.companyName}
+                onChange={handleChange('companyName')}
               />
             </InputWrapper>
           </FormGroup>
@@ -65,7 +93,6 @@ const Application = () => {
           <FormGroup>
             <Label>사업자명</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="사업자명"
                 style={InputStyle.InputGray}
@@ -78,12 +105,11 @@ const Application = () => {
           <FormGroup>
             <Label>연락처</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="연락처"
                 style={InputStyle.InputGray}
-                value={formData.company_tel}
-                onChange={handleChange('company_tel')}
+                value={formData.companyTel}
+                onChange={handleChange('companyTel')}
               />
             </InputWrapper>
           </FormGroup>
@@ -94,15 +120,15 @@ const Application = () => {
               <InputDate
                 type="date"
                 style={InputStyle.InputYellow}
-                value={formData.start_date}
-                onChange={handleChange('start_date')}
+                value={formData.startDate}
+                onChange={handleChange('startDate')}
               />
               <DateSeparator>~</DateSeparator>
               <InputDate
                 type="date"
                 style={InputStyle.InputYellow}
-                value={formData.end_date}
-                onChange={handleChange('end_date')}
+                value={formData.endDate}
+                onChange={handleChange('endDate')}
               />
             </DateRangeWrapper>
           </FormGroup>
@@ -112,12 +138,11 @@ const Application = () => {
           <FormGroup>
             <Label>기업 인원</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="제휴 인원"
                 style={InputStyle.InputGray}
-                value={formData.company_people}
-                onChange={handleChange('company_people')}
+                value={formData.companyPeople}
+                onChange={handleChange('companyPeople')}
               />
             </InputWrapper>
           </FormGroup>
@@ -125,12 +150,11 @@ const Application = () => {
           <FormGroup>
             <Label>사업자번호</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="사업자번호"
                 style={InputStyle.InputGray}
-                value={formData.business_id}
-                onChange={handleChange('business_id')}
+                value={formData.businessId}
+                onChange={handleChange('businessId')}
               />
             </InputWrapper>
           </FormGroup>
@@ -138,12 +162,11 @@ const Application = () => {
           <FormGroup>
             <Label>이메일</Label>
             <InputWrapper>
-              <FaUser className="icon" />
               <Input
                 placeholder="이메일"
                 style={InputStyle.InputGray}
-                value={formData.company_email}
-                onChange={handleChange('company_email')}
+                value={formData.companyEmail}
+                onChange={handleChange('companyEmail')}
               />
             </InputWrapper>
           </FormGroup>
@@ -198,14 +221,7 @@ const Label = styled.label`
 
 const InputWrapper = styled.div`
   position: relative;
-
-  .icon {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    color: #dddddd;
-  }
+  gap: 5px;
 `;
 
 const Input = styled.input`

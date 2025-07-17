@@ -238,7 +238,16 @@ const WorcationDetail = () => {
           {loginUser && (
             <TopButtons>
               {loginUser.role !== 'EMPLOYEE' && loginUser.role !== 'WORCATION' && (
-                <ButtonBorder onClick={() => navigate(`/partnership/apply/`)}>제휴 신청</ButtonBorder>
+                <ButtonBorder
+  onClick={() => {
+    console.log('[Detail.jsx] worcation:', worcation);
+    console.log('[Detail.jsx] typeof navigate:', typeof navigate);
+    console.log('[Detail.jsx] navigate function:', navigate);
+    navigate('/partnership/apply', { state: { worcation } });
+  }}
+>
+  제휴 신청
+</ButtonBorder>
               )}
               {loginUser.role !== 'WORCATION' && (
                 <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>
