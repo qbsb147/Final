@@ -95,7 +95,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
           </PlaceCard>
         ))
       ) : (
-        <div>목록이 없습니다.</div>
+        <ErrorDiv>심리검사 테스트를 진행해주세요.</ErrorDiv>
       )}
     </CardList>
   );
@@ -188,4 +188,15 @@ const ThemeText = styled.p`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
+`;
+
+const ErrorDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 16px;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 30px;
 `;

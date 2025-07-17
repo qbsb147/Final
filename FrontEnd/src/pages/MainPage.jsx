@@ -20,21 +20,24 @@ const MainPage = () => {
   const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
 
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
-      setLoading(true);
       try {
         const data = await worcationService.list();
         const appData = await worcationService.applicationList();
         setWorcations(data);
         setApplications(appData);
-        if (loginUser) {
-          await fetchAiWorcations(loginUser.user_no, worcationService);
-        }
       } finally {
         setLoading(false);
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (loginUser) {
+      fetchAiWorcations(loginUser.user_no, worcationService);
+    }
   }, [loginUser, fetchAiWorcations]);
 
   useEffect(() => {
@@ -113,9 +116,9 @@ const MainPage = () => {
           <SectionTitle>AI 추천</SectionTitle>
           <CardList>
             {aiLoading ? (
-              <LoadingOverlay>
+              <AiLoadingOverlay>
                 <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
-              </LoadingOverlay>
+              </AiLoadingOverlay>
             ) : (
               <WorcationCardList data={aiWorcations.slice(0, 3)} navigate={navigate} />
             )}
@@ -191,91 +194,32 @@ const CardList = styled.div`
   gap: 4%;
 `;
 
-const PlaceCard = styled.div`
-  display: flex;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 20px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-bottom: 30px;
-`;
-
-const PlaceImage = styled.img`
-  width: 250px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 20px;
-  margin: 3% 0 3% 3%;
-`;
-
-const CardContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 5% 5% 3% 5%;
-`;
-
-const InfoBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10%;
-  align-items: flex-start;
-  justify-content: space-between;
-`;
-
-const PlaceLocation = styled.p`
-  font-size: 90%;
-  color: #555;
-`;
-
-const PlaceName = styled.h3`
-  font-size: 140%;
-  font-weight: bold;
-`;
-
-const PlaceReview = styled.p`
-  font-size: 90%;
-  color: #333;
-`;
-
-const ThemeBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: end;
-  gap: 5%;
-  border-left: 2px solid #ffdd38;
-  padding-left: 5%;
-`;
-
-const ThemeLabel = styled.p`
-  font-size: 90%;
-  color: #888;
-`;
-
-const ThemeText = styled.p`
-  font-size: 110%;
-  font-weight: bold;
-  color: #000;
-`;
-
-const BottomBanner = styled.div`
-  margin-top: 3%;
-  width: 100%;
-  height: 100px;
-  background: rgba(235, 235, 235, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const LoadingOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+const AiLoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
