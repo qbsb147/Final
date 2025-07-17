@@ -66,13 +66,17 @@ public class MentalServiceImpl implements MentalService {
                 .call()
                 .entity(new ParameterizedTypeReference<Mental>() {});
 
+        if (mental == null) {
+            throw new RuntimeException("AI 응답을 받지 못했습니다.");
+        }
+
         String userId = jwtTokenProvider.getUserIdFromToken();
         Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         mental.changeMemberAndSeparation(member, MentalEnums.Separation.STRESS);
 
-        Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
+        Mental prevMental = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.STRESS).orElse(null);
 
         if(prevMental != null) {
             prevMental.changeThis(mental);
@@ -107,7 +111,7 @@ public class MentalServiceImpl implements MentalService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
         mental.changeMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
 
-        Mental prevMental = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        Mental prevMental = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT).orElse(null);
 
         if(prevMental != null) {
             prevMental.changeThis(mental);
@@ -121,8 +125,8 @@ public class MentalServiceImpl implements MentalService {
         String user_id = jwtTokenProvider.getUserIdFromToken();
         Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
-        Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
-        Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        Mental stress = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.STRESS).orElse(null);
+        Mental burnout = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT).orElse(null);
         MemberPreference memberPreference = memberPreferenceRepository.findByMember(member)
                 .orElse(null);
 
@@ -153,8 +157,8 @@ public class MentalServiceImpl implements MentalService {
         String user_id = jwtTokenProvider.getUserIdFromToken();
         Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
-        Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
-        Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        Mental stress = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.STRESS).orElse(null);
+        Mental burnout = mentalRepository.findTopByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT).orElse(null);
 
         MentalDto.MainResponse mainResponse = new MentalDto.MainResponse();
 

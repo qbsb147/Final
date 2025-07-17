@@ -35,7 +35,7 @@ const MemberListWrap = styled.div`
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing.s10};
   width: 100%;
-  max-width: 1280px;
+  // max-width: 1280px;
 `;
 const Title = styled.h1`
   display: flex;
@@ -68,4 +68,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};
+  overflow-x: auto; // 가로 스크롤 허용
+  min-width: 900px; // 테이블 최소 너비(필요시 조정)
 `;

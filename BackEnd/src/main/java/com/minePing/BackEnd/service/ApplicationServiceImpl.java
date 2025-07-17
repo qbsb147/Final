@@ -213,10 +213,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
 
-        int maxPeople = applications.stream()
-                .findFirst()
-                .map(app -> app.getWorcation().getMaxPeople())
-                .orElse(0);
+        Worcation worcation = worcationRepository.findById(worcationNo)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
+    int maxPeople = worcation.getMaxPeople();
 
         List<RemainingDto> result = new ArrayList<>();
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
