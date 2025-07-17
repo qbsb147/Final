@@ -98,7 +98,10 @@ const WorcationPartnersPage = () => {
           <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
         </LoadingOverlay>
       ) : (
-        <WorcationCardList data={getFilteredWorcations()} navigate={navigate} />
+        <WorcationCardList data={getFilteredWorcations().map(item => ({
+          ...item,
+          mainPhoto: item.mainPhoto || item.main_change_photo,
+        }))} navigate={navigate} />
       )}
     </Container>
   );
