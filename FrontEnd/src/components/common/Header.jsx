@@ -4,6 +4,7 @@ import bgImg from '../../assets/backgroundImg.jpg';
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import useSearchStore from '../../store/useSearchStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiUser } from 'react-icons/fi';
@@ -63,29 +64,17 @@ const Header = () => {
   const isLoggedIn = Boolean(loginUser);
   const role = loginUser?.role;
 
-  /*
-  // 기존 코드: 로그인 메뉴 가공 및 menus 사용
-  const menus = menuData.map((menu) => {
-    if (menu.title === '로그인') {
-      if (isLoggedIn) {
-        return {
-          ...menu,
-          title: loginUser.user_name + '님' || '내 정보',
-          path: '/my/info',
-          items: [
-            { title: '내 정보', path: '/my/info' },
-            { title: '신체 정보', path: '/my/body' },
-            { title: '예약자 명단', path: 'my/reservation' },
-            { title: '워케이션 신청내역', path: '/my/worcation-history' },
-            { title: '로그아웃', path: '/logout' },
-          ],
-        };
-      }
-      return menu;
-    }
-    return menu;
-  });
-  */
+  // searchStore 초기화 함수들
+  const setKeyword = useSearchStore((state) => state.setKeyword);
+  const setDates = useSearchStore((state) => state.setDates);
+  const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
+
+  // 로고 클릭 시 searchStore 초기화
+  const handleLogoClick = () => {
+    setKeyword('');
+    setDates(null, null);
+    setPopularKeywords([]);
+  };
 
   // 신규 코드: 로그인 메뉴 가공 후 role별로 filteredMenus로 가공
   const menus = menuData.map((menu) => {
@@ -153,7 +142,7 @@ const Header = () => {
       <HeaderBg>
         <HeaderInner>
           <LogoWrap>
-            <Link to="/">
+            <Link to="/" onClick={handleLogoClick}>
               <LogoImg src={logo} alt="logo" />
             </Link>
           </LogoWrap>
