@@ -35,7 +35,7 @@ public class Worcation {
     @Enumerated(EnumType.STRING)
     private WorcationEnums.Category worcationCategory;
 
-    @Column(name = "main_change_photo",length = 100)
+    @Column(name = "main_change_photo",length = 512)
     private String mainChangePhoto;
 
     @Column(name = "worcation_thema",length = 20)

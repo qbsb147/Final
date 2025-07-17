@@ -20,7 +20,7 @@ public class Photo {
     @JoinColumn(name = "worcation_no", nullable = false)
     private Worcation worcation;
 
-    @Column(name = "change_name", length = 100, nullable = false)
+    @Column(name = "change_name", length = 500, nullable = false)
     private String changeName;
 
     @Column(name = "image_url", length = 500)
