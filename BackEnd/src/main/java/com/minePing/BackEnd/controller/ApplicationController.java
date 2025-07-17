@@ -52,7 +52,7 @@ public class ApplicationController {
 
     //워케이션 업체 별 신청 현황
     @GetMapping("/reserved_by_worcation")
-    @PreAuthorize("hasRole('ROLE_WORCATION')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ApplicationDto.ReservedResponseDto>> getReservedByWorcation(
             @RequestParam Long worcationNo) {
         List<ApplicationDto.ReservedResponseDto> list = applicationService.getReservedByWorcation(worcationNo);

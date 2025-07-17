@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { DateRange } from 'react-date-range';
+import React from 'react';
+import { Calendar } from 'react-date-range';
 import { ko } from 'date-fns/locale';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
@@ -10,30 +10,12 @@ function ApplySampleCalendar({
   datePeopleMap = {},
   fullDates = {},
 }) {
-  const [state, setState] = useState([
-    {
-      startDate: selectedDates[0],
-      endDate: selectedDates[1],
-      key: 'selection',
-    },
-  ]);
-
-  useEffect(() => {
-    setState([
-      {
-        startDate: selectedDates[0],
-        endDate: selectedDates[1],
-        key: 'selection',
-      },
-    ]);
-  }, [selectedDates]);
-
   // 날짜 셀: 날짜 숫자 + 인원/마감 (간격 넓게)
   const renderDayContent = (date) => {
     const d = date.toISOString().slice(0, 10);
-    // 선택된 날짜인지 확인
-    const isSelected = state[0] && state[0].startDate && state[0].endDate &&
-      date >= state[0].startDate && date <= state[0].endDate;
+    const reserved = datePeopleMap[d]?.reserved ?? 0;
+    let max = datePeopleMap[d]?.max ?? 0;
+    if (max === 0) max = 30; // max가 0이면 30으로 대체
     return (
       <div style={{
         display: 'flex',
@@ -42,12 +24,12 @@ function ApplySampleCalendar({
         justifyContent: 'space-between',
         padding: 0,
       }}>
-        <span style={{ color: isSelected ? '#fff' : 'black', fontSize: 16 }}>{date.getDate()}</span>
+        <span style={{ fontSize: 16 }}>{date.getDate()}</span>
         {fullDates[d] ? (
-          <span style={{ color: isSelected ? '#fff' : 'red', fontSize: 12 }}>마감</span>
+          <span style={{ color: 'red', fontSize: 12 }}>마감</span>
         ) : datePeopleMap[d] ? (
-          <span style={{ color: isSelected ? '#fff' : 'blue', fontSize: 12 }}>
-            {datePeopleMap[d].reserved} / {datePeopleMap[d].max}
+          <span style={{ color: 'blue', fontSize: 12 }}>
+            {reserved} / {max}
           </span>
         ) : <span style={{ height: 14 }}></span>}
       </div>
@@ -67,17 +49,11 @@ function ApplySampleCalendar({
         padding: 20,
       }}
     >
-      <DateRange
-        editableDateInputs={true}
-        onChange={(item) => {
-          setState([item.selection]);
-          setSelectedDates([item.selection.startDate, item.selection.endDate]);
-        }}
-        moveRangeOnFirstSelection={false}
-        ranges={state}
+      <Calendar
         locale={ko}
         minDate={new Date()}
         dayContentRenderer={renderDayContent}
+        onChange={() => {}}
       />
       <style>
         {`
@@ -89,6 +65,7 @@ function ApplySampleCalendar({
           }
           .rdrDayNumber span {
             font-size: 18px !important;
+            color: black !important;
           }
           .rdrMonth {
             width: 100% !important;
@@ -101,6 +78,7 @@ function ApplySampleCalendar({
           .rdrWeekDays, .rdrDays, .rdrMonth {
             margin-bottom: 0 !important;
           }
+          /* hover 효과 제거 */
         `}
       </style>
     </div>
