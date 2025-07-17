@@ -1,92 +1,111 @@
 import styled from 'styled-components';
-import { ButtonBorder, ButtonDetail } from '../../styles/Button.styles';
+import { ButtonDetail } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import Swal from 'sweetalert2';
+import useAuthStore from '../../store/authStore';
+import { applicationService } from '../../api/application';
+import { worcationService } from '../../api/worcations';
+import WorcationCardList from '../../components/worcation/WorcationCardList';
 
-const History = () => {
+const WorcationHistory = () => {
   const navigate = useNavigate();
   const [reservedList, setReservedList] = useState([]);
   const [usedList, setUsedList] = useState([]);
+  const { loginUser } = useAuthStore();
 
-  const fetchReservationData = async () => {
+  useEffect(() => {
+    if (!loginUser?.user_no) return;
+    getReservedWorcation();
+  }, [loginUser?.user_no]);
+
+  const getReservedWorcation = async () => {
     try {
-      const res = await axios.get('/api/reservations'); // 백엔드에서 데이터 받아오기
-      const all = res.data;
+      const reserved = await applicationService.reserved(loginUser.user_no);
 
-      const reserved = all.filter((item) => item.status === 'RESERVED'); // 예약 중
-      const used = all.filter((item) => item.status === 'USED');         // 이용 완료
-
+      const used = await applicationService.used(loginUser.user_no);
       setReservedList(reserved);
       setUsedList(used);
     } catch (err) {
-      console.error('예약 데이터 불러오기 실패:', err);
+      console.log('예약 데이터 조회 실패:', err);
     }
   };
 
-  const handleDetail = (id) => {
-    navigate(`/worcation/detail/${id}`);
+  const handleDelete = async (application_no) => {
+    try {
+      const confirm = await Swal.fire({
+        title: '삭제하시겠습니까?',
+        showCancelButton: true,
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+      });
+      if (confirm.isConfirmed) {
+        await applicationService.delete(application_no);
+        Swal.fire('삭제 완료', '예약이 삭제되었습니다.', 'success');
+        // 삭제 후 목록 다시 불러오기
+        getReservedWorcation(); // 예약 목록 재조회 함수
+      }
+    } catch (error) {
+      Swal.fire('삭제 실패', '예약 삭제 중 문제가 발생했습니다.', 'error');
+      console.error(error);
+    }
   };
 
-  useEffect(() => {
-    fetchReservationData();
-  }, []);
+  // WorcationCardList에 맞는 데이터 변환(mainPhoto 필드 추가)
+  const convertToCardData = (list) =>
+    list.map((item) => ({
+      ...item,
+      mainPhoto: item.main_change_photo, // 이미지 필드명 맞추기
+      worcation_address: item.worcation_address || '',
+      reviews: item.reviews || [],
+    }));
 
+  // 예약 카드의 버튼 렌더링 (상세/예약취소)
+  const renderReservedActions = (item) => (
+    <BtnBox>
+      <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
+      <Btn
+        onClick={() => {
+          console.log('삭제 시도 항목:', item);
+          handleDelete(item.application_no);
+        }}
+      >
+        예약취소
+      </Btn>
+    </BtnBox>
+  );
 
-const WorcationHistory = () => {
+  // 이용후 카드의 버튼 렌더링 (상세만)
+  const renderUsedActions = (item) => (
+    <BtnBox>
+      <Btn onClick={() => navigate(`/worcation/${item.worcation_no}`)}>상세보기</Btn>
+    </BtnBox>
+  );
+
   return (
     <Container>
       <NameBox>
         <SectionTitle>예약</SectionTitle>
       </NameBox>
- <CardList>
-        {reservedList.map((item) => (
-          <PlaceCard key={item.id}>
-            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
-            <CardContent>
-              <InfoBlock>
-                <PlaceLocation>{item.address}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
-              </InfoBlock>
-              <ThemeBlock>
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
-                <BtnBox>
-                  <Btn onClick={() => handleDetail(item.id)}>상세보기</Btn>
-                  <Btn>예약취소</Btn>
-                </BtnBox>
-              </ThemeBlock>
-            </CardContent>
-          </PlaceCard>
-        ))}
-      </CardList>
 
+      <WorcationCardList
+        data={convertToCardData(reservedList)}
+        navigate={navigate}
+        mode="view"
+        renderActions={renderReservedActions}
+      />
 
       <NameBox>
         <SectionTitle>예약 내역</SectionTitle>
         <SmallTitle>(이용후)</SmallTitle>
       </NameBox>
-
-  <CardList>
-        {usedList.map((item) => (
-          <BeforePlaceCard key={item.id}>
-            <PlaceImage src={item.thumbnailUrl || '/default.jpg'} alt={item.name} />
-            <CardContent>
-              <InfoBlock>
-                <PlaceLocation>{item.address}</PlaceLocation>
-                <PlaceName>{item.name}</PlaceName>
-              </InfoBlock>
-              <ThemeBlock>
-                <ThemeLabel>테마</ThemeLabel>
-                <ThemeText>{item.theme}</ThemeText>
-                <BtnBox>
-                  <BeforeBtn onClick={() => handleDetail(item.id)}>업체상세 보기</BeforeBtn>
-                </BtnBox>
-              </ThemeBlock>
-            </CardContent>
-          </BeforePlaceCard>
-        ))}
-      </CardList>
+      <WorcationCardList
+        data={convertToCardData(usedList)}
+        navigate={navigate}
+        cardStyle={{ background: '#e9e9e9' }}
+        mode="view"
+        renderActions={renderUsedActions}
+      />
     </Container>
   );
 };
@@ -182,6 +201,11 @@ const InfoBlock = styled.div`
 `;
 
 const PlaceLocation = styled.p`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.gray[600]};
+`;
+
+const DateText = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   color: ${({ theme }) => theme.colors.gray[600]};
 `;
