@@ -100,7 +100,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete, renderActi
           </PlaceCard>
         ))
       ) : (
-        <ErrorDiv>심리검사 테스트를 진행해주세요.</ErrorDiv>
+        <ErrorDiv>목록이 없습니다다.</ErrorDiv>
       )}
     </CardList>
   );

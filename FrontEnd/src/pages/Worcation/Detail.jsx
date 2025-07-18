@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import { worcationService } from '../../api/worcations.js';
 import useAuthStore from '../../store/authStore.js';
+import useSelectedWorcationStore from '../../store/selectedWorcationStore.js';
 
 const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
 
@@ -24,6 +25,7 @@ const WorcationDetail = () => {
   const [editingId, setEditingId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
   const [appData, setAppData] = useState(null);
+  const setSelectedWorcation = useSelectedWorcationStore((state) => state.setSelectedWorcation);
   const settings = {
     dots: true,
     infinite: true,
@@ -238,16 +240,14 @@ const WorcationDetail = () => {
           {loginUser && (
             <TopButtons>
               {loginUser.role !== 'EMPLOYEE' && loginUser.role !== 'WORCATION' && (
-                <ButtonBorder
-  onClick={() => {
-    console.log('[Detail.jsx] worcation:', worcation);
-    console.log('[Detail.jsx] typeof navigate:', typeof navigate);
-    console.log('[Detail.jsx] navigate function:', navigate);
-    navigate('/partnership/apply', { state: { worcation } });
-  }}
->
-  제휴 신청
-</ButtonBorder>
+              <ButtonBorder
+              onClick={() => {
+                setSelectedWorcation(worcation);
+                navigate('/partnership/apply');
+              }}
+            >
+              제휴 신청
+            </ButtonBorder>
               )}
               {loginUser.role !== 'WORCATION' && (
                 <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>

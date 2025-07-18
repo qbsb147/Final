@@ -3,16 +3,20 @@ import styled from 'styled-components';
 import { FaUser } from 'react-icons/fa';
 import Button from '../../../styles/Button';
 import InputStyle from '../../../styles/Input';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { partnerService } from '../../../api/partner';
 import useAuthStore from '../../../store/authStore';
+import useSelectedWorcationStore from '../../../store/selectedWorcationStore';
 const Application = () => {
   const { loginUser } = useAuthStore();
   const navigate = useNavigate();
-  const passedWorcation = location.state?.worcation;
-  const worcationNo = passedWorcation?.worcation_no;
-  console.log('[Application.jsx] passedWorcation:', passedWorcation);
-  console.log('[Application.jsx] worcationNo:', worcationNo);
+  // 간단한 방법: zustand store에서 선택된 워케이션 가져오기
+  const selectedWorcation = useSelectedWorcationStore((s) => s.selectedWorcation);
+  const worcationNo = selectedWorcation?.worcation_no;
+  // const worcationNo = selectedWorcation?.worcation_no || localStorage.getItem('selectedWorcationNo'); // 임시 방법(주석)
+
+  const setSelectedWorcation = useSelectedWorcationStore((state) => state.setSelectedWorcation);
+
 
   useEffect(() => {
     if (!loginUser?.user_id) return;
@@ -62,7 +66,8 @@ const Application = () => {
         company_people: Number(formData.company_people),
         member_no: Number(loginUser?.user_no) || '',
         company_no: Number(loginUser?.company_no) || '',
-        worcationNo: Number(worcationNo), // 반드시 포함
+        // worcationNo: '1',
+        worcation_no: Number(worcationNo), // store에서 가져온 번호 사용
       };
 
       await partnerService.create(submitData);
@@ -84,8 +89,8 @@ const Application = () => {
               <Input
                 placeholder="기업 이름"
                 style={InputStyle.InputGray}
-                value={formData.companyName}
-                onChange={handleChange('companyName')}
+                value={formData.company_name}
+                onChange={handleChange('company_name')}
               />
             </InputWrapper>
           </FormGroup>
@@ -108,8 +113,8 @@ const Application = () => {
               <Input
                 placeholder="연락처"
                 style={InputStyle.InputGray}
-                value={formData.companyTel}
-                onChange={handleChange('companyTel')}
+                value={formData.company_tel}
+                onChange={handleChange('company_tel')}
               />
             </InputWrapper>
           </FormGroup>
@@ -120,15 +125,15 @@ const Application = () => {
               <InputDate
                 type="date"
                 style={InputStyle.InputYellow}
-                value={formData.startDate}
-                onChange={handleChange('startDate')}
+                value={formData.start_date}
+                onChange={handleChange('start_date')}
               />
               <DateSeparator>~</DateSeparator>
               <InputDate
                 type="date"
                 style={InputStyle.InputYellow}
-                value={formData.endDate}
-                onChange={handleChange('endDate')}
+                value={formData.end_date}
+                onChange={handleChange('end_date')}
               />
             </DateRangeWrapper>
           </FormGroup>
@@ -141,8 +146,8 @@ const Application = () => {
               <Input
                 placeholder="제휴 인원"
                 style={InputStyle.InputGray}
-                value={formData.companyPeople}
-                onChange={handleChange('companyPeople')}
+                value={formData.company_people}
+                onChange={handleChange('company_people')}
               />
             </InputWrapper>
           </FormGroup>
@@ -153,8 +158,8 @@ const Application = () => {
               <Input
                 placeholder="사업자번호"
                 style={InputStyle.InputGray}
-                value={formData.businessId}
-                onChange={handleChange('businessId')}
+                value={formData.business_id}
+                onChange={handleChange('business_id')}
               />
             </InputWrapper>
           </FormGroup>
@@ -165,8 +170,8 @@ const Application = () => {
               <Input
                 placeholder="이메일"
                 style={InputStyle.InputGray}
-                value={formData.companyEmail}
-                onChange={handleChange('companyEmail')}
+                value={formData.company_email}
+                onChange={handleChange('company_email')}
               />
             </InputWrapper>
           </FormGroup>
