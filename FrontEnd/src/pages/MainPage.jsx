@@ -120,7 +120,10 @@ const MainPage = () => {
                 <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
               </AiLoadingOverlay>
             ) : (
-              <WorcationCardList data={aiWorcations.slice(0, 3)} navigate={navigate} />
+              <WorcationCardList data={aiWorcations.slice(0, 3).map(item => ({
+                ...item,
+                mainPhoto: item.main_change_photo,
+              }))} navigate={navigate} />
             )}
           </CardList>
         </>
@@ -129,7 +132,10 @@ const MainPage = () => {
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
       </SectionTitle>
-      <WorcationCardList data={sortedWorcations.slice(0, 10)} navigate={navigate} />
+      <WorcationCardList data={sortedWorcations.slice(0, 10).map(item => ({
+        ...item,
+        mainPhoto: item.main_change_photo,
+      }))} navigate={navigate} />
     </Container>
   );
 };

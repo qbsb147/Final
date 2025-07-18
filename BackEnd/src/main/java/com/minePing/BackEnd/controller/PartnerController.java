@@ -28,6 +28,7 @@ public class PartnerController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_MASTER') OR hasRole('ROLE_MANAGER')")
     public ResponseEntity<String> createApplication(@RequestBody PartnerDto requestDto) {
+        System.out.println("[DEBUG] PartnerDto requestDto = " + requestDto); // 디버깅용 로그
         partnerService.saveApplication(requestDto);
         return ResponseEntity.ok("신청 완료");
     }

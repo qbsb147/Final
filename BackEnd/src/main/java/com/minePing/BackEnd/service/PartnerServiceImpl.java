@@ -32,6 +32,9 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public void saveApplication(PartnerDto dto) {
+        System.out.println("[DEBUG] saveApplication - companyNo = " + dto.getCompanyNo());
+        System.out.println("[DEBUG] saveApplication - worcationNo = " + dto.getWorcationNo());
+        System.out.println("[DEBUG] saveApplication - memberNo = " + dto.getMemberNo());
         Worcation worcation = worcationRepository.findById(dto.getWorcationNo())
                 .orElseThrow(() -> new IllegalArgumentException("워케이션 없음"));
 
