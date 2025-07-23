@@ -75,7 +75,7 @@ public class PartnerDto {
 
     @Getter
     @Setter
-    public class PartnerApproveRequestDto {
+    public static class PartnerApproveRequestDto {
         private Approve approve; // W, Y, N 중 하나 (대기, 승인, 거절)
     }
 }

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ReusableTable from './ReusableTable';
 import { partnerService } from '../../../api/partner';
-
-const PartnerApprovedListTable = ({ user_no }) => {
+import useAuthStore from '../../../store/authStore';
+const PartnerApprovedListTable = () => {
+  const loginUser = useAuthStore((state) => state.loginUser);
+  const user_no = loginUser?.user_no;
   const [data, setData] = useState([]);
 
   // 백엔드에서 데이터 불러오기
@@ -18,7 +20,7 @@ const PartnerApprovedListTable = ({ user_no }) => {
         email: item.company_email,
         TIN: item.business_id,
         period: `${item.start_date} ~ ${item.end_date}`,
-        actions: item.approve,
+        text: '승인',
       }));
       setData(formattedData);
     } catch (error) {
@@ -27,18 +29,20 @@ const PartnerApprovedListTable = ({ user_no }) => {
   };
 
   useEffect(() => {
+    if (!user_no) return;
     fetchData();
-  }, []);
+  }, [user_no]);
+
   const columns = [
-    { header: '번호', accessor: 'No' },
-    { header: '기업명', accessor: 'CompanyName' },
+    { header: '번호', accessor: 'partner_no' },
+    { header: '기업명', accessor: 'company_name' },
     { header: '사업자명', accessor: 'name' },
     { header: '인원', accessor: 'personnel' },
     { header: '연락처', accessor: 'phone' },
     { header: '이메일', accessor: 'email' },
     { header: '사업자번호', accessor: 'TIN' },
     { header: '기간', accessor: 'period' },
-    { header: '승인 여부', accessor: 'actions' },
+    { header: '승인 여부', accessor: 'text' },
   ];
 
   return <ReusableTable columns={columns} data={data} />;

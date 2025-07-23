@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class HealthServiceImpl implements HealthService {
 
     private final HealthRepository healthRepository;
@@ -45,6 +45,7 @@ public class HealthServiceImpl implements HealthService {
     }
 
     @Override
+    @Transactional
     public void saveHealth(Request healthDto) {
         String userId = jwtTokenProvider.getUserIdFromToken();
         Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
@@ -55,6 +56,7 @@ public class HealthServiceImpl implements HealthService {
     }
 
     @Override
+    @Transactional
     public void updateHealth(Request healthDto) {
         String userId = jwtTokenProvider.getUserIdFromToken();
         Health health = healthRepository.findByMember_UserId(userId)
@@ -63,5 +65,6 @@ public class HealthServiceImpl implements HealthService {
                 .orElseThrow(UserNotFoundException::new);
         health.changeThis(healthDto);
         health.changeMember(member);
+        healthRepository.flush();
     }
 }

@@ -34,11 +34,6 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
     }
   }, [externalKeyword]);
 
-  // inputKeyword가 바뀔 때마다 store에 저장
-  useEffect(() => {
-    setKeyword(inputKeyword);
-  }, [inputKeyword, setKeyword]);
-
   // '확인' 버튼을 누를 때만 날짜 적용 및 zustand에 반영
   const handleCalendarConfirm = (dates) => {
     setSelectedDates(dates);
@@ -68,11 +63,6 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
   // 추천 검색어 클릭 시 keyword에 반영
   const handleKeywordClick = (word) => {
     setInputKeyword(word);
-    if (onSearch) onSearch(word);
-    setShowCalendar(false);
-    // 추천 검색어를 store에 저장하고 전체 리스트 페이지로 이동
-    setKeyword(word);
-    navigate('/worcation');
   };
 
   useEffect(() => {
@@ -145,9 +135,7 @@ const SearchBar = ({ onSearch, keyword: externalKeyword, popularKeywords = [] })
 const BackWrap = styled.div`
   display: flex;
   justify-content: center;
-  background-color: ${({ theme }) => theme.colors.gray[100]};
   width: 100%;
-  padding: 100px 0;
   margin-top: 140px;
   margin-bottom: 40px;
   position: relative;

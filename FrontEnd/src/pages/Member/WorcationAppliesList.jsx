@@ -1,36 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+
 import styled from 'styled-components';
 import LeftContent from '../../components/Member/LeftContent';
 import WorcationTable from '../../components/Member/table/WorcationTable';
 import CalenderContainoer from '../../components/Member/CalenderContainoer';
-import useAuthStore from '../../store/authStore';
-import MemberSearchBar from '../../components/Member/MemberSearchBar'; // 검색 바가 있다면 추가
+import MemberSearchBar from '../../components/Member/MemberSearchBar';
 
 const WorcationAppliesList = () => {
-  const { loginUser } = useAuthStore();
-  const navigate = useNavigate();
-  const alertedRef = useRef(false);
-
   const [searchKeyword, setSearchKeyword] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
-
-  // 권한 체크 주석 해제해도 되고 필요시 사용하세요
-  /*
-  useEffect(() => {
-    if (alertedRef.current) return;
-
-    if (!loginUser || !['manager', 'master'].includes(loginUser.role)) {
-      alertedRef.current = true;
-      alert('접근 권한이 없습니다.');
-      navigate('/');
-    }
-  }, [loginUser, navigate]);
-
-  if (!loginUser || !['manager', 'master'].includes(loginUser.role)) {
-    return null;
-  }
-  */
 
   return (
     <MemberListWrap>
@@ -57,7 +35,7 @@ const MemberListWrap = styled.div`
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing.s10};
   width: 100%;
-  max-width: 1280px;
+  // max-width: 1280px;
 `;
 const Title = styled.h1`
   display: flex;
@@ -84,11 +62,12 @@ const MainContent = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: ${({ theme }) => theme.spacing.s6};
   min-height: 600px;
-  height: 100vh;
 `;
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.s6};
+  overflow-x: auto; // 가로 스크롤 허용
+  min-width: 900px; // 테이블 최소 너비(필요시 조정)
 `;

@@ -61,7 +61,7 @@ export const useMasterForm = yup.object().shape({
     .string()
     .matches(/^\d{10}$/, '사업자번호 형식은 10자리 번호입니다.')
     .required('사업자번호를 입력해주세요.'),
-  licensee: yup.string().required('사업자명을 입력해주세요.'),
+  // licensee: yup.string().required('사업자명을 입력해주세요.'),
   open_date: yup
     .date()
     .typeError('유효한 날짜 형식이 아닙니다.')

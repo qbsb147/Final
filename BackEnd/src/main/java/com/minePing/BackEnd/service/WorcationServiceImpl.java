@@ -452,14 +452,68 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
-        // 기존 연관관계 삭제
-        worcation.getWorcationAmenities().clear();
 
-        if (amenityIds != null) {
-            for (Long amenityId : amenityIds) {
-                Amenity amenity = amenityRepository.findById(amenityId)
-                    .orElseThrow(() -> new RuntimeException("Amenity not found: " + amenityId));
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<WorcationDto.Response> findAllByNos(List<Long> ids) {
+        List<Worcation> worcations = worcationRepository.findAllByWorcationNoIn(ids);
+
+
+        // 중복 제거 (중복될 경우 toSet() → toList() 가능)
+        return worcations.stream()
+                .distinct()
+                .map(w -> {
+                    WorcationDetail d = w.getWorcationDetail();
+                    WorcationFeatures f = w.getWorcationFeatures();
+
+                    List<Amenity> amenities = w.getWorcationAmenities().stream()
+                            .map(WorcationAmenity::getAmenity)
+                            .collect(Collectors.toList());
+
+                    List<Photo> photos = new ArrayList<>(w.getPhotos());
+
+                    List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
+
+                    List<Review> reviews = w.getWorcationApplications().stream()
+                            .map(WorcationApplication::getReview)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+
+                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                })
+                .collect(Collectors.toList());
+    }
+    //여러개 조회
+    @Override
+    public List<WorcationDto.Response> findByIds(List<Long> ids) {
+        return worcationRepository.findAllById(ids)
+            .stream()
+            .map(w -> WorcationDto.Response.fromEntity(
+                w,
+                w.getWorcationDetail(),
+                w.getWorcationFeatures(),
+                new ArrayList<>(w.getWorcationPartners()),
+                w.getWorcationApplications().stream()
+                    .map(WorcationApplication::getReview)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()),
+                w.getWorcationAmenities().stream()
+                    .map(WorcationAmenity::getAmenity)
+                    .collect(Collectors.toList()),
+                new ArrayList<>(w.getPhotos())
+            ))
+            .collect(Collectors.toList());
+    }
+
+    private void saveAmenities(Worcation worcation, List<Long> amenityIds) {
+        if (amenityIds == null) return;
+        // 기존 연관된 amenity 모두 삭제
+        worcation.getWorcationAmenities().clear();
+        // 새로 amenity 추가
+        for (Long amenityId : amenityIds) {
+            Amenity amenity = amenityRepository.findById(amenityId).orElse(null);
+            if (amenity != null) {
                 WorcationAmenity wa = WorcationAmenity.builder()
                     .worcation(worcation)
                     .amenity(amenity)
@@ -468,5 +522,4 @@ public class WorcationServiceImpl implements WorcationService {
             }
         }
     }
-
 }

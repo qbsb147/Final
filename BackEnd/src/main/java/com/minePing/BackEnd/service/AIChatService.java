@@ -1,7 +1,12 @@
 package com.minePing.BackEnd.service;
 
-import java.util.Map;
+import java.util.List;
+
+import com.minePing.BackEnd.dto.AiDto;
+import com.minePing.BackEnd.dto.AiDto.AIWorcationDto;
+
 
 public interface AIChatService {
-    Map<String, String> processChat(Long userNo, String message);
+    AiDto.AiEat getPromptDataByUser(Long userNo);
+    AIWorcationDto getAiWorcationByUser(Long userNo);
 }

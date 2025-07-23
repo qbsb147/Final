@@ -44,6 +44,7 @@ public class MemberController {
         String json = objectMapper.writerWithDefaultPrettyPrinter()
                         .writeValueAsString(masterJoinDto);
         log.debug("json = \n{}",json);
+        System.out.println("masterJoinDto = " + masterJoinDto.getMasterProfileJoinDto().getCompany_phone());
         memberService.createMasterMember(masterJoinDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -98,11 +99,11 @@ public class MemberController {
     }
 
     @PatchMapping("{userNo}")
-    @PreAuthorize("hasRole('MASTER') OR hasRole('MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MASTER')")
     public ResponseEntity<String> updateRole(@PathVariable Long userNo,@RequestBody MemberDto.UpdateRole updateRoleDto) {
         try {
-            memberService.updateRole(userNo,updateRoleDto);
-            return ResponseEntity.ok("등급 변경 성공");
+            String jwt = memberService.updateRole(userNo,updateRoleDto);
+            return ResponseEntity.ok(jwt);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

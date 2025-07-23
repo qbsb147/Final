@@ -47,8 +47,9 @@ public class Mental {
         this.updateDate = LocalDate.now();
     }
 
-    public void changeMemberAndSeparation(Member member, MentalEnums.Separation separation) {
-        this.member = member;
-        this.separation = separation;
+    public void changeThis(Mental prevMental) {
+        this.score = prevMental.getScore();
+        this.psychologicalState = prevMental.getPsychologicalState();
+        this.resultContent = prevMental.getResultContent();
     }
 }

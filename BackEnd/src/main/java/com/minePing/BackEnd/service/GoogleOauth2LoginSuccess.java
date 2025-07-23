@@ -63,13 +63,15 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             Cookie jwtCookie = new Cookie("token", jwtToken);
             jwtCookie.setPath("/");
             response.addCookie(jwtCookie);
-            response.sendRedirect("http://localhost:5173/signUp");
+            response.sendRedirect("http://https://localhost:5173/signUp");
+//            response.sendRedirect("http://https://mineping.store/signUp");
             return;
         }
         String jwtToken = jwtTokenProvider.createToken(member.getUserId(), member.getRole());
         Cookie jwtCookie = new Cookie("token", jwtToken);
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
-        response.sendRedirect("http://localhost:5173");
+        response.sendRedirect("http://https://localhost:5173");
+//        response.sendRedirect("http://https://mineping.store");
     }
 }

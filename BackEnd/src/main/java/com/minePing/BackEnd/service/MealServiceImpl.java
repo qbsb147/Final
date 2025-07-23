@@ -3,11 +3,15 @@ package com.minePing.BackEnd.service;
 import com.minePing.BackEnd.auth.JwtTokenProvider;
 import com.minePing.BackEnd.dto.MealDto;
 import com.minePing.BackEnd.entity.Health;
+import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
+import com.minePing.BackEnd.enums.CommonEnums.Status;
 import com.minePing.BackEnd.enums.MentalEnums;
+import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.HealthRepository;
 import com.minePing.BackEnd.repository.MemberPreferenceRepository;
+import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.repository.MentalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ public class MealServiceImpl implements MealService {
     private final MentalRepository mentalRepository;
     private final MemberPreferenceRepository memberPreferenceRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MemberRepository memberRepository;
 
     @Override
     public MealDto.check check() {
@@ -41,12 +46,14 @@ public class MealServiceImpl implements MealService {
         boolean stress = false;
 
         String user_id = jwtTokenProvider.getUserIdFromToken();
+        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+                .orElseThrow(() -> new UserNotFoundException());
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-        Health health =healthRepository.findByMember_UserIdAndUpdateDateAfter(user_id, oneMonthAgo);
+        Health health =healthRepository.findByMember(member);
         if (health != null) {
             body = true;
         }
-        for (Mental mental : mentalRepository.findByMember_UserIdAndUpdateDateAfter(user_id, oneMonthAgo)) {
+        for (Mental mental : mentalRepository.findByMemberAndUpdateDateAfter(member, oneMonthAgo)) {
             if (mental.getSeparation() == MentalEnums.Separation.BURNOUT) {
                 burnout = true;
             } else if (mental.getSeparation() == MentalEnums.Separation.STRESS) {
@@ -56,7 +63,8 @@ public class MealServiceImpl implements MealService {
                 break;
             }
         }
-        List<MemberPreference> memberPreferences = memberPreferenceRepository.findByMember_UserIdAndUpdateDateAfter(user_id, oneMonthAgo);
+
+        List<MemberPreference> memberPreferences = memberPreferenceRepository.findByMemberAndUpdateDateAfter(member, oneMonthAgo);
         if (!memberPreferences.isEmpty()) {
             preference = true;
         }

@@ -18,11 +18,13 @@ public interface ApplicationService {
 
     Map<LocalDate, Boolean> getFullyReservedDates(Long worcationNo, LocalDate start, LocalDate end);
 
-    List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo);
-    List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo);
+    List<ApplicationDto.ApplicationApplyDto> getReservedByUser(Long userNo);
+    List<ApplicationDto.ApplicationApplyDto> getUsedByUser(Long userNo);
     List<ApplicationDto.ReservedResponseDto> getReservedByWorcation(Long worcationNo);
 
     List<LocalDate> getFullDates(Long worcationNo, String startDate, String endDate);
 
     List<ApplicationDto.RemainingDto> getRemainingByWorcation(Long worcationNo, String startDate, String endDate);
+
+
 }

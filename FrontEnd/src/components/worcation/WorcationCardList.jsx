@@ -6,7 +6,7 @@ import useAuthStore from '../../store/authStore';
 import useWorcationStore from '../../store/useWorcationStore';
 import defaultWorcationImage from '../../assets/default-worcation.png';
 
-const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
+const WorcationCardList = ({ data, navigate, mode = 'view', onDelete, renderActions, cardStyle, hideReviewCount }) => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const resetStore = useWorcationStore((state) => state.resetAll);
   const [imageErrors, setImageErrors] = useState({});
@@ -62,7 +62,10 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
     <CardList>
       {data && data.length > 0 ? (
         data.map((item) => (
-          <PlaceCard key={item.worcation_no}>
+          <PlaceCard
+            key={item.worcation_no}
+            style={cardStyle} // 카드별 스타일 prop 적용
+          >
             <picture>
               <PlaceImage
                 src={getImageSrc(item)}
@@ -77,12 +80,14 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
                   {item.worcation_address ? item.worcation_address.split(' ').slice(0, 2).join(' ') : ''}
                 </PlaceLocation>
                 <PlaceName>{item.worcation_name}</PlaceName>
-                <PlaceReview>리뷰 ({item.reviews ? item.reviews.length : 0})</PlaceReview>
+                <PlaceReview>{!hideReviewCount && `리뷰 (${item.reviews ? item.reviews.length : 0})`}</PlaceReview>
               </InfoBlock>
               <ThemeBlock>
                 <ThemeLabel>테마</ThemeLabel>
                 <ThemeText>{item.worcation_thema || '미지정'}</ThemeText>
-                {mode === 'host' && item.member_id === loginUser.user_no ? (
+                {renderActions ? (
+                  renderActions(item)
+                ) : mode === 'host' && item.member_id === loginUser.user_no ? (
                   <ButtonGroup>
                     <ButtonDetail onClick={() => handleEdit(item)}>수정</ButtonDetail>
                     <ButtonDetail onClick={() => handleDelete(item.worcation_no)}>삭제</ButtonDetail>
@@ -95,7 +100,7 @@ const WorcationCardList = ({ data, navigate, mode = 'view', onDelete }) => {
           </PlaceCard>
         ))
       ) : (
-        <div>목록이 없습니다.</div>
+        <ErrorDiv>목록이 없습니다다.</ErrorDiv>
       )}
     </CardList>
   );
@@ -188,4 +193,15 @@ const ThemeText = styled.p`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 10px;
+`;
+
+const ErrorDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 16px;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 30px;
 `;

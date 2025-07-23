@@ -4,6 +4,7 @@ import bgImg from '../../assets/backgroundImg.jpg';
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import useSearchStore from '../../store/useSearchStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiUser } from 'react-icons/fi';
@@ -61,27 +62,105 @@ const Header = () => {
   const loginUser = useAuthStore((state) => state.loginUser);
   const logout = useAuthStore((state) => state.logout);
   const isLoggedIn = Boolean(loginUser);
+  const role = loginUser?.role;
 
+  // searchStore 초기화 함수들
+  const setKeyword = useSearchStore((state) => state.setKeyword);
+  const setDates = useSearchStore((state) => state.setDates);
+  const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
+
+  // 로고 클릭 시 searchStore 초기화
+  const handleLogoClick = () => {
+    setKeyword('');
+    setDates(null, null);
+    setPopularKeywords([]);
+  };
+
+  // 신규 코드: 로그인 메뉴 가공 후 role별로 filteredMenus로 가공
   const menus = menuData.map((menu) => {
     if (menu.title === '로그인') {
       if (isLoggedIn) {
+        let items = [
+          { title: '내 정보', path: '/my/info' },
+          { title: '신체 정보', path: '/my/body' },
+        ];
+        if (role === 'WORCATION') {
+          items.push(
+            { title: '예약자 명단', path: 'my/reservation' },
+            { title: '제휴 승인 목록', path: '/partnership/approveList' },
+            { title: '제휴 요청 목록', path: '/partnership/requests' }
+          );
+        } else {
+          items.push({ title: '워케이션 신청내역', path: '/my/worcation-history' });
+        }
+        items.push({ title: '로그아웃', path: '/logout' });
+
         return {
           ...menu,
           title: loginUser.user_name + '님' || '내 정보',
           path: '/my/info',
-          items: [
-            { title: '내 정보', path: '/my/info' },
-            { title: '신체 정보', path: '/my/body' },
-            { title: '예약자 명단', path: 'my/reservation' },
-            { title: '워케이션 신청내역', path: '/my/worcation-history' },
-            { title: '로그아웃', path: '/logout' },
-          ],
+          items,
         };
-      }
-      return menu;
+      } else return menu;
     }
     return menu;
   });
+  // const filteredMenus = menus
+  // .map((menu) => {
+  //   if (menu.title === '워케이션') {
+  //     return {
+  //       ...menu,
+  //       items: menu.items.filter((item) => {
+  //         if (item.title === '워케이션 등록') {
+  //           return role === 'WORCATION';
+  //         }
+  //         return true;
+  //       }),
+  //     };
+  //   }
+  //   return menu;
+  // })
+  // .filter((menu) => {
+  //   // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
+  //   if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
+  //   if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
+  //   if (menu.title === '워케이션' && menu.items && menu.items.length === 0) return false;
+  //   return true;
+  // });
+
+  const filteredMenus = menus
+    .map((menu) => {
+      if (!isLoggedIn) {
+        // 로그인 전에는 모든 메뉴의 items(드롭다운)를 빈 배열로
+        return { ...menu, items: [] };
+      }
+      // 로그인 후에는 items만 권한별로 필터링, 상단 탭은 항상 보임
+      if (menu.title === '워케이션') {
+        return {
+          ...menu,
+          items: menu.items.filter((item) => {
+            if (item.title === '워케이션 등록') {
+              return role === 'WORCATION';
+            }
+            return true;
+          }),
+        };
+      }
+      // 로그인 후 WORCATION이면 직원관리 메뉴 자체를 아예 숨김
+      if (menu.title === '직원관리' && role === 'WORCATION') {
+        return null;
+      }
+      if (menu.title === '직원관리') {
+        // 직원관리 드롭다운은 MASTER, MANAGER만 보임
+        return {
+          ...menu,
+          items: (role === 'MASTER' || role === 'MANAGER') ? menu.items : [],
+        };
+      }
+      // 다른 메뉴는 items 그대로
+      return menu;
+    })
+    .filter(Boolean); // null(숨김) 메뉴 제거
 
   const handleLogout = () => {
     logout();
@@ -96,13 +175,19 @@ const Header = () => {
       <HeaderBg>
         <HeaderInner>
           <LogoWrap>
-            <Link to="/">
+            <Link to="/" onClick={handleLogoClick}>
               <LogoImg src={logo} alt="logo" />
             </Link>
           </LogoWrap>
           <NavWrap>
             <Nav>
+              {/*
               {menus.map((menu, idx) => (
+                <NavItem key={idx} className="nav-item">
+                  ...
+                ))}
+              */}
+              {filteredMenus.map((menu, idx) => (
                 <NavItem key={idx} className="nav-item">
                   {menu.title === '로그인' && !isLoggedIn ? (
                     <StyleLinkColumn to="/login">
@@ -126,22 +211,26 @@ const Header = () => {
       {isDropdownVisible && (
         <DropdownWrap>
           <DropdownContent>
+            {/*
             {menus
+              .filter((menu) => menu.items && menu.items.length > 0)
+              .map((menu, idx) => (
+                ...
+              ))}
+            */}
+            {filteredMenus
               .filter((menu) => menu.items && menu.items.length > 0)
               .map((menu, idx) => (
                 <DropdownColumn key={idx}>
                   <ul>
                     {menu.items
-                      // 로그인 메뉴의 경우, 비로그인 시 특정 항목 숨김
                       .filter((item) => {
                         if (
                           !isLoggedIn &&
-                          (
-                            item.title === '내 정보' ||
+                          (item.title === '내 정보' ||
                             item.title === '신체 정보' ||
                             item.title === '워케이션 신청내역' ||
-                            item.title === '예약자 명단'
-                          )
+                            item.title === '예약자 명단')
                         ) {
                           return false;
                         }

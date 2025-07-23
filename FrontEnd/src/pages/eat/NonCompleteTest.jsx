@@ -19,7 +19,6 @@ const NonCompleteTest = ({ body, stress, burnout, preference }) => {
               <Link to="/my/body">
                 <Image src="src/assets/body.png" alt="body"></Image>
                 <Subtitle>나의 신체 정보를 등록</Subtitle>
-                <p>등록 기간이 한 달 지나면 다시 등록해야해요!</p>
               </Link>
             </>
           )}

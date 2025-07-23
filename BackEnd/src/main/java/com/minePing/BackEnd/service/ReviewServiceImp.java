@@ -54,5 +54,7 @@ public class ReviewServiceImp implements ReviewService {
     public void delete(Long reviewNo) {
         reviewRepository.deleteById(reviewNo);
     }
+
+
     
 }

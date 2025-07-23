@@ -120,4 +120,21 @@ public interface WorcationRepository extends JpaRepository<Worcation, Long>, Wor
            "WHERE w.member.userNo = :userNo AND w.status = :status")
     List<Worcation> findByMemberUserNoAndStatus(@Param("userNo") Long userNo, @Param("status") CommonEnums.Status status);
 
+
+
+    @Query("SELECT w FROM Worcation w " +
+            "LEFT JOIN FETCH w.worcationDetail d " +
+            "LEFT JOIN FETCH w.worcationFeatures f " +
+            "LEFT JOIN FETCH w.worcationPartners p " +
+            "LEFT JOIN FETCH w.worcationApplications wa2 " +
+            "LEFT JOIN FETCH wa2.review " +
+            "LEFT JOIN FETCH w.worcationAmenities a " +
+            "LEFT JOIN FETCH w.photos ph " +
+            "WHERE w.worcationNo IN :ids")
+    List<Worcation> findAllByWorcationNoIn(@Param("ids") List<Long> ids);
+
+
+
+    @Query("SELECT w FROM Worcation w")
+    List<Worcation> findAllBasic();
 }

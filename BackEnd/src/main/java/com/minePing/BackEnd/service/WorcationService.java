@@ -2,6 +2,7 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
+import com.minePing.BackEnd.entity.Worcation;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,10 @@ public interface WorcationService {
      * 특정 ID의 워케이션 상세 정보를 조회한다.
      */
     WorcationDto.Response getById(Long worcationNo);
-
+    /**
+     * 워케이션 여러개 조회
+     */
+    List<WorcationDto.Response> findByIds(List<Long> ids);
     /**
      * 워케이션 전체 목록(간단 요약) 조회
      */
@@ -60,4 +64,5 @@ public interface WorcationService {
     String uploadWithoutWorcation(MultipartFile file);
 
 
-}
+
+    List<WorcationDto.Response> findAllByNos(List<Long> ids);}

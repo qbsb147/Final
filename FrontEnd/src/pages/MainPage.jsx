@@ -6,31 +6,39 @@ import { worcationService } from '../api/worcations';
 import WorcationCardList from '../components/worcation/WorcationCardList';
 import useSearchStore from '../store/useSearchStore';
 import useAuthStore from '../store/authStore';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { useAiStore } from '../store/aiStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
-  const [showAISection, setShowAISection] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const keyword = useSearchStore((state) => state.keyword);
   const navigate = useNavigate();
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   const loginUser = useAuthStore((state) => state.loginUser);
+  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
 
-  const handleShowAI = () => {
-    setShowBanner(false);
-    setShowAISection(true);
-    //Ai 출력 로직
-  };
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
-      const data = await worcationService.list();
-      const appData = await worcationService.applicationList();
-      setWorcations(data);
-      setApplications(appData);
+      try {
+        const data = await worcationService.list();
+        const appData = await worcationService.applicationList();
+        setWorcations(data);
+        setApplications(appData);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (loginUser) {
+      fetchAiWorcations(loginUser.user_no, worcationService);
+    }
+  }, [loginUser, fetchAiWorcations]);
 
   useEffect(() => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
@@ -61,6 +69,14 @@ const MainPage = () => {
     // 내림차순 정렬
     .sort((a, b) => b.approvedApplicationCount - a.approvedApplicationCount);
 
+  if (loading) {
+    return (
+      <LoadingOverlay>
+        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+      </LoadingOverlay>
+    );
+  }
+
   return (
     <Container>
       {loginUser?.company_no && (
@@ -69,6 +85,7 @@ const MainPage = () => {
           <PartnerGrid>
             {filteredWorcations
               .filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'))
+              .slice(0, 3)
               .map((matchedWorcation) => (
                 <PartnerCard key={matchedWorcation.worcation_no}>
                   <picture>
@@ -94,25 +111,31 @@ const MainPage = () => {
         </>
       )}
 
-      <SectionTitle>
-        인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
-      </SectionTitle>
-      <WorcationCardList data={sortedWorcations.slice(0, 10)} navigate={navigate} />
-
-      {showBanner && (
-        <BottomBanner>
-          <ButtonYb onClick={handleShowAI}>AI로 여행지 추천 받기</ButtonYb>
-        </BottomBanner>
-      )}
-      {showAISection && (
+      {(loginUser || aiWorcations.length > 0) && (
         <>
           <SectionTitle>AI 추천</SectionTitle>
           <CardList>
-            <WorcationCardList data={filteredWorcations} navigate={navigate} />
-            {/* AI 필터 추가 해야함 */}
+            {aiLoading ? (
+              <AiLoadingOverlay>
+                <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+              </AiLoadingOverlay>
+            ) : (
+              <WorcationCardList data={aiWorcations.slice(0, 3).map(item => ({
+                ...item,
+                mainPhoto: item.main_change_photo,
+              }))} navigate={navigate} />
+            )}
           </CardList>
         </>
       )}
+
+      <SectionTitle>
+        인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
+      </SectionTitle>
+      <WorcationCardList data={sortedWorcations.slice(0, 10).map(item => ({
+        ...item,
+        mainPhoto: item.main_change_photo,
+      }))} navigate={navigate} />
     </Container>
   );
 };
@@ -177,81 +200,43 @@ const CardList = styled.div`
   gap: 4%;
 `;
 
-const PlaceCard = styled.div`
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 20px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-bottom: 30px;
-`;
-
-const PlaceImage = styled.img`
-  width: 250px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 20px;
-  margin: 3% 0 3% 3%;
-`;
-
-const CardContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 5% 5% 3% 5%;
-`;
-
-const InfoBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10%;
-  align-items: flex-start;
-  justify-content: space-between;
-`;
-
-const PlaceLocation = styled.p`
-  font-size: 90%;
-  color: #555;
-`;
-
-const PlaceName = styled.h3`
-  font-size: 140%;
-  font-weight: bold;
-`;
-
-const PlaceReview = styled.p`
-  font-size: 90%;
-  color: #333;
-`;
-
-const ThemeBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: end;
-  gap: 5%;
-  border-left: 2px solid #ffdd38;
-  padding-left: 5%;
-`;
-
-const ThemeLabel = styled.p`
-  font-size: 90%;
-  color: #888;
-`;
-
-const ThemeText = styled.p`
-  font-size: 110%;
-  font-weight: bold;
-  color: #000;
-`;
-
-const BottomBanner = styled.div`
-  margin-top: 3%;
-  width: 100%;
-  height: 100px;
-  background: rgba(235, 235, 235, 0.5);
-  display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+const AiLoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;

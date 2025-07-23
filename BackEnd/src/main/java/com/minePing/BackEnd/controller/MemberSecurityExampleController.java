@@ -13,21 +13,21 @@ public class MemberSecurityExampleController {
 
     // 1. 본인만 접근 가능 (userNo == 인증된 사용자 번호)
     @GetMapping("/my-page/{userNo}")
-    @PreAuthorize("#userNo == authentication.principal.userNo")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> myPage(@PathVariable Long userNo) {
         return ResponseEntity.ok("본인만 접근 가능: userNo=" + userNo);
     }
 
     // 2. 관리자만 접근 가능
     @GetMapping("/admin-only")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> adminOnly() {
         return ResponseEntity.ok("관리자만 접근 가능");
     }
 
     // 3. 본인 또는 관리자만 접근 가능
     @GetMapping("/my-or-admin/{userNo}")
-    @PreAuthorize("hasRole('ADMIN') or #userNo == authentication.principal.userNo")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or isAuthenticated()")
     public ResponseEntity<String> myOrAdmin(@PathVariable Long userNo) {
         return ResponseEntity.ok("본인 또는 관리자만 접근 가능: userNo=" + userNo);
     }

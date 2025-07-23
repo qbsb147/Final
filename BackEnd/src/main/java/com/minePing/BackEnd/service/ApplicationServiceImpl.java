@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.ApplicationDto.RemainingDto;
 import com.minePing.BackEnd.dto.ApplicationDto.ReservedResponseDto;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import com.minePing.BackEnd.entity.WorcationDetail;
@@ -42,7 +43,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final WorcationRepository worcationRepository;
     private final WorcationDetailRepository detailRepository;
     private final WorcationFeaturesRepository featuresRepository;
-
 
 
     @Override
@@ -141,20 +141,18 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional
-    public List<ApplicationDto.ApplicationResponseDto> getReservedByUser(Long userNo) {
+    public List<ApplicationDto.ApplicationApplyDto> getReservedByUser(Long userNo) {
         return applicationRepository.getReservedByUser(userNo, LocalDate.now())
                 .stream()
-                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
-                .toList();
+                .map(entity -> ApplicationDto.ApplicationApplyDto.toDto(entity, null))                .toList();
     }
 
     @Override
     @Transactional
-    public List<ApplicationDto.ApplicationResponseDto> getUsedByUser(Long userNo) {
+    public List<ApplicationDto.ApplicationApplyDto> getUsedByUser(Long userNo) {
         return applicationRepository.getUsedByUser(userNo, LocalDate.now())
                 .stream()
-                .map(ApplicationDto.ApplicationResponseDto::fromEntity)
-                .toList();
+                .map(entity -> ApplicationDto.ApplicationApplyDto.toDto(entity, null))                .toList();
        }
 
     @Override
@@ -213,10 +211,9 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
 
-        int maxPeople = applications.stream()
-                .findFirst()
-                .map(app -> app.getWorcation().getMaxPeople())
-                .orElse(0);
+        Worcation worcation = worcationRepository.findById(worcationNo)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
+    int maxPeople = worcation.getMaxPeople();
 
         List<RemainingDto> result = new ArrayList<>();
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {

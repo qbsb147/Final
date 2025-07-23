@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("api/v1/health")
@@ -21,17 +22,20 @@ public class HealthController {
     private final HealthService healthService;
 
     @GetMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<HealthDto.Response> getHealth() {
         return ResponseEntity.ok(healthService.findByUserId());
     }
 
     @PostMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> insertHealth(@RequestBody HealthDto.Request healthDto) {
         healthService.saveHealth(healthDto);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> updateHealth(@RequestBody HealthDto.Request healthDto) {
         healthService.updateHealth(healthDto);
         return ResponseEntity.ok().build();
