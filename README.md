@@ -92,4 +92,4 @@ cd BackEnd
 | 최예찬 | READER & DataBase Manager | qbsb147@naver.com |
 | 최성진 | Issue Manager | skskcsj@naver.com |
 | 윤택봉 | Configuration Manager | a1@gmail.com |
-| 이상준 | Schedule Manager | a1@gmail.com |
+| 이상준 | Schedule Manager | steve020205@naver.com |
