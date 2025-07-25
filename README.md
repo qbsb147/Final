@@ -89,8 +89,7 @@ cd BackEnd
 ## 팀원 소개
 
 | 이름 | 포지션 | Contact |
-| --- | --- | --- |
-| 최예찬 | READER & DB | qbsb147@naver.com |
-| 최성진 | BE | a1@gmail.com |
-| 윤택봉 | FE | a1@gmail.com |
-| 이상준 | FE | a1@gmail.com |
+| 최예찬 | READER & DataBase Manager | qbsb147@naver.com |
+| 최성진 | Issue Manager | skskcsj@naver.com |
+| 윤택봉 | Configuration Manager | a1@gmail.com |
+| 이상준 | Schedule Manager | steve020205@naver.com |
