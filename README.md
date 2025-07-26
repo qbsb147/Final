@@ -91,5 +91,5 @@ cd BackEnd
 | 이름 | 포지션 | Contact |
 | 최예찬 | READER & DataBase Manager | qbsb147@naver.com |
 | 최성진 | Issue Manager | skskcsj@naver.com |
-| 윤택봉 | Configuration Manager | a1@gmail.com |
+| 윤택봉 | Configuration Manager | mohae@kakao.com |
 | 이상준 | Schedule Manager | steve020205@naver.com |
