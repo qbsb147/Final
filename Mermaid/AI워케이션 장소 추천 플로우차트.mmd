@@ -1,0 +1,51 @@
+flowchart TD
+    A[Start: 유저 워케이션 AI 추천 조회] --> B{member_recommend DB에 존재?}
+    B -- No --> C[Spring AI 호출: 스트레스, 번아웃, 성향 전달]
+    C --> D[Spring AI가 모든 필드 채운 member_recommand 반환]
+    D --> E[member 외래값 추가, DB에 memberRecommand 저장]
+    B -- Yes --> F[memberRecommand 가져오기]
+
+    E --> F
+
+    F --> G[memberRecommand + Pageable를 WorcationFeaturesRepositoryImpl로 전달]
+    G --> H[준영속 memberRecommand merge -> 영속 상태]
+
+    H --> I{bestFor != null?}
+    I -- Yes --> J[where 조건: locationType, dominantColor, spaceMood, bestFor, accommodationType]
+    J --> K[List&lt;Worcation&gt; 개수 >= 5?]
+K -- Yes --> L[반환]
+K -- No --> M[다음 로직 실행]
+
+I -- No --> M
+
+M --> N{spaceMood != null?}
+N -- Yes --> O[bestFor를 null로 설정]
+O --> P[where 조건: locationType, dominantColor, spaceMood, accommodationType]
+P --> Q[List&lt;Worcation&gt; 개수 >= 5?]
+Q -- Yes --> L
+Q -- No --> R[다음 로직 수행]
+
+N -- No --> R
+
+R --> S{accommodationType != null?}
+S -- Yes --> T[spaceMood를 null로 설정]
+T --> U[where 조건: locationType, dominantColor, accommodationType]
+U --> V[List&lt;Worcation&gt; 개수 >= 5?]
+V -- Yes --> L
+V -- No --> W[다음 로직 수행]
+
+S -- No --> W
+
+W --> X{dominantColor != null?}
+X -- Yes --> Y[accommodationType를 null로 설정]
+Y --> Z[where 조건: locationType, dominantColor]
+Z --> AA[List&lt;Worcation&gt; 개수 >= 5?]
+AA -- Yes --> L
+AA -- No --> AB[다음 로직 수행]
+X -- No --> AB
+
+AB --> AC[dominantColor를 null로 설정]
+AC --> AD[where 조건: locationType]
+
+AD --> L
+L --> AE[End]

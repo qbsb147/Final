@@ -36,7 +36,7 @@ const MainPage = () => {
 
   useEffect(() => {
     if (loginUser) {
-      fetchAiWorcations(loginUser.user_no, worcationService);
+      fetchAiWorcations(worcationService, 0, 3);
     }
   }, [loginUser, fetchAiWorcations]);
 
@@ -50,6 +50,23 @@ const MainPage = () => {
       navigate('/worcation');
     }
   }, [keyword, navigate]);
+
+  // AI 워케이션 데이터 처리
+  const processedAiWorcations = (aiWorcations || []).map(item => ({
+    ...item,
+    // WorcationDto.Simple 구조에 맞게 필드 매핑
+    worcation_name: item.worcation_name,
+    worcation_address: item.worcation_address,
+    mainPhoto: item.main_change_photo,
+    photos: item.main_change_photo ? [{ image_url: item.main_change_photo }] : [],
+    // 기타 필요한 필드들 추가
+    worcation_category: item.worcation_category,
+    worcation_thema: item.worcation_thema,
+    // WorcationCardList에서 사용하는 필드들
+    address: item.worcation_address, // 검색 필터링용
+    reviews: [], // 리뷰 정보가 없으므로 빈 배열로 설정
+    status: 'Y', // AI 추천 워케이션은 활성 상태로 설정
+  }));
 
   // 필터링된 워케이션 (검색어가 없을 때만)
   const filteredWorcations = keyword.trim() === '' ? worcations : [];
@@ -119,11 +136,12 @@ const MainPage = () => {
               <AiLoadingOverlay>
                 <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
               </AiLoadingOverlay>
+            ) : processedAiWorcations.length > 0 ? (
+              <WorcationCardList data={processedAiWorcations.slice(0, 3)} navigate={navigate} />
             ) : (
-              <WorcationCardList data={aiWorcations.slice(0, 3).map(item => ({
-                ...item,
-                mainPhoto: item.main_change_photo,
-              }))} navigate={navigate} />
+              <NoAiRecommendation>
+                {loginUser ? 'AI 추천 워케이션이 준비 중입니다.' : '로그인하면 AI 추천 워케이션을 받을 수 있습니다.'}
+              </NoAiRecommendation>
             )}
           </CardList>
         </>
@@ -239,4 +257,18 @@ const AiLoadingOverlay = styled.div`
       transform: rotate(360deg);
     }
   }
+`;
+
+const NoAiRecommendation = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px; /* Adjust height as needed */
+  background-color: #f0f0f0;
+  border-radius: ${({ theme }) => theme.borderRadius['lg']};
+  padding: 20px;
+  text-align: center;
+  font-size: ${({ theme }) => theme.fontSizes['md']};
+  color: #555;
+  box-shadow: ${({ theme }) => theme.shadows.md};
 `;

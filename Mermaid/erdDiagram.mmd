@@ -1,0 +1,215 @@
+erDiagram
+    AMENITY as "편의시설" {
+    bigint amenity_no "편의시설번호"
+    varchar amenity_name "편의시설명"
+}
+
+    COMPANY as "회사" {
+    bigint company_no "회사번호"
+    varchar business_email "사업자이메일"
+    varchar business_id "사업자번호"
+    varchar company_address "회사주소"
+    varchar company_name "회사명"
+    varchar company_tel "회사전화번호"
+    datetime create_at "생성일시"
+    varchar licensee "대표자명"
+    date open_date "개업일자"
+    enum status "상태"
+    datetime update_at "수정일시"
+}
+
+    DEPARTMENT as "부서" {
+    bigint department_no "부서번호"
+    varchar department_name "부서명"
+    bigint company_no "회사번호"
+}
+
+    MEMBER as "회원" {
+    bigint user_no "사용자번호"
+    varchar address "주소"
+    date birthday "생년월일"
+    datetime create_at "생성일시"
+    varchar email "이메일"
+    enum gender "성별"
+    varchar name "이름"
+    varchar phone "전화번호"
+    enum role "역할"
+    varchar social_id "소셜아이디"
+    enum social_type "소셜타입"
+    enum status "상태"
+    datetime update_at "수정일시"
+    varchar user_id "사용자아이디"
+    varchar user_pwd "사용자비밀번호"
+}
+
+    COMPANY_PROFILE as "회사프로필" {
+    bigint profile_no "프로필번호"
+    enum approve "승인여부"
+    varchar company_email "회사이메일"
+    varchar company_phone "회사전화번호"
+    varchar department_name "부서명"
+    varchar position "직급"
+    bigint company_no "회사번호"
+    bigint user_no "사용자번호"
+}
+
+    HEALTH as "건강정보" {
+    bigint health_no "건강번호"
+    enum alcohol_consumption "음주량"
+    varchar blood_pressure "혈압"
+    float blood_sugar "혈당"
+    float bmi "BMI지수"
+    int cholesterol_level "콜레스테롤수치"
+    varchar diet_type "식단유형"
+    varchar health_condition "건강상태"
+    float height "키"
+    enum physical_activity "신체활동"
+    double sleep_hours "수면시간"
+    varchar smoking_status "흡연상태"
+    date update_date "수정일자"
+    float weight "몸무게"
+    bigint user_no "사용자번호"
+}
+
+    MEMBER_PREFERENCE as "회원선호도" {
+    bigint preference_no "선호도번호"
+    enum accommodation_type "숙박유형"
+    enum important_factor "중요요소"
+    enum leisure_activity "여가활동"
+    enum mbti "MBTI유형"
+    enum preferenced_color "선호색상"
+    enum preferenced_location "선호지역"
+    varchar result_content "결과내용"
+    enum space_mood "공간분위기"
+    date update_date "수정일자"
+    bigint user_no "사용자번호"
+}
+
+    MENTAL as "정신건강" {
+    bigint mental_no "정신건강번호"
+    enum psychological_state "심리상태"
+    varchar result_content "결과내용"
+    int score "점수"
+    enum separation "구분"
+    date update_date "수정일자"
+    bigint user_no "사용자번호"
+}
+
+    SIDO_AREAS as "시도지역" {
+    int id "아이디"
+    varchar name "지역명"
+}
+
+    SIGG_AREAS as "시군구지역" {
+    int id "아이디"
+    varchar name "지역명"
+    int sido_area_id "시도지역아이디"
+}
+
+    WORCATION as "워케이션" {
+    bigint worcation_no "워케이션번호"
+    datetime create_at "생성일시"
+    varchar main_change_photo "메인변경사진"
+    int max_people "최대인원"
+    int non_partner_price "비파트너가격"
+    varchar partner_price "파트너가격"
+    enum status "상태"
+    datetime update_at "수정일시"
+    varchar worcation_address "워케이션주소"
+    enum worcation_category "워케이션카테고리"
+    varchar worcation_name "워케이션명"
+    varchar worcation_thema "워케이션테마"
+    bigint ref_writer "작성자번호"
+    int ref_area_id "지역아이디"
+}
+
+    PHOTO as "사진" {
+    bigint photo_no "사진번호"
+    varchar change_name "변경파일명"
+    varchar image_url "이미지URL"
+    bigint worcation_no "워케이션번호"
+}
+
+    WORCATION_AMENITY as "워케이션편의시설" {
+    bigint worc_amenity_no "워케이션편의시설번호"
+    bigint amenity_no "편의시설번호"
+    bigint worcation_no "워케이션번호"
+}
+
+    WORCATION_APPLICATION as "워케이션신청" {
+    bigint application_no "신청번호"
+    enum approve "승인여부"
+    datetime create_at "생성일시"
+    date end_date "종료일자"
+    date start_date "시작일자"
+    datetime update_at "수정일시"
+    bigint user_no "사용자번호"
+    bigint worcation_no "워케이션번호"
+}
+
+    REVIEW as "리뷰" {
+    bigint review_no "리뷰번호"
+    datetime create_at "생성일시"
+    tinytext review_content "리뷰내용"
+    datetime update_at "수정일시"
+    varchar writer_id "작성자아이디"
+    bigint application_no "신청번호"
+}
+
+    WORCATION_DETAIL as "워케이션상세" {
+    bigint worcation_no "워케이션번호"
+    varchar available_time "이용시간"
+    varchar business_id "사업자번호"
+    int charge_amount "요금"
+    tinytext content "내용"
+    varchar licensee "대표자명"
+    tinytext navigate "길찾기"
+    date open_date "개업일자"
+    tinytext refund_policy "환불정책"
+    varchar worcation_tel "워케이션전화번호"
+}
+
+    WORCATION_FEATURES as "워케이션특징" {
+    bigint worcation_no "워케이션번호"
+    enum accommodation_type "숙박유형"
+    tinytext activities "액티비티"
+    enum best_for "최적환경"
+    enum dominant_color "주요색상"
+    enum location_type "지역유형"
+    enum space_mood "공간분위기"
+}
+
+    WORCATION_PARTNER as "워케이션파트너" {
+    bigint partner_no "파트너번호"
+    enum approve "승인여부"
+    int company_people "회사인원수"
+    datetime create_at "생성일시"
+    date end_date "종료일자"
+    date start_date "시작일자"
+    datetime update_at "수정일시"
+    bigint company_no "회사번호"
+    bigint ref_writer_no "작성자번호"
+    bigint worcation_no "워케이션번호"
+}
+
+%% 관계 정의
+    COMPANY ||--|| DEPARTMENT : "소속"
+    COMPANY ||--o{ COMPANY_PROFILE : "보유"
+    MEMBER ||--|| COMPANY_PROFILE : "작성"
+    MEMBER ||--|| HEALTH : "보유"
+    MEMBER ||--|| MEMBER_PREFERENCE : "설정"
+    MEMBER ||--o{ MENTAL : "측정"
+    MEMBER ||--o{ WORCATION : "등록"
+    MEMBER ||--o{ WORCATION_APPLICATION : "신청"
+    MEMBER ||--o{ WORCATION_PARTNER : "작성"
+    SIDO_AREAS ||--o{ SIGG_AREAS : "포함"
+    SIGG_AREAS ||--o{ WORCATION : "위치"
+    WORCATION ||--o{ PHOTO : "포함"
+    WORCATION ||--|| WORCATION_DETAIL : "상세정보"
+    WORCATION ||--|| WORCATION_FEATURES : "특징"
+    WORCATION ||--o{ WORCATION_AMENITY : "제공"
+    WORCATION ||--o{ WORCATION_APPLICATION : "대상"
+    WORCATION ||--o{ WORCATION_PARTNER : "파트너십"
+    AMENITY ||--o{ WORCATION_AMENITY : "포함"
+    WORCATION_APPLICATION ||--|| REVIEW : "작성"
+    COMPANY ||--o{ WORCATION_PARTNER : "참여"

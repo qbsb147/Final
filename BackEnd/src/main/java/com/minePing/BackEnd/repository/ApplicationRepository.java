@@ -16,67 +16,6 @@ import java.util.List;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<WorcationApplication, Long> {
-    
-    // 사용자별 신청 조회
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.member.userNo = :userNo")
-    List<WorcationApplication> findByUserNo(@Param("userNo") Long userNo);
-    
-    // 워케이션별 신청 조회
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.worcation.worcationNo = :worcationNo")
-    List<WorcationApplication> findByWorcationNoAndDateRangeByWorcationNo(@Param("worcationNo") Long worcationNo);
-
-
-
-    // 승인 상태별 신청 조회
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.approve = :approve")
-    List<WorcationApplication> findByApprove(@Param("approve") CommonEnums.Approve approve);
-    
-    // 예약된 신청 조회 (시작일이 오늘 이후)
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.startDate > :today " +
-           "ORDER BY wa.startDate ASC")
-    List<WorcationApplication> findReservedApplications(@Param("today") LocalDate today);
-    
-    // 사용 완료된 신청 조회 (종료일이 오늘 이전)
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.endDate < :today " +
-           "ORDER BY wa.endDate DESC")
-    List<WorcationApplication> findUsedApplications(@Param("today") LocalDate today);
-    
-    // 특정 기간의 신청 조회
-    @Query("SELECT wa FROM WorcationApplication wa " +
-           "LEFT JOIN FETCH wa.member " +
-           "LEFT JOIN FETCH wa.worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "WHERE wa.startDate >= :startDate AND wa.endDate <= :endDate")
-    List<WorcationApplication> findByDateRange(
-        @Param("startDate") LocalDate startDate, 
-        @Param("endDate") LocalDate endDate
-    );
 
     // 로그인한 사용자의 예약된 신청 (시작일이 오늘 이후)
     @Query("SELECT wa FROM WorcationApplication wa " +
@@ -119,5 +58,17 @@ public interface ApplicationRepository extends JpaRepository<WorcationApplicatio
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query(value = """
+            SELECT wa FROM WorcationApplication wa
+            WHERE wa.worcation.worcationNo = :worcationNo
+            AND wa.startDate <= :endDate AND wa.endDate >= :startDate
+            AND wa.approve IN :approves
+        """)
+    List<WorcationApplication> lockDateRangeForUpdate(
+            @Param("worcationNo") Long worcationNo,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("approves") List<CommonEnums.Approve> approves
+    );
 }

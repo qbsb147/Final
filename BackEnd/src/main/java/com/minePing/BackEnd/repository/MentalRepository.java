@@ -25,4 +25,6 @@ public interface MentalRepository extends JpaRepository<Mental, Long>,MentalRepo
     Optional<Mental> findTopByMember_UserNoOrderByUpdateDateDesc(Long memberUserNo);
 
     Mental findByMemberAndSeparation(Member member, Separation separation);
+
+    Optional<Mental> findByMember_userNoAndSeparation(Long memberUserNo, Separation separation);
 }

@@ -311,6 +311,30 @@ public class WorcationDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class Simple {
+        private Long worcation_no;
+        private String worcation_name;
+        private String worcation_address;
+        private WorcationEnums.Category worcation_category;
+        private String main_change_photo;
+        private String worcation_thema;
+
+        public static Simple toDto(Worcation worcation) {
+            return Simple.builder()
+                    .worcation_no(worcation.getWorcationNo())
+                    .worcation_name(worcation.getWorcationName())
+                    .worcation_address(worcation.getWorcationAddress())
+                    .worcation_category(worcation.getWorcationCategory())
+                    .main_change_photo(worcation.getMainChangePhoto())
+                    .worcation_thema(worcation.getWorcationThema())
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class WorcationReservation {
         private String company_name;
         private String worcation_name;
@@ -338,7 +362,4 @@ public class WorcationDto {
                     .build();
         }
     }
-
-
-        
 }

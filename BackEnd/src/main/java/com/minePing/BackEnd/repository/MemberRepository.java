@@ -17,6 +17,9 @@ import static com.minePing.BackEnd.enums.CommonEnums.Status.Y;
 
 public interface MemberRepository  extends JpaRepository<Member, Long> {
     Optional<Member> findByUserIdAndStatus(String userId, CommonEnums.Status status);
+    @Query("select m.userNo from Member m where m.userId = :userId and m.status = :status")
+    Long findNoByUserIdAndStatus(@Param("userId") String userId,@Param("status") CommonEnums.Status status);
+
     Optional<Member> findById(Long userNo);
 
     @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.userId = :userId and m.status = :status")

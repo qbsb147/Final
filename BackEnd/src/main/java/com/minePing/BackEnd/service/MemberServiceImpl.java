@@ -243,7 +243,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
         String userId = jwtTokenProvider.getUserIdFromToken();
 
-        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+        memberRepository.findByUserIdAndStatus(userId, Status.Y)
                 .orElseThrow(()->new UserNotFoundException());
         String jwt =null;
         if (updateRoleDto.getRole() == CommonEnums.Role.MASTER) {

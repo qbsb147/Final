@@ -18,7 +18,7 @@ public class Worcation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "worcation_no")
-        private Long worcationNo;
+    private Long worcationNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ref_writer", nullable = false)

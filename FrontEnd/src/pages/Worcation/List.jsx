@@ -43,7 +43,7 @@ const WorcationList = () => {
   }, [worcations, setPopularKeywords]);
 
   useEffect(() => {
-    if (loginUser) fetchAiWorcations(loginUser.user_no, worcationService);
+    if (loginUser) fetchAiWorcations(worcationService, 0, 10);
   }, [loginUser, fetchAiWorcations]);
 
   const handleToggleView = (mode) => {
@@ -55,6 +55,10 @@ const WorcationList = () => {
       setViewMode('all');
     } else {
       setViewMode(mode);
+      // AI 모드로 전환할 때 AI 워케이션 조회
+      if (mode === 'ai' && loginUser) {
+        fetchAiWorcations(worcationService, 0, 10);
+      }
     }
   };
 
@@ -67,7 +71,22 @@ const WorcationList = () => {
       filtered = filtered.filter((w) => w.partners && w.partners.some((p) => p.approve === 'Y'));
     }
     if (viewMode === 'ai') {
-      filtered = aiWorcations || [];
+      // AI 워케이션 데이터 처리 - 백엔드 응답 구조에 맞게 수정
+      filtered = (aiWorcations || []).map((item) => ({
+        ...item,
+        // WorcationDto.Simple 구조에 맞게 필드 매핑
+        worcation_name: item.worcation_name,
+        worcation_address: item.worcation_address,
+        mainPhoto: item.main_change_photo,
+        photos: item.main_change_photo ? [{ image_url: item.main_change_photo }] : [],
+        // 기타 필요한 필드들 추가
+        worcation_category: item.worcation_category,
+        worcation_thema: item.worcation_thema,
+        // WorcationCardList에서 사용하는 필드들
+        address: item.worcation_address, // 검색 필터링용
+        reviews: [], // 리뷰 정보가 없으므로 빈 배열로 설정
+        status: 'Y', // AI 추천 워케이션은 활성 상태로 설정
+      }));
     }
     if (keyword.trim() !== '') {
       filtered = filtered.filter(

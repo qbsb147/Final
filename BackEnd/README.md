@@ -163,3 +163,78 @@ React와 Spring Boot를 활용한
      <br><br>
      결국 2번(Spring AI 기반 정식 OpenAI API 사용) 을 선택하여 이미지 생성 기능의 신뢰성과 사용자 경험을 보장하기로 결정했습니다.
      
+
+# BackEnd
+
+## 주요 기능
+
+### 1. 워케이션 신청 시스템
+- **범위 락(Range Lock)을 통한 동시성 제어**
+- **날짜별 정원 체크**: 특정 날짜에 정원이 초과되면 신청 불가
+- **예약 겹침 검증**: 사용자의 중복 예약 방지
+- **실시간 정원 관리**: 각 날짜별로 예약 가능한 인원 수 실시간 계산
+
+#### 올바른 동시성 제어 방식
+```java
+// 날짜 범위에 대한 범위 락 - 동시 신청 방지
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query(value = """
+        SELECT wa FROM WorcationApplication wa
+        WHERE wa.worcation.worcationNo = :worcationNo
+        AND wa.startDate <= :endDate AND wa.endDate >= :startDate
+        AND wa.approve IN :approves
+    """)
+List<WorcationApplication> lockDateRangeForUpdate(...);
+```
+
+**범위 락의 핵심 역할:**
+- **WorcationApplication 테이블의 특정 날짜 범위에 락 적용**
+- **트랜잭션 종료까지 유지**되어 다른 트랜잭션이 같은 날짜 범위에 신청하는 것을 완전 차단
+- **Race Condition 완벽 방지**: 정원 체크 → 신청 삽입 과정에서의 동시성 문제 해결
+
+**기존 Worcation 락의 문제점:**
+- Worcation 엔티티에 락을 걸어도 **새로운 WorcationApplication 삽입은 막을 수 없음**
+- 정원 체크 후 insert 전까지의 시간 동안 다른 트랜잭션이 신청을 삽입할 수 있음
+
+#### 날짜별 정원 체크 로직
+```java
+// 신청하려는 기간의 각 날짜별로 정원 체크
+for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+    long currentCount = dateCountMap.getOrDefault(date, 0L);
+    if (currentCount >= maxPeople) {
+        throw new IllegalStateException(
+            String.format("%s 날짜에 정원이 모두 찼습니다. (정원: %d명, 현재: %d명)", 
+                date, maxPeople, currentCount));
+    }
+}
+```
+
+#### 예약 겹침 검증
+- 사용자가 동일한 워케이션의 겹치는 기간에 중복 예약하는 것을 방지
+- 승인 상태가 W(대기) 또는 Y(승인)인 신청 건만 고려
+
+#### 비관적 락의 역할
+- `@Lock(LockModeType.PESSIMISTIC_WRITE)`를 사용하여 워케이션 엔티티에 대한 동시 접근 제어
+- 동시에 여러 사용자가 같은 워케이션을 신청할 때의 데이터 일관성 보장
+
+### 2. API 엔드포인트
+- `POST /applications`: 워케이션 신청 (날짜별 정원 체크 포함)
+- `GET /applications/available-capacity`: 날짜별 예약 가능 인원 수 조회
+- `GET /applications/fully-reserved-dates`: 정원이 모두 찬 날짜 목록 조회
+
+### 3. 데이터베이스 설계
+- **WorcationApplication**: 워케이션 신청 정보 (시작일, 종료일, 승인상태)
+- **Worcation**: 워케이션 기본 정보 (최대 인원 수, 워케이션명)
+- **Member**: 회원 정보 (역할, 사용자 번호)
+
+## 기술 스택
+- Spring Boot
+- Spring Data JPA
+- MySQL
+- Gradle
+
+## 실행 방법
+```bash
+./gradlew bootRun
+```
+

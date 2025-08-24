@@ -104,12 +104,24 @@ export const worcationService = {
       throw new Error('이미지 삭제에 실패했습니다.');
     }
   },
-  getGPT: async (user_no) => {
-    const response = await api.post(API_ENDPOINTS.WORCATION.GPT(user_no));
-    return response.data;
-  },
   getAI: async (worcation_no) => {
     const response = await api.get(`/worcations/ids?ids=${worcation_no}`);
     return response.data;
+  },
+  getAIList: async (page = 0, size = 10) => {
+    console.log('🚀 getAIList 호출됨 - 페이지:', page, '크기:', size);
+    console.log('📡 API 엔드포인트:', API_ENDPOINTS.WORCATION.AI);
+    console.log('🔗 전체 URL:', `${import.meta.env.VITE_API_URL}/api/v1${API_ENDPOINTS.WORCATION.AI}`);
+    
+    try {
+      const response = await api.get(API_ENDPOINTS.WORCATION.AI, {
+        params: { page, size }
+      });
+      console.log('✅ getAIList 응답 성공:', response);
+      return response.data;
+    } catch (error) {
+      console.error('❌ getAIList 에러:', error);
+      throw error;
+    }
   },
 };

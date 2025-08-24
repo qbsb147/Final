@@ -129,5 +129,4 @@ public class MemberController {
             return ResponseEntity.ok("인증이 완료되었습니다.");
         }
         return ResponseEntity.badRequest().body("인증코드가 올바르지 않거나 만료되었습니다.");
-    }
-}
+    }}

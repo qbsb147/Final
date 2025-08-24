@@ -14,9 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(name = "worcation_partner",
-        indexes = {@Index(name = "idx_worcation_partner", columnList = "worcation_no")
-                ,@Index(name = "idx_company_partner", columnList = "company_no")})
+@Table(name = "worcation_partner")
 public class WorcationPartner {
 
     @Id

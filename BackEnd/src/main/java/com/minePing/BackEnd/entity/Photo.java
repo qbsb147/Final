@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-@Table(name = "photo", indexes = {@Index(name = "idx_photo_worcation", columnList = "worcation_no")})
+@Table(name = "photo")
 public class Photo {
 
     @Id

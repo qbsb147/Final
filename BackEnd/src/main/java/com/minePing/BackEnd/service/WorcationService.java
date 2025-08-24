@@ -50,10 +50,6 @@ public interface WorcationService {
     // 오늘까지
     Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo);
 
-
-    //사업자
-
-
     //워케이션 이름
     List<WorcationDto.WorcationListName> getWorcationListName(Long userNo);
 
@@ -63,6 +59,7 @@ public interface WorcationService {
 
     String uploadWithoutWorcation(MultipartFile file);
 
+    List<WorcationDto.Response> findAllByNos(List<Long> ids);
 
-
-    List<WorcationDto.Response> findAllByNos(List<Long> ids);}
+    Page<WorcationDto.Simple> getAIList(Pageable pageable);
+}

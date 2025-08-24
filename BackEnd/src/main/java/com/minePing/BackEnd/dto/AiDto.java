@@ -152,8 +152,6 @@ public class AiDto {
                     .accommodationType(preference.getAccommodationType())
                     .result_content(preference.getResultContent())
 
-                    // 워케이션 리스트
-                    .worcationList(worcationList)
                     .build();
         }
     }

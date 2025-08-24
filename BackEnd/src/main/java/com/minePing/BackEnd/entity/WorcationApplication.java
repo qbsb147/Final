@@ -17,7 +17,11 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "worcation_application",
-        indexes = {@Index(name = "idx_worcation_application", columnList = "worcation_no")})
+        indexes = {
+                @Index(name = "idx_worcation_start_end",
+                        columnList = "worcation_no, approve, start_date, end_date")
+        }
+    )
 public class WorcationApplication {
 
     @Id
@@ -37,7 +41,7 @@ public class WorcationApplication {
     @Column(name="approve", nullable = false)
     private CommonEnums.Approve approve;
 
-        @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)

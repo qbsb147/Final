@@ -20,6 +20,8 @@ import com.minePing.BackEnd.repository.WorcationRepository;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Map;
@@ -61,28 +63,18 @@ public class ApplicationServiceImpl implements ApplicationService {
         return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
     }
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ApplicationDto.ApplicationResponseDto createApplication(ApplicationDto.ApplicationRequestDto requestDto) {
         //회원을 조회하고 존재하지 않는 회원이면 예외 발생
         Member member = memberRepository.findById(requestDto.getUserNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        //비관적 락으로 워케이션 조회
-        //worcationNo로 워케이션 조회
-        //findByIdForUpdate()는 비관적 락(Pessimistic Lock) 을 사용하여 다른 트랜잭션이 이 워케이션을 동시에 수정하거나 조회하는 것을 차단
-        //동시성 문제를 방지하여 인원 초과 시 중복 신청 막음
-        Worcation worcation = worcationRepository.findByIdForUpdate(requestDto.getWorcationNo())
+        //워케이션 조회 (비관적 락 제거 - 의미 없음)
+        Worcation worcation = worcationRepository.findById(requestDto.getWorcationNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
 
-        //현재 신청 인원 수 조회
-        //해당 워케이션에 연관된 신청 목록 중 Y, W 상태인 신청 건만 필터링
-        long approvedCount = worcation.getWorcationApplications().stream()
-                .filter(app -> app.getApprove() == CommonEnums.Approve.W || app.getApprove() == CommonEnums.Approve.Y)
-                .count();
-        //현재 신청 인원이 max_people이상인 경우 예외를 발생시켜 신청을 막는다.
-        if (approvedCount >= worcation.getMaxPeople()) {
-            throw new IllegalStateException("해당 워케이션은 정원이 모두 찼습니다.");
-        }
+        // 날짜별 정원 체크 및 예약 겹침 검증 (범위 락으로 동시성 제어)
+        validateApplicationAvailability(requestDto, member, worcation);
 
         //신청 엔티티 생성 신청자는 member, 워케이션은 worcation 날짜는 startDate, endDate
         //승인 상태는 초기에는 항상 대기(W) 로 설정
@@ -101,6 +93,55 @@ public class ApplicationServiceImpl implements ApplicationService {
         //저장된 엔티티를 DTO 형태로 변환하여 반환
         //컨트롤러로 응답 전달
         return ApplicationDto.ApplicationResponseDto.fromEntity(entity);
+    }
+
+    /**
+     * 신청 가능성 검증 (날짜별 정원 체크, 예약 겹침 검증)
+     */
+    private void validateApplicationAvailability(ApplicationDto.ApplicationRequestDto requestDto, Member member, Worcation worcation) {
+        LocalDate startDate = requestDto.getStartDate();
+        LocalDate endDate = requestDto.getEndDate();
+        Long worcationNo = requestDto.getWorcationNo();
+        Long userNo = requestDto.getUserNo();
+
+        // 1. 사용자의 동일 워케이션 중복 예약 체크
+        List<CommonEnums.Approve> activeStatuses = List.of(CommonEnums.Approve.W, CommonEnums.Approve.Y);
+        
+        // 2. 날짜 범위에 대한 범위 락 획득 (동시 신청 방지)
+        // 이 락은 트랜잭션 종료까지 유지되어 다른 트랜잭션이 같은 날짜 범위에 신청하는 것을 차단
+        // 승인 상태가 W, Y인 신청 건만 락을 걸어 정확한 정원 체크 수행
+        List<WorcationApplication> lockedApplications = applicationRepository
+                .lockDateRangeForUpdate(worcationNo, startDate, endDate, activeStatuses);
+
+        // 3. 사용자의 중복 예약 체크 (락이 걸린 상태에서 안전하게 수행)
+        boolean hasExistingApplication = lockedApplications.stream()
+                .anyMatch(app -> app.getMember().getUserNo().equals(userNo));
+        
+        if (hasExistingApplication) {
+            throw new IllegalStateException("해당 기간에 이미 예약된 워케이션이 있습니다.");
+        }
+
+        // 날짜별 예약 인원 수 계산
+        Map<LocalDate, Long> dateCountMap = new HashMap<>();
+        for (WorcationApplication app : lockedApplications) {
+            LocalDate current = app.getStartDate();
+            while (!current.isAfter(app.getEndDate())) {
+                dateCountMap.put(current, dateCountMap.getOrDefault(current, 0L) + 1);
+                current = current.plusDays(1);
+            }
+        }
+
+        // 신청하려는 기간의 각 날짜별로 정원 체크
+        int maxPeople = worcation.getMaxPeople();
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            long currentCount = dateCountMap.getOrDefault(date, 0L);
+            if (currentCount >= maxPeople) {
+                throw new IllegalStateException(
+                    String.format("%s 날짜에 정원이 모두 찼습니다. (정원: %d명, 현재: %d명)", 
+                        date, maxPeople, currentCount));
+            }
+        }
     }
 
     @Override
@@ -132,8 +173,44 @@ public class ApplicationServiceImpl implements ApplicationService {
         Optional<Worcation> worcationOpt = worcationRepository.findById(worcationNo);
         int maxPeople = worcationOpt.map(Worcation::getMaxPeople).orElse(100); // 기본값 100
         Map<LocalDate, Boolean> result = new HashMap<>();
-        for (LocalDate date : dateCount.keySet()) {
-            result.put(date, dateCount.get(date) >= maxPeople);
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            long currentCount = dateCount.getOrDefault(date, 0L);
+            result.put(date, currentCount >= maxPeople);
+        }
+
+        return result;
+    }
+
+    /**
+     * 특정 워케이션의 날짜별 예약 가능 인원 수 조회
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Map<LocalDate, Integer> getAvailableCapacityByDate(Long worcationNo, LocalDate start, LocalDate end) {
+        List<CommonEnums.Approve> statuses = List.of(CommonEnums.Approve.W, CommonEnums.Approve.Y);
+        List<WorcationApplication> apps = applicationRepository.findInRangeWithStatus(worcationNo, start, end, statuses);
+
+        // 날짜별 예약 인원 수 집계
+        Map<LocalDate, Long> dateCount = new HashMap<>();
+        for (WorcationApplication app : apps) {
+            LocalDate cur = app.getStartDate();
+            while (!cur.isAfter(app.getEndDate())) {
+                dateCount.put(cur, dateCount.getOrDefault(cur, 0L) + 1);
+                cur = cur.plusDays(1);
+            }
+        }
+
+        // 워케이션 최대 인원 수 조회
+        Worcation worcation = worcationRepository.findById(worcationNo)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 워케이션입니다."));
+        int maxPeople = worcation.getMaxPeople();
+
+        // 날짜별 예약 가능 인원 수 계산
+        Map<LocalDate, Integer> result = new HashMap<>();
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            long currentCount = dateCount.getOrDefault(date, 0L);
+            int availableCapacity = Math.max(0, maxPeople - (int) currentCount);
+            result.put(date, availableCapacity);
         }
 
         return result;

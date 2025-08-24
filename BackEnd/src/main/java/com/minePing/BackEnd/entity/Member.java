@@ -105,6 +105,10 @@ public class Member {
     @Builder.Default
     private List<Mental> mentals = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<MemberRecommand> memberRecommands = new ArrayList<>();
+
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberPreference memberPreferences;
 

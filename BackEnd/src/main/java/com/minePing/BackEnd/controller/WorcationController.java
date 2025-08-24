@@ -5,6 +5,7 @@ import com.minePing.BackEnd.dto.PageResponse;
 import com.minePing.BackEnd.dto.WorcationDto;
 import com.minePing.BackEnd.dto.WorcationDto.Response;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
+import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.service.WorcationService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,7 @@ import java.util.List;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.data.domain.PageRequest;
 
 @RestController
 @RequestMapping("api/v1/worcations")
@@ -173,4 +175,11 @@ public class WorcationController {
         return ResponseEntity.ok(savedName); // UUID+확장자만 반환
     }
 
+    @GetMapping("/ai")
+    public ResponseEntity<PageResponse<WorcationDto.Simple>> getAI(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(new PageResponse<>(worcationService.getAIList(pageable)));
+    }
 }

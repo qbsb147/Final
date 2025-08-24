@@ -26,5 +26,9 @@ public interface ApplicationService {
 
     List<ApplicationDto.RemainingDto> getRemainingByWorcation(Long worcationNo, String startDate, String endDate);
 
+    /**
+     * 특정 워케이션의 날짜별 예약 가능 인원 수 조회
+     */
+    Map<LocalDate, Integer> getAvailableCapacityByDate(Long worcationNo, LocalDate start, LocalDate end);
 
 }

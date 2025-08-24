@@ -1,16 +1,19 @@
 package com.minePing.BackEnd.service;
 
+import com.minePing.BackEnd.auth.JwtTokenProvider;
 import com.minePing.BackEnd.dto.WorcationDto.Response;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationListName;
 import com.minePing.BackEnd.dto.WorcationDto.WorcationReservation;
-import com.minePing.BackEnd.entity.Company;
-import com.minePing.BackEnd.entity.CompanyProfile;
-import com.minePing.BackEnd.entity.WorcationApplication;
+import com.minePing.BackEnd.dto.WorcationFeaturesDto;
+import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
-import com.minePing.BackEnd.repository.PhotoRepository;
-import com.minePing.BackEnd.repository.AmenityRepository;
+import com.minePing.BackEnd.enums.MentalEnums;
+import com.minePing.BackEnd.exception.DuplicateResourceException;
+import com.minePing.BackEnd.repository.*;
+
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
@@ -27,6 +30,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageImpl;
@@ -38,17 +47,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.minePing.BackEnd.dto.WorcationDto;
-import com.minePing.BackEnd.entity.Worcation;
-import com.minePing.BackEnd.entity.WorcationAmenity;
-import com.minePing.BackEnd.entity.WorcationDetail;
-import com.minePing.BackEnd.entity.WorcationFeatures;
-import com.minePing.BackEnd.entity.Amenity;
-import com.minePing.BackEnd.entity.Member;
-import com.minePing.BackEnd.entity.Photo;
-import com.minePing.BackEnd.entity.WorcationPartner;
-import com.minePing.BackEnd.entity.Review;
-import com.minePing.BackEnd.repository.WorcationRepository;
-import com.minePing.BackEnd.repository.MemberRepository;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.exception.WorcationNotFoundException;
 
@@ -60,29 +58,38 @@ import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WorcationServiceImpl implements WorcationService {
 //    private final AmazonS3 amazonS3;
+    private final JwtTokenProvider jwtTokenProvider;
     private final WorcationRepository worcationRepository;
     private final MemberRepository memberRepository;
     private final PhotoRepository photoRepository;
     private final AmenityRepository amenityRepository;
+    private final ChatModel chatModel;
     public static final String UPLOAD_DIR = "src/main/resources/static/upload/";
+    private final MentalRepository mentalRepository;
+    private final MemberPreferenceRepository memberPreferenceRepository;
+    private final WorcationFeaturesRepository worcationFeaturesRepository;
+    private final MemberRecommandRepository memberRecommandRepository;
+
+    @Value("classpath:/prompts/worcation-recommand.st")
+    private Resource worcationRecommend;
 
     //최종 등록
     @Override
     @Transactional
-    public WorcationDto.Response create(WorcationDto.Request request) {
+    public Response create(WorcationDto.Request request) {
         // 최종등록: business_id+status=Y 중복이면 예외
         if (worcationRepository.existsByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.Y)) {
-            throw new com.minePing.BackEnd.exception.DuplicateResourceException("이미 등록된 사업자번호입니다.");
+            throw new DuplicateResourceException("이미 등록된 사업자번호입니다.");
         }
         return saveWorcation(request, CommonEnums.Status.Y);
     }
-  
     //임시저장
     @Override
     @Transactional
-    public WorcationDto.Response tmpSave(WorcationDto.Request request) {
+    public Response tmpSave(WorcationDto.Request request) {
         // 1. 같은 사업자번호+임시상태 데이터가 있으면 update, 없으면 create
         Optional<Worcation> existing = worcationRepository.findByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.N);
         if (existing.isPresent()) {
@@ -127,18 +134,18 @@ public class WorcationServiceImpl implements WorcationService {
             saveAmenities(worcation, request.getAmenities());
             
             // save 불필요(더티체킹)
-            return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
+            return Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
         } else {
             // 없으면 새로 생성
             return saveWorcation(request, CommonEnums.Status.N);
         }
     }
 
-    private WorcationDto.Response saveWorcation(WorcationDto.Request request, CommonEnums.Status status) {
+    private Response saveWorcation(WorcationDto.Request request, CommonEnums.Status status) {
         // business_id 중복 체크 (모든 상태에서)
         if (worcationRepository.existsByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.Y) ||
             worcationRepository.existsByBusinessIdAndStatus(request.getBusiness_id(), CommonEnums.Status.N)) {
-            throw new com.minePing.BackEnd.exception.DuplicateResourceException("이미 사용 중인 사업자번호입니다: " + request.getBusiness_id());
+            throw new DuplicateResourceException("이미 사용 중인 사업자번호입니다: " + request.getBusiness_id());
         }
         
         Member member = memberRepository.findById(request.getMember_id())
@@ -191,7 +198,7 @@ public class WorcationServiceImpl implements WorcationService {
         // amenities 저장
         saveAmenities(worcation, request.getAmenities());
 
-        return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
+        return Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(), List.of());
     }
 
     private void savePhotos(Worcation worcation, List<String> photoUrls) {
@@ -215,20 +222,9 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-    private String extractFileNameFromUrl(String imageUrl) {
-        try {
-            // CloudFront URL에서 파일명 추출
-            // 예: https://cloudfront-domain.com/images/filename.jpg
-            String[] parts = imageUrl.split("/");
-            return parts[parts.length - 1];
-        } catch (Exception e) {
-            return UUID.randomUUID().toString() + ".jpg";
-        }
-    }
-
     @Override
     @Transactional(readOnly = true)
-    public WorcationDto.Response getById(Long worcationNo) {
+    public Response getById(Long worcationNo) {
         // 최적화: 한 번의 쿼리로 모든 데이터 조회
         Worcation w = worcationRepository.findByIdWithAllDetails(worcationNo)
                 .orElseThrow(() -> new WorcationNotFoundException("워케이션을 찾을 수 없습니다: " + worcationNo));
@@ -239,19 +235,19 @@ public class WorcationServiceImpl implements WorcationService {
         List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
         List<Review> reviews = w.getWorcationApplications().stream()
                 .map(app -> app.getReview())
-                .filter(java.util.Objects::nonNull)
-                .collect(java.util.stream.Collectors.toList());
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         List<Amenity> amenities = w.getWorcationAmenities().stream()
                 .map(WorcationAmenity::getAmenity)
                 .collect(Collectors.toList());
         List<Photo> photos = new ArrayList<>(w.getPhotos());
 
-        return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+        return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<WorcationDto.Response> getAll() {
+    public List<Response> getAll() {
         return worcationRepository.findAllWithAllDetails().stream()
                 .map(w -> {
                     // 모든 데이터가 이미 로드되어 있으므로 별도 조회 불필요
@@ -268,18 +264,17 @@ public class WorcationServiceImpl implements WorcationService {
 
                     List<Review> reviews = w.getWorcationApplications().stream()
                             .map(app -> app.getReview())
-                            .filter(java.util.Objects::nonNull)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
-                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                    return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
                 })
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional(readOnly = true)
-    public List<WorcationDto.Response> getMyListALl(Long id) {
+    public List<Response> getMyListALl(Long id) {
         // 최적화: 특정 사용자의 워케이션만 조회
         return worcationRepository.findAllByUserNoWithAllDetails(id).stream()
                 .map(w -> {
@@ -296,17 +291,17 @@ public class WorcationServiceImpl implements WorcationService {
                     
                     List<Review> reviews = w.getWorcationApplications().stream()
                             .map(app -> app.getReview())
-                            .filter(java.util.Objects::nonNull)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
-                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                    return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
                 })
             .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public WorcationDto.Response update(Long worcationNo, WorcationDto.Request request) {
+    public Response update(Long worcationNo, WorcationDto.Request request) {
         Worcation worcation = worcationRepository.findById(worcationNo)
                 .orElseThrow(() -> new WorcationNotFoundException("워케이션을 찾을 수 없습니다: " + worcationNo));
         // 필드만 수정 (더티체킹)
@@ -349,7 +344,7 @@ public class WorcationServiceImpl implements WorcationService {
         saveAmenities(worcation, request.getAmenities());
         
         // save 불필요 (더티체킹)
-        return WorcationDto.Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
+        return Response.fromEntity(worcation, detail, features, List.of(), List.of(), List.of(),
                 List.of());
     }
 
@@ -358,7 +353,6 @@ public class WorcationServiceImpl implements WorcationService {
     public void delete(Long worcationNo) {
         worcationRepository.deleteById(worcationNo);
     }
-
 
     @Override
     @Transactional(readOnly = true)
@@ -416,7 +410,6 @@ public class WorcationServiceImpl implements WorcationService {
 //        return amazonS3.generatePresignedUrl(request).toString();
 //    }
 
-
     public Map<String, List<WorcationDto.SimpleResponse>> getMyWorcations(Long userNo) {
         // 최적화: 한 번의 쿼리로 모든 데이터 조회
         List<Worcation> all = worcationRepository.findAllByUserNoWithAllDetails(userNo);
@@ -452,11 +445,9 @@ public class WorcationServiceImpl implements WorcationService {
         }
     }
 
-
-
     @Override
     @Transactional(readOnly = true)
-    public List<WorcationDto.Response> findAllByNos(List<Long> ids) {
+    public List<Response> findAllByNos(List<Long> ids) {
         List<Worcation> worcations = worcationRepository.findAllByWorcationNoIn(ids);
 
 
@@ -480,16 +471,16 @@ public class WorcationServiceImpl implements WorcationService {
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
-                    return WorcationDto.Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+                    return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
                 })
                 .collect(Collectors.toList());
     }
     //여러개 조회
     @Override
-    public List<WorcationDto.Response> findByIds(List<Long> ids) {
+    public List<Response> findByIds(List<Long> ids) {
         return worcationRepository.findAllById(ids)
             .stream()
-            .map(w -> WorcationDto.Response.fromEntity(
+            .map(w -> Response.fromEntity(
                 w,
                 w.getWorcationDetail(),
                 w.getWorcationFeatures(),
@@ -521,5 +512,56 @@ public class WorcationServiceImpl implements WorcationService {
                 worcation.getWorcationAmenities().add(wa);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public Page<WorcationDto.Simple> getAIList(Pageable pageable) {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        LocalDateTime nowDate = LocalDateTime.now().minusDays(1);
+        MemberRecommand memberRecommand = memberRecommandRepository.findTopByMemberAndCreateTimeAfter(member, nowDate)
+                .orElseGet(()->
+                        {
+                            MemberRecommand newMemberRecommand = getWorcationFeatures(member);
+                            newMemberRecommand.changeMember(member);
+                            return memberRecommandRepository.save(newMemberRecommand);
+                        }
+                );
+        Page<Worcation> worcations = worcationFeaturesRepository.findAllFilter(memberRecommand, pageable);
+        List<WorcationDto.Simple> simpleList = worcations.stream().map(WorcationDto.Simple::toDto).toList();
+        return new PageImpl<>(simpleList, pageable, worcations.getTotalElements());
+    }
+
+    private MemberRecommand getWorcationFeatures(Member member) {
+        Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
+        if (burnout == null) throw new EntityNotFoundException("번아웃 정보가 없습니다.");
+        Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
+        if (stress == null) throw new EntityNotFoundException("스트레스 정보가 없습니다.");
+        MemberPreference preference = memberPreferenceRepository.findByMember(member)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        ChatClient chatClient = ChatClient.builder(chatModel).build();
+
+        return chatClient.prompt()
+                .user(userSpec -> userSpec.text(worcationRecommend)
+                        .param("mbti", preference.getMbti())
+                        .param("preferred_color",preference.getPreferencedColor())
+                        .param("preferred_location",preference.getPreferencedLocation())
+                        .param("space_mood",preference.getSpaceMood())
+                        .param("important_factor",preference.getImportantFactor())
+                        .param("leisure_activity",preference.getLeisureActivity())
+                        .param("accommodation_type",preference.getAccommodationType())
+                        .param("burnout_score",burnout.getScore())
+                        .param("burnout_psychological_state",burnout.getPsychologicalState())
+                        .param("burnout_result_content",burnout.getResultContent())
+                        .param("stress_score",stress.getScore())
+                        .param("stress_psychological_state",stress.getPsychologicalState())
+                        .param("stress_result_content",stress.getResultContent())
+                        .param("format", "json"))
+                .call()
+                .entity(new ParameterizedTypeReference<MemberRecommand>() {});
     }
 }
