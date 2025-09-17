@@ -57,9 +57,7 @@ public class MemberController {
 
     @PostMapping("login")
     public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) {
-        Map<String, Object> loginInfo = new HashMap<>();
         String jwtToken = memberService.login(loginDto);
-        loginInfo.put("token", jwtToken);
         return ResponseEntity.ok()
                 .header("Set-Cookie", String.format(
                         "token=%s; Path=/; HttpOnly; Secure=false; SameSite=Strict",
@@ -70,7 +68,6 @@ public class MemberController {
 
     @GetMapping("logout")
     public ResponseEntity<Void> logout() {
-        System.out.println("MemberController.logout");
         return ResponseEntity.ok()
                 .header("Set-Cookie",
                 "token=; Path=/; HttpOnly; Secure=false; SameSite=Strict; Max-Age=0"
