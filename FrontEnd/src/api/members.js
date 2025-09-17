@@ -5,17 +5,19 @@ import { API_ENDPOINTS } from './config';
 const memberService = {
   login: async ({ userId, userPwd }) => {
     try {
-      const response = await axiosInstance.post(API_ENDPOINTS.LOGIN, {
+      await axiosInstance.post(API_ENDPOINTS.LOGIN, {
         user_id: userId,
         user_pwd: userPwd,
       });
-
-      if (!response?.data?.token) {
-        throw new Error('로그인에 실패했습니다.');
-      }
-
-      return response.data;
     } catch (error) {
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
+  logout: async () => {
+    try {
+      await axiosInstance.get(API_ENDPOINTS.MEMBER.LOGOUT);
+    } catch (error) {
+      console.log('error', error);
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },

@@ -154,7 +154,7 @@ const Header = () => {
         // 직원관리 드롭다운은 MASTER, MANAGER만 보임
         return {
           ...menu,
-          items: (role === 'MASTER' || role === 'MANAGER') ? menu.items : [],
+          items: role === 'MASTER' || role === 'MANAGER' ? menu.items : [],
         };
       }
       // 다른 메뉴는 items 그대로

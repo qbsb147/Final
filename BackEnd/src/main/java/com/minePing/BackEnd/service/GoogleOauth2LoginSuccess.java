@@ -57,7 +57,7 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             String jwtToken = jwtTokenProvider.createToken(uuid, CommonEnums.Role.TEMP);
 
             response.addHeader("Set-Cookie", String.format(
-                    "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Lax",
+                    "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Strict",
                     jwtToken
             ));
 
@@ -67,18 +67,18 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             response.addCookie(jwtCookie);
             */
 
-            response.sendRedirect("http://localhost:5173/signUp");
-//            response.sendRedirect("https://mineping.store/signUp");
+//            response.sendRedirect("http://localhost:5173/signUp");
+            response.sendRedirect("https://mineping.store/signUp");
             return;
         }
 
         String jwtToken = jwtTokenProvider.createToken(member.getUserId(), member.getRole());
         
         response.addHeader("Set-Cookie", String.format(
-                "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Lax",
+                "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Strict",
                 jwtToken
         ));
-        response.sendRedirect("http://localhost:5173");
-//        response.sendRedirect("https://mineping.store");
+//        response.sendRedirect("http://localhost:5173");
+        response.sendRedirect("https://mineping.store");
     }
 }
