@@ -60,33 +60,12 @@ import Requests from './pages/Worcation/Partnership/Requests'; // 제휴 요청 
 
 function App() {
   useEffect(() => {
-    const cookieToken = Cookies.get('token');
-
-    if (cookieToken) {
-      localStorage.setItem('token', cookieToken);
-      Cookies.remove('token');
-    }
-
-    const token = localStorage.getItem('token');
-    const expireAt = localStorage.getItem('tokenExpireAt');
-
-    if (token && expireAt && Date.now() > Number(expireAt)) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('tokenExpireAt');
-      toast.info('로그인 세션이 만료되었습니다. 다시 로그인 해주세요.');
-      return;
-    }
-
-    if (token) {
-      useAuthStore
-        .getState()
-        .autoFetchUserInfo()
-        .catch((error) => {
-          toast.error(`로그인 오류 : ${error}`);
-          localStorage.removeItem('token');
-          localStorage.removeItem('tokenExpireAt');
-        });
-    }
+    useAuthStore
+      .getState()
+      .autoFetchUserInfo()
+      .catch((error) => {
+        console.log('사용자 정보 가져오기 실패 (토큰 없음 또는 만료):', error);
+      });
   }, []);
 
   return (

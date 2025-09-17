@@ -19,10 +19,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await memberService.login({ userId, userPwd });
-      const { token } = response;
-      localStorage.setItem('token', token);
-      const expireAt = Date.now() + 24 * 60 * 60 * 1000;
-      localStorage.setItem('tokenExpireAt', expireAt.toString());
       await useAuthStore.getState().fetchUserInfo();
       toast.success('로그인에 성공했습니다!');
       navigate('/');
@@ -32,12 +28,13 @@ const Login = () => {
   };
   useEffect(() => {
     (async () => {
-      if (localStorage.getItem('token')) {
+      try {
         await useAuthStore.getState().fetchUserInfo();
-        console.log('useAuthStore.loginUser', useAuthStore.loginUser);
         if (useAuthStore.loginUser) {
           navigate('/');
         }
+      } catch (error) {
+        console.log('로그인되지 않은 상태');
       }
     })();
   }, [navigate]);

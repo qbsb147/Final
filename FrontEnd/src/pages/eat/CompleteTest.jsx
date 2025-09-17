@@ -8,6 +8,7 @@ import { MiniContent, MiniTitle } from '../../styles/Typography.js';
 import useAuthStore from '../../store/authStore.js';
 import memberService from '../../api/members';
 import { format } from 'date-fns';
+import foodImg from '../../assets/food.png';
 
 const CompleteTest = () => {
   const { eats, setEats, eatsDate } = userStore();
@@ -72,7 +73,7 @@ const CompleteTest = () => {
       <Background>
         <Column1>
           <Today />
-          <Circle src="src/assets/food.png" />
+          <Circle src={foodImg} />
           <Inbody>
             <Content>
               <MiniTitle style={{ color: 'white', marginBottom: '6px' }}>

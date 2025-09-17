@@ -59,11 +59,15 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDto.init init() {
         CommonEnums.Role temp = jwtTokenProvider.getRoleFromToken();
+        System.out.println("temp = " + temp);
         MemberDto.init initValue= new MemberDto.init();
         if(temp!= null && temp.equals(Role.TEMP)){
             String uuid = jwtTokenProvider.getUserIdFromToken();
+            System.out.println("uuid = " + uuid);
             TempOAuthUser tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
+            System.out.println("tempUser.getEmail() = " + tempUser.getEmail());
+            System.out.println("tempUser.getName() = " + tempUser.getName());
             initValue.setUser_id(tempUser.getEmail());
             initValue.setName(tempUser.getName());
         }

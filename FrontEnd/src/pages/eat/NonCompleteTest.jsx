@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Title, Subtitle } from '../../styles/Typography';
 import { Link } from 'react-router-dom';
+import bodyImg from '../../assets/body.png';
+import brainImg from '../../assets/brain.png';
 
 const NonCompleteTest = ({ body, stress, burnout, preference }) => {
   return (
@@ -11,13 +13,13 @@ const NonCompleteTest = ({ body, stress, burnout, preference }) => {
         <Element>
           {body ? (
             <>
-              <Image src="src/assets/body.png" alt="body"></Image>
+              <Image src={bodyImg} alt="body"></Image>
               <Subtitle>나의 신체 정보가 등록되어있어요.</Subtitle>
             </>
           ) : (
             <>
               <Link to="/my/body">
-                <Image src="src/assets/body.png" alt="body"></Image>
+                <Image src={bodyImg} alt="body"></Image>
                 <Subtitle>나의 신체 정보를 등록</Subtitle>
               </Link>
             </>
@@ -26,13 +28,13 @@ const NonCompleteTest = ({ body, stress, burnout, preference }) => {
         <Element>
           {stress && burnout && preference ? (
             <>
-              <Image src="src/assets/brain.png" alt="brain"></Image>
+              <Image src={brainImg} alt="brain"></Image>
               <Subtitle>심리 테스트를 마쳤어요</Subtitle>
             </>
           ) : (
             <>
               <Link to="/trial">
-                <Image src="src/assets/brain.png" alt="brain"></Image>
+                <Image src={brainImg} alt="brain"></Image>
                 <Subtitle>심리 테스트 하기</Subtitle>
                 <p>등록 기간이 한 달 지나면 다시 등록해야해요!</p>
               </Link>

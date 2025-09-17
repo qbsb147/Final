@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +30,7 @@ import java.util.List;
 @Component
 public class JwtTokenFilter extends GenericFilter {
 
-    //JWT를 생성하거나 검증할 때 사용하는 진짜 key객체
     private final Key SECRET_KEY;
-    // application.yml에 설정된 jwt 시크릿 키 주입
     private final String secretKey;
 
     public JwtTokenFilter(@Value("${jwt.secret}") String secretKey) {
@@ -39,8 +38,6 @@ public class JwtTokenFilter extends GenericFilter {
         this.SECRET_KEY = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    //JWT토근 검증
-    //검증이 필요한 모든 요청에 대해서 실행하는 필터, Authorization 헤더에 포함된 JWT를 검증
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -48,34 +45,38 @@ public class JwtTokenFilter extends GenericFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        String token = httpRequest.getHeader("Authorization");
+        // Session Cookie에서만 토큰 읽기
+        String token = null;
+        Cookie[] cookies = httpRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    token = "Bearer " + cookie.getValue();
+                    break;
+                }
+            }
+        }
         try {
             if (token != null) {
                 if (!token.startsWith("Bearer ")) {
                     throw new AuthenticationServiceException("Bearer 형식이 아닙니다.");
                 }
 
-                //Bearer 뒤에 담긴 실제 jwt문자열 추출
                 String jwtToken = token.substring(7);
 
-                //jwt토큰 파싱하고 서명 검증
                 Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(SECRET_KEY) //Key객체로 검증
+                        .setSigningKey(SECRET_KEY) 
                         .build()
                         .parseClaimsJws(jwtToken)
-                        .getBody(); // Claims(payload) 반환
+                        .getBody(); 
 
                 List<GrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + claims.get("role")));
 
-                //jwt의 subject값을 username으로 사용하겠다.
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
-                //인증객체 생성(사용자정보, 인증수단, 권한리스트)
                 Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, jwtToken,
                         userDetails.getAuthorities());
 
-                //현재 요청에 대한 인증 정보 등록
-                //이요청을 인증된 것으로 간주
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
 

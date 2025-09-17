@@ -4,6 +4,9 @@ import { WhiteButtonLink } from '../../styles/Link.styles';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { mentalService } from '../../api/mentals';
+import stressImg from '../../assets/stress.png';
+import burnoutImg from '../../assets/bunout.png';
+import tendencyImg from '../../assets/tendency.png';
 
 const Trial = () => {
   const [stress, setStress] = useState('');
@@ -31,7 +34,7 @@ const Trial = () => {
           <NameBox>
             <TestName>스트레스 검사</TestName>
             <ExplanationBox>
-              <Img src="src/assets/stress.png" alt="Rectangle" />
+              <Img src={stressImg} alt="Rectangle" />
               <Explanation>마음이 무겁게 느껴질 때, 스트레스 검사를 통해 내 상태를 한 번 체크해보세요.</Explanation>
             </ExplanationBox>
           </NameBox>
@@ -58,7 +61,7 @@ const Trial = () => {
           <NameBox>
             <TestName>번아웃 검사</TestName>
             <ExplanationBox>
-              <Img src="src/assets/bunout.png" alt="Rectangle" />
+              <Img src={burnoutImg} alt="Rectangle" />
               <Explanation>
                 요즘 유난히 피로하고 무기력하다면, 번아웃 검사를 통해 나의 소진 상태를 점검해보세요.
               </Explanation>
@@ -88,7 +91,7 @@ const Trial = () => {
           <NameBox>
             <TestName>성향 검사</TestName>
             <ExplanationBox>
-              <Img src="src/assets/tendency.png" alt="Rectangle" />
+              <Img src={tendencyImg} alt="Rectangle" />
               <Explanation>워케이션 전, 성향검사로 나에게 맞는 휴식을 찾아보세요.</Explanation>
             </ExplanationBox>
           </NameBox>
