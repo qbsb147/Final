@@ -50,6 +50,9 @@ public class SecurityConfig {
                                 "/api/v1/member/kakao/login",
                                 "/oauth2/**",
                                 "/api/v1/member/signUp/init",
+                                "/api/v1/member/send_code",
+                                "/api/v1/member/verify_code",
+                                "/api/v1/member/validate-password",
                                 "/login/**"
 //                                "/**"
                         )
@@ -70,7 +73,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//        configuration.setAllowedOrigins(List.of("http://www.mineping.store"));
+/*        configuration.setAllowedOrigins(List.of(
+                "https://www.mineping.store",
+                "https://mineping.store"
+        ));*/
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -16,11 +16,7 @@ const fileApi = axios.create({
 // 요청 인터셉터 - 토큰 자동 추가
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    console.log('config?.headers?.Authorization = ', config?.headers?.Authorization);
+    config.withCredentials = true;
     return config;
   },
   (error) => {
@@ -31,10 +27,7 @@ api.interceptors.request.use(
 // 파일 업로드용 인터셉터 - 토큰 자동 추가
 fileApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    config.withCredentials = true;
     return config;
   },
   (error) => {
@@ -94,7 +87,6 @@ fileApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
       window.location.href = '/login';
     } else if (error.response) {
       const { status, data } = error.response;

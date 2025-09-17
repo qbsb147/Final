@@ -10,8 +10,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -60,18 +56,29 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
 
             String jwtToken = jwtTokenProvider.createToken(uuid, CommonEnums.Role.TEMP);
 
+            response.addHeader("Set-Cookie", String.format(
+                    "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Lax",
+                    jwtToken
+            ));
+
+/*
             Cookie jwtCookie = new Cookie("token", jwtToken);
             jwtCookie.setPath("/");
             response.addCookie(jwtCookie);
-            response.sendRedirect("http://https://localhost:5173/signUp");
-//            response.sendRedirect("http://https://mineping.store/signUp");
+            */
+
+            response.sendRedirect("http://localhost:5173/signUp");
+//            response.sendRedirect("https://mineping.store/signUp");
             return;
         }
+
         String jwtToken = jwtTokenProvider.createToken(member.getUserId(), member.getRole());
-        Cookie jwtCookie = new Cookie("token", jwtToken);
-        jwtCookie.setPath("/");
-        response.addCookie(jwtCookie);
-        response.sendRedirect("http://https://localhost:5173");
-//        response.sendRedirect("http://https://mineping.store");
+        
+        response.addHeader("Set-Cookie", String.format(
+                "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Lax",
+                jwtToken
+        ));
+        response.sendRedirect("http://localhost:5173");
+//        response.sendRedirect("https://mineping.store");
     }
 }
