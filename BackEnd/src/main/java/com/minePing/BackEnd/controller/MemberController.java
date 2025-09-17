@@ -57,9 +57,7 @@ public class MemberController {
 
     @PostMapping("login")
     public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) {
-        Map<String, Object> loginInfo = new HashMap<>();
         String jwtToken = memberService.login(loginDto);
-        loginInfo.put("token", jwtToken);
         return ResponseEntity.ok()
                 .header("Set-Cookie", String.format(
                         "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Strict",
