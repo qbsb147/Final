@@ -51,30 +51,24 @@ public class JwtTokenFilter extends GenericFilter {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
-                    token = "Bearer " + cookie.getValue();
+                    token = cookie.getValue();
                     break;
                 }
             }
         }
         try {
             if (token != null) {
-                if (!token.startsWith("Bearer ")) {
-                    throw new AuthenticationServiceException("Bearer 형식이 아닙니다.");
-                }
-
-                String jwtToken = token.substring(7);
-
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(SECRET_KEY) 
                         .build()
-                        .parseClaimsJws(jwtToken)
+                        .parseClaimsJws(token)
                         .getBody(); 
 
                 List<GrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + claims.get("role")));
 
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
-                Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, jwtToken,
+                Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, token,
                         userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
