@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
     MY_INFO: '/member/userInfo',
     BASE: '/member',
     VALIDATE_PASSWORD: '/member/validate-password',
+    LOGOUT: '/member/logout',
     INIT: '/member/signUp/init',
     SEND_CODE: '/member/send_code',
     VERIFY_CODE: '/member/verify_code',
