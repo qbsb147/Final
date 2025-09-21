@@ -29,8 +29,6 @@ public class S3Service {
     @Value("${aws.cloudfront.domain}")
     private String cloudFrontDomain;
 
-
-
     public String uploadFile(MultipartFile file) {
         // 파일 검증
         if (file == null || file.isEmpty()) {
