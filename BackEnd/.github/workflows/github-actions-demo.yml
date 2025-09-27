@@ -17,3 +17,9 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - run: echo "Anything Action"
+  test-job:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+      - run: echo "✅ Self-hosted runner is working!"
