@@ -23,3 +23,4 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
       - run: echo "✅ Self-hosted runner is working!"
+      - run: echo "✅ Self-hosted runner is working!"
