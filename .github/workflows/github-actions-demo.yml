@@ -32,6 +32,8 @@ jobs:
     runs-on: [self-hosted, Linux, aws] # Self-hosted EC2 Runner
     steps:
       - uses: actions/checkout@v3
+      - name: List files after checkout
+        run: ls -al
       - uses: actions/setup-java@v3
         with:
           distribution: 'corretto'      # EC2 Ubuntu Linux에서도 그대로 사용 가능
