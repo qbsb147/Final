@@ -88,7 +88,9 @@ dependencyManagement {
 		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
 	}
 }
-
+jar {
+	enabled = false
+}
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['-parameters']
 
