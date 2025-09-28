@@ -25,7 +25,9 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
       - run: echo "✅ Self-hosted runner is working!"
-      - run: echo "✅ Self-hosted runner is for!"
+      - run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
   build:
     runs-on: [self-hosted, Linux, aws] # Self-hosted EC2 Runner
     steps:
