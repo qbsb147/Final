@@ -1,0 +1,294 @@
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Popup from './Popup';
+import CustomDatePicker from '../common/DatePicker';
+import { formatPhoneNumber } from '../../hooks/useAuth';
+
+const MasterStep = ({ setFormData1, formData2, setFormData2 }) => {
+  const [showInput, setShowInput] = useState(false);
+  const [departments, setDepartments] = useState(
+    formData2.departments
+      ? formData2.departments.reduce((acc, dept, index) => {
+          acc[index + 1] = dept;
+          return acc;
+        }, {})
+      : {}
+  );
+  const [isPostcodeReady, setIsPostcodeReady] = useState(false);
+
+  // departments가 변경될 때만 formData2 업데이트 (초기 로드 시 제외)
+  useEffect(() => {
+    const department_names = Object.values(departments);
+    if (department_names.length > 0) {
+      const currentDepartments = formData2.departments || [];
+      if (JSON.stringify(department_names) !== JSON.stringify(currentDepartments)) {
+        setFormData2((prev) => ({ ...prev, departments: department_names }));
+      }
+    }
+  }, [departments]);
+
+  useEffect(() => {
+    if (formData2.departments && formData2.departments.length > 0 && Object.keys(departments).length === 0) {
+      const departmentsObj = formData2.departments.reduce((acc, dept, index) => {
+        acc[index + 1] = dept;
+        return acc;
+      }, {});
+      setDepartments(departmentsObj);
+    }
+  }, [formData2.departments]);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => setIsPostcodeReady(true);
+    script.onerror = () => console.error('주소 검색 스크립트 로드 실패');
+    document.body.appendChild(script);
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
+  const handleChange = (e, step) => {
+    const { name, value } = e.target;
+    if (step === 1) setFormData1((prev) => ({ ...prev, [name]: value }));
+    else if (step === 2) setFormData2((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddressSearch = () => {
+    if (!isPostcodeReady) {
+      alert('주소 검색 스크립트가 아직 준비되지 않았습니다.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        const company_address = data.address;
+        setFormData2((prev) => ({ ...prev, company_address: company_address }));
+      },
+    }).open();
+  };
+
+  const handleDeptBtnClick = () => {
+    if (showInput) {
+      const departmentNames = Object.values(departments);
+      setFormData2((prev) => ({ ...prev, departments: departmentNames }));
+    }
+    setShowInput(!showInput);
+  };
+
+  // 부서 등록 완료 시 formData2에 저장
+  const handleDepartmentComplete = () => {
+    const department_names = Object.values(departments);
+    setFormData2((prev) => ({ ...prev, departments: department_names }));
+    setShowInput(false);
+  };
+
+  return (
+    <Body className="InputWrap">
+      {/* Left column */}
+      <Left>
+        <div style={{ marginBottom: '16px' }}>
+          <Label htmlFor="company_name">기업명</Label>
+          <InputBox
+            name="company_name"
+            type="text"
+            placeholder="기업명"
+            value={formData2.company_name || ''}
+            onChange={(e) => handleChange(e, 2)}
+            autoComplete="off"
+            variant="yellow"
+          />
+        </div>
+        <div style={{ marginBottom: '16px' }}>
+          <Label htmlFor="business_id">사업자 등록 번호</Label>
+          <InputBox
+            name="business_id"
+            type="text"
+            placeholder="숫자만 10자리 입력"
+            value={formData2.business_id || ''}
+            onChange={(e) => handleChange(e, 2)}
+            variant="yellow"
+          />
+        </div>
+        <div style={{ marginBottom: '16px' }}>
+          <Label htmlFor="licensee">사업자명</Label>
+          <InputBox
+            name="licensee"
+            type="text"
+            placeholder="사업자명"
+            value={formData2.licensee || ''}
+            onChange={(e) => handleChange(e, 2)}
+            variant="yellow"
+          />
+        </div>
+        <div style={{ marginBottom: '16px' }}>
+          <Label htmlFor="open_date">개업일</Label>
+          <CustomDatePicker
+            selected={formData2.open_date || null}
+            onChange={(date) => handleChange({ target: { name: 'open_date', value: date } }, 2)}
+            variant="yellow"
+          />
+        </div>
+      </Left>
+      {/* Right column */}
+      <Right>
+        <div style={{ marginBottom: '16px' }}>
+          <Label htmlFor="register_department">부서 등록</Label>
+          {showInput ? (
+            <>
+              <Popup
+                handleDeptBtnClick={handleDepartmentComplete}
+                departments={departments}
+                setDepartments={setDepartments}
+              />
+            </>
+          ) : (
+            <Btn type="button" style={{ width: '100%' }} onClick={handleDeptBtnClick}>
+              부서 등록
+            </Btn>
+          )}
+        </div>
+        {showInput ? (
+          <></>
+        ) : (
+          <div>
+            <div style={{ marginBottom: '16px' }}>
+              <Label htmlFor="company_address">기업주소</Label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '400px' }}>
+                <InputBox
+                  name="company_address"
+                  type="text"
+                  placeholder="기업주소"
+                  value={formData2.company_address || ''}
+                  readOnly
+                  variant="yellow"
+                  onClick={handleAddressSearch}
+                />
+                <AddressSearchButton type="button" onClick={handleAddressSearch} disabled={!isPostcodeReady}>
+                  검색
+                </AddressSearchButton>
+              </div>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <Label htmlFor="business_email">이메일</Label>
+              <InputBox
+                name="business_email"
+                type="text"
+                placeholder="이메일"
+                value={formData2.business_email || ''}
+                onChange={(e) => handleChange(e, 2)}
+                variant="yellow"
+                readOnly={showInput}
+              />
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <Label htmlFor="company_tel">기업전화번호</Label>
+              <InputBox
+                name="company_tel"
+                type="text"
+                placeholder="기업전화번호"
+                value={formData2.company_tel || ''}
+                onChange={(e) =>
+                  setFormData2((prev) => ({
+                    ...prev,
+                    company_tel: formatPhoneNumber(e.target.value),
+                  }))
+                }
+                variant="yellow"
+                readOnly={showInput}
+              />
+            </div>
+          </div>
+        )}
+      </Right>
+    </Body>
+  );
+};
+
+export default MasterStep;
+
+const Body = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 100px;
+  align-items: stretch;
+`;
+
+const Left = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const Right = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const InputBox = styled.input`
+  ${({ variant }) => {
+    switch (variant) {
+      case 'yellow':
+        return `
+          background: #ffffff;
+          border: 3px solid #ffeb8c;
+          border-radius: 10px;
+          color: black;
+        `;
+      case 'gray':
+        return `
+          background: #f3f3f3;
+          border: 3px solid #d1d5db;
+          border-radius: 10px;
+          color: black;
+        `;
+      case 'orange':
+        return `
+          background: #ffffff;
+          border: 3px solid #f59e0b;
+          border-radius: 10px;
+          color: black;
+        `;
+      default:
+        return '';
+    }
+  }};
+  width: 400px;
+  padding: ${({ theme }) => theme.spacing.s3};
+  box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.25);
+  margin: ${({ theme }) => theme.spacing.s0};
+`;
+
+const Btn = styled.button`
+  width: 100px;
+  height: 52.41px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.black};
+  border: none;
+`;
+
+const Label = styled.label`
+  display: block;
+  text-align: left;
+  margin-bottom: ${({ theme }) => theme.spacing.s2};
+  margin-left: ${({ theme }) => theme.spacing.s1};
+`;
+
+const AddressSearchButton = styled.button`
+  height: 52.41px;
+  min-width: 80px;
+  padding: 0 12px;
+  background: #feffe0;
+  border: 3px solid #dda900;
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  font-family: ${({ theme }) => theme.fontFamily.primary};
+  font-size: ${({ theme }) => theme.fontSizes.base};
+  color: ${({ theme }) => theme.colors.black};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
