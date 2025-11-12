@@ -5,10 +5,11 @@ import { API_ENDPOINTS } from './config';
 const memberService = {
   login: async ({ userId, userPwd }) => {
     try {
-      await axiosInstance.post(API_ENDPOINTS.LOGIN, {
+      const response = await axiosInstance.post(API_ENDPOINTS.LOGIN, {
         user_id: userId,
         user_pwd: userPwd,
       });
+      return response.data;
     } catch (error) {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }

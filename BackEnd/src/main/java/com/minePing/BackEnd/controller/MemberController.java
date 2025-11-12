@@ -60,7 +60,7 @@ public class MemberController {
         String jwtToken = memberService.login(loginDto);
         return ResponseEntity.ok()
                 .header("Set-Cookie", String.format(
-                        "token=%s; Path=/; HttpOnly; Secure=true; SameSite=Strict",
+                        "token=%s; Path=/; HttpOnly; Secure=false; SameSite=Strict",
                         jwtToken
                 ))
                 .build();
@@ -70,7 +70,7 @@ public class MemberController {
     public ResponseEntity<Void> logout() {
         return ResponseEntity.ok()
                 .header("Set-Cookie",
-                "token=; Path=/; HttpOnly; Secure=true; SameSite=Strict; Max-Age=0"
+                "token=; Path=/; HttpOnly; Secure=false; SameSite=Strict; Max-Age=0"
                 )
                 .build();
     }
