@@ -33,6 +33,7 @@ public class MemberDto {
     @Builder
     public static class MemberJoinDto {
         @NotBlank(message = "아이디는 필수입니다.")
+        @Size(max = 50, message = "아이디는 최대 16자 이하여야합니다.")
         private String user_id;
 
         @NotBlank(message = "비밀번호는 필수입니다.")
@@ -44,7 +45,12 @@ public class MemberDto {
         private String user_pwd;
 
         @NotBlank(message = "이름은 필수입니다.")
+        @Size(max = 50, message = "이름은 최대 16자 이하여야합니다.")
         private String name;
+
+        @NotBlank(message = "닉네임은 필수입니다.")
+        @Size(max = 50, message = "닉네임은 최대 16자 이하여야합니다.")
+        private String nick_name;
 
         @NotNull(message = "성별 설정은 필수입니다.")
         private CommonEnums.Gender gender;
@@ -61,6 +67,7 @@ public class MemberDto {
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Email(message = "올바른 이메일 형식이 아닙니다.")
+        @Size(max = 100, message = "이메일은 최대 100자 이하여야합니다.")
         private String email;
 
         @NotBlank(message = "전화번호는 필수입니다.")
@@ -187,6 +194,7 @@ public class MemberDto {
         private Long user_no;
         private String user_id;
         private String user_name;
+        private String nick_name;
         private Long company_no;
         private SocialType social_type;
         private CommonEnums.Role role;
@@ -198,6 +206,7 @@ public class MemberDto {
                     .user_no(member.getUserNo())
                     .user_id(member.getUserId())
                     .user_name(member.getName())
+                    .nick_name(member.getNickName())
                     .role(member.getRole())
                     .social_type(member.getSocialType())
                     .gender(member.getGender())
@@ -223,6 +232,7 @@ public class MemberDto {
         private String user_id;
         private String email;
         private String name;
+        private String nick_name;
         private String address;
         private String phone;
         private LocalDate birthday;
@@ -235,6 +245,7 @@ public class MemberDto {
                     .user_id(member.getUserId())
                     .email(member.getEmail())
                     .name(member.getName())
+                    .nick_name(member.getNickName())
                     .address(member.getAddress())
                     .birthday(member.getBirthday())
                     .gender(member.getGender())
@@ -267,6 +278,7 @@ public class MemberDto {
                     .user_id(member.getUserId())
                     .email(member.getEmail())
                     .name(member.getName())
+                    .nick_name(member.getNickName())
                     .address(member.getAddress())
                     .phone(member.getPhone())
                     .birthday(member.getBirthday())
@@ -279,6 +291,7 @@ public class MemberDto {
                     .user_id(member.getUserId())
                     .email(member.getEmail())
                     .name(member.getName())
+                    .nick_name(member.getNickName())
                     .address(member.getAddress())
                     .phone(member.getPhone())
                     .birthday(member.getBirthday())
@@ -305,21 +318,27 @@ public class MemberDto {
     @ToString
     public static class Update {
 
-//        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
-//        @Pattern(
-//                regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-//                message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
-//        )
+        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+        @Pattern(
+                regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
+                message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다."
+        )
         private String user_pwd;
 
         @NotBlank(message = "이름은 필수입니다.")
+        @Size(max = 50, message = "이름은 최대 16자 이하여야합니다.")
         private String name;
+
+        @NotBlank(message = "닉네임은 필수입니다.")
+        @Size(max = 50, message = "닉네임은 최대 16자 이하여야합니다.")
+        private String nick_name;
 
         @NotBlank(message = "주소는 필수입니다.")
         private String address;
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Email(message = "올바른 이메일 형식이 아닙니다.")
+        @Size(max = 100, message = "이메일은 최대 100자 이하여야합니다.")
         private String email;
 
         @NotBlank(message = "전화번호는 필수입니다.")

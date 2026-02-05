@@ -7,7 +7,6 @@ import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.SocialType;
 import com.minePing.BackEnd.repository.MemberRepository;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -54,10 +53,10 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
                     .build();
             tempOAuthUserStore.save(uuid, tempUser);
 
-            String jwtToken = jwtTokenProvider.createToken(uuid, CommonEnums.Role.TEMP);
+            String jwtToken = jwtTokenProvider.createAccessToken(uuid, CommonEnums.Role.TEMP);
 
             response.addHeader("Set-Cookie", String.format(
-                    "token=%s; Path=/; HttpOnly; Secure=false; SameSite=Strict",
+                    "token=%s; Path=/; HttpOnly=false; Secure=false; SameSite=Strict",
                     jwtToken
             ));
 
@@ -72,10 +71,10 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             return;
         }
 
-        String jwtToken = jwtTokenProvider.createToken(member.getUserId(), member.getRole());
+        String jwtToken = jwtTokenProvider.createAccessToken(member.getUserId(), member.getRole());
         
         response.addHeader("Set-Cookie", String.format(
-                "token=%s; Path=/; HttpOnly; Secure=false; SameSite=Strict",
+                "token=%s; Path=/; HttpOnly=false; Secure=false; SameSite=Strict",
                 jwtToken
         ));
         response.sendRedirect("http://localhost:5173");

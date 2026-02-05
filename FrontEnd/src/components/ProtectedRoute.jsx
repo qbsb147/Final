@@ -33,7 +33,7 @@ const ProtectedRoute = ({ allowedRoles = [], children }) => {
       navigate('/login');
       return;
     }
-    
+
     if (!isLoading && loginUser && allowedRoles.length > 0 && !allowedRoles.includes(loginUser.role)) {
       alert('권한이 없습니다.');
       navigate(-1);
@@ -44,8 +44,8 @@ const ProtectedRoute = ({ allowedRoles = [], children }) => {
   if (isLoading) return null;
   if (!loginUser) return null;
   if (allowedRoles.length > 0 && !allowedRoles.includes(loginUser.role)) return null;
-  
+
   return children;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

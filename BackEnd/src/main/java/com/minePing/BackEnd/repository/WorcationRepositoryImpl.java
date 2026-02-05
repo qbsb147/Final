@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.repository;
 
+import com.minePing.BackEnd.entity.Worcation;
 import com.minePing.BackEnd.entity.WorcationApplication;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -55,5 +56,34 @@ public class WorcationRepositoryImpl implements WorcationRepositoryV1 {
                 .getSingleResult();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<Worcation> findAllWithAllDetails(Pageable pageable) {
+        String jpql = """
+        SELECT DISTINCT w FROM Worcation w
+        LEFT JOIN FETCH w.worcationDetail
+        LEFT JOIN FETCH w.worcationFeatures
+        LEFT JOIN FETCH w.worcationAmenities wa
+        LEFT JOIN FETCH wa.amenity
+        LEFT JOIN FETCH w.photos
+        LEFT JOIN FETCH w.worcationPartners
+        LEFT JOIN FETCH w.worcationApplications wa2
+        LEFT JOIN FETCH wa2.review
+    """;
+
+        String countJpql = """
+        SELECT COUNT(DISTINCT w) FROM Worcation w
+    """;
+
+    java.util.List<Worcation> resultList = em.createQuery(jpql, Worcation.class)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery(countJpql, Long.class)
+                .getSingleResult();
+
+        return new PageImpl<>(resultList, pageable, total);
     }
 }

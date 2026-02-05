@@ -1,11 +1,8 @@
 package com.minePing.BackEnd.repository;
 
 import com.minePing.BackEnd.entity.Worcation;
-import com.minePing.BackEnd.entity.WorcationFeatures;
 import com.minePing.BackEnd.enums.CommonEnums;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,18 +12,6 @@ import java.util.Optional;
 
 @Repository
 public interface WorcationRepository extends JpaRepository<Worcation, Long>, WorcationRepositoryV1  {
-
-    // 모든 워케이션을 모든 관련 정보와 함께 한 번에 조회 (N+1 문제 해결)
-    @Query("SELECT DISTINCT w FROM Worcation w " +
-           "LEFT JOIN FETCH w.worcationDetail " +
-           "LEFT JOIN FETCH w.worcationFeatures " +
-           "LEFT JOIN FETCH w.worcationAmenities wa " +
-           "LEFT JOIN FETCH wa.amenity " +
-           "LEFT JOIN FETCH w.photos " +
-           "LEFT JOIN FETCH w.worcationPartners " +
-           "LEFT JOIN FETCH w.worcationApplications wa2 " +
-           "LEFT JOIN FETCH wa2.review")
-    List<Worcation> findAllWithAllDetails();
 
     @Query("SELECT w.worcationNo FROM Worcation w WHERE w.member.userNo = :userNo")
     List<Long> findIdsByWriter(@Param("userNo") Long userNo);

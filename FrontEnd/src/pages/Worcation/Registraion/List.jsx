@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import useWorcationStore from '../../../store/useWorcationStore';
 import { worcationService } from '../../../api/worcations';
 import useAuthStore from '../../../store/authStore';
-import WorcationCardList from '../../../components/worcation/WorcationCardList';
+import WorcationCardList from '../components/WorcationCardList';
 
 const WorcationList = () => {
   const loginUser = useAuthStore((state) => state.loginUser);

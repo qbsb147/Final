@@ -3,48 +3,109 @@ import styled from 'styled-components';
 import { ButtonBorder } from '../../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../../api/worcations';
-import { useAiStore } from '../../store/aiStore';
-import WorcationCardList from '../../components/worcation/WorcationCardList';
+import WorcationCardList from './components/WorcationCardList';
 import useSearchStore from '../../store/useSearchStore';
 import useAuthStore from '../../store/authStore';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import Pagination from '../../components/common/Pagination';
 
 const WorcationList = () => {
   const [viewMode, setViewMode] = useState('all');
   const navigate = useNavigate();
   const [worcations, setWorcations] = useState([]);
+  // allWorcations is used if backend returns full array (no pagination)
+  const [allWorcations, setAllWorcations] = useState([]);
   const keyword = useSearchStore((state) => state.keyword);
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
-  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
+  const [aiWorcations, setAiWorcations] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
   const loginUser = useAuthStore((state) => state.loginUser);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 12; // default page size for 전체보기
+
+  // AI fetch helper (local)
+  const fetchAi = React.useCallback(
+    async (page = 0, size = 10) => {
+      if (!loginUser) return;
+      setAiLoading(true);
+      try {
+        const res = await worcationService.getAIList(page, size);
+        const aiData = res.content || [];
+        setAiWorcations(Array.isArray(aiData) ? aiData : aiData ? [aiData] : []);
+      } catch (err) {
+        console.error('AI 리스트 로드 실패', err);
+        setAiWorcations([]);
+      } finally {
+        setAiLoading(false);
+      }
+    },
+    [loginUser]
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const data = await worcationService.list();
-      // 각 워케이션에 mainPhoto(S3 URL) 필드 추가
-      const processedList = data.map((w) => {
-        let sortedPhotos = w.photos ? [...w.photos] : [];
-        sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
-        return {
-          ...w,
-          mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
-        };
-      });
-      setWorcations(processedList);
-      setTimeout(() => setLoading(false), 100);
+      try {
+        const res = await worcationService.list(currentPage, pageSize);
+
+        // If backend returns paginated response (content + pagination fields)
+        if (res && res.content) {
+          const data = res.content;
+          const processedList = data.map((w) => {
+            let sortedPhotos = w.photos ? [...w.photos] : [];
+            sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+            return {
+              ...w,
+              mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+            };
+          });
+          setWorcations(processedList);
+          // backend may use snake_case names
+          const tp = res.total_page || res.totalPages || Math.ceil((res.total_elements || res.totalElements || res.total || (res.totalElementsCount || 0)) / pageSize);
+          setTotalPages(tp || 0);
+        } else if (Array.isArray(res)) {
+          // fallback: backend returned full array (no pagination)
+          const processed = res.map((w) => {
+            let sortedPhotos = w.photos ? [...w.photos] : [];
+            sortedPhotos.sort((a, b) => a.photo_no - b.photo_no);
+            return {
+              ...w,
+              mainPhoto: sortedPhotos.length > 0 ? sortedPhotos[0].image_url : null,
+            };
+          });
+          setAllWorcations(processed);
+          const pages = Math.ceil(processed.length / pageSize) || 1;
+          setTotalPages(pages);
+          // slice the array for the current page
+          const paged = processed.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+          setWorcations(paged);
+        } else {
+          // unknown structure - clear
+          setWorcations([]);
+          setTotalPages(0);
+        }
+      } catch (err) {
+        console.error('워케이션 리스트 로드 실패', err);
+        setWorcations([]);
+        setTotalPages(0);
+      } finally {
+        setTimeout(() => setLoading(false), 100);
+      }
     };
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
-    setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
-  }, [worcations, setPopularKeywords]);
+    // prefer popular keywords from full list if available
+    const source = allWorcations.length > 0 ? allWorcations : worcations;
+    setPopularKeywords((source || []).slice(0, 5).map((w) => w.worcation_name));
+  }, [worcations, allWorcations, setPopularKeywords]);
 
   useEffect(() => {
-    if (loginUser) fetchAiWorcations(worcationService, 0, 10);
-  }, [loginUser, fetchAiWorcations]);
+    fetchAi(0, 10);
+  }, [fetchAi]);
 
   const handleToggleView = (mode) => {
     if (mode === 'partner') {
@@ -57,7 +118,7 @@ const WorcationList = () => {
       setViewMode(mode);
       // AI 모드로 전환할 때 AI 워케이션 조회
       if (mode === 'ai' && loginUser) {
-        fetchAiWorcations(worcationService, 0, 10);
+        fetchAi(0, 10);
       }
     }
   };
@@ -125,7 +186,13 @@ const WorcationList = () => {
           <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
         </LoadingOverlay>
       ) : (
-        <WorcationCardList data={getFilteredWorcations()} navigate={navigate} />
+        <>
+          <WorcationCardList data={getFilteredWorcations()} navigate={navigate} />
+          {/* show pagination for 전체보기 (not AI) */}
+          {viewMode === 'all' && totalPages > 1 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+          )}
+        </>
       )}
     </Container>
   );

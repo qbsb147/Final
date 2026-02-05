@@ -1,6 +1,8 @@
 package com.minePing.BackEnd.auth;
 
+import com.minePing.BackEnd.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.*;
@@ -10,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,68 +20,142 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Component
-public class JwtTokenFilter extends GenericFilter {
+public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final Key SECRET_KEY;
-    private final String secretKey;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
+    private final int accessTokenExpireSec;
 
-    public JwtTokenFilter(@Value("${jwt.secret}") String secretKey) {
-        this.secretKey = secretKey;
+    public JwtTokenFilter(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.access_expiration_sec}") int accessTokenExpireSec,
+            JwtTokenProvider jwtTokenProvider,
+            RefreshTokenService refreshTokenService
+                          ) {
         this.SECRET_KEY = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.refreshTokenService = refreshTokenService;
+        this.accessTokenExpireSec = accessTokenExpireSec;
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        String accessToken = extractTokenFromCookie(request);
 
-        // Session Cookie에서만 토큰 읽기
-        String token = null;
-        Cookie[] cookies = httpRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
+        if (accessToken != null) {
+            try {
+                Claims claims = parseToken(accessToken);
+                setAuthentication(claims);
+            } catch (ExpiredJwtException e) {
+                log.warn("ACCESS TOKEN EXPIRED");
+
+                Claims claims = e.getClaims();
+                String userId = claims.getSubject();
+                Date expiration = claims.getExpiration();
+                long now = System.currentTimeMillis();
+
+                long gracePeriodMs = 10 * 60 * 1000;
+
+                if (now - expiration.getTime() > gracePeriodMs) {
+                    writeUnauthorized(response, "ACCESS_TOKEN_EXPIRED_TOO_LONG");
+                    return;
                 }
+
+                // Redis에서 RefreshToken 가져오기 RefreshToken 유효성 검증
+                String refreshToken = refreshTokenService.getRefreshToken(userId);
+                if (refreshToken == null||!jwtTokenProvider.validateRefreshToken(refreshToken)) {
+                    writeUnauthorized(response, "REFRESH_TOKEN_EXPIRED");
+                    return;
+                }
+
+                // 새 AccessToken 재발급
+                String newAccessToken = jwtTokenProvider.recreateAccessToken(refreshToken);
+
+                // 쿠키 갱신
+                addAccessTokenCookie(response, newAccessToken);
+
+                Claims newClaims = parseToken(newAccessToken);
+                setAuthentication(newClaims);
+
+            } catch (Exception e) {
+                log.warn("INVALID ACCESS TOKEN");
+                writeUnauthorized(response, "INVALID_TOKEN");
+                return;
             }
         }
-        try {
-            if (token != null) {
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(SECRET_KEY)
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
 
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + claims.get("role")));
+        filterChain.doFilter(request, response);
+    }
 
-                UserDetails userDetails = new User(claims.getSubject(), "", authorities);
-                Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, token,
-                        userDetails.getAuthorities());
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
+        for (Cookie cookie : cookies) {
+            if ("token".equals(cookie.getName())) {
+                return cookie.getValue();
             }
-
-            chain.doFilter(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            httpResponse.setContentType("application/json");
-            httpResponse.getWriter().write("invalid token");
         }
+        return null;
+    }
+
+    private Claims parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private void setAuthentication(Claims claims) {
+
+        String role = (String) claims.get("role");
+
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+        UserDetails userDetails =
+                new User(claims.getSubject(), "", authorities);
+
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        authorities
+                );
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    private void addAccessTokenCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(accessTokenExpireSec); // 1시간 (필요 시 수정)
+        cookie.setSecure(false);   // 배포 시 true
+        response.addCookie(cookie);
+    }
+
+    private void writeUnauthorized(HttpServletResponse response, String message)
+            throws IOException {
+
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.getWriter().write(message);
     }
 }

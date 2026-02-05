@@ -10,6 +10,8 @@ import oauth2Service from '../../api/oauth';
 import useAuthStore from '../../store/authStore';
 import { toast } from 'react-toastify';
 import { GoogleSignInButton } from '../../components/common/Google';
+import { onlineWsService } from '../../api/onlineWsService';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const [userId, setUserId] = useState('');
@@ -18,8 +20,25 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await memberService.login({ userId, userPwd });
-      await useAuthStore.getState().fetchUserInfo();
+      await memberService.login({ userId, userPwd });
+      try {
+        const token = Cookies.get('token');
+        if (token) {
+          localStorage.setItem('token', token);
+          Cookies.remove('token', { path: '/' });
+        }
+      } catch (error) {
+        console.error('토큰 마이그레이션 중 오류:', error);
+      }
+
+      await useAuthStore
+        .getState()
+        .fetchUserInfo()
+        .then((user) => {
+          if (user) {
+            onlineWsService.connect();
+          }
+        });
       toast.success('로그인에 성공했습니다!');
       navigate('/');
     } catch (error) {

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import useAuthStore from '../../store/authStore';
 import { applicationService } from '../../api/application';
 import { worcationService } from '../../api/worcations';
-import WorcationCardList from '../../components/worcation/WorcationCardList';
+import WorcationCardList from './components/WorcationCardList';
 
 const WorcationHistory = () => {
   const navigate = useNavigate();

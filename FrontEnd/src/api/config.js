@@ -1,7 +1,14 @@
-const { VITE_API_URL, VITE_BASE_URL, VITE_API_TIMEOUT = 5000, VITE_API_VERSION = 'v1' } = import.meta.env;
+const {
+  VITE_API_URL,
+  VITE_BASE_URL,
+  VITE_API_TIMEOUT = 5000,
+  VITE_API_VERSION = 'v1',
+  VITE_WEBSOCKET_URL,
+} = import.meta.env;
 
 export const API_CONFIG = {
   BASE_URL: `${VITE_API_URL}/${VITE_API_VERSION}`, //localhost:8080/api/v1
+  WEBSOCKET_URL: `${VITE_WEBSOCKET_URL}/${VITE_API_VERSION}`, //localhost:8080/ws
   TIMEOUT: VITE_API_TIMEOUT,
   HEADERS: {
     'Content-Type': 'application/json', //내가 서버로 보내는 데이터는 json이야
@@ -24,6 +31,10 @@ export const API_ENDPOINTS = {
     SEND_CODE: '/member/send_code',
     VERIFY_CODE: '/member/verify_code',
     EAT: (userNo) => `/ai/diet-recommend/${userNo}`,
+  },
+  WEBSOCKET: {
+    ONLINE: () => `/online`,
+    ROOM: ({ room_no }) => `/room?room_no=${room_no}`,
   },
   HEALTH: {
     BASE: '/health',
@@ -115,5 +126,10 @@ export const API_ENDPOINTS = {
   MEALS: {
     BASE: '/meal',
     CHECK: '/meal/check',
+  },
+  CHAT: {
+    ADD_WORCATION: (worcation_no) => `/chat/worcation/${worcation_no}`,
+    LIST: '/chat/list',
+    MESSAGE_LIST: (room_no) => `/chat/message/${room_no}`,
   },
 };

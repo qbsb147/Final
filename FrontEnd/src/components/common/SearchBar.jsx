@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import SearchBtn from '../../assets/SearchBtn.png';
 import btn from '../../styles/Button';
-import ReservationCalendar from './ReservationCalendar.jsx';
+import ReservationCalendar from '../calender/ReservationCalendar.jsx';
 import { FaRegCalendarAlt } from 'react-icons/fa';
 import useSearchStore from '../../store/useSearchStore';
 import '../../styles/ReservationCalendar.css'; //캘랜더 전용 CSS

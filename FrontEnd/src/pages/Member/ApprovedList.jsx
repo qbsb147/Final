@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import LeftContent from '../../components/Member/LeftContent';
-import MemberSearchBar from '../../components/Member/MemberSearchBar';
-import EmployeeApproveTable from '../../components/Member/table/EmployeeApproveTable';
+import LeftContent from './components/LeftContent';
+import MemberSearchBar from './components/MemberSearchBar';
+import EmployeeApproveTable from './components/table/EmployeeApproveTable';
 import useAuthStore from '../../store/authStore';
 
 const MemberApplies = () => {

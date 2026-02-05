@@ -7,8 +7,9 @@ import GlobalStyle from './styles/GlobalStyle';
 import Cookies from 'js-cookie';
 import useAuthStore from './store/authStore';
 import ProtectedRoute from './components/ProtectedRoute';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { onlineWsService } from './api/onlineWsService.js';
 
 // 레이아웃
 import Layout from './components/Layout/Layout'; // Header + SearchBar + Footer
@@ -30,35 +31,37 @@ import BurnoutTest from './pages/test/BurnoutTest'; // 번아웃 테스트
 import TendencyTest from './pages/test/TendencyTest'; // 성향 테스트
 
 // 워케이션
-import WorcationMainList from './pages/Worcation/List'; // 전체 워케이션 리스트
-import WorcationRegister from './pages/Worcation/Registraion/List'; // 업체 등록 리스트
-import Register from './pages/Worcation/Registraion/Register'; // 업체 등록 폼
-import WorcationDetail from './pages/Worcation/Detail'; // 워케이션 상세 페이지
-import WorcationApply from './pages/Worcation/Apply'; // 워케이션 신청
-import WorcationHistory from './pages/Worcation/History'; // 내 워케이션 히스토리
-import WorcationPartnersPage from './pages/Worcation/Partners'; //워케이션 제휴 리스트
-import WorcationAIPage from './pages/Worcation/ai'; //워케이션 AI 리스트
+import WorcationMainList from './pages/worcation/List'; // 전체 워케이션 리스트
+import WorcationRegister from './pages/worcation/Registraion/List'; // 업체 등록 리스트
+import Register from './pages/worcation/Registraion/Register'; // 업체 등록 폼
+import WorcationDetail from './pages/worcation/Detail'; // 워케이션 상세 페이지
+import WorcationApply from './pages/worcation/Apply'; // 워케이션 신청
+import WorcationHistory from './pages/worcation/History'; // 내 워케이션 히스토리
+import WorcationPartnersPage from './pages/worcation/Partners'; //워케이션 제휴 리스트
+import WorcationAIPage from './pages/worcation/ai'; //워케이션 AI 리스트
+import Chatting from './pages/chat/Chat.jsx'; //워케이션 AI 리스트
 
 // 직원 / 멤버 관리
-import MemberList from './pages/Member/List'; // 직원 리스트
-import NeedsConsult from './pages/Member/NeedsConsult'; // 상담 필요 직원 리스트
-import MemberApplies from './pages/Member/ApprovedList'; // 승인 대기 리스트
-import WorcationAppliesList from './pages/Member/WorcationAppliesList'; // 직원 워케이션 신청 리스트
+import MemberList from './pages/member/List'; // 직원 리스트
+import NeedsConsult from './pages/member/NeedsConsult'; // 상담 필요 직원 리스트
+import MemberApplies from './pages/member/ApprovedList'; // 승인 대기 리스트
+import WorcationAppliesList from './pages/member/worcationAppliesList'; // 직원 워케이션 신청 리스트
 
 // 마이페이지
 import Mypage from './pages/auth/Mypage'; // 내 정보
 import BodyInfo from './pages/auth/BodyInfo'; // 신체 정보
-import Reservation from './pages/Worcation/Reservation'; //예약자확인
+import Reservation from './pages/worcation/Reservation'; //예약자확인
 
 // 식단
-import Eat from './pages/eat/Eat'; // 식단 확인
+import Meal from './pages/meal/Meal.jsx'; // 식단 확인
 
 // 제휴 관련
-import PartnershipApplication from './pages/Worcation/Partnership/Application'; // 제휴 신청
-import ApprovedList from './pages/Worcation/Partnership/ApprovedList'; // 제휴 승인 목록
-import Requests from './pages/Worcation/Partnership/Requests'; // 제휴 요청 목록
+import PartnershipApplication from './pages/worcation/partnership/Application'; // 제휴 신청
+import ApprovedList from './pages/worcation/partnership/ApprovedList'; // 제휴 승인 목록
+import Requests from './pages/worcation/partnership/Requests'; // 제휴 요청 목록
 
 function App() {
+  // 사용자 정보 자동 로드 및 웹소켓 초기화
   useEffect(() => {
     useAuthStore
       .getState()
@@ -66,6 +69,10 @@ function App() {
       .catch((error) => {
         console.log('사용자 정보 가져오기 실패 (토큰 없음 또는 만료):', error);
       });
+
+    return () => {
+      onlineWsService.close();
+    };
   }, []);
 
   return (
@@ -119,20 +126,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/my/chat" element={<Chatting />} />
             <Route path="/worcation/:worcationNo" element={<WorcationDetail />} />
             <Route path="/worcation/temp/:worcationNo" element={<WorcationDetail />} />
             {/* 식단 */}
-            <Route path="/eat" element={<Eat />} /> {/* 식단 정보 */}
+            <Route path="/eat" element={<Meal />} /> {/* 식단 정보 */}
             {/* 심리 테스트 */}
             <Route path="/trial" element={<Trial />} />
             <Route path="/trial/stress" element={<StressTest />} />
             <Route path="/trial/burnout" element={<BurnoutTest />} />
             <Route path="/trial/tendency" element={<TendencyTest />} />
             {/* 직원 관련 */}
-            {/* <Route path="/employee/list" element={<MemberList />} />
-            <Route path="/employee/worcation-applies" element={<WorcationAppliesList />} />
-            <Route path="/employee/needs-consult" element={<NeedsConsult />} />
-            <Route path="/employee/applies" element={<MemberApplies />} /> */}
             <Route
               path="/employee/list"
               element={
@@ -169,10 +173,6 @@ function App() {
 
           {/* 🟡 Layout3: Footer 없음 */}
           <Route element={<Layout3 />}>
-            {/* <Route path="/worcation/register" element={<Register />} /> 업체 등록 */}
-            {/* <Route path="/worcation/edit/:worcation_no" element={<Register />} />  */}
-            {/* <Route path="/worcation/register/:worcation_no" element={<Register />} /> */}
-            {/* <Route path="/worcation/apply" element={<WorcationApply />} /> 워케이션 신청  */}
             <Route
               path="/worcation/apply"
               element={
@@ -237,10 +237,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/partnership/approveList" element={<ApprovedList />} /> */}
-            {/* 승인된 제휴 목록 */}
-            {/* <Route path="/partnership/requests" element={<Requests />} /> */}
-            {/* 제휴 요청 목록 */}
           </Route>
 
           {/* 로그인/회원가입 */}

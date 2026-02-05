@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import LeftContent from '../../components/Member/LeftContent';
-import MemberSearchBar from '../../components/Member/MemberSearchBar';
-import MemberTable from '../../components/Member/table/MemberTable ';
+import LeftContent from './components/LeftContent';
+import MemberSearchBar from './components/MemberSearchBar';
+import MemberTable from './components/table/MemberTable ';
 import useAuthStore from '../../store/authStore';
 
 const MemberList = () => {

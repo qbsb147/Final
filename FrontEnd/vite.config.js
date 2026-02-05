@@ -7,4 +7,11 @@ export default defineConfig({
   esbuild: {
     jsx: 'automatic',
   },
+  define: {
+    global: 'window',
+  },
+  server: {
+    port: 5173,
+    host: true,
+  },
 });

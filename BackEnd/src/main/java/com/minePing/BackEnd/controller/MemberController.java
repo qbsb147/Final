@@ -9,10 +9,12 @@ import com.minePing.BackEnd.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +28,10 @@ public class MemberController {
     private final MemberService memberService;
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/signUp/init")
+    @Value("${jwt.access_expiration_sec}")
+    private int accessTokenExpireSec;
+
+    @GetMapping("signUp/init")
     public ResponseEntity<MemberDto.init> init() {
         MemberDto.init memberDto = memberService.init();
         System.out.println("memberDto = " + memberDto);
@@ -56,22 +61,28 @@ public class MemberController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) {
-        String jwtToken = memberService.login(loginDto);
+    public ResponseEntity<?> login(@Valid @RequestBody MemberDto.Login loginDto) throws IOException {
+        String accessToken = memberService.login(loginDto);
+
+        String accessCookie = String.format(
+                "token=%s; Path=/; HttpOnly=false; Secure=false; SameSite=Strict; Max-Age=%d",
+                accessToken,
+                accessTokenExpireSec
+        );
+
         return ResponseEntity.ok()
-                .header("Set-Cookie", String.format(
-                        "token=%s; Path=/; HttpOnly; Secure=false; SameSite=Strict",
-                        jwtToken
-                ))
+                .header("Set-Cookie", accessCookie)
                 .build();
     }
 
     @GetMapping("logout")
     public ResponseEntity<Void> logout() {
+        memberService.logout();
+
+        String accessCookie = "token=; Path=/; HttpOnly=false; Secure=false; SameSite=Strict; Max-Age=0";
+
         return ResponseEntity.ok()
-                .header("Set-Cookie",
-                "token=; Path=/; HttpOnly; Secure=false; SameSite=Strict; Max-Age=0"
-                )
+                .header("Set-Cookie", accessCookie)
                 .build();
     }
 
@@ -141,4 +152,6 @@ public class MemberController {
             return ResponseEntity.ok("인증이 완료되었습니다.");
         }
         return ResponseEntity.badRequest().body("인증코드가 올바르지 않거나 만료되었습니다.");
-    }}
+    }
+
+}

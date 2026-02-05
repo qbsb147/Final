@@ -2,8 +2,12 @@ import api, { fileApi } from './axios';
 import { API_CONFIG, API_ENDPOINTS, IMG_CONFIG } from './config';
 
 export const worcationService = {
-  list: async () => {
-    const response = await api.get(API_ENDPOINTS.WORCATION.LIST);
+  // list supports optional pagination parameters (page, size).
+  // If backend doesn't support pagination and returns an array, caller will handle it.
+  list: async (page = 0, size = 10) => {
+    const response = await api.get(API_ENDPOINTS.WORCATION.LIST, {
+      params: { page, size },
+    });
     return response.data;
   },
   getMyWorcationList: async (user_no) => {
@@ -112,10 +116,10 @@ export const worcationService = {
     console.log('🚀 getAIList 호출됨 - 페이지:', page, '크기:', size);
     console.log('📡 API 엔드포인트:', API_ENDPOINTS.WORCATION.AI);
     console.log('🔗 전체 URL:', `${import.meta.env.VITE_API_URL}/api/v1${API_ENDPOINTS.WORCATION.AI}`);
-    
+
     try {
       const response = await api.get(API_ENDPOINTS.WORCATION.AI, {
-        params: { page, size }
+        params: { page, size },
       });
       console.log('✅ getAIList 응답 성공:', response);
       return response.data;

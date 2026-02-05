@@ -8,7 +8,6 @@ public class WorcationEnums {
 
     public enum Category {
         Office, Accommodation, OfficeAndStay;
-
     }
 
     public enum LocationType {

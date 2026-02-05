@@ -6,7 +6,7 @@ import useAuthStore from '../../store/authStore';
 import btn from '../../styles/Button';
 import memberService from '../../api/members';
 import { usePosition } from '../../hooks/usePosition';
-import Popup from '../../components/auth/Popup';
+import Popup from './components/Popup';
 import Swal from 'sweetalert2';
 import { useValidatePassword } from '../../hooks/useAuth';
 import { toast } from 'react-toastify';
@@ -72,6 +72,7 @@ const Mypage = () => {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
+            nick_name: memberData.nick_name,
             email: memberData.email,
             name: memberData.name,
             phone: memberData.phone,
@@ -91,6 +92,7 @@ const Mypage = () => {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
+            nick_name: memberData.nick_name,
             email: memberData.email,
             name: memberData.name,
             phone: memberData.phone,
@@ -120,6 +122,7 @@ const Mypage = () => {
           mappedData = {
             user_no: memberData.user_no,
             user_id: memberData.user_id,
+            nick_name: memberData.nick_name,
             email: memberData.email,
             phone: memberData.phone,
             name: memberData.name,
@@ -242,6 +245,7 @@ const Mypage = () => {
       let submitData = {
         user_pwd: userInfo.user_pwd,
         name: userInfo.name,
+        nick_name: userInfo.nick_name,
         address: userInfo.address,
         email: userInfo.email,
         phone: userInfo.phone,
@@ -527,6 +531,17 @@ const Mypage = () => {
                 value={userInfo.age || ''}
                 onChange={handleInputChange}
                 readOnly
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputName>닉네임</InputName>
+              <InputText
+                style={Input.InputGray}
+                type="text"
+                name="nick_name"
+                value={userInfo.nick_name || ''}
+                onChange={handleInputChange}
+                placeholder="닉네임을 입력하세요"
               />
             </InputGroup>
           </Box>

@@ -3,16 +3,16 @@ package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
-import com.minePing.BackEnd.entity.Member;
-import com.minePing.BackEnd.enums.CommonEnums.Role;
-import com.minePing.BackEnd.enums.SocialType;
+
+import java.io.IOException;
 
 public interface MemberService {
     MemberDto.init init();
     void createEmployeeMember(MemberDto.EmployeeJoin employeeJoinDto);
     void createMasterMember(MemberDto.MasterJoin masterJoinDto);
     void createWorcationMember(MemberDto.WorcationJoin worcationJoinDto);
-    String login(MemberDto.Login loginDto);
+    String login(MemberDto.Login loginDto) throws IOException;
+    void logout();
 
     String updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto);
 

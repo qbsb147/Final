@@ -50,7 +50,7 @@ const menuData = [
     items: [
       { title: '내 정보', path: '/my/info' },
       { title: '신체 정보', path: '/my/body' },
-      { title: '예약자 명단', path: 'my/reservation' },
+      { title: '예약자 명단', path: '/my/reservation' },
       { title: '워케이션 신청내역', path: '/my/worcation-history' },
     ],
   },
@@ -93,6 +93,7 @@ const Header = () => {
         } else {
           items.push({ title: '워케이션 신청내역', path: '/my/worcation-history' });
         }
+        items.push({ title: '채팅방 목록', path: '/my/chat' });
         items.push({ title: '로그아웃', path: '/logout' });
 
         return {
@@ -105,28 +106,6 @@ const Header = () => {
     }
     return menu;
   });
-  // const filteredMenus = menus
-  // .map((menu) => {
-  //   if (menu.title === '워케이션') {
-  //     return {
-  //       ...menu,
-  //       items: menu.items.filter((item) => {
-  //         if (item.title === '워케이션 등록') {
-  //           return role === 'WORCATION';
-  //         }
-  //         return true;
-  //       }),
-  //     };
-  //   }
-  //   return menu;
-  // })
-  // .filter((menu) => {
-  //   // 로그인하지 않은 경우 심리검사, 식단정보 메뉴 숨김
-  //   if (!isLoggedIn && (menu.title === '심리검사' || menu.title === '식단정보')) return false;
-  //   if (menu.title === '직원관리' && !(role === 'MASTER' || role === 'MANAGER')) return false;
-  //   if (menu.title === '워케이션' && menu.items && menu.items.length === 0) return false;
-  //   return true;
-  // });
 
   const filteredMenus = menus
     .map((menu) => {
@@ -211,13 +190,6 @@ const Header = () => {
       {isDropdownVisible && (
         <DropdownWrap>
           <DropdownContent>
-            {/*
-            {menus
-              .filter((menu) => menu.items && menu.items.length > 0)
-              .map((menu, idx) => (
-                ...
-              ))}
-            */}
             {filteredMenus
               .filter((menu) => menu.items && menu.items.length > 0)
               .map((menu, idx) => (
@@ -283,10 +255,18 @@ const HeaderInner = styled.div`
   max-width: 1280px;
   height: 100%;
   margin: ${({ theme }) => theme.spacing.s0} auto;
-  padding: ${({ theme }) => theme.spacing.s0} ${({ theme }) => theme.spacing.s4};
+  padding: ${({ theme }) => theme.spacing.s0} ${({ theme }) => theme.spacing.s2};
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  @media (max-width: 1200px) {
+    padding: ${({ theme }) => theme.spacing.s0} ${({ theme }) => theme.spacing.s2};
+  }
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => theme.spacing.s0} ${({ theme }) => theme.spacing.s1};
+  }
 `;
 
 const LogoWrap = styled.div`
@@ -298,6 +278,15 @@ const LogoWrap = styled.div`
 const LogoImg = styled.img`
   width: 100px;
   height: 100px;
+  @media (max-width: 992px) {
+    width: 80px;
+    height: 80px;
+  }
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+  }
 `;
 
 const NavWrap = styled.div`
@@ -312,20 +301,42 @@ const Nav = styled.ul`
   display: flex;
   width: 100%;
   list-style: none;
-  margin: ${({ theme }) => theme.spacing.s0};
-  padding: ${({ theme }) => theme.spacing.s0};
+  margin: 0;
+  padding: 0;
   font-weight: bold;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+
+  @media (max-width: 1200px) {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  @media (max-width: 768px) {
+    gap: 4px;
+    font-size: 0.9em;
+  }
 `;
 
 const NavItem = styled.li`
-  flex: 1;
+  flex: 1 0 auto;
   text-align: center;
   color: ${({ theme }) => theme.colors.black};
   cursor: pointer;
   display: flex;
   align-items: center;
+  min-width: max-content;
+  padding: 0 4px;
+
+  @media (max-width: 992px) {
+    padding: 0 2px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9em;
+  }
   justify-content: center;
   height: 100%;
 `;
@@ -339,64 +350,90 @@ const DropdownWrap = styled.div`
   z-index: ${({ theme }) => theme.zIndices.dropdown};
   display: flex;
   justify-content: center;
-  padding: ${({ theme }) => theme.spacing.s6} ${({ theme }) => theme.spacing.s0};
+  padding: ${({ theme }) => `${theme.spacing.s4} ${theme.spacing.s0}`};
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 992px) {
+    padding: ${({ theme }) => `${theme.spacing.s3} ${theme.spacing.s0}`};
+  }
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => `${theme.spacing.s2} ${theme.spacing.s0}`};
+    top: 80px;
+  }
 `;
 
 const DropdownContent = styled.div`
+  margin-left: 100px;
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: space-between;
+  overflow-x: auto;
   width: 100%;
-  max-width: 1280px;
-  padding: ${({ theme }) => theme.spacing.s0} ${({ theme }) => theme.spacing.s4};
+  max-width: 1180px;
+  white-space: nowrap;
+  padding: ${({ theme }) => `${theme.spacing.s0} ${theme.spacing.s4}`};
+  gap: 16px;
 
   &::before {
     content: '';
-    display: block;
-    width: 100px;
-    margin-right: ${({ theme }) => theme.spacing.s2};
+    display: none;
+    width: 0;
+    margin-right: 0;
+  }
+
+  @media (max-width: 1200px) {
+    padding: ${({ theme }) => `${theme.spacing.s0} ${theme.spacing.s3}`};
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => `${theme.spacing.s0} ${theme.spacing.s2}`};
+    gap: 8px;
   }
 `;
 
 const DropdownColumn = styled.div`
   flex: 1;
-  min-width: 180px;
+  min-width: 0px;
   text-align: center;
+  padding: ${({ theme }) => theme.spacing.s2};
+
+  @media (max-width: 992px) {
+    flex: 1 0 calc(33.333% - 16px);
+    min-width: 140px;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 0 calc(50% - 8px);
+    min-width: 120px;
+    padding: ${({ theme }) => theme.spacing.s1};
+  }
 
   ul {
     list-style: none;
-    padding: ${({ theme }) => theme.spacing.s0};
-    margin: ${({ theme }) => theme.spacing.s0};
+    padding: 0;
+    margin: 0;
 
     li {
-      padding: ${({ theme }) => theme.spacing.s3} ${({ theme }) => theme.spacing.s0};
-      color: ${({ theme }) => theme.colors.black};
+      padding: ${({ theme }) => `${theme.spacing.s2} ${theme.spacing.s2}`};
+      color: ${({ theme }) => theme.colors.gray[700]};
       cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+      border-radius: 4px;
 
       &:hover {
-        text-decoration: none;
+        background-color: ${({ theme }) => theme.colors.gray[100]};
+        color: ${({ theme }) => theme.colors.primary};
+      }
+
+      @media (max-width: 768px) {
+        padding: ${({ theme }) => `${theme.spacing.s1} ${theme.spacing.s2}`};
+        font-size: 0.85em;
       }
     }
-  }
-`;
-
-const StyleLinkButton = styled(Link)`
-  padding: ${({ theme }) => theme.spacing.s2} ${({ theme }) => theme.spacing.s4};
-  border: 1px solid ${({ theme }) => theme.colors.black};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  background: ${({ theme }) => theme.colors.white};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  color: ${({ theme }) => theme.colors.black};
-  text-decoration: none;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.gray[100]};
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px ${({ theme }) => theme.colors.primary};
   }
 `;
 

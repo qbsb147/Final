@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Table from '../../../components/Member/table/PartnerApprovedListTable';
+import Table from '../../member/components/table/PartnerApprovedListTable';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../../store/authStore';
 

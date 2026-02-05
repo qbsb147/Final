@@ -28,14 +28,16 @@ public interface WorcationService {
      */
     List<WorcationDto.Response> findByIds(List<Long> ids);
     /**
-     * 워케이션 전체 목록(간단 요약) 조회
+     * 워케이션 전체 목록(간단 요약) 조회 - 페이징 사용 권장
      */
-    List<WorcationDto.Response> getAll();
 
     /**
      * 워케이션 내 목록(간단 요약) 조회
      */
     List<WorcationDto.Response> getMyListALl(Long id);
+
+    // 페이징된 전체 목록 조회
+    Page<WorcationDto.Response> getAll(Pageable pageable);
 
     /**
      * 특정 워케이션을 수정하고, 수정된 DTO 응답을 반환한다.

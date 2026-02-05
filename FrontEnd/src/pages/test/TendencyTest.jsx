@@ -1,9 +1,9 @@
 import React, { useState } from 'react'; // useState 임포트 꼭 추가하세요
 import styled from 'styled-components';
 import { ButtonDetail } from '../../styles/Button.styles';
-import { tendency } from '../../components/test/questions';
+import { tendency } from './components/questions';
 import { Navigate, useNavigate } from 'react-router-dom';
-import MbtiSelect from '../../components/test/mbtiSelect.jsx';
+import MbtiSelect from './components/mbtiSelect.jsx';
 import { mentalService } from '../../api/mentals.js';
 import { toast } from 'react-toastify';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";

@@ -1,5 +1,6 @@
 package com.minePing.BackEnd.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.minePing.BackEnd.dto.MemberPreferenceDto;
 import com.minePing.BackEnd.enums.PreferenceEnums;
 import com.minePing.BackEnd.enums.WorcationEnums;
@@ -16,13 +17,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Entity
-
 @Table(name = "member_recommand")
 @EntityListeners(AuditingEntityListener.class)
 public class MemberRecommand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "recommand_no")
     private Long recommandNo;
 

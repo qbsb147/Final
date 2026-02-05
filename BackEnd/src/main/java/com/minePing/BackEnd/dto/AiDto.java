@@ -151,7 +151,6 @@ public class AiDto {
                     .leisureActivity(preference.getLeisureActivity())
                     .accommodationType(preference.getAccommodationType())
                     .result_content(preference.getResultContent())
-
                     .build();
         }
     }

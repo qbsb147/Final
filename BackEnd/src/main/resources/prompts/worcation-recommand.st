@@ -23,6 +23,8 @@ ResultContent: {stress_result_content},
 
 The member_recommand object must contain the following
 The enum format is one of the values in the [].
+You must strictly use ONLY the values provided in the enum lists below.
+Do NOT create new terms, synonyms, or similar words (e.g., do NOT use "sunset"; use only "yellow_orange", "nature_earth", "purple", "achromatic", or "blue_sky" for dominantColor).
 - “locationType” (enum): Location type
 [mountain, river, sea, plain, city]
 - “dominantColor” (enum): Overall color tone

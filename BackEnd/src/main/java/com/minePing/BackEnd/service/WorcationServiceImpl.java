@@ -247,29 +247,30 @@ public class WorcationServiceImpl implements WorcationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Response> getAll() {
-        return worcationRepository.findAllWithAllDetails().stream()
-                .map(w -> {
-                    // 모든 데이터가 이미 로드되어 있으므로 별도 조회 불필요
-                    WorcationDetail d = w.getWorcationDetail();
-                    WorcationFeatures f = w.getWorcationFeatures();
+    public Page<WorcationDto.Response> getAll(Pageable pageable) {
+        Page<Worcation> page = worcationRepository.findAllWithAllDetails(pageable);
 
-                    List<Amenity> amenities = w.getWorcationAmenities().stream()
-                            .map(WorcationAmenity::getAmenity)
-                            .collect(Collectors.toList());
+        java.util.List<WorcationDto.Response> dtoList = page.getContent().stream().map(w -> {
+            WorcationDetail d = w.getWorcationDetail();
+            WorcationFeatures f = w.getWorcationFeatures();
 
-                    List<Photo> photos = new ArrayList<>(w.getPhotos());
+            java.util.List<Amenity> amenities = w.getWorcationAmenities().stream()
+                    .map(WorcationAmenity::getAmenity)
+                    .collect(Collectors.toList());
 
-                    List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
+            java.util.List<Photo> photos = new ArrayList<>(w.getPhotos());
 
-                    List<Review> reviews = w.getWorcationApplications().stream()
-                            .map(app -> app.getReview())
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
+            java.util.List<WorcationPartner> partners = new ArrayList<>(w.getWorcationPartners());
 
-                    return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
-                })
-                .collect(Collectors.toList());
+            java.util.List<Review> reviews = w.getWorcationApplications().stream()
+                    .map(WorcationApplication::getReview)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            return Response.fromEntity(w, d, f, partners, reviews, amenities, photos);
+        }).collect(Collectors.toList());
+
+        return new PageImpl<>(dtoList, pageable, page.getTotalElements());
     }
 
     @Override
@@ -526,7 +527,9 @@ public class WorcationServiceImpl implements WorcationService {
                 .orElseGet(()->
                         {
                             MemberRecommand newMemberRecommand = getWorcationFeatures(member);
+                            System.out.println("newMemberRecommand = " + newMemberRecommand);
                             newMemberRecommand.changeMember(member);
+                            System.out.println("recommandNo = " + newMemberRecommand.getRecommandNo());
                             return memberRecommandRepository.save(newMemberRecommand);
                         }
                 );

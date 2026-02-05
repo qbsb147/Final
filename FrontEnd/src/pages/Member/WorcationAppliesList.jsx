@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import LeftContent from '../../components/Member/LeftContent';
-import WorcationTable from '../../components/Member/table/WorcationTable';
-import CalenderContainoer from '../../components/Member/CalenderContainoer';
-import MemberSearchBar from '../../components/Member/MemberSearchBar';
+import LeftContent from './components/LeftContent';
+import WorcationTable from './components/table/WorcationTable';
+import CalenderContainoer from './components/CalenderContainoer';
+import MemberSearchBar from './components/MemberSearchBar';
 
 const WorcationAppliesList = () => {
   const [searchKeyword, setSearchKeyword] = useState('');

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @AllArgsConstructor
@@ -26,6 +27,7 @@ import java.util.List;
         indexes = {@Index(name = "idx_user_id", columnList = "user_id")},
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_user_id", columnNames = "user_id"),
+                @UniqueConstraint(name = "uk_user_nick_name", columnNames = "nick_name"),
                 @UniqueConstraint(name = "uk_email", columnNames = "email"),
                 @UniqueConstraint(name = "uk_phone", columnNames = "phone")
         }
@@ -46,6 +48,9 @@ public class Member {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
+    @Column(name = "nick_name", nullable = false, length = 50, unique = true)
+    private String nickName;
+
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
 
@@ -56,7 +61,7 @@ public class Member {
     @Column(name = "birthday", nullable = false)
     private LocalDate birthday;
 
-    @Column(name = "address", nullable = false, length = 100)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @Column(name = "phone", nullable = false, length = 13, unique = true)
@@ -172,8 +177,20 @@ public class Member {
         this.companyProfile.getCompany().updateThis(updateDto);
     }
 
-    public Member changeStatus(CommonEnums.Status status) {
-        this.status = status;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MessageReadStatus> messageReadStatuses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<ChatParticipant> chatParticipants = new ArrayList<>();
+
+    public Member changeNickName(String nickName){
+        this.nickName = nickName;
         return this;
     }
 }

@@ -6,16 +6,16 @@ import logoText from '../../assets/LoginText.png';
 import memberService from '../../api/members';
 import { validateForm } from '../../hooks/useAuth';
 import { useDefaultForm, useEmployeeForm, useMasterForm, useMasterProfileForm } from '../../schemas/schema';
-import DefaultStep from '../../components/auth/Default';
-import EmployeeStep from '../../components/auth/Employee';
-import MasterStep from '../../components/auth/Master';
+import DefaultStep from './components/Default';
+import EmployeeStep from './components/Employee';
+import MasterStep from './components/Master';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { businessApi } from '../../api/businessApi';
 import { handleBusinessValidationResult } from '../../hooks/useValidation';
 import { useForm } from 'react-hook-form';
 import Cookies from 'js-cookie';
-import MasterProfileStep from '../../components/auth/MaterProfile';
+import MasterProfileStep from './components/MaterProfile';
 
 const SignUp = () => {
   const [formStep, setFormStep] = useState(1);

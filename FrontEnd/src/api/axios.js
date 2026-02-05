@@ -17,6 +17,13 @@ const fileApi = axios.create({
 api.interceptors.request.use(
   (config) => {
     config.withCredentials = true;
+    
+    // localStorage에서 토큰을 읽어 Authorization 헤더에 추가
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => {
@@ -28,6 +35,13 @@ api.interceptors.request.use(
 fileApi.interceptors.request.use(
   (config) => {
     config.withCredentials = true;
+    
+    // localStorage에서 토큰을 읽어 Authorization 헤더에 추가
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => {

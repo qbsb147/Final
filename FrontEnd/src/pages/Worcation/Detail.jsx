@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ButtonBorder, ButtonYbShadow } from '../../styles/Button.styles.js';
+import { ButtonBorder } from '../../styles/Button.styles.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import Slider from 'react-slick';
 import { worcationService } from '../../api/worcations.js';
+import { chatService } from '../../api/chat.js';
 import useAuthStore from '../../store/authStore.js';
 import useSelectedWorcationStore from '../../store/selectedWorcationStore.js';
+import ImageSlider from '../../components/image/ImageSlider.jsx';
+import WorcationInfo from './components/detail/WorcationInfo';
+import ReviewSection from './components/detail/ReviewSection.jsx';
 
 const CLOUDFRONT_DOMAIN = import.meta.env.VITE_CLOUDFRONT_DOMAIN;
 
@@ -22,21 +25,10 @@ const WorcationDetail = () => {
   const [amenities, setAmenities] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [photos, setPhotos] = useState([]);
-  const [editingId, setEditingId] = useState(null);
   const [editedContent, setEditedContent] = useState('');
   const [appData, setAppData] = useState(null);
   const setSelectedWorcation = useSelectedWorcationStore((state) => state.setSelectedWorcation);
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    centerMode: true,
-    centerPadding: '100px',
-  };
+
   useEffect(() => {
     // worcationNo로 데이터 가져오기
     const fetchData = async () => {
@@ -115,61 +107,6 @@ const WorcationDetail = () => {
     ),
   ].filter(Boolean);
 
-  //숙소 유형에 따른 정보 출력
-  const renderBlocks = () => {
-    switch (worcation?.worcation_category) {
-      case 'Office':
-        return (
-          <Block>
-            <BlockTitle>오피스</BlockTitle>
-            <BlockText>
-              - 운용시간 : {officeTime || '미입력'}
-              <br />- 연락처 : {worcation?.worcation_tel || '-'}
-              <br />- 수용인원 : {worcation?.max_people || '-'}
-              <br />- 홈페이지 : {worcation?.content || '-'}
-            </BlockText>
-          </Block>
-        );
-      case 'Accommodation':
-        return (
-          <Block>
-            <BlockTitle>숙소</BlockTitle>
-            <BlockText>
-              - 입실/퇴실 : {accomTime || '미입력'}
-              <br />- 연락처 : {worcation?.worcation_tel || '-'}
-              <br />- 최대인원 : {worcation?.max_people || '-'}
-              <br />- 홈페이지 : {worcation?.content || '-'}
-            </BlockText>
-          </Block>
-        );
-      case 'OfficeAndStay':
-        return (
-          <>
-            <Block>
-              <BlockTitle>오피스</BlockTitle>
-              <BlockText>
-                - 운용시간 : {officeTime || '미입력'}
-                <br />- 연락처 : {worcation?.worcation_tel || '-'}
-                <br />- 수용인원 : {worcation?.max_people || '-'}
-                <br />- 홈페이지 : {worcation?.content || '-'}
-              </BlockText>
-            </Block>
-            <Block>
-              <BlockTitle>숙소</BlockTitle>
-              <BlockText>
-                - 입실/퇴실 : {accomTime || '미입력'}
-                <br />- 연락처 : {detail?.worcation_tel || '-'}
-                <br />- 최대인원 : {worcation?.max_people || '-'}
-                <br />- 홈페이지 : {detail?.content || '-'}
-              </BlockText>
-            </Block>
-          </>
-        );
-      default:
-        return null;
-    }
-  };
-
   //댓글
   //테스트 시 신청 먼저 해야함
   const loginUserId = 'user001';
@@ -193,11 +130,6 @@ const WorcationDetail = () => {
     }
   };
 
-  const handleEditClick = (review) => {
-    setEditingId(review.review_no);
-    setEditedContent(review.review_content);
-  };
-
   const handleSaveEdit = async (review_no) => {
     try {
       await worcationService.updateReview(review_no, {
@@ -206,7 +138,6 @@ const WorcationDetail = () => {
       });
       alert('댓글을 수정하였습니다.');
 
-      setEditingId(null);
       setEditedContent('');
 
       setReviews((prev) =>
@@ -233,6 +164,14 @@ const WorcationDetail = () => {
   const endDate = appData ? new Date(appData.end_date) : null;
   const isDisabled = !(appData && appData.approve === 'Y' && endDate > today);
 
+  const handleAddWorcationChat = async (worcationNo) => {
+    try {
+      await chatService.addWorcationChat(worcationNo);
+    } catch {
+      alert('1:1 문의 등록에 실패했습니다.');
+    }
+  };
+
   return (
     <PageContainer>
       <Wrapper>
@@ -240,142 +179,58 @@ const WorcationDetail = () => {
           {loginUser && (
             <TopButtons>
               {loginUser.role !== 'EMPLOYEE' && loginUser.role !== 'WORCATION' && (
-              <ButtonBorder
-              onClick={() => {
-                setSelectedWorcation(worcation);
-                navigate('/partnership/apply');
-              }}
-            >
-              제휴 신청
-            </ButtonBorder>
+                <ButtonBorder
+                  onClick={() => {
+                    setSelectedWorcation(worcation);
+                    navigate('/partnership/apply');
+                  }}
+                >
+                  제휴 신청
+                </ButtonBorder>
               )}
               {loginUser.role !== 'WORCATION' && (
-                <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>예약</ButtonBorder>
+                <>
+                  <ButtonBorder onClick={() => navigate('/worcation/apply', { state: { worcation } })}>
+                    예약
+                  </ButtonBorder>
+                  <ButtonBorder
+                    onClick={async () => {
+                      await handleAddWorcationChat(worcation.worcation_no);
+                      navigate('/my/chat');
+                    }}
+                  >
+                    1:1 문의
+                  </ButtonBorder>
+                </>
               )}
             </TopButtons>
           )}
         </MainImageWrapper>
-
         <Title>{worcation.worcation_name}</Title>
-        <PhotoGallery>
-          <PhotoSliderWrapper>
-            {images.length > 1 ? (
-              <Slider {...settings}>
-                {images.map((src, idx) => (
-                  <picture key={idx}>
-                    <SliderImage src={src} alt={`slide-${idx}`} loading="lazy" />
-                  </picture>
-                ))}
-              </Slider>
-            ) : (
-              images.length === 1 && (
-                <picture>
-                  <SliderImage src={images[0]} alt="slide-0" loading="lazy" />
-                </picture>
-              )
-            )}
-          </PhotoSliderWrapper>
-        </PhotoGallery>
+        <ImageSlider images={images} />
         <PriceWrapper>
           <Price>{worcation.non_partner_price?.toLocaleString()} 원</Price>
         </PriceWrapper>
-
-        <ContentSection>
-          {renderBlocks()}
-          <Block>
-            <BlockTitle>위치 및 상세 설명</BlockTitle>
-            <BlockText>
-              <br />- 주소 : {worcation?.worcation_address}
-              <br />- 오시는 길 : {detail?.navigate}
-            </BlockText>
-          </Block>
-          <Block>
-            <BlockTitle>사업자 정보</BlockTitle>
-            <BlockText>
-              - 대표 이사 : {detail?.licensee}
-              <br />- 사업자등록번호 : {detail?.business_id}
-              <br />- 기업명 : {detail?.licensee}
-            </BlockText>
-          </Block>
-          <Block>
-            <BlockTitle>워케이션 소개</BlockTitle>
-            <BlockText>
-              {detail?.content}
-              <br />
-              이용 가격 : {detail?.charge_amount}
-              <br />
-              숙소 형태 : {features[0]?.accommodation_type || '미지정'}
-              <br />
-              환불 정책 : {detail?.refund_policy}
-              <br />
-              여가 활동 : {features[0]?.activities || '없음'}
-            </BlockText>
-          </Block>
-          <Block>
-            <BlockTitle>편의 시설</BlockTitle>
-            <BlockText>
-              {amenities.length > 0 ? (
-                amenities.map((item, index) => <div key={index}>- {item.amenity_name}</div>)
-              ) : (
-                <>등록된 편의 시설이 없습니다.</>
-              )}
-            </BlockText>
-          </Block>
-        </ContentSection>
+        <WorcationInfo
+          worcation={worcation}
+          officeTime={officeTime}
+          accomTime={accomTime}
+          detail={detail}
+          features={features}
+          amenities={amenities}
+        />
       </Wrapper>
 
       <CommentTitle>댓글 ({reviews ? reviews.length : 0})</CommentTitle>
       <Wrapper2>
-        <ContentSection>
-          <CommentInputWrap>
-            {isDisabled && <Overlay>댓글 작성은 워케이션 이용후 이용 가능합니다.</Overlay>}
-            <CommentInput
-              placeholder="댓글을 입력하세요."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              disabled={isDisabled}
-            />
-            <CommentSubmit as={ButtonYbShadow} onClick={handleAddComment} disabled={isDisabled}>
-              등록
-            </CommentSubmit>
-          </CommentInputWrap>
-          <CommentList>
-            {reviews.map((review) => (
-              <CommentItem key={review.review_no}>
-                <CommentUser>{review.writer_id} :</CommentUser>
-                {editingId === review.review_no ? (
-                  <>
-                    <CommentText>
-                      <CommentInput value={editedContent} onChange={(e) => setEditedContent(e.target.value)} />
-                    </CommentText>
-                    <CommentActions>
-                      <ActionBtn onClick={() => handleSaveEdit(review.review_no)}>저장</ActionBtn>
-                      <ActionBtn onClick={() => setEditingId(null)}>취소</ActionBtn>
-                    </CommentActions>
-                  </>
-                ) : (
-                  <>
-                    <CommentText>{review.review_content}</CommentText>
-
-                    <CommentActions>
-                      {review.writer_id === loginUser?.user_id ? (
-                        <>
-                          <ActionBtn onClick={() => handleEditClick(review)}>수정</ActionBtn>
-                          <ActionBtn onClick={() => handleDelete(review.review_no)}>삭제</ActionBtn>
-                        </>
-                      ) : (
-                        <>
-                          <ActionBtn style={{ visibility: 'hidden' }}>수정</ActionBtn>
-                          <ActionBtn style={{ visibility: 'hidden' }}>삭제</ActionBtn>
-                        </>
-                      )}
-                    </CommentActions>
-                  </>
-                )}
-              </CommentItem>
-            ))}
-          </CommentList>
-        </ContentSection>
+        <ReviewSection
+          reviews={reviews}
+          loginUser={loginUser}
+          isDisabled={isDisabled}
+          handleAddComment={handleAddComment}
+          handleSaveEdit={handleSaveEdit}
+          handleDelete={handleDelete}
+        />
       </Wrapper2>
     </PageContainer>
   );
@@ -407,27 +262,6 @@ const MainImageWrapper = styled.div`
   position: relative;
 `;
 
-const PhotoSliderWrapper = styled.div`
-  width: 100%;
-  margin: 30px auto;
-`;
-
-const SliderImage = styled.img`
-  width: 100%;
-  max-width: 600px;
-  height: 400px;
-  object-fit: cover;
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  display: block;
-  margin: 0 auto;
-`;
-
-const PhotoGallery = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
-`;
 const TopButtons = styled.div`
   position: absolute;
   right: 20px;
@@ -456,32 +290,6 @@ const Price = styled.div`
   color: ${({ theme }) => theme.colors.black};
 `;
 
-const ContentSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  text-align: left;
-`;
-
-const Block = styled.div`
-  margin-bottom: 80px;
-  margin-left: 50px;
-`;
-
-const BlockTitle = styled.h2`
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  font-family: 'Godo B';
-  color: ${({ theme }) => theme.colors.black};
-  margin-bottom: 20px;
-`;
-
-const BlockText = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  font-family: 'Godo B';
-  color: ${({ theme }) => theme.colors.black};
-  line-height: 2.5;
-`;
-
 const CommentTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   color: ${({ theme }) => theme.colors.gray[600]};
@@ -489,92 +297,4 @@ const CommentTitle = styled.h3`
   display: flex;
   justify-content: left;
   margin-left: 30px;
-`;
-
-const CommentInputWrap = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 40px;
-`;
-
-const CommentInput = styled.input`
-  flex: 1;
-  width: 100%;
-  height: 50px;
-  border: 2px solid ${({ theme }) => theme.colors.gray[400]};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: 0 10px;
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  font-family: 'GyeonggiTitleOTF';
-  background: ${({ theme }) => theme.colors.white};
-  color: ${({ theme }) => theme.colors.black};
-`;
-
-const CommentSubmit = styled.button``;
-
-const CommentList = styled.div`
-  border: 2px solid ${({ theme }) => theme.colors.black};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: 20px;
-`;
-
-const CommentItem = styled.div`
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.black};
-  padding: 10px 0;
-`;
-
-const CommentUser = styled.span`
-  flex-basis: 10%;
-  min-width: 80px;
-  font-weight: bold;
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  font-family: 'GyeonggiTitleOTF';
-`;
-
-const CommentText = styled.div`
-  flex-basis: 80%;
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  flex: 1;
-  margin: 0 10px;
-  display: flex;
-  align-items: center;
-  padding: 0;
-`;
-
-const CommentActions = styled.div`
-  flex-basis: 10%;
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-`;
-
-const ActionBtn = styled.button`
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.black};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: 5px 10px;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  cursor: pointer;
-  font-family: 'Godo B';
-  color: ${({ theme }) => theme.colors.black};
-`;
-
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 1);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  color: #e2e2e2;
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
 `;

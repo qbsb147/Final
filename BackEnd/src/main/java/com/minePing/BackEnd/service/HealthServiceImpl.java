@@ -1,15 +1,22 @@
 package com.minePing.BackEnd.service;
 
 import com.minePing.BackEnd.auth.JwtTokenProvider;
+import com.minePing.BackEnd.dto.AiDto;
 import com.minePing.BackEnd.dto.HealthDto;
 import com.minePing.BackEnd.dto.HealthDto.Request;
 import com.minePing.BackEnd.dto.HealthDto.Response;
 import com.minePing.BackEnd.entity.Health;
+import com.minePing.BackEnd.entity.Mental;
 import com.minePing.BackEnd.entity.Member;
+import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
+import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.repository.HealthRepository;
+import com.minePing.BackEnd.repository.MemberPreferenceRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
+import com.minePing.BackEnd.repository.MentalRepository;
+import com.minePing.BackEnd.repository.WorcationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +33,9 @@ public class HealthServiceImpl implements HealthService {
     private final HealthRepository healthRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+    private final MentalRepository mentalRepository;
+    private final MemberPreferenceRepository memberPreferenceRepository;
+    private final WorcationRepository worcationRepository;
 
     @Override
     public List<HealthDto.Response> findDtoByUserNo(Long userNo) {
@@ -34,6 +44,18 @@ public class HealthServiceImpl implements HealthService {
         return healthList.stream()
                 .map(HealthDto.Response::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AiDto.AiEat getAiEatByUser(Long userNo) {
+    Health health = healthRepository.findTopByMember_UserNoOrderByUpdateDateDesc(userNo)
+        .orElseThrow(() -> new RuntimeException("Health 정보가 없습니다."));
+    Mental burnout = mentalRepository.findTopByMember_UserNoAndSeparationOrderByUpdateDateDesc(userNo, MentalEnums.Separation.BURNOUT)
+        .orElseThrow(() -> new RuntimeException("번아웃 정보가 없습니다."));
+    Mental stress = mentalRepository.findTopByMember_UserNoAndSeparationOrderByUpdateDateDesc(userNo, MentalEnums.Separation.STRESS)
+        .orElseThrow(() -> new RuntimeException("스트레스 정보가 없습니다."));
+
+    return AiDto.AiEat.toDo(health, burnout, stress);
     }
 
     @Override

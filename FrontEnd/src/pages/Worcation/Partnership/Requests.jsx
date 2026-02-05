@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Table from '../../../components/Member/table/AffiliationRequestsTable';
+import Table from '../../member/components/table/AffiliationRequestsTable';
 import useAuthStore from '../../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 

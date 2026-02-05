@@ -1,19 +1,16 @@
 package com.minePing.BackEnd.repository;
 
+import com.minePing.BackEnd.entity.ChatRoom;
 import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.CommonEnums;
-import com.minePing.BackEnd.enums.CommonEnums.Status;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
-
-import static com.minePing.BackEnd.enums.CommonEnums.Status.Y;
 
 public interface MemberRepository  extends JpaRepository<Member, Long> {
     Optional<Member> findByUserIdAndStatus(String userId, CommonEnums.Status status);
@@ -54,5 +51,14 @@ public interface MemberRepository  extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m join fetch m.companyProfile cp where cp.company.companyNo = :companyNo and m.role = :role ")
     Optional<Member> findMaster(@Param("companyNo")Long companyNo, @Param("role") CommonEnums.Role role);
+
+    @Query("""
+select m
+from Member m
+join fetch m.chatParticipants cp
+where cp.chatRoom = :chatRoom
+and cp.member != :member
+""")
+    List<Member> findAllMemberByChatRoom(ChatRoom chatRoom, Member member);
 
 }

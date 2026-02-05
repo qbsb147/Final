@@ -1,44 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { ButtonDetail, ButtonYb } from '../styles/Button.styles';
 import { useNavigate } from 'react-router-dom';
 import { worcationService } from '../api/worcations';
-import WorcationCardList from '../components/worcation/WorcationCardList';
+import WorcationCardList from './worcation/components/WorcationCardList';
 import useSearchStore from '../store/useSearchStore';
 import useAuthStore from '../store/authStore';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { useAiStore } from '../store/aiStore';
 
 const MainPage = () => {
   const [worcations, setWorcations] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
   const keyword = useSearchStore((state) => state.keyword);
   const navigate = useNavigate();
   const setPopularKeywords = useSearchStore((state) => state.setPopularKeywords);
   const loginUser = useAuthStore((state) => state.loginUser);
-  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
+  const [aiWorcations, setAiWorcations] = useState([]);
+  const [aiLoading, setAiLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     const fetchData = async () => {
       try {
         const data = await worcationService.list();
         const appData = await worcationService.applicationList();
-        setWorcations(data);
-        setApplications(appData);
-      } finally {
-        setLoading(false);
+        // API may return either an array or a paged object { content: [...] }
+        const worcationList = Array.isArray(data) ? data : data?.content || [];
+        const applicationsList = Array.isArray(appData) ? appData : appData?.content || [];
+        setWorcations(worcationList);
+        setApplications(applicationsList);
+      } catch (error) {
+        console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
       }
     };
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (loginUser) {
-      fetchAiWorcations(worcationService, 0, 3);
-    }
-  }, [loginUser, fetchAiWorcations]);
+    const fetchAi = async () => {
+      if (!loginUser) return;
+      setAiLoading(true);
+      try {
+        const res = await worcationService.getAIList(0, 3);
+        const aiData = res.content || [];
+        setAiWorcations(Array.isArray(aiData) ? aiData : aiData ? [aiData] : []);
+      } catch (err) {
+        console.error('AI 리스트 로드 실패', err);
+        setAiWorcations([]);
+      } finally {
+        setAiLoading(false);
+      }
+    };
+    fetchAi();
+  }, [loginUser]);
 
   useEffect(() => {
     setPopularKeywords(worcations.slice(0, 5).map((w) => w.worcation_name));
@@ -52,7 +64,7 @@ const MainPage = () => {
   }, [keyword, navigate]);
 
   // AI 워케이션 데이터 처리
-  const processedAiWorcations = (aiWorcations || []).map(item => ({
+  const processedAiWorcations = (aiWorcations || []).map((item) => ({
     ...item,
     // WorcationDto.Simple 구조에 맞게 필드 매핑
     worcation_name: item.worcation_name,
@@ -85,14 +97,6 @@ const MainPage = () => {
     .filter((w) => w.approvedApplicationCount > 0)
     // 내림차순 정렬
     .sort((a, b) => b.approvedApplicationCount - a.approvedApplicationCount);
-
-  if (loading) {
-    return (
-      <LoadingOverlay>
-        <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
-      </LoadingOverlay>
-    );
-  }
 
   return (
     <Container>
@@ -131,12 +135,13 @@ const MainPage = () => {
       {(loginUser || aiWorcations.length > 0) && (
         <>
           <SectionTitle>AI 추천</SectionTitle>
-          <CardList>
-            {aiLoading ? (
+          <CardList style={{ position: 'relative', minHeight: '200px' }}>
+            {aiLoading && (
               <AiLoadingOverlay>
-                <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
+                <AiOutlineLoading3Quarters className="spinner" size={40} color="#FFD600" />
               </AiLoadingOverlay>
-            ) : processedAiWorcations.length > 0 ? (
+            )}
+            {!aiLoading && processedAiWorcations.length > 0 ? (
               <WorcationCardList data={processedAiWorcations.slice(0, 3)} navigate={navigate} />
             ) : (
               <NoAiRecommendation>
@@ -150,10 +155,13 @@ const MainPage = () => {
       <SectionTitle>
         인기명소 <span style={{ fontSize: '16px', fontWeight: 'normal' }}>(Top10)</span>
       </SectionTitle>
-      <WorcationCardList data={sortedWorcations.slice(0, 10).map(item => ({
-        ...item,
-        mainPhoto: item.main_change_photo,
-      }))} navigate={navigate} />
+      <WorcationCardList
+        data={sortedWorcations.slice(0, 10).map((item) => ({
+          ...item,
+          mainPhoto: item.main_change_photo,
+        }))}
+        navigate={navigate}
+      />
     </Container>
   );
 };
@@ -239,16 +247,16 @@ const LoadingOverlay = styled.div`
   }
 `;
 const AiLoadingOverlay = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background: rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  border-radius: 8px;
   .spinner {
     animation: spin 1s linear infinite;
   }

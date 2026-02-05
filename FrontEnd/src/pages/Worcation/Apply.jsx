@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import WorcationCalendar from '../../components/common/ApplySampleCalendar';
+import WorcationCalendar from '../../components/calender/ApplySampleCalendar.jsx';
 import Button from '../../styles/Button';
 import Input from '../../styles/Input';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import memberService from '../../api/members';
 import { applicationService } from '../../api/application';
-import ApplySampleCalendar from '../../components/common/ApplySampleCalendar';
+import ApplySampleCalendar from '../../components/calender/ApplySampleCalendar.jsx';
 
 const WorcationApply = () => {
   const location = useLocation();

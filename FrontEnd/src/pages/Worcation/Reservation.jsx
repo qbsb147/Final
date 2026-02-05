@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import ReservationSearchBar from '../../components/worcation/ReservationSearchBar';
-import ReservationTable from '../../components/worcation/ReservationTable ';
+import ReservationSearchBar from './components/ReservationSearchBar';
+import ReservationTable from './components/ReservationTable ';
 import useAuthStore from '../../store/authStore';
 
 const Reservation = () => {

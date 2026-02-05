@@ -6,7 +6,6 @@ import com.minePing.BackEnd.dto.MemberDto;
 import com.minePing.BackEnd.dto.MemberDto.EmployeeJoin;
 import com.minePing.BackEnd.dto.MemberDto.InfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Login;
-import com.minePing.BackEnd.dto.MemberDto.LoginResponse;
 import com.minePing.BackEnd.dto.MemberDto.MasterJoin;
 import com.minePing.BackEnd.dto.MemberDto.MemberInfoResponse;
 import com.minePing.BackEnd.dto.MemberDto.Update;
@@ -17,22 +16,26 @@ import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
-import com.minePing.BackEnd.enums.SocialType;
 
 import com.minePing.BackEnd.exception.CompanyNotFoundException;
 import com.minePing.BackEnd.exception.UserAuthenticationException;
 import com.minePing.BackEnd.exception.UserNotFoundException;
+import com.minePing.BackEnd.handler.OnlineWebSocketHandler;
+import com.minePing.BackEnd.kafka.ChatKafkaProducer;
 import com.minePing.BackEnd.repository.CompanyProfileRepository;
 import com.minePing.BackEnd.repository.CompanyRepository;
 import com.minePing.BackEnd.repository.DepartmentRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -55,6 +58,12 @@ public class MemberServiceImpl implements MemberService {
     private final RedisTemplate<String, String> redisTemplate;
     private final JavaMailSender mailSender;
     private static final long EXPIRE_TIME = 5*60;
+    private final OnlineWebSocketHandler onlineWebSocketHandler;
+    private final ChatKafkaProducer chatKafkaProducer;
+    private final RefreshTokenService refreshTokenService;
+
+    @Value("${jwt.refresh_expiration_sec}")
+    private int refreshTokenExpireSec;
 
     @Override
     public MemberDto.init init() {
@@ -74,6 +83,34 @@ public class MemberServiceImpl implements MemberService {
         return initValue;
     }
 
+    private String generateNickTag(String base){
+        int len = ThreadLocalRandom.current().nextBoolean() ? 4 : 5;
+        int num = ThreadLocalRandom.current().nextInt((int)Math.pow(10, len-1), (int)Math.pow(10, len));
+        return base + "#" + num;
+    }
+
+    private Member saveWithRetryNickName(Member member){
+        String baseNick = member.getNickName();
+        int maxRetry = 10;
+        for(int i = 0; i< maxRetry; i++){
+            try {
+                member = member.changeNickName(generateNickTag(baseNick));
+                return memberRepository.save(member);
+            }catch (DataIntegrityViolationException e){
+                Throwable cause = e.getCause();
+                if(cause instanceof ConstraintViolationException c){
+                    String name = c.getConstraintName();
+                    if("uk_user_nick_name".equals(name)){
+                        continue;
+                    }
+                }
+                throw e;
+            }
+        }
+
+        throw new RuntimeException("닉네임을 생성할 수 없습니다. 다시 시도해 주세요.");
+    }
+
     @Override
     @Transactional
     public void createEmployeeMember(EmployeeJoin employeeJoinDto) {
@@ -88,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd("")
                     .name(employeeJoinDto.getMemberJoinDto().getName())
+                    .nickName(employeeJoinDto.getMemberJoinDto().getNick_name())
                     .gender(employeeJoinDto.getMemberJoinDto().getGender())
                     .address(employeeJoinDto.getMemberJoinDto().getAddress())
                     .birthday(employeeJoinDto.getMemberJoinDto().getBirthday())
@@ -102,6 +140,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(employeeJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd(passwordEncoder.encode(employeeJoinDto.getMemberJoinDto().getUser_pwd()))
                     .name(employeeJoinDto.getMemberJoinDto().getName())
+                    .nickName(employeeJoinDto.getMemberJoinDto().getNick_name())
                     .gender(employeeJoinDto.getMemberJoinDto().getGender())
                     .address(employeeJoinDto.getMemberJoinDto().getAddress())
                     .birthday(employeeJoinDto.getMemberJoinDto().getBirthday())
@@ -111,7 +150,7 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
 
-        memberRepository.save(member);
+        saveWithRetryNickName(member);
 
         CompanyProfile companyProfile = employeeJoinDto.toCompanyProfileEntity();
 
@@ -139,6 +178,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(masterJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd("")
                     .name(masterJoinDto.getMemberJoinDto().getName())
+                    .nickName(masterJoinDto.getMemberJoinDto().getNick_name())
                     .gender(masterJoinDto.getMemberJoinDto().getGender())
                     .address(masterJoinDto.getMemberJoinDto().getAddress())
                     .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
@@ -153,6 +193,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(masterJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd(passwordEncoder.encode(masterJoinDto.getMemberJoinDto().getUser_pwd()))
                     .name(masterJoinDto.getMemberJoinDto().getName())
+                    .nickName(masterJoinDto.getMemberJoinDto().getNick_name())
                     .gender(masterJoinDto.getMemberJoinDto().getGender())
                     .address(masterJoinDto.getMemberJoinDto().getAddress())
                     .birthday(masterJoinDto.getMemberJoinDto().getBirthday())
@@ -162,7 +203,7 @@ public class MemberServiceImpl implements MemberService {
                     .build();
         }
 
-        Member savedMember = memberRepository.save(member);
+        Member savedMember = saveWithRetryNickName(member);
 
         Company company = masterJoinDto.toCompanyEntity();
         Company savedCompany = companyRepository.save(company);
@@ -202,6 +243,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd("")
                     .name(worcationJoinDto.getMemberJoinDto().getName())
+                    .nickName(worcationJoinDto.getMemberJoinDto().getNick_name())
                     .gender(worcationJoinDto.getMemberJoinDto().getGender())
                     .address(worcationJoinDto.getMemberJoinDto().getAddress())
                     .birthday(worcationJoinDto.getMemberJoinDto().getBirthday())
@@ -216,6 +258,7 @@ public class MemberServiceImpl implements MemberService {
                     .userId(worcationJoinDto.getMemberJoinDto().getUser_id())
                     .userPwd(passwordEncoder.encode(worcationJoinDto.getMemberJoinDto().getUser_pwd()))
                     .name(worcationJoinDto.getMemberJoinDto().getName())
+                    .nickName(worcationJoinDto.getMemberJoinDto().getNick_name())
                     .gender(worcationJoinDto.getMemberJoinDto().getGender())
                     .address(worcationJoinDto.getMemberJoinDto().getAddress())
                     .birthday(worcationJoinDto.getMemberJoinDto().getBirthday())
@@ -224,21 +267,36 @@ public class MemberServiceImpl implements MemberService {
                     .role(worcationJoinDto.getMemberJoinDto().getRole())
                     .build();
         }
-
-        memberRepository.save(member);
+        saveWithRetryNickName(member);
     }
 
     @Override
     public String login(Login loginDto) {
         Member member = memberRepository.findByUserIdAndStatus(loginDto.getUser_id(), CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserAuthenticationException("존재하지 않는 사용자입니다."));
+
         if(!passwordEncoder.matches(loginDto.getUser_pwd(), member.getUserPwd())) {
             throw new UserAuthenticationException("비밀번호가 일치하지 않습니다.");
         }
-        LoginResponse memberDto = LoginResponse.toDto(member);
-        String jwtToken = jwtTokenProvider.createToken(memberDto.getUser_id(), memberDto.getRole());
-        return jwtToken;
+
+        // AccessToken 생성
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUserId(), member.getRole());
+
+        // RefreshToken 생성 및 저장
+        String refreshToken = jwtTokenProvider.createRefreshToken(member.getUserId());
+
+        refreshTokenService.saveRefreshToken(member.getUserId(), refreshToken, refreshTokenExpireSec);
+
+        chatKafkaProducer.sendOnline(member.getUserId());
+
+        return accessToken;
     }
+
+    public void logout() {
+        String userId = jwtTokenProvider.getUserIdFromToken();
+        refreshTokenService.deleteRefreshToken(userId);
+    }
+
 
     @Override
     @Transactional
@@ -261,7 +319,7 @@ public class MemberServiceImpl implements MemberService {
             if (currentMaster != null && !currentMaster.getUserNo().equals(newMaster.getUserNo())) {
                 // 기존 대표는 매니저로 역할 변경
                 currentMaster.updateRole(CommonEnums.Role.MANAGER);
-                jwt = jwtTokenProvider.createToken(userId, Role.MANAGER);
+                jwt = jwtTokenProvider.createAccessToken(userId, Role.MANAGER);
                 memberRepository.save(currentMaster);
 
                 // 회사의 대표 멤버 변경

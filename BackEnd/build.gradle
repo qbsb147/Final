@@ -61,7 +61,6 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-
 	//oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
@@ -75,12 +74,21 @@ dependencies {
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+
 	//AI
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.ai:spring-ai-pdf-document-reader'
+
+	//WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	//kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
 
 dependencyManagement {

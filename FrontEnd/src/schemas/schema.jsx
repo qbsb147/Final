@@ -26,8 +26,14 @@ export const useDefaultForm = yup.object().shape({
     .required('비밀번호 확인을 입력해주세요.'),
   name: yup
     .string()
-    .matches(/^[가-힣a-zA-Z\s]{2,20}$/, '이름은 2~20자의 한글 또는 영문만 가능합니다.')
+    .matches(/^[가-힣a-zA-Z\s]{2,16}$/, '이름은 2~16자의 한글 또는 영문만 가능합니다.')
     .required('이름을 입력해주세요.'),
+  nickname: yup
+    .string()
+    .min(2, '닉네임은 2자 이상이어야 합니다.')
+    .max(16, '닉네임은 16자 이하여야 합니다.')
+    .matches(/^[가-힣a-zA-Z0-9]{2,16}$/, '닉네임은 2~16자의 한글, 영문, 숫자만 가능합니다.')
+    .required('닉네임을 입력해주세요.'),
   address: yup.string().required('주소를 입력해주세요.'),
   birthday: yup
     .date()

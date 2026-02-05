@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
@@ -88,12 +89,15 @@ public class WorcationController {
     }
 
     /**
-     * 전체 목록 조회
+     * 전체 목록 조회 (페이징)
      */
     @GetMapping
-    public ResponseEntity<List<WorcationDto.Response>> getAll() {
-        List<WorcationDto.Response> list = worcationService.getAll();
-        return ResponseEntity.ok(list);
+    public ResponseEntity<PageResponse<WorcationDto.Response>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Response> result = worcationService.getAll(pageable);
+        return ResponseEntity.ok(new PageResponse<>(result));
     }
 
     /**

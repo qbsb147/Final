@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { worcationService } from '../../api/worcations';
-import { useAiStore } from '../../store/aiStore';
-import WorcationCardList from '../../components/worcation/WorcationCardList';
+import WorcationCardList from './components/WorcationCardList';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { ButtonBorder } from '../../styles/Button.styles';
@@ -11,7 +10,8 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const WorcationPartnersPage = () => {
   const [worcations, setWorcations] = useState([]);
-  const { aiWorcations, aiLoading, fetchAiWorcations } = useAiStore();
+  const [aiWorcations, setAiWorcations] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState('partner');
   const keyword = useSearchStore((state) => state.keyword);
   const loginUser = useAuthStore((state) => state.loginUser);
@@ -39,8 +39,22 @@ const WorcationPartnersPage = () => {
   }, []);
 
   useEffect(() => {
-    if (loginUser) fetchAiWorcations(loginUser.user_no, worcationService);
-  }, [loginUser, fetchAiWorcations]);
+    const fetchAi = async () => {
+      if (!loginUser) return;
+      setAiLoading(true);
+      try {
+        const aiResponse = await worcationService.getAIList(0, 10);
+        const aiData = aiResponse.content || [];
+        setAiWorcations(Array.isArray(aiData) ? aiData : aiData ? [aiData] : []);
+      } catch (err) {
+        console.error('AI 로드 실패', err);
+        setAiWorcations([]);
+      } finally {
+        setAiLoading(false);
+      }
+    };
+    fetchAi();
+  }, [loginUser]);
 
   const getFilteredWorcations = () => {
     let filtered = worcations;
@@ -98,10 +112,13 @@ const WorcationPartnersPage = () => {
           <AiOutlineLoading3Quarters className="spinner" size={80} color="#FFD600" />
         </LoadingOverlay>
       ) : (
-        <WorcationCardList data={getFilteredWorcations().map(item => ({
-          ...item,
-          mainPhoto: item.mainPhoto || item.main_change_photo,
-        }))} navigate={navigate} />
+        <WorcationCardList
+          data={getFilteredWorcations().map((item) => ({
+            ...item,
+            mainPhoto: item.mainPhoto || item.main_change_photo,
+          }))}
+          navigate={navigate}
+        />
       )}
     </Container>
   );
