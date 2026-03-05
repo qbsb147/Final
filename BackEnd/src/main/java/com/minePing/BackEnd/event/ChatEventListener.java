@@ -26,14 +26,14 @@ public class ChatEventListener {
 
         while(retryCount < MAX_RETRY){
             try {
-                messageReadStatusRepository
-                        .updateRead(event.roomNo(), event.userId(), workerId);
+//                messageReadStatusRepository
+//                        .markMessageRead(event.roomNo(), event.publicUuid(), );
 
-                log.info("읽음 처리 완료: room={}, user={}", event.roomNo(), event.userId());
+                log.info("읽음 처리 완료: room={}, user={}", event.roomNo(), event.publicUuid());
                 return;
             } catch (Exception e) {
                 retryCount++;
-                log.error("읽음 처리 실패: room={}, user={}", event.roomNo(), event.userId(), e);
+                log.error("읽음 처리 실패: room={}, user={}", event.roomNo(), event.publicUuid(), e);
                 if(retryCount < MAX_RETRY){
                     try {
                         Thread.sleep(waitTime);

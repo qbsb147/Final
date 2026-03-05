@@ -518,8 +518,8 @@ public class WorcationServiceImpl implements WorcationService {
     @Override
     @Transactional
     public Page<WorcationDto.Simple> getAIList(Pageable pageable) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
 
         LocalDateTime nowDate = LocalDateTime.now().minusDays(1);

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -45,8 +46,8 @@ public class MealServiceImpl implements MealService {
         boolean burnout = false;
         boolean stress = false;
 
-        String user_id = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         Health health =healthRepository.findByMember(member);

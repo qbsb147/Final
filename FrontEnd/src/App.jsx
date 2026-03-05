@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import theme from './styles/theme';
 import GlobalStyle from './styles/GlobalStyle';
-import Cookies from 'js-cookie';
 import useAuthStore from './store/authStore';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
@@ -61,7 +60,9 @@ import ApprovedList from './pages/worcation/partnership/ApprovedList'; // 제휴
 import Requests from './pages/worcation/partnership/Requests'; // 제휴 요청 목록
 
 function App() {
-  // 사용자 정보 자동 로드 및 웹소켓 초기화
+  const loginUser = useAuthStore((state) => state.loginUser);
+
+  // 사용자 정보 자동 로드
   useEffect(() => {
     useAuthStore
       .getState()
@@ -69,11 +70,18 @@ function App() {
       .catch((error) => {
         console.log('사용자 정보 가져오기 실패 (토큰 없음 또는 만료):', error);
       });
-
-    return () => {
-      onlineWsService.close();
-    };
   }, []);
+
+  // 로그인 / 로그아웃에 따라 온라인 웹소켓 관리
+  useEffect(() => {
+    if (loginUser) {
+      onlineWsService.connect();
+      onlineWsService.startHeartbeat();
+    } else {
+      onlineWsService.stopHeartbeat?.();
+      onlineWsService.close();
+    }
+  }, [loginUser]);
 
   return (
     <BrowserRouter>

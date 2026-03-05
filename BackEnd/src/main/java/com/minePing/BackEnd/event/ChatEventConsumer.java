@@ -11,10 +11,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ChatReadEventConsumer {
+public class ChatEventConsumer {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final MessageReadStatusRepository messageReadStatusRepository;
@@ -30,10 +31,11 @@ public class ChatReadEventConsumer {
         for (MapRecord<String, Object, Object> msg : messages) {
             try {
                 Long roomNo = Long.valueOf((String) msg.getValue().get("roomNo"));
-                String userId = (String) msg.getValue().get("userId");
+                String publicUuidStr = (String) msg.getValue().get("publicUuid");
+                UUID publicUuid = UUID.fromString(publicUuidStr);
 
                 // 처리
-                messageReadStatusRepository.updateRead(roomNo, userId, userId);
+//                messageReadStatusRepository.markMessageRead(roomNo, publicUuid, );
 
                 // ACK
                 redisTemplate.opsForStream().acknowledge("chat_read_stream", "group1", msg.getId());
@@ -42,4 +44,5 @@ public class ChatReadEventConsumer {
             }
         }
     }
+
 }

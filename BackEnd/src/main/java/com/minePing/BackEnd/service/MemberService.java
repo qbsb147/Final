@@ -16,8 +16,8 @@ public interface MemberService {
 
     String updateRole(Long userNo,MemberDto.UpdateRole updateRoleDto);
 
-    MemberDto.InfoResponse getUserInfoByUserId();
-    MemberInfoResponse getUserByUserId();
+    MemberDto.InfoResponse getUserInfoByPublicUuid();
+    MemberInfoResponse getUserByPublicUuid();
 
     void checkPassword(String password);
     void updateUser(MemberDto.Update updateDto);

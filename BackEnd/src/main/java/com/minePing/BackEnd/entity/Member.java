@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
@@ -24,7 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Entity
 @Table(
         name = "member",
-        indexes = {@Index(name = "idx_user_id", columnList = "user_id")},
+        indexes = {@Index(name = "idx_user_id", columnList = "user_id"),
+                @Index(name = "idx_publid_uuid", columnList = "public_uuid")},
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_user_id", columnNames = "user_id"),
                 @UniqueConstraint(name = "uk_user_nick_name", columnNames = "nick_name"),
@@ -38,6 +40,9 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // pk값 자동생성(AUTO_INCREMENT방식)
     @Column(name = "user_no") // DB컬럼명 지정
     private Long userNo;
+
+    @Column(name="public_uuid", columnDefinition = "BINARY(16)", nullable = false, unique = true)
+    private UUID publicUuid;
 
     @Column(name = "user_id", nullable = false, length = 50, unique = true)
     private String userId;
@@ -131,6 +136,10 @@ public class Member {
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();
+
+        if (this.publicUuid == null) {
+            this.publicUuid = UUID.randomUUID();
+        }
 
         if (this.status == null) {
             this.status = CommonEnums.Status.Y;

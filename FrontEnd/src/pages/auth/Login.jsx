@@ -10,7 +10,6 @@ import oauth2Service from '../../api/oauth';
 import useAuthStore from '../../store/authStore';
 import { toast } from 'react-toastify';
 import { GoogleSignInButton } from '../../components/common/Google';
-import { onlineWsService } from '../../api/onlineWsService';
 import Cookies from 'js-cookie';
 
 const Login = () => {
@@ -31,14 +30,7 @@ const Login = () => {
         console.error('토큰 마이그레이션 중 오류:', error);
       }
 
-      await useAuthStore
-        .getState()
-        .fetchUserInfo()
-        .then((user) => {
-          if (user) {
-            onlineWsService.connect();
-          }
-        });
+      await useAuthStore.getState().fetchUserInfo();
       toast.success('로그인에 성공했습니다!');
       navigate('/');
     } catch (error) {

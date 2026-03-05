@@ -32,4 +32,14 @@ export const chatService = {
       throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
     }
   },
+
+  getParticipantsCount: async (room_no) => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.CHAT.PARTICIPANTS_COUNT(room_no));
+      return response.data;
+    } catch (error) {
+      console.log('error', error);
+      throw error?.response?.data?.message || '알 수 없는 오류가 발생했습니다.';
+    }
+  },
 };

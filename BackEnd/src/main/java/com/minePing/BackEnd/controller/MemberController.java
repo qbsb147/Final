@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -89,14 +88,14 @@ public class MemberController {
     @GetMapping("userInfo")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<InfoResponse> getMyInfo() {
-        InfoResponse userInfo = memberService.getUserInfoByUserId();
+        InfoResponse userInfo = memberService.getUserInfoByPublicUuid();
         return ResponseEntity.ok(userInfo);
     }
 
     @GetMapping("")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getUser() {
-        MemberDto.MemberInfoResponse user = memberService.getUserByUserId();
+        MemberDto.MemberInfoResponse user = memberService.getUserByPublicUuid();
         return ResponseEntity.ok(user);
     }
 

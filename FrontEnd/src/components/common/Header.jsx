@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FiUser } from 'react-icons/fi';
 import { FaRegUserCircle } from 'react-icons/fa';
+import { onlineWsService } from '../../api/onlineWsService';
 
 const menuData = [
   {
@@ -145,6 +146,8 @@ const Header = () => {
     logout();
     localStorage.removeItem('token');
     localStorage.removeItem('tokenExpireAt');
+    onlineWsService.stopHeartbeat();
+    onlineWsService.close();
     toast.success('로그아웃했습니다.');
     navigate('/');
   };

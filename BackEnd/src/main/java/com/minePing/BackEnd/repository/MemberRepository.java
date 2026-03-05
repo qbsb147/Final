@@ -5,47 +5,50 @@ import com.minePing.BackEnd.entity.Member;
 import com.minePing.BackEnd.enums.CommonEnums;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository  extends JpaRepository<Member, Long> {
+
+    Optional<Member> findByPublicUuidAndStatus(UUID publicUuid, CommonEnums.Status status);
+
     Optional<Member> findByUserIdAndStatus(String userId, CommonEnums.Status status);
-    @Query("select m.userNo from Member m where m.userId = :userId and m.status = :status")
-    Long findNoByUserIdAndStatus(@Param("userId") String userId,@Param("status") CommonEnums.Status status);
 
     Optional<Member> findById(Long userNo);
 
-    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.userId = :userId and m.status = :status")
-    Optional<Member> findMasterInfoByUserId(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.publicUuid = :publicUuid and m.status = :status")
+    Optional<Member> findMasterInfoByPublicUuid(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
     @Query("""
             SELECT m
             FROM Member m
             LEFT JOIN FETCH m.companyProfile cp
             LEFT JOIN FETCH cp.company
-            WHERE m.userId = :userId AND m.status = :status
+            WHERE m.publicUuid = :publicUuid AND m.status = :status
             """)
-    Optional<Member> findEmployeeInfoByUserId(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    Optional<Member> findEmployeeInfoByPublicUuid(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
-    @Query("select m from Member m where m.userId = :userId and m.status = :status")
-    Optional<Member> findWorcationInfoByUserId(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    @Query("select m from Member m where m.publicUuid = :publicUuid and m.status = :status")
+    Optional<Member> findWorcationInfoByPublicUuid(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
-    @Query("select m.userPwd from Member m where m.userId = :userId and m.status = :status")
-    Optional<String> findUserPwdByUserId(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    @Query("select m.userPwd from Member m where m.publicUuid = :publicUuid and m.status = :status")
+    Optional<String> findUserPwdByPublicUuid(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
     @Modifying
-    @Query("update Member m set m.userPwd = :updatedPwd where m.userId = :userId")
-    int updatePwdByUserId(@Param("userId") String userId, @Param("updatedPwd") String updatedPwd);
+    @Query("update Member m set m.userPwd = :updatedPwd where m.publicUuid = :publicUuid")
+    int updatePwdByPublicUuid(@Param("publicUuid") UUID publicUuid, @Param("updatedPwd") String updatedPwd);
 
-    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.userId = :userId and m.status = :status")
-    Optional<Member> findByUserIdWithCompany(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    @Query("select m from Member m join fetch m.companyProfile cp join fetch cp.company c join fetch c.departments where m.publicUuid = :publicUuid and m.status = :status")
+    Optional<Member> findByPublicUuidWithCompany(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
-    @Query("select m from Member m join fetch m.companyProfile where m.userId = :userId and m.status = :status")
-    Optional<Member> findByUserIdWithCompanyProfile(@Param("userId") String userId, @Param("status") CommonEnums.Status status);
+    @Query("select m from Member m join fetch m.companyProfile where m.publicUuid = :publicUuid and m.status = :status")
+    Optional<Member> findByPublicUuidWithCompanyProfile(@Param("publicUuid") UUID publicUuid, @Param("status") CommonEnums.Status status);
 
     Optional<Member> findBySocialIdAndStatus(String socialId, CommonEnums.Status status);
 
@@ -61,4 +64,5 @@ and cp.member != :member
 """)
     List<Member> findAllMemberByChatRoom(ChatRoom chatRoom, Member member);
 
+    List<Member> findByPublicUuidIn(Collection<UUID> publicUuids);
 }

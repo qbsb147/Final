@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -33,30 +35,18 @@ public class MessageReadStatus {
     @Column(name = "is_read")
     private Boolean isRead;
 
-    @Column(name = "worker_id", length = 4)
-    private String workerId;
+    @Column(name = "public_uuid", columnDefinition = "BINARY(16)")
+    private UUID publicUuid;
 
     @CreationTimestamp
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
+    @Column(name = "batch_in")
+    private Long batchIn;
+
     @PrePersist
     protected void onCreate(){
         isRead = false;
-    }
-
-    public void changeReference(ChatMessage chatMessage, Member member, ChatRoom chatRoom){
-        this.chatMessage = chatMessage;
-        this.member = member;
-        this.chatRoom = chatRoom;
-        if(!chatMessage.getMessageReadStatuses().contains(this)){
-            chatMessage.getMessageReadStatuses().add(this);
-        }
-        if(!member.getMessageReadStatuses().contains(this)){
-            member.getMessageReadStatuses().add(this);
-        }
-        if(!chatRoom.getMessageReadStatuses().contains(this)){
-            chatRoom.getMessageReadStatuses().add(this);
-        }
     }
 }

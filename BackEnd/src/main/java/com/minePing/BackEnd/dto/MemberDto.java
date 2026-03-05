@@ -4,6 +4,8 @@ import com.minePing.BackEnd.dto.CompanyDto.CompanyInfoResponse;
 import com.minePing.BackEnd.dto.CompanyProfileDto.CompanyProfileInfoResponse;
 import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
+import com.minePing.BackEnd.enums.MemberEnums;
+import com.minePing.BackEnd.enums.SocketEnums;
 import com.minePing.BackEnd.enums.SocialType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -11,6 +13,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -195,6 +198,7 @@ public class MemberDto {
         private String user_id;
         private String user_name;
         private String nick_name;
+        private UUID public_uuid;
         private Long company_no;
         private SocialType social_type;
         private CommonEnums.Role role;
@@ -206,6 +210,7 @@ public class MemberDto {
                     .user_no(member.getUserNo())
                     .user_id(member.getUserId())
                     .user_name(member.getName())
+                    .public_uuid(member.getPublicUuid())
                     .nick_name(member.getNickName())
                     .role(member.getRole())
                     .social_type(member.getSocialType())
@@ -233,6 +238,7 @@ public class MemberDto {
         private String email;
         private String name;
         private String nick_name;
+        private UUID public_uuid;
         private String address;
         private String phone;
         private LocalDate birthday;
@@ -246,6 +252,7 @@ public class MemberDto {
                     .email(member.getEmail())
                     .name(member.getName())
                     .nick_name(member.getNickName())
+                    .public_uuid(member.getPublicUuid())
                     .address(member.getAddress())
                     .birthday(member.getBirthday())
                     .gender(member.getGender())
@@ -279,6 +286,7 @@ public class MemberDto {
                     .email(member.getEmail())
                     .name(member.getName())
                     .nick_name(member.getNickName())
+                    .public_uuid(member.getPublicUuid())
                     .address(member.getAddress())
                     .phone(member.getPhone())
                     .birthday(member.getBirthday())
@@ -292,6 +300,7 @@ public class MemberDto {
                     .email(member.getEmail())
                     .name(member.getName())
                     .nick_name(member.getNickName())
+                    .public_uuid(member.getPublicUuid())
                     .address(member.getAddress())
                     .phone(member.getPhone())
                     .birthday(member.getBirthday())
@@ -350,5 +359,17 @@ public class MemberDto {
 
         @Valid
         private CompanyDto.Update company_update;
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Status{
+        private UUID public_uuid;
+        private MemberEnums.Status status;
+        private SocketEnums.type type;
     }
 }

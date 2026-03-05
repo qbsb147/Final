@@ -17,6 +17,8 @@ import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Role;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
 
+import com.minePing.BackEnd.enums.MemberEnums;
+import com.minePing.BackEnd.event.ChatEvent;
 import com.minePing.BackEnd.exception.CompanyNotFoundException;
 import com.minePing.BackEnd.exception.UserAuthenticationException;
 import com.minePing.BackEnd.exception.UserNotFoundException;
@@ -28,6 +30,7 @@ import com.minePing.BackEnd.repository.DepartmentRepository;
 import com.minePing.BackEnd.repository.MemberRepository;
 
 import java.util.*;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -58,7 +61,6 @@ public class MemberServiceImpl implements MemberService {
     private final RedisTemplate<String, String> redisTemplate;
     private final JavaMailSender mailSender;
     private static final long EXPIRE_TIME = 5*60;
-    private final OnlineWebSocketHandler onlineWebSocketHandler;
     private final ChatKafkaProducer chatKafkaProducer;
     private final RefreshTokenService refreshTokenService;
 
@@ -71,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
         System.out.println("temp = " + temp);
         MemberDto.init initValue= new MemberDto.init();
         if(temp!= null && temp.equals(Role.TEMP)){
-            String uuid = jwtTokenProvider.getUserIdFromToken();
+            String uuid = jwtTokenProvider.getSubjectFromToken();
             System.out.println("uuid = " + uuid);
             TempOAuthUser tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
@@ -118,7 +120,7 @@ public class MemberServiceImpl implements MemberService {
         TempOAuthUser tempUser;
         Member member;
         if(temp!=null && temp.equals(Role.TEMP)){
-            String uuid = jwtTokenProvider.getUserIdFromToken();
+            String uuid = jwtTokenProvider.getSubjectFromToken();
             tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
             member = Member.builder()
@@ -171,7 +173,7 @@ public class MemberServiceImpl implements MemberService {
         TempOAuthUser tempUser;
         Member member;
         if(temp!=null && temp.equals(Role.TEMP)){
-            String uuid = jwtTokenProvider.getUserIdFromToken();
+            String uuid = jwtTokenProvider.getSubjectFromToken();
             tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
             member = Member.builder()
@@ -235,7 +237,7 @@ public class MemberServiceImpl implements MemberService {
         TempOAuthUser tempUser;
         Member member;
         if(temp!=null && temp.equals(Role.TEMP)){
-            String uuid = jwtTokenProvider.getUserIdFromToken();
+            String uuid = jwtTokenProvider.getSubjectFromToken();
             tempUser = tempOAuthUserStore.find(uuid)
                     .orElseThrow(() -> new RuntimeException("가입 정보가 만료되었거나 없습니다."));
 
@@ -279,22 +281,23 @@ public class MemberServiceImpl implements MemberService {
             throw new UserAuthenticationException("비밀번호가 일치하지 않습니다.");
         }
 
-        // AccessToken 생성
-        String accessToken = jwtTokenProvider.createAccessToken(member.getUserId(), member.getRole());
+        // AccessToken 생성 (publicUuid 사용)
+        UUID publicUuid = member.getPublicUuid();
+        String accessToken = jwtTokenProvider.createAccessToken(publicUuid.toString(), member.getRole());
 
         // RefreshToken 생성 및 저장
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getUserId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(publicUuid.toString());
 
-        refreshTokenService.saveRefreshToken(member.getUserId(), refreshToken, refreshTokenExpireSec);
+        refreshTokenService.saveRefreshToken(publicUuid.toString(), refreshToken, refreshTokenExpireSec);
 
-        chatKafkaProducer.sendOnline(member.getUserId());
+        chatKafkaProducer.sendUserStatus(new ChatEvent.UserStateEvent(MemberEnums.Status.Online, publicUuid));
 
         return accessToken;
     }
 
     public void logout() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        refreshTokenService.deleteRefreshToken(userId);
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        refreshTokenService.deleteRefreshToken(publicUuid.toString());
     }
 
 
@@ -303,9 +306,9 @@ public class MemberServiceImpl implements MemberService {
     public String updateRole(Long userNo, MemberDto.UpdateRole updateRoleDto) {
         Member newMaster = memberRepository.findById(userNo)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
-        String userId = jwtTokenProvider.getUserIdFromToken();
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
 
-        memberRepository.findByUserIdAndStatus(userId, Status.Y)
+        memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(()->new UserNotFoundException());
         String jwt =null;
         if (updateRoleDto.getRole() == CommonEnums.Role.MASTER) {
@@ -319,7 +322,7 @@ public class MemberServiceImpl implements MemberService {
             if (currentMaster != null && !currentMaster.getUserNo().equals(newMaster.getUserNo())) {
                 // 기존 대표는 매니저로 역할 변경
                 currentMaster.updateRole(CommonEnums.Role.MANAGER);
-                jwt = jwtTokenProvider.createAccessToken(userId, Role.MANAGER);
+                jwt = jwtTokenProvider.createAccessToken(publicUuid.toString(), Role.MANAGER);
                 memberRepository.save(currentMaster);
 
                 // 회사의 대표 멤버 변경
@@ -337,13 +340,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public InfoResponse getUserInfoByUserId() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
+    public InfoResponse getUserInfoByPublicUuid() {
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
         CommonEnums.Role role = jwtTokenProvider.getRoleFromToken();
         if(role.equals(Role.TEMP)){
             return null;
         }
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
                 .orElseThrow(()->new UserAuthenticationException("유저 정보를 찾을 수 없습니다."));
         InfoResponse infoDto = InfoResponse.toMemberDto(member);
         if(
@@ -363,23 +366,23 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberInfoResponse getUserByUserId() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
+    public MemberInfoResponse getUserByPublicUuid() {
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
         Role role = jwtTokenProvider.getRoleFromToken();
         Member member;
         switch (role){
             case MASTER->{
-                member = memberRepository.findMasterInfoByUserId(userId, CommonEnums.Status.Y)
+                member = memberRepository.findMasterInfoByPublicUuid(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 return MemberInfoResponse.toMasterDto(member);
             }
             case MANAGER, EMPLOYEE->{
-                member = memberRepository.findEmployeeInfoByUserId(userId, CommonEnums.Status.Y)
+                member = memberRepository.findEmployeeInfoByPublicUuid(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 return MemberInfoResponse.toEmployeeDto(member);
             }
             case WORCATION, ADMIN -> {
-                member = memberRepository.findWorcationInfoByUserId(userId, CommonEnums.Status.Y)
+                member = memberRepository.findWorcationInfoByPublicUuid(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 return MemberInfoResponse.toWorcationDto(member);
             }
@@ -390,8 +393,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void checkPassword(String password) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        String currentPassword = memberRepository.findUserPwdByUserId(userId, CommonEnums.Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        String currentPassword = memberRepository.findUserPwdByPublicUuid(publicUuid, CommonEnums.Status.Y)
                 .orElseThrow(() -> new UserAuthenticationException("존재하지 않는 사용자입니다."));
         if(!passwordEncoder.matches(password, currentPassword)) {
             throw new UserAuthenticationException("비밀번호가 일치하지 않습니다.");
@@ -401,19 +404,19 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void updateUser(Update updateDto) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
         Role role = jwtTokenProvider.getRoleFromToken();
 
         if(updateDto.getUser_pwd()!=null){
             String updatedPwd = passwordEncoder.encode(updateDto.getUser_pwd());
-            int updatedRow = memberRepository.updatePwdByUserId(userId, updatedPwd);
+            int updatedRow = memberRepository.updatePwdByPublicUuid(publicUuid, updatedPwd);
             if(updatedRow == 0){
                 throw new IllegalStateException("비밀번호가 변경되지 않았습니다.");
             }
         }
         switch (role){
             case WORCATION -> {
-                Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+                Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 member.updateWorcation(updateDto);
             }
@@ -422,7 +425,7 @@ public class MemberServiceImpl implements MemberService {
                     throw new NoSuchElementException("회원 정보가 부족합니다.");
                 }
 
-                Member member = memberRepository.findByUserIdWithCompanyProfile(userId, CommonEnums.Status.Y)
+                Member member = memberRepository.findByPublicUuidWithCompanyProfile(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
                 Company changeCompany;
 
@@ -443,7 +446,7 @@ public class MemberServiceImpl implements MemberService {
                     throw new NoSuchElementException("회원 정보가 부족합니다.");
                 }
 
-                Member member = memberRepository.findByUserIdWithCompany(userId, CommonEnums.Status.Y)
+                Member member = memberRepository.findByPublicUuidWithCompany(publicUuid, CommonEnums.Status.Y)
                         .orElseThrow(UserNotFoundException::new);
 
                 Set<Long> departmentNos = updateDto.getCompany_update().getDepartments()
@@ -484,9 +487,9 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public void delete() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
 
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
                 .orElseThrow(UserNotFoundException::new);
 
         for (Worcation worcation : member.getWorcations()) {

@@ -29,7 +29,7 @@ public class ChatParticipantRepositoryImpl implements ChatParticipantRepositoryV
     select cp
     from ChatParticipant cp
     join fetch cp.member
-    where ChatRoom in :chatRooms
+    where cp.chatRoom in :chatRooms
     and cp.member != :currentMember
 """, ChatParticipant.class)
                     .setParameter("chatRooms", batch)

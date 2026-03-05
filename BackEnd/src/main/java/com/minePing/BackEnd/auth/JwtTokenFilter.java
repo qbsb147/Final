@@ -65,7 +65,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.warn("ACCESS TOKEN EXPIRED");
 
                 Claims claims = e.getClaims();
-                String userId = claims.getSubject();
+                String publicUuid = claims.getSubject();
                 Date expiration = claims.getExpiration();
                 long now = System.currentTimeMillis();
 
@@ -77,7 +77,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 }
 
                 // Redis에서 RefreshToken 가져오기 RefreshToken 유효성 검증
-                String refreshToken = refreshTokenService.getRefreshToken(userId);
+                String refreshToken = refreshTokenService.getRefreshToken(publicUuid);
                 if (refreshToken == null||!jwtTokenProvider.validateRefreshToken(refreshToken)) {
                     writeUnauthorized(response, "REFRESH_TOKEN_EXPIRED");
                     return;

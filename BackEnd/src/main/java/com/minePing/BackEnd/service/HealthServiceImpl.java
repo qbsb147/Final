@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,8 +61,8 @@ public class HealthServiceImpl implements HealthService {
 
     @Override
     public Response findByUserId() {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Health health = healthRepository.findByMember_UserId(userId)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Health health = healthRepository.findByMember_PublicUuid(publicUuid)
                 .orElseThrow(()-> new EntityNotFoundException("등록 되어있는 정보가 없습니다."));
         return Response.toDto(health);
     }
@@ -69,8 +70,8 @@ public class HealthServiceImpl implements HealthService {
     @Override
     @Transactional
     public void saveHealth(Request healthDto) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(UserNotFoundException::new);
         Health health = Request.toEntity(healthDto);
         health.changeMember(member);
@@ -80,10 +81,10 @@ public class HealthServiceImpl implements HealthService {
     @Override
     @Transactional
     public void updateHealth(Request healthDto) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Health health = healthRepository.findByMember_UserId(userId)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Health health = healthRepository.findByMember_PublicUuid(publicUuid)
                 .orElseThrow(()-> new EntityNotFoundException("신체정보를 못 가져왔습니다."));
-        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(UserNotFoundException::new);
         health.changeThis(healthDto);
         health.changeMember(member);

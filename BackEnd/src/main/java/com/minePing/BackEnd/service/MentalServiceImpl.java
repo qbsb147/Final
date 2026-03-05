@@ -8,6 +8,7 @@ import com.minePing.BackEnd.entity.MemberPreference;
 import com.minePing.BackEnd.entity.Mental;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.CommonEnums.Status;
+import java.util.UUID;
 import com.minePing.BackEnd.enums.MentalEnums;
 import com.minePing.BackEnd.enums.MentalEnums.Separation;
 import com.minePing.BackEnd.exception.UserNotFoundException;
@@ -49,9 +50,9 @@ public class MentalServiceImpl implements MentalService {
 
         MentalEnums.PsychologicalState psychologicalState = stressDto.getPsychologicalState(score);
 
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserNotFoundException(publicUuid.toString()));
 
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
@@ -104,9 +105,9 @@ public class MentalServiceImpl implements MentalService {
 
         MentalEnums.PsychologicalState psychologicalState = burnoutDto.getPsychologicalState(score);
 
-        String userId = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, CommonEnums.Status.Y)
+                .orElseThrow(() -> new UserNotFoundException(publicUuid.toString()));
 
         ChatClient chatClient = ChatClient.builder(chatModel).build();
 
@@ -147,8 +148,8 @@ public class MentalServiceImpl implements MentalService {
 
     @Override
     public MentalDto.MentalsResponse findMentals() {
-        String user_id = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
         Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
         Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);
@@ -179,8 +180,8 @@ public class MentalServiceImpl implements MentalService {
 
     @Override
     public MentalDto.MainResponse findMainMental() {
-        String user_id = jwtTokenProvider.getUserIdFromToken();
-        Member member = memberRepository.findByUserIdAndStatus(user_id, Status.Y)
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
         Mental stress = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.STRESS);
         Mental burnout = mentalRepository.findByMemberAndSeparation(member, MentalEnums.Separation.BURNOUT);

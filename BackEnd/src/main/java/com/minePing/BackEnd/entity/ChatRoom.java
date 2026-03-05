@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
@@ -22,11 +23,14 @@ public class ChatRoom {
     @Column(name = "isGroupChat", nullable = false)
     private Boolean isGroupChat;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
+    @Column(name = "room_name", nullable = false, length = 100)
+    private String roomName;
 
     @Column(name = "separation", nullable = false, length = 10)
     private String separation;
+
+    @Column(name = "owner_uuid", nullable = false, columnDefinition = "BINARY(16)" )
+    private UUID ownerUuid;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     @Builder.Default
@@ -42,8 +46,8 @@ public class ChatRoom {
 
     @PrePersist
     protected void OnCreate(){
-        if(name == null){
-            name = "채팅방";
+        if(roomName == null){
+            roomName = "채팅방";
         }
     }
 }

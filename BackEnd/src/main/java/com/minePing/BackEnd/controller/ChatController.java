@@ -1,6 +1,6 @@
 package com.minePing.BackEnd.controller;
 
-import com.minePing.BackEnd.dto.ChatMessageDto;
+import com.minePing.BackEnd.dto.MessageDto;
 import com.minePing.BackEnd.dto.ChatRoomDto;
 import com.minePing.BackEnd.dto.PageResponse;
 import com.minePing.BackEnd.service.ChatService;
@@ -32,14 +32,19 @@ public class ChatController {
     }
 
     @GetMapping("/message/{room_no}")
-    public ResponseEntity<PageResponse<ChatMessageDto.Response>> getMessages(
+    public ResponseEntity<PageResponse<MessageDto.Response>> getMessages(
             @PathVariable Long room_no,
             @PageableDefault(
                     size = 50,
-                    sort = "messageNo",
+                    sort = "message_no",
                     direction = Sort.Direction.DESC
             )Pageable pageable
             ){
         return ResponseEntity.ok(new PageResponse<>(chatService.getMessages(room_no, pageable)));
+    }
+
+    @GetMapping("/participants_count/{room_no}")
+    public ResponseEntity<Integer> getParticipants_count(@PathVariable("room_no") Long room_no){
+        return ResponseEntity.ok(chatService.getParticipantsCount(room_no));
     }
 }

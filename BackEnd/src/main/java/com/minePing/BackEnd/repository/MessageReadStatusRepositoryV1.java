@@ -1,5 +1,8 @@
 package com.minePing.BackEnd.repository;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
 public interface MessageReadStatusRepositoryV1 {
-    int updateRead(Long roomNo, String userId, String workerId);
+    int markMessageRead(Long roomNo, UUID publicUuid, Long idempotentKey);
 }

@@ -1,7 +1,12 @@
 package com.minePing.BackEnd.event;
 
+import com.minePing.BackEnd.enums.MemberEnums;
+
+import java.util.UUID;
+
 public class ChatEvent {
 
-    // 읽음 처리 이벤트
-    public record ChatReadEvent(Long roomNo, String userId) {}
+    public record UserStateEvent(MemberEnums.Status status, UUID publicUuid) {}
+    
+    public record ChatReadEvent(Long roomNo, UUID publicUuid) {}
 }

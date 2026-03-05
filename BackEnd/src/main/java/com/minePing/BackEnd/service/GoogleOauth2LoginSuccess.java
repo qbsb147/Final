@@ -53,7 +53,7 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
                     .build();
             tempOAuthUserStore.save(uuid, tempUser);
 
-            String jwtToken = jwtTokenProvider.createAccessToken(uuid, CommonEnums.Role.TEMP);
+        String jwtToken = jwtTokenProvider.createAccessToken(uuid, CommonEnums.Role.TEMP);
 
             response.addHeader("Set-Cookie", String.format(
                     "token=%s; Path=/; HttpOnly=false; Secure=false; SameSite=Strict",
@@ -71,7 +71,7 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
             return;
         }
 
-        String jwtToken = jwtTokenProvider.createAccessToken(member.getUserId(), member.getRole());
+        String jwtToken = jwtTokenProvider.createAccessToken(member.getPublicUuid().toString(), member.getRole());
         
         response.addHeader("Set-Cookie", String.format(
                 "token=%s; Path=/; HttpOnly=false; Secure=false; SameSite=Strict",

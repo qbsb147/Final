@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ChatReadEventProducer {
+public class ChatEventProducer {
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -16,10 +16,11 @@ public class ChatReadEventProducer {
         // Redis Stream에 저장할 데이터
         Map<String, String> data = Map.of(
             "roomNo", roomNo.toString(),
-            "userId", userId
+            "publicUuid", userId
         );
 
         // chat_read_stream에 메시지 추가
         redisTemplate.opsForStream().add("chat_read_stream", data);
     }
+
 }

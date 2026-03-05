@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtTokenProvider {
@@ -42,8 +43,9 @@ public class JwtTokenProvider {
         this.refreshTokenService = refreshTokenService;
     }
 
-    public String createAccessToken(String userId, CommonEnums.Role role) {
-        Claims claims = Jwts.claims().setSubject(userId);
+    // subject is a publicUuid string (or temporary uuid for non‑registered users)
+    public String createAccessToken(String publicUuid, CommonEnums.Role role) {
+        Claims claims = Jwts.claims().setSubject(publicUuid);
         claims.put("role", role);
 
         Date now = new Date();
@@ -57,12 +59,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(String userId) {
+    public String createRefreshToken(String publicUuid) {
         Date now = new Date();
         Date expire = new Date(now.getTime() + (refreshTokenExpireSec * 1000L));
 
         return Jwts.builder()
-                .setSubject(userId)
+                .setSubject(publicUuid)
                 .setIssuedAt(now)
                 .setExpiration(expire)
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
@@ -81,9 +83,9 @@ public class JwtTokenProvider {
     public boolean isRefreshTokenValid(String refreshToken) {
         try {
             Claims claims = parseClaims(refreshToken);
-            String userId = claims.getSubject();
+            String publicUuid = claims.getSubject();
 
-            String stored = refreshTokenService.getRefreshToken(userId);
+            String stored = refreshTokenService.getRefreshToken(publicUuid);
             return stored != null && stored.equals(refreshToken);
 
         } catch (ExpiredJwtException e) {
@@ -101,21 +103,33 @@ public class JwtTokenProvider {
         }
 
         Claims claims = parseClaims(refreshToken);
-        String userId = claims.getSubject();
-        Member member = memberRepository.findByUserIdAndStatus(userId, CommonEnums.Status.Y)
+        String publicUuid = claims.getSubject();
+        Member member = memberRepository.findByPublicUuidAndStatus(UUID.fromString(publicUuid), CommonEnums.Status.Y)
                 .orElseThrow(()-> new UserNotFoundException());
-        return createAccessToken(userId, member.getRole());
+        return createAccessToken(publicUuid, member.getRole());
     }
 
-    public String getUserIdFromToken() {
+    /**
+     * Returns the subject stored in the token.  For normal authenticated users this is the
+     * publicUuid string.  Temporary logins may store arbitrary UUIDs here as well.
+     */
+    public String getSubjectFromToken() {
         return SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getName();
     }
 
-    public String getUserIdFromToken(String token) {
+    public String getSubjectFromToken(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    // convenience methods if you know the subject is meant to be a publicUuid
+    public UUID getPublicUuidFromToken() {
+        return UUID.fromString(getSubjectFromToken());
+    }
+    public UUID getPublicUuidFromToken(String token) {
+        return UUID.fromString(getSubjectFromToken(token));
     }
 
     public CommonEnums.Role getRoleFromToken() {

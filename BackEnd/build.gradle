@@ -35,6 +35,8 @@ dependencies {
 	// 🔹 데이터베이스 관련
 	implementation 'mysql:mysql-connector-java:8.0.32' // MySQL 연결을 위한 JDBC 드라이버
 	runtimeOnly 'com.h2database:h2' // 개발/테스트용 인메모리 H2 데이터베이스
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
 
 	// 🔹 Lombok: Getter, Setter 등 코드 자동 생성을 위한 도구
 	compileOnly 'org.projectlombok:lombok' // 컴파일 시에만 사용되는 Lombok 라이브러리

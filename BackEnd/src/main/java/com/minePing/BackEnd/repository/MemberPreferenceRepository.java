@@ -14,8 +14,6 @@ public interface MemberPreferenceRepository extends JpaRepository<MemberPreferen
 
     Optional<MemberPreference> findByMember(Member member);
 
-    Optional<MemberPreference> findTopByMember_UserNoOrderByUpdateDateDesc(Long userNo);
-
     List<MemberPreference> findByMemberAndUpdateDateAfter(Member member, LocalDate updateDateAfter);
 
 }

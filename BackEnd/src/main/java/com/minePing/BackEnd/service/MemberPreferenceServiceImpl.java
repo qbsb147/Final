@@ -16,6 +16,7 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ public class MemberPreferenceServiceImpl implements MemberPreferenceService{
     @Override
     @Transactional
     public void savePreference(MemberPreferenceDto.Request requestDto) {
-        String userId = jwtTokenProvider.getUserIdFromToken();
+        UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
 
         String template = """
 This information comes from users' responses to a survey form about their preferred workplace characteristics. After checking the following, write a post analyzing the user's preferences.
@@ -68,7 +69,7 @@ Translated with DeepL.com (free version)
                 .content();
         requestDto.setResult_content(result_content);
 
-        Member member = memberRepository.findByUserIdAndStatus(userId, Status.Y)
+        Member member = memberRepository.findByPublicUuidAndStatus(publicUuid, Status.Y)
                 .orElseThrow(() -> new UserNotFoundException());
 
         MemberPreference memberPreference = memberPreferenceRepository.findByMember(member)

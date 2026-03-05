@@ -13,16 +13,16 @@ public class RefreshTokenService {
     private final String PREFIX = "refresh:";
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void saveRefreshToken(String userId, String refreshToken, long expiration) {
+    public void saveRefreshToken(String publicUuid, String refreshToken, long expiration) {
         redisTemplate.opsForValue()
-                     .set(PREFIX + userId, refreshToken, expiration, TimeUnit.SECONDS);
+                     .set(PREFIX + publicUuid, refreshToken, expiration, TimeUnit.SECONDS);
     }
 
-    public String getRefreshToken(String userId) {
-        return redisTemplate.opsForValue().get(PREFIX + userId);
+    public String getRefreshToken(String publicUuid) {
+        return redisTemplate.opsForValue().get(PREFIX + publicUuid);
     }
 
-    public void deleteRefreshToken(String userId) {
-        redisTemplate.delete(PREFIX + userId);
+    public void deleteRefreshToken(String publicUuid) {
+        redisTemplate.delete(PREFIX + publicUuid);
     }
 }

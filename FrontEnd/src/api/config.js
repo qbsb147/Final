@@ -131,5 +131,6 @@ export const API_ENDPOINTS = {
     ADD_WORCATION: (worcation_no) => `/chat/worcation/${worcation_no}`,
     LIST: '/chat/list',
     MESSAGE_LIST: (room_no) => `/chat/message/${room_no}`,
+    PARTICIPANTS_COUNT: (room_no) => `/chat/participants_count/${room_no}`,
   },
 };
