@@ -57,13 +57,13 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
 
-        @Override
-        public List<Response> getRequestsByUser(Long userNo) {
-            List<WorcationPartner> list = partnerRepository.findAllByWorcationWriter(userNo);
-            return list.stream()
-                    .map(PartnerDto.Response::fromEntity)
-                    .collect(Collectors.toList());
-        }
+    @Override
+    public List<Response> getRequestsByUser(Long userNo) {
+        List<WorcationPartner> list = partnerRepository.findAllByWorcationWriter(userNo);
+        return list.stream()
+                .map(PartnerDto.Response::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<Response> getApprovalRequestsByUser(Long userNo) {

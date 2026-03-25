@@ -13,9 +13,9 @@ import com.minePing.BackEnd.entity.*;
 import com.minePing.BackEnd.enums.CommonEnums;
 import com.minePing.BackEnd.enums.SocketEnums;
 import com.minePing.BackEnd.event.ChatEvent;
+import com.minePing.BackEnd.event.ChatEventProducer;
 import com.minePing.BackEnd.exception.UserNotFoundException;
 import com.minePing.BackEnd.handler.ChatRoomWebSocketHandler;
-import com.minePing.BackEnd.handler.OnlineWebSocketHandler;
 import com.minePing.BackEnd.kafka.ChatKafkaProducer;
 import com.minePing.BackEnd.repository.*;
 import com.minePing.BackEnd.service.messageHandler.MessageFactory;
@@ -24,6 +24,7 @@ import com.minePing.BackEnd.service.userStateHandler.UserStateFactory;
 import com.minePing.BackEnd.service.userStateHandler.UserStateHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,8 +59,8 @@ public class ChatServiceImpl implements ChatService{
     private final WorcationRepository worcationRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final ChatKafkaProducer chatKafkaProducer;
-//    private final ApplicationEventPublisher applicationEventPublisher;
-//    private final ChatEventProducer chatEventProducer;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final ChatEventProducer chatEventProducer;
     private final ObjectMapper objectMapper;
     private final UserStateFactory userStateFactory;
     private final ChatRoomWebSocketHandler chatRoomWebSocketHandler;
@@ -167,12 +168,11 @@ public class ChatServiceImpl implements ChatService{
         Page<MessageProjection> chatMessages = chatMessageRepository.findMessagesWithUnreadAndMember(roomNo, pageable);
 
         UUID publicUuid = jwtTokenProvider.getPublicUuidFromToken();
-
 //        스프링의 이벤트 발행을 통한 서비스 구현
 //        applicationEventPublisher.publishEvent(new ChatEvent.ChatReadEvent(roomNo, publicUuid));
 
 //        redis를 통한 서비스 구현
-//        chatReadEventProducer.sendReadEvent(roomNo, publicUuid);
+//        chatEventProducer.sendReadEvent(roomNo, publicUuid);
 
 //        kafka + debezium(+kafka)를 통한 서비스 구현
         chatKafkaProducer.sendChatReadEvent(MessageReadStatusDto.Request.builder()

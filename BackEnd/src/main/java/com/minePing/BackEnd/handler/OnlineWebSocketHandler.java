@@ -65,7 +65,6 @@ public class OnlineWebSocketHandler extends TextWebSocketHandler {
         messageDto.setPublic_uuid(publicUuid);
         chatKafkaProducer.sendChatMessage(messageDto);
     }
-
     //WebSocket 클라이언트가 연결을 끊었을 때 자동으로 호출
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {

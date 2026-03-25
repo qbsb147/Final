@@ -35,7 +35,7 @@ public class ApplicationController {
     //  신청 등록
     @PostMapping
     @PreAuthorize("!hasRole('ROLE_WORCATION')")
-    public ResponseEntity<ApplicationDto.ApplicationResponseDto> createApplication(
+public ResponseEntity<ApplicationDto.ApplicationResponseDto> createApplication(
             @RequestBody ApplicationDto.ApplicationRequestDto requestDto
     ) {
         ApplicationDto.ApplicationResponseDto responseDto = applicationService.createApplication(requestDto);

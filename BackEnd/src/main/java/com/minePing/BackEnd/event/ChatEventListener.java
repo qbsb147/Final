@@ -26,8 +26,10 @@ public class ChatEventListener {
 
         while(retryCount < MAX_RETRY){
             try {
-//                messageReadStatusRepository
-//                        .markMessageRead(event.roomNo(), event.publicUuid(), );
+/*
+                messageReadStatusRepository
+                        .markMessageRead(event.roomNo(), event.publicUuid(), );
+*/
 
                 log.info("읽음 처리 완료: room={}, user={}", event.roomNo(), event.publicUuid());
                 return;

@@ -2,10 +2,9 @@ package com.minePing.BackEnd.event;
 
 import com.minePing.BackEnd.repository.MessageReadStatusRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.StreamOffset;
-import org.springframework.data.redis.connection.stream.StreamReadOptions;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Range;
+import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,34 +14,57 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatEventConsumer {
-
     private final RedisTemplate<String, String> redisTemplate;
     private final MessageReadStatusRepository messageReadStatusRepository;
 
+    private static final String STREAM_KEY = "chat_read_stream";
+    private static final String GROUP = "group1";
+    private static final String CONSUMER = "consumer1";
+    private static final int BATCH_SIZE = 10;
+
     @Scheduled(fixedDelay = 1000)
     public void consume() {
-        List<MapRecord<String, Object, Object>> messages =
-                redisTemplate.opsForStream().read(
-                        Consumer.from("group1", "consumer1"),
-                        StreamReadOptions.empty().count(10),
-                        StreamOffset.fromStart("chat_read_stream"));
+        // 1️⃣ Pending 메시지 먼저 처리 (재처리)
+        PendingMessagesSummary pending = redisTemplate.opsForStream().pending(STREAM_KEY, GROUP);
 
+        // Pending 메시지별 처리
+        pending.getPendingMessagesPerConsumer().forEach((consumer, msgId) -> {
+            // msgId는 Long 하나
+            List<MapRecord<String, Object, Object>> records =
+                    redisTemplate.opsForStream()
+                            .range(STREAM_KEY, Range.closed(msgId.toString(), msgId.toString()));
+
+                // records 처리
+                processMessages(records);
+        });
+        // 2️⃣ 새로 들어온 메시지 읽기
+        List<MapRecord<String, Object, Object>> newMessages =
+                redisTemplate.opsForStream().read(
+                        Consumer.from(GROUP, CONSUMER),
+                        StreamReadOptions.empty().count(BATCH_SIZE),
+                        StreamOffset.fromStart(STREAM_KEY));
+
+        processMessages(newMessages);
+    }
+
+    private void processMessages(List<MapRecord<String, Object, Object>> messages) {
         for (MapRecord<String, Object, Object> msg : messages) {
             try {
                 Long roomNo = Long.valueOf((String) msg.getValue().get("roomNo"));
-                String publicUuidStr = (String) msg.getValue().get("publicUuid");
-                UUID publicUuid = UUID.fromString(publicUuidStr);
+                UUID publicUuid = UUID.fromString((String) msg.getValue().get("publicUuid"));
 
-                // 처리
-//                messageReadStatusRepository.markMessageRead(roomNo, publicUuid, );
+                // 읽음 처리
+                messageReadStatusRepository.markMessageRead(roomNo, publicUuid);
 
-                // ACK
-                redisTemplate.opsForStream().acknowledge("chat_read_stream", "group1", msg.getId());
+                // ACK: 처리 완료 표시
+                redisTemplate.opsForStream().acknowledge(STREAM_KEY, GROUP, msg.getId());
+
             } catch (Exception e) {
-                // 실패 로그 기록 후 재시도 가능
+                // 실패 로그 기록, 다음 스케줄에서 Pending으로 재처리
+                log.error("읽음 처리 실패, 재시도 예정: msgId={}, error={}", msg.getId(), e.getMessage());
             }
         }
     }
-
 }
