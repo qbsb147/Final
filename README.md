@@ -53,6 +53,47 @@ React와 Spring Boot를 활용한
 - toast
 - sweetalert2
 
+## 실행 화면
+## - 로그인 화면
+
+<img src="./screen/그림14.png" width="834">
+
+## - 회원 가입
+
+<img src="./screen/그림15.png" width="834">
+
+## - 메인 화면
+
+<img src="./screen/그림16.png" width="834">
+
+## - 심리 테스트
+
+<img src="./screen/그림17.png" width="834">
+
+## - 성향 분석 테스트
+
+<img src="./screen/그림18.png" width="834">
+
+## - 심리 검사 결과
+
+<img src="./screen/그림19.png" width="834">
+
+## - 회사 업체 등록
+
+<img src="./screen/그림20.png" width="834">
+
+## - 회사 업체 등록2
+
+<img src="./screen/그림21.png" width="834">
+
+## - 사원 관리
+
+<img src="./screen/그림22.png" width="834">
+
+## - 관리 필요 회원 목록
+
+<img src="./screen/그림23.png" width="834">
+
 ## 설치 및 실행 방법
 ```bash
 git clone https://github.com/MinePing/Final.git
