@@ -78,11 +78,11 @@ React와 Spring Boot를 활용한
 
 <img src="./screen/그림19.png" width="834">
 
-## - 회사 업체 등록
+## - 워케이션 업체 등록
 
 <img src="./screen/그림20.png" width="834">
 
-## - 회사 업체 등록2
+## - 워케이션 업체 등록2
 
 <img src="./screen/그림21.png" width="834">
 
